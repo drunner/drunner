@@ -7,12 +7,12 @@ LDFLAGS=
 LDLIBS=
 
 SRCS=$(shell find . -maxdepth 1 -name "*.cpp")
-OBJS=$(subst .cc,.o,$(SRCS))
+OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(APP)
 
 $(APP): $(OBJS)
-	$(CXX) $(LDFLAGS) -o tool $(OBJS) $(LDLIBS) 
+	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
 
