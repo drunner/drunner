@@ -1,5 +1,8 @@
 #include <vector>
 
+#ifndef __UTILS_H
+#define __UTILS_H
+
 // Shell utilities
 namespace utils
 {
@@ -8,3 +11,5 @@ namespace utils
 
       std::string getVersion();
 }
+
+#endif

@@ -1,2 +1,2 @@
-main.o: main.cpp shellutils.h
-shellutils.o: shellutils.cpp pstream.h shellutils.h
+utils.o: utils.cpp pstream.h utils.h
+main.o: main.cpp utils.h

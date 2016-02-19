@@ -11,7 +11,7 @@
 #include <errno.h>
 
 #include "pstream.h"
-#include "shellutils.h"
+#include "utils.h"
 
 namespace utils
 {
