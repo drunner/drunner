@@ -10,9 +10,10 @@
 //#include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
+
 #include <boost/filesystem.hpp>
-#include <grp.h>
-#include <pwd.h>
+#include <boost/locale.hpp>
+
 #include <sys/stat.h>
 
 #include "pstream.h"
@@ -21,11 +22,17 @@
 namespace utils
 {
    
-   bool fileexists (const std::string& name) {
+   bool fileexists (const std::string& name) 
+   {
       struct stat buffer;   
       return (stat (name.c_str(), &buffer) == 0); 
    }
-   
+
+   bool stringisame(const std::string & s1, const std::string &s2 )
+   {
+      boost::locale::comparator<char,boost::locale::collator_base::secondary> stringcompare;
+      return stringcompare(s1,s2);
+   }
    
    // trim from left
    inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")

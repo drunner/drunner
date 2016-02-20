@@ -26,6 +26,8 @@ int command_setup(params & p)
    rootpath = utils::getcanonicalpath(rootpath);
 
    drunner_settings settings(rootpath);
-
+   if (!settings.writeSettings())
+      utils::die(p,"Couldn't write settings file!");
+   
    return 0;
 }

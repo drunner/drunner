@@ -32,6 +32,8 @@ namespace utils
 
    void die( const params & p, std::string msg, int exit_code=1 );
    void die( std::string msg, int exit_code=1 );
+ 
+   bool stringisame(const std::string & s1, const std::string &s2 );  
 }
 
 #endif

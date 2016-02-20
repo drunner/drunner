@@ -1,3 +1,5 @@
+#include <map>
+
 
 #ifndef __DRUNNER_SETTINGS_H
 #define __DRUNNER_SETTINGS_H
@@ -9,14 +11,15 @@ public:
 
    bool readSettings();
    bool writeSettings();
-
-   std::string mRootPath;
-   std::string mSupportImage;
-   std::string mRootUtilImage;
-   std::string mdrunnerInstallURL;
-   std::string mdrunnerInstallTime;
+   
+   std::string getRootPath()           {   return mSettings["ROOTPATH"];            }
+   std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
+   std::string getRootUtilImage()      {   return mSettings["ROOTUTILIMAGE"];       }
+   std::string getdrunnerInstallURL()  {   return mSettings["DRUNNERINSTALLURL"];   }
+   std::string getdrunnerInstallTime() {   return mSettings["DRUNNERINSTALLTIME"];  }
+   
+private:   
+   std::map< std::string, std::string > mSettings;
 };
-
-
 
 #endif
