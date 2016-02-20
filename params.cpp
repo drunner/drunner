@@ -1,11 +1,13 @@
 #include <string>
-#include "params.h"
-#include "utils.h"
-#include "showhelp.h"
-
+#include <algorithm>
 #include <stdio.h>
 #include <getopt.h>
 #include <iostream>
+#include <map>
+
+#include "params.h"
+#include "utils.h"
+#include "showhelp.h"
 
 std::string params::substitute( const std::string & source ) const
 {
@@ -14,10 +16,39 @@ std::string params::substitute( const std::string & source ) const
    return d;
 }
 
+eCommand params::parsecmd(std::string s) const
+{
+   std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
-params::params(int argc, char **argv) {
+   std::map<std::string, eCommand> commandlist;
+   std::map<std::string, eCommand>::iterator it;
+
+   commandlist["setup"]=c_setup;
+   commandlist["clean"]=c_clean;
+   commandlist["list"]=c_list;
+   commandlist["update"]=c_update;
+   commandlist["checkimage"]=c_checkimage;
+   commandlist["backup"]=c_backup;
+   commandlist["restore"]=c_restore;
+   commandlist["install"]=c_install;
+   commandlist["recover"]=c_recover;
+   commandlist["uninstall"]=c_uninstall;
+   commandlist["obliterate"]=c_obliterate;
+   commandlist["enter"]=c_enter;
+   commandlist["status"]=c_status;
+
+   it=commandlist.find(s);
+   if (it==commandlist.end())
+      showhelp(*this,"Unknown command \"" + s + "\".");
+   return it->second;
+}
+
+// Parse command line parameters.
+params::params(int argc, char **argv)
+{
   mVersion="0.1 Dev";
   mOMode=om_normal;
+  mCmd=c_UNDEFINED;
 
   // parse command line stuff.
   int c;
@@ -58,11 +89,11 @@ params::params(int argc, char **argv) {
          default:
             showhelp(*this,"Unrecognised option "+c);
       }
+   }
+   if (optind>=argc) showhelp(*this);
 
-      if (optind>=argc) showhelp(*this);
+   mCmd=parsecmd(argv[optind]);
 
-      std::string tcmd=argv[optind];
-      for (int i=optind+1;i<argc;++i)
-         mOptions.push_back(argv[i]);
-  }
+   for (int i=optind+1;i<argc;++i)
+      mArgs.push_back(argv[i]);
 }

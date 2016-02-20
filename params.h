@@ -5,6 +5,8 @@
 #define __PARAMS_H
 
 enum eCommand {
+   c_UNDEFINED,
+   c_setup,
    c_clean,
    c_list,
    c_update,
@@ -33,7 +35,11 @@ public:
    std::string mVersion;
    eCommand mCmd;
    eOutputmode mOMode;
-   std::vector<std::string> mOptions;
+   std::vector<std::string> mArgs;
+
+private:
+   eCommand parsecmd(std::string s) const;
+   params();
 };
 
 

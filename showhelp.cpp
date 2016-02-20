@@ -1,10 +1,11 @@
 #include "showhelp.h"
+#include "utils.h"
 #include <iostream>
 
 
-   void showhelp(const params & p, std::string cMsg) {
-      if (p.mOMode != om_silent) {
-         std::cerr << p.substitute(R"EOF(
+void showhelp(const params & p, std::string cMsg) {
+   if (p.mOMode != om_silent) {
+      std::cerr << p.substitute(R"EOF(
 
 NAME
    drunner - docker Runner
@@ -16,6 +17,7 @@ LOCATION
    $ROOTPATH
 
 SYNOPSIS
+   drunner setup
    drunner clean
    drunner list
    drunner update
@@ -46,8 +48,6 @@ EXIT CODE
    3   - no changes made
 
 )EOF");
-      if (cMsg.length()>0)
-         std::cerr << cMsg << std::endl;
-      }
-      exit(1);
    }
+      utils::die(p,cMsg,1);
+}

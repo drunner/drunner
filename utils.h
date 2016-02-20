@@ -8,10 +8,10 @@
 // Shell utilities
 namespace utils
 {
-      //typedef std::vector<std::string> strvec;
-      //int runcommand(std::string cmd, std::vectror args, std::vector & logstdout, std::vector & logstderr);
-      std::string replacestring(std::string subject, const std::string& search,
-                                const std::string& replace);
+   std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
+
+   void die( const params & p, std::string msg, int exit_code=1 );
+   void dielow( std::string msg, int exit_code=1 );
 }
 
 #endif
