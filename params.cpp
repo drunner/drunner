@@ -59,6 +59,7 @@ params::params(int argc, char **argv)
           { // name, has_arg, flag=0, val={0, character}
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
+            {"getoutput", 0, 0, 'g'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
           };
@@ -84,6 +85,10 @@ params::params(int argc, char **argv)
 
          case 'v':
             mOMode=om_verbose;
+            break;
+
+         case 'g':
+            mOMode=om_getouput;
             break;
 
          default:

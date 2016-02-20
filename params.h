@@ -24,7 +24,8 @@ enum eCommand {
 enum eOutputmode {
    om_normal,
    om_verbose,
-   om_silent
+   om_silent,
+   om_getouput,   // get the output of the service. dRunner must be silent.
 };
 
 class params {

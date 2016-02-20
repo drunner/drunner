@@ -17,7 +17,20 @@ LOCATION
    $ROOTPATH
 
 SYNOPSIS
+   drunner [OPTION]... [COMMAND] [ARGS]...
+
+OPTIONS
+   -v    verbose
+   -s    silent
+   -g    drunner silent, service normal (for capturing service output)
+
+DESCRIPTION
+Provides a standard way to manage and run docker services.
+Intended to be used both manually and via Ansible.
+See http://drunner.io
+
    drunner setup
+
    drunner clean
    drunner list
    drunner update
@@ -37,10 +50,6 @@ SYNOPSIS
    SERVICENAME
    SERVICENAME COMMAND ARGS
 
-DESCRIPTION
-   Provides a standard way to manage and run containers supporting dr.
-   Intended to be used both manually and via Ansible.
-   See https://github.com/j842/drunner
 
 EXIT CODE
    0   - success

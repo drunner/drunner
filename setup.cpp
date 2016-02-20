@@ -15,7 +15,9 @@ int setup(params & p)
    std::string rootpath = utils::getabsolutepath(p.mArgs[0]);
    if (rootpath.length()==0)
       utils::die(p,"Couldn't determine path for "+p.mArgs[0]);
-   std::cout << "Setting up to directory "<<rootpath << std::endl;
+
+   if (p.mOMode == om_verbose)
+      std::cout << "Setting up to directory "<<rootpath << std::endl;
 
    if (!utils::mkdirp(rootpath))
       utils::die(p,"Couldn't create directory "+rootpath);
