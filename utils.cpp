@@ -62,17 +62,11 @@ namespace utils
    int bashcommand(std::string command, std::string & output)
    {
       redi::ipstream in(command);
-      std::string str,str2;
-      while (in >> str2)
-         if (str.length()==0)
-            output=trim_copy(str2);
-         else
-//            { std::cerr<<"Got too many output strings: >>"<<str<<"<<, >>"<<str2<<"<<"<<std::endl; return 77;}
-            return 77;
+      std::string str;
+      while (in >> str)
+         output+=trim_copy(str)+" ";
       in.close();
-      if (!in.rdbuf()->exited())
-//         { std::cerr<<"Didn't exit."<<std::endl; return 77;}
-         return 78;
+      utils::trim(output);
       return in.rdbuf()->status();
    }
 
@@ -99,7 +93,7 @@ namespace utils
       return rval.string();
    }
 
-   void createordie(const params & p, std::string path)
+   bool mkdirp(std::string path)
    {
       try
       {
@@ -107,8 +101,9 @@ namespace utils
       }
       catch (...)
       {
-         utils::die(p,"Couldn't create "+path);
+         return false;
       }
+      return true;
    }
 
 
@@ -126,7 +121,7 @@ namespace utils
       return subject;
    }
 
-   void dielow( std::string msg, int exit_code )
+   void die( std::string msg, int exit_code )
    {
       if (msg.length()>0)
          std::cerr << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
@@ -135,7 +130,7 @@ namespace utils
 
    void die( const params & p, std::string msg, int exit_code )
    {
-      dielow( p.mOMode==om_silent ? "" : msg , exit_code );
+      die( p.mOMode==om_silent ? "" : msg , exit_code );
    }
 
    bool isindockergroup(std::string username)
@@ -157,45 +152,16 @@ namespace utils
       std::string op;
       int rval = bashcommand("echo $USER",op);
       if (rval!=0)
-         dielow("Couldn't get current user.");
+         die("Couldn't get current user.");
       return op;
    }
 
-
-
-   // // this thing probably leaks like a sieve. Code mostly taken from the man page for getgrouplist.
-   // // Switched to just calling the bash command instead!
-   //
-   // void getgroups(std::string username, std::vector<std::string> & usersgroups)
-   // {
-   //    int ngroups=100; // make it large - bug ignores this and breaks things! See man page for getgrouplist.
-   //
-   //    gid_t *groups;
-   //    groups = (gid_t *)malloc(ngroups * sizeof (gid_t));
-   //    if (groups == NULL)
-   //       dielow("Couldn't allocate memory for groups.");
-   //
-   //    struct passwd *pw;
-   //    pw = getpwnam(username.c_str());
-   //    if (pw == NULL)
-   //       dielow("Couldn't get passwd structure for user "+username);
-   //    if (getgrouplist(username.c_str(), pw->pw_gid, groups, &ngroups) == -1)
-   //       dielow("Couldn't get group list for user "+username);
-   //    for (int j = 0; j < ngroups; j++)
-   //    {
-   //       struct group *gr;
-   //       gr = getgrgid(groups[j]);
-   //       if (gr != NULL)
-   //          usersgroups.push_back(gr->gr_name);
-   //    }
-   //    free(groups);
-   // }
-
-   std::string getcurrentusername()
+   bool commandexists(std::string command)
    {
-         return "wibble";
+      std::string op;
+      int rval = bashcommand("command -v "+command,op);
+      return (rval==0);
    }
-
 
 
 

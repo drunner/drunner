@@ -46,13 +46,19 @@ void check_basics()
 {
    uid_t euid=geteuid();
    if (euid == 0)
-      utils::dielow("Please run as a standard user, not as root.");
+      utils::die("Please run as a standard user, not as root.");
 
    std::string user=utils::getUSER();
    if (!utils::isindockergroup(user))
-      utils::dielow("Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
+      utils::die("Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
    if (!utils::canrundocker(user))
-      utils::dielow(user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
+      utils::die(user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
 
+   if (!utils::commandexists("docker"))
+      utils::die("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
 
+   std::string v;
+   if (utils::bashcommand("docker --version",v)!=0)
+      utils::die("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
+   //std::cerr << v << std::endl;
 }

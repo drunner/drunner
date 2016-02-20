@@ -13,10 +13,11 @@ namespace utils
 
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
    std::string getabsolutepath(std::string path);
-   void createordie(const params & p, std::string path);
+   bool mkdirp(std::string path);
 
    bool canrundocker(std::string username);
    bool isindockergroup(std::string username);
+   bool commandexists(std::string command);
    std::string getUSER();
 
    std::string bashcommand(const params & p, std::string c);
@@ -25,7 +26,7 @@ namespace utils
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
 
    void die( const params & p, std::string msg, int exit_code=1 );
-   void dielow( std::string msg, int exit_code=1 );
+   void die( std::string msg, int exit_code=1 );
 }
 
 #endif
