@@ -18,6 +18,7 @@
 
 #include "pstream.h"
 #include "utils.h"
+#include "exceptions.h"
 
 namespace utils
 {
@@ -85,7 +86,7 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   std::string bashcommand(const params & p, std::string c)
+   std::string bashcommand(const params::params & p, std::string c)
    {
       std::string op;
       int rval = bashcommand(c,op);
@@ -154,13 +155,18 @@ namespace utils
    void die( std::string msg, int exit_code )
    {
       if (msg.length()>0)
-         std::cerr << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
-      exit(exit_code);
+      {
+         std::ostringstream m;
+         m << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
+         throw eExit(m.str().c_str(),exit_code);     
+      }
+      else
+         throw eExit("",exit_code);
    }
 
-   void die( const params & p, std::string msg, int exit_code )
+   void die( const params::params & p, std::string msg, int exit_code )
    {
-      die( p.mOMode==om_silent ? "" : msg , exit_code );
+      die( p.drIsSilent() ? "" : msg , exit_code );
    }
 
    bool isindockergroup(std::string username)

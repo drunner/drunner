@@ -3,8 +3,8 @@
 #include <iostream>
 
 
-void showhelp(const params & p, std::string cMsg) {
-   if (p.mOMode != om_silent) {
+void showhelp(const params::params & p, std::string cMsg) {
+   if (!p.drIsSilent()) {
       std::cerr << p.substitute(R"EOF(
 
 NAME

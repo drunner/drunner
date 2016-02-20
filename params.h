@@ -4,44 +4,54 @@
 #ifndef __PARAMS_H
 #define __PARAMS_H
 
-enum eCommand {
-   c_UNDEFINED,
-   c_setup,
-   c_clean,
-   c_list,
-   c_update,
-   c_checkimage,
-   c_backup,
-   c_restore,
-   c_install,
-   c_recover,
-   c_uninstall,
-   c_obliterate,
-   c_enter,
-   c_status
-};
+namespace params
+{
 
-enum eOutputmode {
-   om_normal,
-   om_verbose,
-   om_silent,
-   om_getouput,   // get the output of the service. dRunner must be silent.
-};
+   enum eCommand {
+      c_UNDEFINED,
+      c_setup,
+      c_clean,
+      c_list,
+      c_update,
+      c_checkimage,
+      c_backup,
+      c_restore,
+      c_install,
+      c_recover,
+      c_uninstall,
+      c_obliterate,
+      c_enter,
+      c_status
+   };
 
-class params {
-public:
-   params(int argc, char **argv);
-   std::string substitute( const std::string & source ) const;
+   enum eOutputmode {
+      om_normal,
+      om_verbose,
+      om_silent,
+      om_getouput,   // get the output of the service. dRunner must be silent.
+   };
 
-   std::string mVersion;
-   eCommand mCmd;
-   eOutputmode mOMode;
-   std::vector<std::string> mArgs;
+   class params {
+   public:
+      params(int argc, char **argv);
+      std::string substitute( const std::string & source ) const;
 
-private:
-   eCommand parsecmd(std::string s) const;
-   params();
-};
+      const std::string & getVersion() const             {return mVersion;}
+      eCommand getCommand() const                        {return mCmd;}
+      bool isVerbose() const                             {return mOMode==om_verbose;}
+      bool drIsSilent() const                            {return mOMode==om_silent || mOMode==om_getouput;}
+      bool serviceIsSilent() const                       {return mOMode==om_silent;}
+      const std::vector<std::string> & getArgs() const   {return mArgs;}
 
+   private:
+      std::string mVersion;
+      eCommand mCmd;
+      std::vector<std::string> mArgs;
+      eOutputmode mOMode;
+      eCommand parsecmd(std::string s) const;
+      params();
+   };
+
+} // namespace
 
 #endif

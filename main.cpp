@@ -2,7 +2,9 @@
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sstream>
 
+#include "exceptions.h"
 #include "utils.h"
 #include "params.h"
 #include "command_setup.h"
@@ -14,35 +16,31 @@ using namespace utils;
 
 int main(int argc, char **argv)
 {
-   check_basics();
-
-   params p(argc, argv);
-
-   if (p.mOMode != om_silent)
-	  std::cout << "dRunner C++, version " << p.mVersion << std::endl;
-   if (p.mOMode == om_verbose)
+   try 
    {
-      std::string u=getUSER();
-      std::cout << "Username: "+u+",  Docker OK: "+std::string(utils::canrundocker(u) ? "YES" : "NO")<< std::endl;
+      mainroutines::check_basics();
+
+      params::params p(argc, argv);
+
+      if (! p.drIsSilent())
+      std::cout << "dRunner C++, version " << p.getVersion() << std::endl;
+      if (p.isVerbose())
+      {
+         std::string u=getUSER();
+         std::cout << "Username: "+u+",  Docker OK: "+std::string(utils::canrundocker(u) ? "YES" : "NO")<< std::endl;
+      }
+
+      mainroutines::process(p);
    }
-
-   switch (p.mCmd)
-   {
-      case c_setup:
-         exit( command_setup(p) );
-
-      default:
-         std::cerr << "\e[31m" <<  R"EOF(
-
-          /-------------------------------------------------------------\
-          |   That command has not been implemented and I am sad. :,(   |
-          \-------------------------------------------------------------/
-)EOF" << "\e[0m";
-         exit(1);
+   
+   catch (const eExit & e) {
+      if (e.hasMsg()) 
+         std::cerr << e.what();
+      return e.exitCode();
    }
 }
 
-void check_basics()
+void mainroutines::check_basics()
 {
    uid_t euid=geteuid();
    if (euid == 0)
@@ -61,4 +59,32 @@ void check_basics()
    if (utils::bashcommand("docker --version",v)!=0)
       utils::die("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
    //std::cerr << v << std::endl;
+}
+
+void mainroutines::process(const params::params & p)
+{
+  
+   switch (p.getCommand())
+   {
+      case params::c_setup:
+         {
+            int rval=command_setup(p);
+            if (rval!=0) throw eExit("Setup failed.",rval);
+            if (!p.drIsSilent())
+               std::cout << "Setup completed succesfully." << std::endl;
+            break;
+         }
+         
+      default:
+         {
+            std::ostringstream msg;
+            msg << "\e[31m" <<  R"EOF(
+
+          /-------------------------------------------------------------\
+          |   That command has not been implemented and I am sad. :,(   |
+          \-------------------------------------------------------------/
+)EOF" << "\e[0m";
+            throw eExit(msg.str().c_str());
+         }
+   } 
 }

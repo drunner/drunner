@@ -1,6 +1,7 @@
 APP=drunnerc
 CC=gcc
-CXX=g++
+#CXX=g++
+CXX=./g++
 RM=rm -f
 CPPFLAGS=-g -Wall -std=c++11
 LDFLAGS=-lboost_filesystem -lboost_system 

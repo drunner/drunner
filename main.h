@@ -1,6 +1,12 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-void check_basics();
+namespace mainroutines
+{
+
+   void check_basics();
+   void process(const params::params & p);
+
+} // namespace
 
 #endif

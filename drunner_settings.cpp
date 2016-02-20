@@ -71,7 +71,7 @@ bool drunner_settings::writeSettings()
    ofile << "# Docker Runner configuration file." << std::endl;
    ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
    
-  // iterate through array etc. C++11 style.  
+  // iterate through map. C++11 style.  
   for (auto const &entry : mSettings) {
      ofile << entry.first << "=" << entry.second << std::endl;
   }
