@@ -2,7 +2,7 @@ APP=drunnerc
 CC=gcc
 CXX=g++
 RM=rm -f
-CPPFLAGS=-g -Wall
+CPPFLAGS=-g -Wall -std=c++11
 LDFLAGS=
 LDLIBS=
 
