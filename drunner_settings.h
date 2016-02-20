@@ -7,9 +7,8 @@
 class drunner_settings
 {
 public:
-   drunner_settings(std::string rootpath);
-
-   bool readSettings();
+   drunner_settings(std::string rootpath); // sets defaults, reads from config.sh if present.
+   
    bool writeSettings();
    
    std::string getRootPath()           {   return mSettings["ROOTPATH"];            }
@@ -19,6 +18,7 @@ public:
    std::string getdrunnerInstallTime() {   return mSettings["DRUNNERINSTALLTIME"];  }
    
 private:   
+   bool readSettings();
    std::map< std::string, std::string > mSettings;
 };
 
