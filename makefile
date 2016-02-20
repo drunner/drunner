@@ -3,7 +3,7 @@ CC=gcc
 CXX=g++
 RM=rm -f
 CPPFLAGS=-g -Wall -std=c++11
-LDFLAGS=
+LDFLAGS=-lboost_filesystem -lboost_system 
 LDLIBS=
 
 SRCS=$(shell find . -maxdepth 1 -name "*.cpp")
@@ -11,7 +11,7 @@ OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(APP)
 
-$(APP): $(OBJS)
+$(APP): $(OBJS) makefile
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
