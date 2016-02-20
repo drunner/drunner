@@ -15,9 +15,7 @@ public:
    std::string mRootUtilImage;
    std::string mdrunnerInstallURL;
    std::string mdrunnerInstallTime;
-
-   
-}
+};
 
 
 

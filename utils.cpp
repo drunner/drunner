@@ -13,12 +13,20 @@
 #include <boost/filesystem.hpp>
 #include <grp.h>
 #include <pwd.h>
+#include <sys/stat.h>
 
 #include "pstream.h"
 #include "utils.h"
 
 namespace utils
 {
+   
+   bool fileexists (const std::string& name) {
+      struct stat buffer;   
+      return (stat (name.c_str(), &buffer) == 0); 
+   }
+   
+   
    // trim from left
    inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
    {
@@ -92,6 +100,21 @@ namespace utils
       }
       return rval.string();
    }
+
+   std::string getcanonicalpath(std::string path)
+   {
+      boost::filesystem::path rval;
+      try
+      {
+         rval = boost::filesystem::canonical(path);
+      }
+      catch(...)
+      {
+         return "";
+      }
+      return rval.string();     
+   }
+
 
    bool mkdirp(std::string path)
    {

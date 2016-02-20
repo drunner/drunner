@@ -5,7 +5,7 @@
 
 #include "utils.h"
 #include "params.h"
-#include "setup.h"
+#include "command_setup.h"
 #include "main.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
    switch (p.mCmd)
    {
       case c_setup:
-         exit( setup(p) );
+         exit( command_setup(p) );
 
       default:
          std::cerr << "\e[31m" <<  R"EOF(
