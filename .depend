@@ -1,4 +1,0 @@
-params.o: params.cpp params.h utils.h showhelp.h
-showhelp.o: showhelp.cpp showhelp.h params.h
-utils.o: utils.cpp pstream.h utils.h params.h
-main.o: main.cpp utils.h params.h
