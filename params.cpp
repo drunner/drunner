@@ -107,7 +107,7 @@ namespace params
       }
       
       // drunner with no command.
-      if (optind>=argc) showhelp(*this);
+      if (optind>=argc) showhelp(*this,"Please enter a command.");
 
       // confirm the command is valid and convert to enum.
       mCmd=parsecmd(argv[optind]);

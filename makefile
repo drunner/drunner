@@ -28,9 +28,10 @@ clean:
 dist-clean: clean
 	$(RM) *~ .depend
 
+HDRS=$(shell find . -maxdepth 1 \( -name "*.h" ! -name "build_number.h" \) )
 build_number.h: $(SRCS) $(HDRS) major_version
 	@echo
-	@echo Generating build number..
+	@echo Bumping build number..
 	sh make_buildnum.sh
 
 include .depend

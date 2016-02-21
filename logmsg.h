@@ -6,10 +6,13 @@
 #include <string>
 
 
-void logmsg(eLogLevel level, std::string s, const params::params & p);
+//void logmsg(eLogLevel level, std::string s, const params::params & p);
 void logmsg(eLogLevel level, std::string s, eLogLevel cutoff=kLINFO);
 
-void logverbatim(eLogLevel level, std::string s, const params::params & p);
+//void logverbatim(eLogLevel level, std::string s, const params::params & p);
 void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff=kLINFO);
+
+//void logmultiline(eLogLevel level, std::string s, const params::params & p);
+void logmultiline(eLogLevel level, std::string s, eLogLevel cutoff);
 
 #endif

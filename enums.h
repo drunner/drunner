@@ -1,6 +1,8 @@
 #ifndef __ENUMS_H
 #define __ENUMS_H
 
+// enumerators used often.
+
 enum eResult 
 {
    kRSuccess=0,

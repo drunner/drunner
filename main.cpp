@@ -31,8 +31,6 @@ int main(int argc, char **argv)
    }
    
    catch (const eExit & e) {
-      if (e.hasMsg()) 
-         std::cerr << "\e[31m" << e.what() << "\e[0m" << std::endl;
       return e.exitCode();
    }
 }
@@ -94,13 +92,12 @@ void mainroutines::process(const params::params & p)
          
       default:
          {
-            std::string msg = R"EOF(
+            logmsg(kLERROR,R"EOF(
 
           /-------------------------------------------------------------\
           |   That command has not been implemented and I am sad. :,(   |
           \-------------------------------------------------------------/
-)EOF";
-            throw eExit(msg.c_str());
+)EOF",p);
          }
    } 
 }

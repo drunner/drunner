@@ -20,6 +20,9 @@ namespace params
       bool getDisplayServiceOutput() const               {return mDisplayServiceOutput;}
       const std::vector<std::string> & getArgs() const   {return mArgs;}
 
+      // implicit conversion to allow easy logging.
+      operator eLogLevel() const                         {return mLogLevel;}
+
    private:
       std::string mVersion;
       eCommand mCmd;
@@ -30,6 +33,6 @@ namespace params
       params();
    };
 
-} // namespace
+} // namespace params
 
 #endif

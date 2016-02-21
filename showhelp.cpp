@@ -5,7 +5,7 @@
 #include "logmsg.h"
 
 void showhelp(const params::params & p, std::string cMsg) {
-   logverbatim(kLINFO,R"EOF(
+   logmultiline(kLINFO,p.substitute(R"EOF(
 
 NAME
    drunner - docker Runner
@@ -56,7 +56,7 @@ EXIT CODE
    1   - error
    3   - no changes made
 
-)EOF", p);   
+)EOF"), p);   
    
    logmsg(kLERROR, cMsg, p);
 }

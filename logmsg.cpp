@@ -26,9 +26,9 @@ std::string timestamp()
         time(&rawtime);
         timeinfo = localtime( &rawtime );
  
-        stream << (timeinfo->tm_year)+1900<<" "<<timeinfo->tm_mon
-        <<" "<<timeinfo->tm_mday<<" "<<timeinfo->tm_hour
-        <<" "<<timeinfo->tm_min<<" "<<timeinfo->tm_sec;
+        stream << (timeinfo->tm_year)+1900<<"/"<<timeinfo->tm_mon
+        <<"/"<<timeinfo->tm_mday<<" "<<timeinfo->tm_hour
+        <<":"<<timeinfo->tm_min;
         // The str() function of output stringstreams return a std::string.
         return stream.str();   
 }
@@ -45,33 +45,42 @@ std::string levelname(eLogLevel level)
    }
 }
 
-void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
+std::string getcolor(eLogLevel level)
 {
+   switch (level)
+   {
+      case kLDEBUG: return "\e[90m";
+      case kLINFO:  return "\e[34m";
+      case kLWARN:  return "\e[33m";
+      case kLERROR: return "\e[31m";
+      default: return "\e[32m";
+   }
+}
+
+void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
+{  
    if (level<cutoff)
       return;
    if (level<=kLINFO)
-      std::cout << s;
+      std::cout << "\e[0m" << getcolor(level) << s << "\e[0m";
    else
-      std::cerr << s;
+      std::cerr << "\e[0m" << getcolor(level) << s << "\e[0m";
 
    if (level==kLERROR)
       throw eExit(s.c_str());
 }
 
-void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
+void logmultiline(eLogLevel level, std::string s, eLogLevel cutoff)
 {
    std::ostringstream ost;
-   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<<s<<std::endl;
-
+   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<<std::endl<< s;
    logverbatim(level,ost.str(),cutoff);
 }
 
-void logmsg(eLogLevel level, std::string s, const params::params & p)
+void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
 {
-   logmsg(level,s,p.getLogLevel());
+   std::ostringstream ost;
+   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<< s <<std::endl;
+   logverbatim(level,ost.str(),cutoff);
 }
 
-void logverbatim(eLogLevel level, std::string s, const params::params & p)
-{
-   logverbatim(level,s,p.getLogLevel());
-}
