@@ -29,4 +29,10 @@ namespace commands_general
       logmsg(kLINFO,"Cleaning is complete.",p);
    }
 
+   void update(const params & p, const drunner_settings settings)
+   {
+      
+      logmsg(kLERROR,"Soon!",p);
+   }
+
 }

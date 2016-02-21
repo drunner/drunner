@@ -9,6 +9,7 @@ namespace commands_general
 {
    void showservices(const params & p, const drunner_settings settings);
    void clean(const params & p, const drunner_settings settings);
+   void update(const params & p, const drunner_settings settings);
 }
 
 #endif

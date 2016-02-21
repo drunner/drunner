@@ -58,6 +58,9 @@ void mainroutines::check_basics()
    if (!utils::commandexists("docker"))
       logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
 
+   if (!utils::commandexists("wget"))
+      logmsg(kLERROR,"Please install wget before using dRunner.");
+      
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
       logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?");
@@ -75,7 +78,7 @@ void mainroutines::process(const params & p)
       return;
    }
 
-   // load settings.  
+   // load settings. We require the basic install to be okay at this point!
    std::string rootpath = utils::get_rootpath();
    drunner_settings settings(rootpath);
    if (!settings.readFromFileOkay())
@@ -98,6 +101,14 @@ void mainroutines::process(const params & p)
       {
          commands_general::showservices(p,settings);
          break;
+      }
+      
+      case c_update:
+      {
+         if (p.getArgs().size()==0)
+            commands_general::update(p,settings);
+         else
+            logmsg(kLERROR,"E_NOTIMPL",p);
       }
          
       default:
