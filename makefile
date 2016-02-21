@@ -1,17 +1,19 @@
 APP=drunnerc
 CC=gcc
-CXX=g++
+#CXX=g++
+CXX=./g++
 RM=rm -f
-CPPFLAGS=-g -Wall -std=c++11
-LDFLAGS=
+CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS)
+LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
+
 
 SRCS=$(shell find . -maxdepth 1 -name "*.cpp")
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(APP)
 
-$(APP): $(OBJS)
+$(APP): build_number.h $(OBJS) makefile
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
@@ -26,4 +28,11 @@ clean:
 dist-clean: clean
 	$(RM) *~ .depend
 
+HDRS=$(shell find . -maxdepth 1 \( -name "*.h" ! -name "build_number.h" \) )
+build_number.h: $(SRCS) $(HDRS) major_version
+	@echo
+	@echo Bumping build number..
+	sh make_buildnum.sh
+
 include .depend
+

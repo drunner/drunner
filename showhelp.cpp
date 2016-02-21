@@ -1,10 +1,11 @@
-#include "showhelp.h"
 #include <iostream>
 
+#include "showhelp.h"
+#include "utils.h"
+#include "logmsg.h"
 
-   void showhelp(const params & p, std::string cMsg) {
-      if (p.mOMode != om_silent) {
-         std::cerr << p.substitute(R"EOF(
+void showhelp(const params & p, std::string cMsg) {
+   logmsg(kLINFO,p.substitute(R"EOF(
 
 NAME
    drunner - docker Runner
@@ -16,6 +17,20 @@ LOCATION
    $ROOTPATH
 
 SYNOPSIS
+   drunner [OPTION]... [COMMAND] [ARGS]...
+
+OPTIONS
+   -v    verbose
+   -s    silent
+   -g    drunner silent, service normal (for capturing service output)
+
+DESCRIPTION
+Provides a standard way to manage and run docker services.
+Intended to be used both manually and via Ansible.
+See http://drunner.io
+
+   drunner setup
+
    drunner clean
    drunner list
    drunner update
@@ -35,19 +50,13 @@ SYNOPSIS
    SERVICENAME
    SERVICENAME COMMAND ARGS
 
-DESCRIPTION
-   Provides a standard way to manage and run containers supporting dr.
-   Intended to be used both manually and via Ansible.
-   See https://github.com/j842/drunner
 
 EXIT CODE
    0   - success
    1   - error
    3   - no changes made
 
-)EOF");
-      if (cMsg.length()>0)
-         std::cerr << cMsg << std::endl;
-      }
-      exit(1);
-   }
+)EOF"), p);   
+   
+   logmsg(kLERROR, cMsg, p);
+}
