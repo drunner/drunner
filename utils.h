@@ -5,6 +5,14 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
+enum eResult 
+{
+   kSuccess=0,
+   kError=1,
+   kNoChange=3
+};
+
+
 // Shell utilities
 namespace utils
 {
@@ -13,7 +21,9 @@ namespace utils
 
    std::string getabsolutepath(std::string path);
    std::string getcanonicalpath(std::string path);
-   bool mkdirp(std::string path);
+
+   eResult mkdirp(std::string path);
+
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
 
@@ -38,6 +48,7 @@ namespace utils
 
    std::string get_rootpath();
    std::string get_exefullpath();
+   std::string get_usersbindir();   // dies if fails.
 }
 
 #endif

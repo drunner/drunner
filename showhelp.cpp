@@ -11,7 +11,7 @@ NAME
    drunner - docker Runner
 
 VERSION
-   ${VERSION}
+   ${VERSION} [ ${TIME} ${DATE} ]
 
 LOCATION
    $ROOTPATH

@@ -124,17 +124,19 @@ namespace utils
    }
 
 
-   bool mkdirp(std::string path)
+   eResult mkdirp(std::string path)
    {
+      if (fileexists(path))
+         return kNoChange;
       try
       {
          boost::filesystem::create_directories(path);
       }
       catch (...)
       {
-         return false;
+         return kError;
       }
-      return true;
+      return kSuccess;
    }
 
 
@@ -217,5 +219,15 @@ namespace utils
       boost::filesystem::path p( get_exefullpath() );
       return p.parent_path().string();
    }
+
+   std::string get_usersbindir()
+   {
+   std::string op;
+   int rval = bashcommand("echo $HOME",op);
+   if (rval!=0)
+      die("Couldn't get current user's home directory.");
+   return op+"/bin";      
+   }
+
 
 } // namespace utils
