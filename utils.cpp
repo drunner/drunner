@@ -19,6 +19,7 @@
 #include "pstream.h"
 #include "utils.h"
 #include "exceptions.h"
+#include "logmsg.h"
 
 namespace utils
 {
@@ -118,16 +119,16 @@ namespace utils
    eResult mkdirp(std::string path)
    {
       if (fileexists(path))
-         return kNoChange;
+         return kRNoChange;
       try
       {
          boost::filesystem::create_directories(path);
       }
       catch (...)
       {
-         return kError;
+         return kRError;
       }
-      return kSuccess;
+      return kRSuccess;
    }
 
 
@@ -145,22 +146,17 @@ namespace utils
       return subject;
    }
 
-   void die( std::string msg, int exit_code )
-   {
-      if (msg.length()>0)
-      {
-         std::ostringstream m;
-         m << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
-         throw eExit(m.str().c_str(),exit_code);     
-      }
-      else
-         throw eExit("",exit_code);
-   }
-
-   void die( const params::params & p, std::string msg, int exit_code )
-   {
-      die( p.drIsSilent() ? "" : msg , exit_code );
-   }
+   // void die( std::string msg, int exit_code )
+   // {
+   //    if (msg.length()>0)
+   //    {
+   //       std::ostringstream m;
+   //       m << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
+   //       throw eExit(m.str().c_str(),exit_code);     
+   //    }
+   //    else
+   //       throw eExit("",exit_code);
+   // }
 
    bool isindockergroup(std::string username)
    {
@@ -181,7 +177,7 @@ namespace utils
       std::string op;
       int rval = bashcommand("echo $USER",op);
       if (rval!=0)
-         die("Couldn't get current user.");
+         logmsg(kLERROR,"Couldn't get current user.");
       return op;
    }
 
@@ -201,7 +197,7 @@ namespace utils
          buff[len] = '\0';
          return std::string(buff);
       }
-      die("Couldn't get path to drunner executable!",1);
+      logmsg(kLERROR,"Couldn't get path to drunner executable!");
       return "";
    }
 
@@ -216,7 +212,7 @@ namespace utils
       std::string op;
       int rval = bashcommand("echo $HOME",op);
       if (rval!=0)
-         die("Couldn't get current user's home directory.");
+         logmsg(kLERROR,"Couldn't get current user's home directory.");
       return op+"/bin";      
    }
    
@@ -235,14 +231,14 @@ namespace utils
    eResult pullimage(std::string imagename)
    {
       if (imageisbranch(imagename))
-         return kNoChange;
+         return kRNoChange;
       std::string op;
       
       int rval = bashcommand("docker pull "+imagename, op);
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
-         return kNoChange; 
+         return kRNoChange; 
       
-      return rval==0 ? kSuccess : kError; 
+      return rval==0 ? kRSuccess : kRError; 
    }
 
 

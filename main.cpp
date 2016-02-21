@@ -10,6 +10,7 @@
 #include "command_setup.h"
 #include "drunner_settings.h"
 #include "main.h"
+#include "logmsg.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -22,15 +23,9 @@ int main(int argc, char **argv)
       mainroutines::check_basics();
 
       params::params p(argc, argv);
-
-      if (! p.drIsSilent())
-         std::cout << "dRunner C++, version " << p.getVersion() << std::endl;
-      if (p.isVerbose())
-      {
-         std::string u=getUSER();
-         std::cout << "Username: " << u << ",  Docker OK: " << (utils::canrundocker(u) ? "YES" : "NO");
-         std::cout << ", drunner path: " << utils::get_rootpath() << std::endl;
-      }
+      logmsg(kLINFO,"dRunner C++, version "+p.getVersion(),p);
+      bool canRunDocker=utils::canrundocker(getUSER());
+      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", drunner path: "+utils::get_rootpath(), p);
 
       mainroutines::process(p);
    }
@@ -46,27 +41,27 @@ void mainroutines::check_basics()
 {
    uid_t euid=geteuid();
    if (euid == 0)
-      utils::die("Please run as a standard user, not as root.");
+      logmsg(kLERROR,"Please run as a standard user, not as root.");
 
    std::string user=utils::getUSER();
    if (!utils::isindockergroup(user))
-      utils::die("Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
+      logmsg(kLERROR,"Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
+
    if (!utils::canrundocker(user))
-      utils::die(user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
+      logmsg(kLERROR,user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
 
    if (!utils::commandexists("docker"))
-      utils::die("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
+      logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
 
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
-      utils::die("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
-   //std::cerr << v << std::endl;
+      logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
 void mainroutines::process(const params::params & p)
 {
    // handle setup specially.
-   if (p.getCommand()==params::c_setup)
+   if (p.getCommand()==c_setup)
    {
       int rval=command_setup(p);
       if (rval!=0) throw eExit("Setup failed.",rval);
@@ -78,19 +73,24 @@ void mainroutines::process(const params::params & p)
    drunner_settings settings(rootpath);
    if (!settings.readFromFileOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
-   if (p.isVerbose()) 
-      std::cout << "Settings read from "<<rootpath<<"/"<<drunner_settings::getSettingsFileName()<<std::endl;
+      
+   logmsg(kLDEBUG,"Settings read from "+rootpath+"/"+drunner_settings::getSettingsFileName(),p);
       
    switch (p.getCommand())
-   {
-      // case params::c_setup:
-      //    {
-      //       int rval=command_setup(p);
-      //       if (rval!=0) throw eExit("Setup failed.",rval);
-      //       if (!p.drIsSilent())
-      //          std::cout << "Setup completed succesfully." << std::endl;
-      //       break;
-      //    }
+   {      
+      case c_clean:
+      {
+         std::string op;
+         logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
+         utils::pullimage("spotify/docker-gc");
+         
+         logmsg(kLINFO,"Cleaning.",p);
+         if (utils::bashcommand("docker run --rm -v /var/run/docker.sock:/var/run/docker.sock spotify/docker-gc",op) != 0)
+            logmsg(kLERROR,"Unable to run spotify/docker-gc to clean docker images.",p);
+         
+         logmsg(kLINFO,"Cleaning is complete.",p);
+         break;
+      }
          
       default:
          {

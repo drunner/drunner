@@ -3,6 +3,7 @@
 #include "command_setup.h"
 #include "utils.h"
 #include "drunner_settings.h"
+#include "logmsg.h"
 
 int command_setup(const params::params & p)
 {
@@ -11,71 +12,64 @@ int command_setup(const params::params & p)
    std::string DRUNNERINSTALLURL="https://raw.githubusercontent.com/drunner/install/master/drunner-install";
 
    if (p.getArgs().size()<1)
-      utils::die(p,"Usage:\n   drunner setup ROOTPATH",1);
+      logmsg(kLERROR,"Usage:\n   drunner setup ROOTPATH",p);
 
    std::string rootpath = utils::getabsolutepath(p.getArgs()[0]);
    if (rootpath.length()==0)
-      utils::die(p,"Couldn't determine path for "+p.getArgs()[0]);
+      logmsg(kLERROR,"Couldn't determine path for "+p.getArgs()[0],p);
+   logmsg(kLINFO,"Setting up to directory "+rootpath,p.getLogLevel());
 
-   if (p.isVerbose())
-      std::cout << "Setting up to directory "<<rootpath << std::endl;
-
-   if (utils::mkdirp(rootpath)==kError)
-      utils::die(p,"Couldn't create directory "+rootpath);
+   if (utils::mkdirp(rootpath)==kRError)
+      logmsg(kLERROR,"Couldn't create directory "+rootpath,p);
 
    rootpath = utils::getcanonicalpath(rootpath);
 
    // create the settings and write to config.sh
    drunner_settings settings(rootpath);
    if (!settings.writeSettings())
-      utils::die(p,"Couldn't write settings file!");
+      logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
    
    // move this executable to the directory.
    int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
    if (result!=0)
-      utils::die(p,"Couldn't move drunner executable to "+rootpath+".");
+      logmsg(kLERROR,"Couldn't move drunner executable to "+rootpath+".",p);
    
    // create bin directory
    std::string bindir = utils::get_usersbindir();
-
-   if (p.isVerbose())
-      std::cout << "Creating "<<bindir<<std::endl;
-   if (utils::mkdirp(bindir)==kError)
-      utils::die(p,"Couldn't create ~/bin.");
+   logmsg(kLINFO,"Creating "+bindir,p.getLogLevel());
+   if (utils::mkdirp(bindir)==kRError)
+      logmsg(kLERROR,"Couldn't create ~/bin.",p);
    if (!utils::fileexists(bindir))
-      utils::die(p,"Failed to create ~/bin.");
+      logmsg(kLERROR,"Failed to create ~/bin.",p);
    
    // create symlink
    std::string symtarget=bindir+"/drunner";
    if (utils::fileexists(symtarget))
       if (remove(symtarget.c_str())!=0)
-         utils::die(p,"Couldn't remove stale symlink at "+symtarget);
+         logmsg(kLERROR,"Couldn't remove stale symlink at "+symtarget,p);
    std::string cmd = "ln -s " + rootpath + "/drunner" + " " + bindir + "/drunner";
    std::string op;
    if ( utils::bashcommand(cmd,op) != 0 )
-      utils::die(p,"Failed to create symbolic link for drunner."); 
+      logmsg(kLERROR,"Failed to create symbolic link for drunner.",p);
    
    // pull the rootutils image to ensure we have the latest.
-   if (p.isVerbose())
-      std::cout << "Pulling Docker image " << settings.getRootUtilImage() << std::endl;
+   logmsg(kLINFO,"Pulling Docker image " + settings.getRootUtilImage(),p);
    eResult rslt = utils::pullimage( settings.getRootUtilImage() );
-   if (rslt==kError) 
-      utils::die(p,"Couldn't pull "+settings.getRootUtilImage() );
-   if (p.isVerbose() && rslt==kNoChange)
+   if (rslt==kRError) 
+      logmsg(kLERROR,"Couldn't pull "+settings.getRootUtilImage() ,p);
+      
+   if (rslt==kRNoChange)
    {
       if (utils::imageisbranch(settings.getRootUtilImage()))
-         std::cout << "No change to Docker image (it's not on the master branch, so assuming dev environment)." <<std::endl;
+         logmsg(kLINFO,"No change to Docker image (it's not on the master branch, so assuming dev environment).",p);
       else
-         std::cout << "No change to Docker image (it's already up to date)." <<std::endl;
+         logmsg(kLINFO,"No change to Docker image (it's already up to date).",p);
    }      
 
-   if (!p.drIsSilent())
-      {
-      if (settings.readFromFileOkay())
-         std::cout << "Update of drunner to "<<p.getVersion() <<" completed succesfully." << std::endl;      
-      else
-         std::cout << "Setup of drunner "<<p.getVersion() <<" completed succesfully." << std::endl;      
-      }
+   if (settings.readFromFileOkay())
+      logmsg(kLINFO,"Update of drunner to "+p.getVersion()+" completed succesfully.",p); 
+   else
+      logmsg(kLINFO,"Setup of drunner "+p.getVersion()+" completed succesfully.",p);
       
    return 0;
 }

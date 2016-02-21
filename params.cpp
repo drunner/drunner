@@ -53,7 +53,8 @@ namespace params
    params::params(int argc, char **argv)
    {
    mVersion=VERSION_STR;
-   mOMode=om_normal;
+   mLogLevel=kLINFO;
+   mDisplayServiceOutput=true;
    mCmd=c_UNDEFINED;
 
    // parse command line stuff.
@@ -86,15 +87,18 @@ namespace params
             break;
 
             case 's':
-               mOMode=om_silent;
+               mLogLevel=kLERROR;
+               mDisplayServiceOutput=false;
                break;
 
             case 'v':
-               mOMode=om_verbose;
+               mLogLevel=kLDEBUG;
+               mDisplayServiceOutput=true;
                break;
 
             case 'g':
-               mOMode=om_getouput;
+               mLogLevel=kLERROR;
+               mDisplayServiceOutput=true;
                break;
 
             default:

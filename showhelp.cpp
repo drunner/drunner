@@ -1,11 +1,11 @@
-#include "showhelp.h"
-#include "utils.h"
 #include <iostream>
 
+#include "showhelp.h"
+#include "utils.h"
+#include "logmsg.h"
 
 void showhelp(const params::params & p, std::string cMsg) {
-   if (!p.drIsSilent()) {
-      std::cerr << p.substitute(R"EOF(
+   logverbatim(kLINFO,R"EOF(
 
 NAME
    drunner - docker Runner
@@ -56,7 +56,7 @@ EXIT CODE
    1   - error
    3   - no changes made
 
-)EOF");
-   }
-      utils::die(p,cMsg,1);
+)EOF", p);   
+   
+   logmsg(kLERROR, cMsg, p);
 }

@@ -5,14 +5,6 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-enum eResult 
-{
-   kSuccess=0,
-   kError=1,
-   kNoChange=3
-};
-
-
 // Shell utilities
 namespace utils
 {
@@ -39,8 +31,8 @@ namespace utils
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
 
-   void die( const params::params & p, std::string msg, int exit_code=1 );
-   void die( std::string msg, int exit_code=1 );
+   //void die( const params::params & p, std::string msg, int exit_code=1 );
+   //void die( std::string msg, int exit_code=1 );
  
    // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2 );  
