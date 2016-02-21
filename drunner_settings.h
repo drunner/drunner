@@ -1,6 +1,5 @@
 #include <map>
 
-
 #ifndef __DRUNNER_SETTINGS_H
 #define __DRUNNER_SETTINGS_H
 
