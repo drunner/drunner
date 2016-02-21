@@ -5,7 +5,7 @@
 #include "drunner_settings.h"
 #include "logmsg.h"
 
-int command_setup(const params::params & p)
+int command_setup(const params & p)
 {
    //std::string SUPPORTIMAGE="drunner/install-support";
    std::string ROOTUTILIMAGE="drunner/install-rootutils";

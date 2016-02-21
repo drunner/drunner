@@ -4,8 +4,8 @@
 #include "utils.h"
 #include "logmsg.h"
 
-void showhelp(const params::params & p, std::string cMsg) {
-   logmultiline(kLINFO,p.substitute(R"EOF(
+void showhelp(const params & p, std::string cMsg) {
+   logmsg(kLINFO,p.substitute(R"EOF(
 
 NAME
    drunner - docker Runner

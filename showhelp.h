@@ -5,6 +5,6 @@
 #ifndef __SHOWHELP_H
 #define __SHOWHELP_H
 
-void showhelp(const params::params & p, std::string cMsg="");
+void showhelp(const params & p, std::string cMsg="");
 
 #endif

@@ -7,8 +7,9 @@
 #include "params.h"
 #include "logmsg.h"
 #include "exceptions.h"
+#include "utils.h"
  
- using namespace std;
+using namespace std;
 
 // ostream& operator<<(ostream& ost, const LogStatement& ls)
 // {
@@ -70,17 +71,21 @@ void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
       throw eExit(s.c_str());
 }
 
-void logmultiline(eLogLevel level, std::string s, eLogLevel cutoff)
-{
-   std::ostringstream ost;
-   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<<std::endl<< s;
-   logverbatim(level,ost.str(),cutoff);
-}
+// void logmultiline(eLogLevel level, std::string s, eLogLevel cutoff)
+// {
+//    std::ostringstream ost;
+//    ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<<std::endl<< s;
+//    logverbatim(level,ost.str(),cutoff);
+// }
 
 void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
 {
    std::ostringstream ost;
-   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<< s <<std::endl;
+   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| ";
+   std::string info=ost.str();
+   std::string s2=utils::replacestring(s,"\n","\n"+info);   
+   
+   ost << s2 <<std::endl;
    logverbatim(level,ost.str(),cutoff);
 }
 

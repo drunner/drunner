@@ -4,7 +4,7 @@
 #define __SETUP_H
 
 
-int command_setup(const params::params & p);
+int command_setup(const params & p);
 
 
 #endif

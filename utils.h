@@ -30,9 +30,6 @@ namespace utils
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
-
-   //void die( const params::params & p, std::string msg, int exit_code=1 );
-   //void die( std::string msg, int exit_code=1 );
  
    // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2 );  

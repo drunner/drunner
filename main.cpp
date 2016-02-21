@@ -11,10 +11,14 @@
 #include "drunner_settings.h"
 #include "main.h"
 #include "logmsg.h"
+#include "commands_general.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
 using namespace utils;
+
+// ----------------------------------------------------------------------------------------------------------------------
+
 
 int main(int argc, char **argv)
 {
@@ -22,7 +26,7 @@ int main(int argc, char **argv)
    {
       mainroutines::check_basics();
 
-      params::params p(argc, argv);
+      params p(argc, argv);
       logmsg(kLINFO,"dRunner C++, version "+p.getVersion(),p);
       bool canRunDocker=utils::canrundocker(getUSER());
       logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", drunner path: "+utils::get_rootpath(), p);
@@ -34,6 +38,9 @@ int main(int argc, char **argv)
       return e.exitCode();
    }
 }
+
+// ----------------------------------------------------------------------------------------------------------------------
+
 
 void mainroutines::check_basics()
 {
@@ -56,7 +63,9 @@ void mainroutines::check_basics()
       logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
-void mainroutines::process(const params::params & p)
+// ----------------------------------------------------------------------------------------------------------------------
+
+void mainroutines::process(const params & p)
 {
    // handle setup specially.
    if (p.getCommand()==c_setup)
@@ -74,19 +83,20 @@ void mainroutines::process(const params::params & p)
       
    logmsg(kLDEBUG,"Settings read from "+rootpath+"/"+drunner_settings::getSettingsFileName(),p);
       
+      
+   // ----------------
+   // command handling   
    switch (p.getCommand())
    {      
       case c_clean:
       {
-         std::string op;
-         logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
-         utils::pullimage("spotify/docker-gc");
-         
-         logmsg(kLINFO,"Cleaning.",p);
-         if (utils::bashcommand("docker run --rm -v /var/run/docker.sock:/var/run/docker.sock spotify/docker-gc",op) != 0)
-            logmsg(kLERROR,"Unable to run spotify/docker-gc to clean docker images.",p);
-         
-         logmsg(kLINFO,"Cleaning is complete.",p);
+         commands_general::clean(p,settings);
+         break;
+      }
+      
+      case c_list:
+      {
+         commands_general::showservices(p,settings);
          break;
       }
          
@@ -101,3 +111,6 @@ void mainroutines::process(const params::params & p)
          }
    } 
 }
+
+
+// ----------------------------------------------------------------------------------------------------------------------
