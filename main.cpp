@@ -70,8 +70,6 @@ void mainroutines::process(const params::params & p)
    {
       int rval=command_setup(p);
       if (rval!=0) throw eExit("Setup failed.",rval);
-      if (!p.drIsSilent())
-         std::cout << "Setup completed succesfully." << std::endl;      
       return;
    }
 

@@ -17,7 +17,7 @@ drunner_settings::drunner_settings(std::string rootpath)
 
    // set defaults.
    mSettings["ROOTPATH"]          =rootpath;
-   mSettings["SUPPORTIMAGE"]      ="drunner/install-support";
+   //mSettings["SUPPORTIMAGE"]      ="drunner/install-support";
    mSettings["ROOTUTILIMAGE"]     ="drunner/install-rootutils";
    mSettings["DRUNNERINSTALLURL"] =R"EOF(https://raw.githubusercontent.com/drunner/install/master/drunner-install)EOF";
    mSettings["DRUNNERINSTALLTIME"]=timestamp;
@@ -84,3 +84,5 @@ bool drunner_settings::writeSettings()
   ofile.close();
   return true;
 }
+
+

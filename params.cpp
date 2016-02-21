@@ -8,6 +8,7 @@
 #include "params.h"
 #include "utils.h"
 #include "showhelp.h"
+#include "build_number.h"
 
 namespace params
 {
@@ -16,8 +17,8 @@ namespace params
    {
       std::string d(source);
       d=utils::replacestring(d,"${VERSION}",mVersion);
-      d=utils::replacestring(d,"${TIME}",__TIME__);
-      d=utils::replacestring(d,"${DATE}",__DATE__);
+      //d=utils::replacestring(d,"${TIME}",__TIME__);
+      //d=utils::replacestring(d,"${DATE}",__DATE__);
       return d;
    }
 
@@ -51,7 +52,7 @@ namespace params
    // Parse command line parameters.
    params::params(int argc, char **argv)
    {
-   mVersion="0.1 Dev";
+   mVersion=VERSION_STR;
    mOMode=om_normal;
    mCmd=c_UNDEFINED;
 

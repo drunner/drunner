@@ -13,7 +13,7 @@ public:
    bool readFromFileOkay();
    
    std::string getRootPath()           {   return mSettings["ROOTPATH"];            }
-   std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
+   //std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
    std::string getRootUtilImage()      {   return mSettings["ROOTUTILIMAGE"];       }
    std::string getdrunnerInstallURL()  {   return mSettings["DRUNNERINSTALLURL"];   }
    std::string getdrunnerInstallTime() {   return mSettings["DRUNNERINSTALLTIME"];  }

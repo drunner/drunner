@@ -34,7 +34,6 @@ namespace utils
 
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
 
-   std::string bashcommand(const params::params & p, std::string c);
    int bashcommand(std::string command, std::string & output);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
@@ -49,6 +48,9 @@ namespace utils
    std::string get_rootpath();
    std::string get_exefullpath();
    std::string get_usersbindir();   // dies if fails.
+   
+   bool imageisbranch(std::string imagename);
+   eResult pullimage(std::string imagename);
 }
 
 #endif

@@ -6,7 +6,7 @@
 
 int command_setup(const params::params & p)
 {
-   std::string SUPPORTIMAGE="drunner/install-support";
+   //std::string SUPPORTIMAGE="drunner/install-support";
    std::string ROOTUTILIMAGE="drunner/install-rootutils";
    std::string DRUNNERINSTALLURL="https://raw.githubusercontent.com/drunner/install/master/drunner-install";
 
@@ -25,6 +25,7 @@ int command_setup(const params::params & p)
 
    rootpath = utils::getcanonicalpath(rootpath);
 
+   // create the settings and write to config.sh
    drunner_settings settings(rootpath);
    if (!settings.writeSettings())
       utils::die(p,"Couldn't write settings file!");
@@ -50,7 +51,31 @@ int command_setup(const params::params & p)
       if (remove(symtarget.c_str())!=0)
          utils::die(p,"Couldn't remove stale symlink at "+symtarget);
    std::string cmd = "ln -s " + rootpath + "/drunner" + " " + bindir + "/drunner";
-   utils::bashcommand(p,cmd);
+   std::string op;
+   if ( utils::bashcommand(cmd,op) != 0 )
+      utils::die(p,"Failed to create symbolic link for drunner."); 
    
+   // pull the rootutils image to ensure we have the latest.
+   if (p.isVerbose())
+      std::cout << "Pulling Docker image " << settings.getRootUtilImage() << std::endl;
+   eResult rslt = utils::pullimage( settings.getRootUtilImage() );
+   if (rslt==kError) 
+      utils::die(p,"Couldn't pull "+settings.getRootUtilImage() );
+   if (p.isVerbose() && rslt==kNoChange)
+   {
+      if (utils::imageisbranch(settings.getRootUtilImage()))
+         std::cout << "No change to Docker image (it's not on the master branch, so assuming dev environment)." <<std::endl;
+      else
+         std::cout << "No change to Docker image (it's already up to date)." <<std::endl;
+   }      
+
+   if (!p.drIsSilent())
+      {
+      if (settings.readFromFileOkay())
+         std::cout << "Update of drunner to "<<p.getVersion() <<" completed succesfully." << std::endl;      
+      else
+         std::cout << "Setup of drunner "<<p.getVersion() <<" completed succesfully." << std::endl;      
+      }
+      
    return 0;
 }

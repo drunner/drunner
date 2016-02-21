@@ -86,15 +86,6 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   std::string bashcommand(const params::params & p, std::string c)
-   {
-      std::string op;
-      int rval = bashcommand(c,op);
-      if (rval!=0)
-         die(p,"Running command "+c+" failed.",rval);
-      return op;
-   }
-
    std::string getabsolutepath(std::string path)
    {
       boost::filesystem::path rval;
@@ -222,11 +213,36 @@ namespace utils
 
    std::string get_usersbindir()
    {
-   std::string op;
-   int rval = bashcommand("echo $HOME",op);
-   if (rval!=0)
-      die("Couldn't get current user's home directory.");
-   return op+"/bin";      
+      std::string op;
+      int rval = bashcommand("echo $HOME",op);
+      if (rval!=0)
+         die("Couldn't get current user's home directory.");
+      return op+"/bin";      
+   }
+   
+   bool imageisbranch(std::string imagename)
+   {
+      std::size_t end=0;
+      if ((end=imagename.find(":",0)) == std::string::npos)
+         return false;
+      std::string branchname=imagename.substr(end+1);
+      if (stringisame(branchname,"master"))
+         return false;
+         
+      return true;
+   }
+
+   eResult pullimage(std::string imagename)
+   {
+      if (imageisbranch(imagename))
+         return kNoChange;
+      std::string op;
+      
+      int rval = bashcommand("docker pull "+imagename, op);
+      if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
+         return kNoChange; 
+      
+      return rval==0 ? kSuccess : kError; 
    }
 
 
