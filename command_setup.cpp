@@ -29,5 +29,10 @@ int command_setup(const params::params & p)
    if (!settings.writeSettings())
       utils::die(p,"Couldn't write settings file!");
    
+   // move this executable to the directory.
+   int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
+   if (result!=0)
+      utils::die(p,"Couldn't move drunner executable to "+rootpath+".");
+   
    return 0;
 }

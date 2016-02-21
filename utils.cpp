@@ -199,6 +199,23 @@ namespace utils
       return (rval==0);
    }
 
+   std::string get_exefullpath() 
+   {
+      char buff[PATH_MAX];
+      ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+      if (len != -1) 
+      {
+         buff[len] = '\0';
+         return std::string(buff);
+      }
+      die("Couldn't get path to drunner executable!",1);
+      return "";
+   }
 
+   std::string get_rootpath()
+   {
+      boost::filesystem::path p( get_exefullpath() );
+      return p.parent_path().string();
+   }
 
 } // namespace utils

@@ -98,10 +98,14 @@ namespace params
                showhelp(*this,"Unrecognised option "+c);
          }
       }
+      
+      // drunner with no command.
       if (optind>=argc) showhelp(*this);
 
+      // confirm the command is valid and convert to enum.
       mCmd=parsecmd(argv[optind]);
 
+      // store the arguments to the command.
       for (int i=optind+1;i<argc;++i)
          mArgs.push_back(argv[i]);
    }

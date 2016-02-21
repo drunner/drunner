@@ -33,7 +33,11 @@ namespace utils
    void die( const params::params & p, std::string msg, int exit_code=1 );
    void die( std::string msg, int exit_code=1 );
  
+   // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2 );  
+
+   std::string get_rootpath();
+   std::string get_exefullpath();
 }
 
 #endif

@@ -22,9 +22,13 @@ drunner_settings::drunner_settings(std::string rootpath)
    mSettings["DRUNNERINSTALLURL"] =R"EOF(https://raw.githubusercontent.com/drunner/install/master/drunner-install)EOF";
    mSettings["DRUNNERINSTALLTIME"]=timestamp;
       
-   readSettings();
+   mRead=readSettings();
 }
 
+bool drunner_settings::readFromFileOkay()
+{
+   return mRead;
+}
 
 bool parse(std::string line, std::string & left, std::string & right)
 {
@@ -40,9 +44,11 @@ bool parse(std::string line, std::string & left, std::string & right)
    return false;
 }
 
+const char * drunner_settings::settingsFileName = "config.sh";
+
 bool drunner_settings::readSettings()
 {
-   std::string settingsfile=getRootPath()+"/config.sh";
+   std::string settingsfile=getRootPath()+"/"+settingsFileName;
    
    if (! utils::fileexists(settingsfile)) 
       return false;
@@ -63,7 +69,7 @@ bool drunner_settings::readSettings()
 
 bool drunner_settings::writeSettings()
 {
-   std::string settingsfile=getRootPath()+"/config.sh";
+   std::string settingsfile=getRootPath()+"/"+settingsFileName;
    std::ofstream ofile;
    ofile.open(settingsfile);
    if (!ofile.is_open()) return false; // can't open the file.
