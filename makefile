@@ -3,18 +3,25 @@ CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
 RM=rm -f
-CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS)
+INC=-Isource -Ibuildnum
+
+CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
 
-HDRS=$(shell find . -maxdepth 1 -name "*.h")
-SRCS=$(shell find . -maxdepth 1 -name "*.cpp")
-OBJS=$(subst .cpp,.o,$(SRCS))
+HDRS=$(shell find source -maxdepth 1 -name "*.h")
+SRCS=$(shell find source -maxdepth 1 -name "*.cpp")
+OBJS=$(patsubst source/%,objs/%,$(SRCS:.cpp=.o))
+#$(subst .cpp,.o,$(SRCS))
 
 all: $(APP)
 
 $(APP): permissions buildnum/build_number.h $(OBJS) makefile
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
+
+objs/%.o: source/%.cpp
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
+
 
 depend: .depend
 
