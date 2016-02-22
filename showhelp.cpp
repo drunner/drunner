@@ -60,11 +60,6 @@ SYNOPSIS
 OPTIONS
    -v    verbose
    -s    silent
-
-DESCRIPTION
-Provides a standard way to manage and run docker services.
-Intended to be used both manually and via Ansible.
-See http://drunner.io
 )EOF"), p);   
 
    logmsg(kLERROR, cMsg, p);

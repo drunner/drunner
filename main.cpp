@@ -10,6 +10,7 @@
 #include "command_setup.h"
 #include "command_general.h"
 #include "drunner_settings.h"
+#include "showhelp.h"
 #include "main.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
@@ -76,6 +77,9 @@ void mainroutines::process(const params & p)
       if (rval!=0) throw eExit("Setup failed.",rval);
       return;
    }
+   
+   if (!utils::isInstalled())
+      showhelp(p,"Please run "+utils::get_exename()+" setup ROOTPATH");
 
    // load settings. We require the basic install to be okay at this point!
    std::string rootpath = utils::get_exepath();

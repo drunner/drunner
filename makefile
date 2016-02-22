@@ -1,4 +1,4 @@
-APP=drunner-install
+APP=bin/drunner-install
 CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
@@ -39,3 +39,8 @@ permissions:
 
 include .depend
 
+upload: $(APP)
+	cd bin/ ; upload drunner-install
+
+push: $(APP)
+	git pull ; git add . ; git commit ; git push
