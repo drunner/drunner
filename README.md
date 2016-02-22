@@ -41,3 +41,16 @@ git clone git@github.com:j842/drunnerc.git
 make
 ```
 
+devmount:
+```
+#!/bin/bash
+echo -n Password:
+read -s PASSWD
+echo " "
+echo "Mounting ~/dev"
+
+mount -t cifs \
+        -o username=j,rw,nounix,iocharset=utf8,file_mode=0644,dir_mode=0755,user=j,uid=1000,gid=1000,workgroup=JOHNE-XPS,password=$PASSWD \
+        //10.10.100.199/dev  \
+        /home/j/dev
+```
