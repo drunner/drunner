@@ -39,6 +39,7 @@ buildnum/build_number.h: $(SRCS) buildnum/major_version
 	buildnum/make_buildnum.sh
 
 permissions:
+	mkdir -p objs
 	chmod 0644 $(SRCS) $(HDRS) buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source	
 
