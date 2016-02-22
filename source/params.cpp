@@ -107,13 +107,15 @@ while (1)
    }
    
    // drunner with no command.
-   if (optind>=argc) showhelp(*this,"Please enter a command.");
+   bool inst=utils::isInstalled();
+   if (optind>=argc) showhelp(*this, inst ? "Please enter a command." : "Installation requires ROOTPATH to be specified." );
 
    // confirm the command is valid and convert to enum.
-   mCmd=parsecmd(argv[optind]);
-
+   int opx=optind;
+   mCmd = inst ? parsecmd(argv[opx++]) : c_setup;
+      
    // store the arguments to the command.
-   for (int i=optind+1;i<argc;++i)
-      mArgs.push_back(argv[i]);
+   for (int i=opx;i<argc;++i)
+      mArgs.push_back(argv[i]);      
 }
 

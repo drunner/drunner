@@ -9,14 +9,12 @@ CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
 
-HDRS=$(shell find source -maxdepth 1 -name "*.h")
 SRCS=$(shell find source -maxdepth 1 -name "*.cpp")
 OBJS=$(patsubst source/%,objs/%,$(SRCS:.cpp=.o))
-#$(subst .cpp,.o,$(SRCS))
 
-all: $(APP)
+all: buildnum/build_number.h $(APP)
 
-$(APP): permissions buildnum/build_number.h $(OBJS) makefile
+$(APP): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 objs/%.o: source/%.cpp
@@ -35,7 +33,7 @@ clean:
 dist-clean: clean
 	$(RM) *~ .depend
 
-buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
+buildnum/build_number.h: $(SRCS) buildnum/major_version
 	@echo
 	@echo Bumping build number..
 	buildnum/make_buildnum.sh

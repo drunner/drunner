@@ -109,14 +109,18 @@ namespace command_setup
       return 0;
    }
 
-
    int update(const params & p , const drunner_settings & s)
    {
       logmsg(kLDEBUG,"Updating dRunner in "+s.getPath_Root(),p);
       
-      logmsg(kLERROR,"E_NOTIMPL",p);
+      std::string op,url( s.getdrunnerInstallURL() ),trgt( utils::get_exefullpath() );
+      int rval = utils::bashcommand("wget --no-cache -nv -O "+trgt+" "+url+" && chmod 0755 "+trgt, op);
       
-      return 1;
+      if (rval!=0)
+         logmsg(kLERROR,"Unable to download updated drunner-install",p);
+      
+      logmsg(kLINFO,"Update successful.");
+      return 0;
    }
 
 }

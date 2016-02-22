@@ -19,7 +19,7 @@ drunner_settings::drunner_settings(std::string rootpath)
    mSettings["ROOTPATH"]          =rootpath;
    //mSettings["SUPPORTIMAGE"]      ="drunner/install-support";
    mSettings["ROOTUTILIMAGE"]     ="drunner/install-rootutils";
-   mSettings["DRUNNERINSTALLURL"] =R"EOF(https://raw.githubusercontent.com/drunner/install/master/drunner-install)EOF";
+   mSettings["DRUNNERINSTALLURL"] =R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF";
    mSettings["DRUNNERINSTALLTIME"]=timestamp;
       
    mRead=readSettings();

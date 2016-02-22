@@ -55,8 +55,9 @@ EXIT CODE
    else
       logmsg(kLINFO,p.substitute(R"EOF(      
 SYNOPSIS
-   ${EXENAME} [OPTION] setup ROOTPATH
-
+   Install drunner with services to be stored under ROOTPATH:
+   ${EXENAME} [OPTION] ROOTPATH
+   
 OPTIONS
    -v    verbose
    -s    silent
