@@ -11,11 +11,13 @@ public:
    bool writeSettings();
    bool readFromFileOkay();
    
-   std::string getRootPath()           {   return mSettings["ROOTPATH"];            }
+   std::string getPath_Root()         const {   return mSettings.at("ROOTPATH");    }
+   std::string getPath_Services()     const {   return getPath_Root()+"/services"; }
+
    //std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
-   std::string getRootUtilImage()      {   return mSettings["ROOTUTILIMAGE"];       }
-   std::string getdrunnerInstallURL()  {   return mSettings["DRUNNERINSTALLURL"];   }
-   std::string getdrunnerInstallTime() {   return mSettings["DRUNNERINSTALLTIME"];  }
+   std::string getRootUtilImage()     const {   return mSettings.at("ROOTUTILIMAGE");       }
+   std::string getdrunnerInstallURL() const {   return mSettings.at("DRUNNERINSTALLURL");   }
+   std::string getdrunnerInstallTime()const {   return mSettings.at("DRUNNERINSTALLTIME");  }
    
    static std::string getSettingsFileName()   {   return settingsFileName;                 }
    

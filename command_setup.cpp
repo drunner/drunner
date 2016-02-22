@@ -17,7 +17,7 @@ int command_setup(const params & p)
    std::string rootpath = utils::getabsolutepath(p.getArgs()[0]);
    if (rootpath.length()==0)
       logmsg(kLERROR,"Couldn't determine path for "+p.getArgs()[0],p);
-   logmsg(kLINFO,"Setting up to directory "+rootpath,p.getLogLevel());
+   logmsg(kLDEBUG,"Setting up to directory "+rootpath,p.getLogLevel());
 
    if (utils::mkdirp(rootpath)==kRError)
       logmsg(kLERROR,"Couldn't create directory "+rootpath,p);
@@ -36,12 +36,16 @@ int command_setup(const params & p)
    
    // create bin directory
    std::string bindir = utils::get_usersbindir();
-   logmsg(kLINFO,"Creating "+bindir,p.getLogLevel());
-   if (utils::mkdirp(bindir)==kRError)
-      logmsg(kLERROR,"Couldn't create ~/bin.",p);
-   if (!utils::fileexists(bindir))
-      logmsg(kLERROR,"Failed to create ~/bin.",p);
-   
+   if (!boost::filesystem::exists(bindir))
+   {
+      logmsg(kLINFO,"Creating "+bindir,p.getLogLevel());
+      if (utils::mkdirp(bindir)==kRError)
+         logmsg(kLERROR,"Couldn't create ~/bin.",p);
+      if (!utils::fileexists(bindir))
+         logmsg(kLERROR,"Failed to create ~/bin.",p);
+   } else
+      logmsg(kLDEBUG,bindir+" exists and was left unchanged.",p);
+      
    // create symlink
    std::string symtarget=bindir+"/drunner";
    if (utils::fileexists(symtarget))
@@ -63,8 +67,20 @@ int command_setup(const params & p)
       if (utils::imageisbranch(settings.getRootUtilImage()))
          logmsg(kLINFO,"No change to Docker image (it's not on the master branch, so assuming dev environment).",p);
       else
-         logmsg(kLINFO,"No change to Docker image (it's already up to date).",p);
-   }      
+         logmsg(kLDEBUG,"No change to Docker image (it's already up to date).",p);
+   } else {
+      logmsg(kLDEBUG,"Successfully pulled "+settings.getRootUtilImage() ,p);
+   }
+   
+   // create services directory
+   rslt = utils::mkdirp(settings.getPath_Services());
+   if (rslt==kRError)
+      logmsg(kLERROR,"Couldn't create "+settings.getPath_Services(),p);
+   if (rslt==kRSuccess)
+      logmsg(kLINFO,"Created "+settings.getPath_Services(),p);
+   if (rslt==kRNoChange)
+      logmsg(kLDEBUG,"Services directory exists. Services left unchanged.",p);
+      
 
    if (settings.readFromFileOkay())
       logmsg(kLINFO,"Update of drunner to "+p.getVersion()+" completed succesfully.",p); 

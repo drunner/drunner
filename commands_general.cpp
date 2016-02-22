@@ -5,14 +5,16 @@
 namespace commands_general
 {
 
-   void showservices(const params & p, const drunner_settings settings)
+   void showservices(const params & p, const drunner_settings & settings)
    {
-      logmsg(kLERROR,R"EOF(
-
-            /-------------------------------------------------------------\
-            |    That command isn't fully implemented and I am sad. :,(   |
-            \-------------------------------------------------------------/
-   )EOF",p);   
+      std::string parent = settings.getPath_Services();
+      std::vector<std::string> services;
+      if (!utils::getFolders(parent,services)) 
+         logmsg(kLERROR,"Couldn't get subfolders of "+parent,p);
+      for (auto const & entry : services)
+      {
+         logmsg(kLINFO,entry,p);
+      }
    }
 
 
@@ -33,6 +35,17 @@ namespace commands_general
    {
       
       logmsg(kLERROR,"Soon!",p);
+   }
+
+
+   void blah(const params & p, const drunner_settings settings)
+   {
+      logmsg(kLERROR,R"EOF(
+
+            /-------------------------------------------------------------\
+            |    That command isn't fully implemented and I am sad. :,(   |
+            \-------------------------------------------------------------/
+      )EOF",p);   
    }
 
 }
