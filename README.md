@@ -26,6 +26,20 @@ Features:
 * Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
 
+
+# Install notes
+
+Download drunner-install:
+```
+wget https://drunner.s3.amazonaws.com/drunner-install ; chmod a+x drunner-install
+```
+Install it:
+```
+drunner-install -v setup ~/drunner
+```
+
+Then you can run drunner.
+
 # Dev notes
 
 As root:

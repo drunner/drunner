@@ -6,57 +6,66 @@
 
 void showhelp(const params & p, std::string cMsg) {
    logmsg(kLINFO,p.substitute(R"EOF(
-
 NAME
-   drunner - docker Runner
-
+   ${EXENAME}
+   
 VERSION
    ${VERSION}
 
-LOCATION
-   $ROOTPATH
+DESCRIPTION
+   Provides a standard way to manage and run docker services.
+   See http://drunner.io
+)EOF"), p); 
 
+   if (utils::isInstalled())
+      logmsg(kLINFO,p.substitute(R"EOF(
 SYNOPSIS
-   drunner [OPTION]... [COMMAND] [ARGS]...
+   ${EXENAME} [OPTION] [COMMAND] [ARGS]...
 
 OPTIONS
    -v    verbose
    -s    silent
    -g    drunner silent, service normal (for capturing service output)
 
-DESCRIPTION
-Provides a standard way to manage and run docker services.
-Intended to be used both manually and via Ansible.
-See http://drunner.io
+COMMANDS
+   ${EXENAME} clean
+   ${EXENAME} list
+   ${EXENAME} update
+   ${EXENAME} checkimage IMAGENAME
 
-   drunner setup
+   [PASS=?] ${EXENAME} backup  SERVICENAME BACKUPFILE
+   [PASS=?] ${EXENAME} restore BACKUPFILE  SERVICENAME
 
-   drunner clean
-   drunner list
-   drunner update
-   drunner checkimage IMAGENAME
-
-   [PASS=?] drunner backup  SERVICENAME BACKUPFILE
-   [PASS=?] drunner restore BACKUPFILE  SERVICENAME
-
-   drunner install    IMAGENAME [SERVICENAME]
-   drunner update     SERVICENAME
-   drunner recover    SERVICENAME
-   drunner uninstall  SERVICENAME
-   drunner obliterate SERVICENAME
-   drunner enter      SERVICENAME [ARGS]
-   drunner status     SERVICENAME
+   ${EXENAME} install    IMAGENAME [SERVICENAME]
+   ${EXENAME} update     SERVICENAME
+   ${EXENAME} recover    SERVICENAME
+   ${EXENAME} uninstall  SERVICENAME
+   ${EXENAME} obliterate SERVICENAME
+   ${EXENAME} enter      SERVICENAME [ARGS]
+   ${EXENAME} status     SERVICENAME
 
    SERVICENAME
    SERVICENAME COMMAND ARGS
-
 
 EXIT CODE
    0   - success
    1   - error
    3   - no changes made
-
 )EOF"), p);   
-   
+   else
+      logmsg(kLINFO,p.substitute(R"EOF(      
+SYNOPSIS
+   ${EXENAME} [OPTION] setup ROOTPATH
+
+OPTIONS
+   -v    verbose
+   -s    silent
+
+DESCRIPTION
+Provides a standard way to manage and run docker services.
+Intended to be used both manually and via Ansible.
+See http://drunner.io
+)EOF"), p);   
+
    logmsg(kLERROR, cMsg, p);
 }

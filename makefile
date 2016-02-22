@@ -1,4 +1,4 @@
-APP=drunnerc
+APP=drunner-install
 CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl

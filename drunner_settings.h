@@ -3,6 +3,8 @@
 #ifndef __DRUNNER_SETTINGS_H
 #define __DRUNNER_SETTINGS_H
 
+static const char * settingsFileName = "config.sh";
+
 class drunner_settings
 {
 public:
@@ -25,7 +27,6 @@ private:
    bool readSettings();
    std::map< std::string, std::string > mSettings;
    bool mRead;
-   static const char * settingsFileName;
 };
 
 #endif

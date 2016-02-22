@@ -15,6 +15,8 @@ std::string params::substitute( const std::string & source ) const
 {
    std::string d(source);
    d=utils::replacestring(d,"${VERSION}",mVersion);
+   d=utils::replacestring(d,"${EXENAME}",utils::get_exename());
+   d=utils::replacestring(d,"${ROOTPATH}",utils::get_exepath());
    //d=utils::replacestring(d,"${TIME}",__TIME__);
    //d=utils::replacestring(d,"${DATE}",__DATE__);
    return d;

@@ -35,14 +35,17 @@ namespace utils
    // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2 );  
 
-   std::string get_rootpath();
+   std::string get_exepath();
    std::string get_exefullpath();
+   std::string get_exename();
    std::string get_usersbindir();   // dies if fails.
    
    bool imageisbranch(std::string imagename);
    eResult pullimage(std::string imagename);
    
    bool getFolders(const std::string & parent, std::vector<std::string> & services);
+   
+   bool isInstalled();
 }
 
 #endif

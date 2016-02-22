@@ -44,8 +44,6 @@ bool parse(std::string line, std::string & left, std::string & right)
    return false;
 }
 
-const char * drunner_settings::settingsFileName = "config.sh";
-
 bool drunner_settings::readSettings()
 {
    std::string settingsfile=getPath_Root()+"/"+settingsFileName;

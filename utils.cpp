@@ -201,7 +201,13 @@ namespace utils
       return "";
    }
 
-   std::string get_rootpath()
+   std::string get_exename()
+   {
+      boost::filesystem::path p( get_exefullpath() );
+      return p.filename().string();      
+   }
+
+   std::string get_exepath()
    {
       boost::filesystem::path p( get_exefullpath() );
       return p.parent_path().string();
@@ -255,6 +261,13 @@ namespace utils
             services.push_back(itr->path().filename().string());
       }
       return true;
+   }
+
+   // quick crude check to see if we're installed.
+   bool isInstalled()
+   {
+      std::string rootpath = get_exepath();
+      return (boost::filesystem::exists(rootpath + "/" + settingsFileName));
    }
 
 

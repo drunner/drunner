@@ -28,7 +28,7 @@ int main(int argc, char **argv)
       params p(argc, argv);
       logmsg(kLDEBUG,"dRunner C++, version "+p.getVersion(),p);
       bool canRunDocker=utils::canrundocker(getUSER());
-      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", drunner path: "+utils::get_rootpath(), p);
+      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath(), p);
 
       mainroutines::process(p);
    }
@@ -78,7 +78,7 @@ void mainroutines::process(const params & p)
    }
 
    // load settings. We require the basic install to be okay at this point!
-   std::string rootpath = utils::get_rootpath();
+   std::string rootpath = utils::get_exepath();
    drunner_settings settings(rootpath);
    if (!settings.readFromFileOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
