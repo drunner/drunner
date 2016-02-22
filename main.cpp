@@ -6,12 +6,11 @@
 
 #include "exceptions.h"
 #include "utils.h"
-#include "params.h"
+#include "logmsg.h"
 #include "command_setup.h"
+#include "command_general.h"
 #include "drunner_settings.h"
 #include "main.h"
-#include "logmsg.h"
-#include "commands_general.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -27,7 +26,7 @@ int main(int argc, char **argv)
       mainroutines::check_basics();
 
       params p(argc, argv);
-      logmsg(kLINFO,"dRunner C++, version "+p.getVersion(),p);
+      logmsg(kLDEBUG,"dRunner C++, version "+p.getVersion(),p);
       bool canRunDocker=utils::canrundocker(getUSER());
       logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", drunner path: "+utils::get_rootpath(), p);
 
@@ -73,7 +72,7 @@ void mainroutines::process(const params & p)
    // handle setup specially.
    if (p.getCommand()==c_setup)
    {
-      int rval=command_setup(p);
+      int rval=command_setup::setup(p);
       if (rval!=0) throw eExit("Setup failed.",rval);
       return;
    }
@@ -93,23 +92,24 @@ void mainroutines::process(const params & p)
    {      
       case c_clean:
       {
-         commands_general::clean(p,settings);
+         command_general::clean(p,settings);
          break;
       }
       
       case c_list:
       {
-         commands_general::showservices(p,settings);
+         command_general::showservices(p,settings);
          break;
       }
       
       case c_update:
       {
          if (p.getArgs().size()==0)
-            commands_general::update(p,settings);
+            command_setup::update(p,settings); // defined in command_setup
          else
             logmsg(kLERROR,"E_NOTIMPL",p);
-      }
+         break;
+      }         
          
       default:
          {

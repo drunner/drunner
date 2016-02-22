@@ -5,11 +5,10 @@
 #define __COMMAND_GENERAL_H
 
 
-namespace commands_general
+namespace command_general
 {
    void showservices(const params & p, const drunner_settings & settings);
    void clean(const params & p, const drunner_settings settings);
-   void update(const params & p, const drunner_settings settings);
 }
 
 #endif

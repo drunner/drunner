@@ -1,8 +1,8 @@
-#include "commands_general.h"
+#include "command_general.h"
 #include "logmsg.h"
 #include "utils.h"
 
-namespace commands_general
+namespace command_general
 {
 
    void showservices(const params & p, const drunner_settings & settings)
@@ -11,10 +11,13 @@ namespace commands_general
       std::vector<std::string> services;
       if (!utils::getFolders(parent,services)) 
          logmsg(kLERROR,"Couldn't get subfolders of "+parent,p);
-      for (auto const & entry : services)
+      if (services.size()>0)
       {
-         logmsg(kLINFO,entry,p);
-      }
+         logmsg(kLINFO,"Installed dServices:",p);
+         for (auto const & entry : services)
+            logmsg(kLINFO,"  "+entry,p);
+      } else
+         logmsg(kLERROR,"No dServices are installed.",p);
    }
 
 
@@ -38,7 +41,7 @@ namespace commands_general
    }
 
 
-   void blah(const params & p, const drunner_settings settings)
+   void asdf(const params & p, const drunner_settings settings)
    {
       logmsg(kLERROR,R"EOF(
 
