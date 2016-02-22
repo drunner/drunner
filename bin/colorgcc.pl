@@ -190,7 +190,7 @@ if (-f $configFile)
 $0 =~ m%.*/(.*)$%;
 $progName = $1 || $0;
 
-$compiler = $compilerPaths{$progName} || $compilerPaths{"gcc"};
+$compiler = $compilerPaths{$progName} || $compilerPaths{"g++"};
 
 # Get the terminal type. 
 $terminal = $ENV{"TERM"} || "dumb";

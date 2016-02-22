@@ -8,7 +8,7 @@
 #include "params.h"
 #include "utils.h"
 #include "showhelp.h"
-#include "build_number.h"
+#include "buildnum/build_number.h"
 
 
 std::string params::substitute( const std::string & source ) const
