@@ -35,7 +35,7 @@ wget https://drunner.s3.amazonaws.com/drunner-install ; chmod a+x drunner-instal
 ```
 Install it:
 ```
-drunner-install -v setup ~/drunner
+drunner-install -v ~/drunner
 ```
 
 Then you can run drunner.
