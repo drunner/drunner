@@ -55,6 +55,48 @@ git clone git@github.com:j842/drunnerc.git
 make
 ```
 
+Samba:
+```
+[global]
+        netbios name = ${HOSTNAME}
+        server string = %h server (Samba, Docker)
+        server role = standalone server
+        map to guest = Bad User
+        guest account = PCGUEST
+        syslog = 0
+        log file = /var/log/samba/log.%m
+        max log size = 1000
+        dns proxy = No
+        idmap config * : backend = tdb
+        security = user
+        encrypt passwords = true
+        passdb backend = tdbsam
+        obey pam restrictions = yes
+        unix password sync = no
+        pam password change = no
+        hosts allow = ALL
+        load printers = no
+        printing = bsd
+        printcap name = /dev/null
+        disable spoolss = yes
+        domain master=no
+        local master=no
+        preferred master=no
+        interfaces = eth0
+[j]
+   browseable = yes
+   read list =
+   write list = j
+   path = /home/j
+   guest ok = no
+   directory mode = 0775
+   force directory mode = 0775
+   create mode = 0664
+   force create mode = 0664
+```
+
+
+
 devmount:
 ```
 apt-get install cifs-utils
