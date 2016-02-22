@@ -1,10 +1,14 @@
-#include "params.h"
-
 #ifndef __SETUP_H
 #define __SETUP_H
 
+#include "params.h"
+#include "drunner_settings.h"
 
-int command_setup(const params & p);
+namespace command_setup
+{
 
+   int setup(const params & p);
+   int update(const params & p , const drunner_settings & s);
 
+}
 #endif

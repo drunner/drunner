@@ -248,10 +248,12 @@ namespace utils
       boost::filesystem::path dir_path(parent);
       if ( ! boost::filesystem::exists( dir_path ) ) return false;
 
-      boost::filesystem::directory_iterator end_itr; // default construction yields past-the-end
-      for ( boost::filesystem::directory_iterator itr( dir_path ); itr != end_itr; ++itr )
-         if ( is_directory(itr->status()) )
-            services.push_back(itr->path().string());
+      boost::filesystem::directory_iterator itr(dir_path),end_itr; // default construction yields past-the-end
+      for ( ; itr != end_itr; ++itr )
+      {
+         if ( boost::filesystem::is_directory(itr->status()) )
+            services.push_back(itr->path().filename().string());
+      }
       return true;
    }
 
