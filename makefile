@@ -13,7 +13,7 @@ OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(APP)
 
-$(APP): build_number.h $(OBJS) makefile
+$(APP): permissions build_number.h $(OBJS) makefile
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
@@ -33,6 +33,11 @@ build_number.h: $(SRCS) $(HDRS) major_version
 	@echo
 	@echo Bumping build number..
 	sh make_buildnum.sh
+
+permissions:
+	chmod 0644 $(SRCS) $(HDRS)
+	chmod -R 0755 bin
+	
 
 include .depend
 
