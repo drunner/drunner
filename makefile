@@ -35,8 +35,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 
 permissions:
 	chmod 0644 $(SRCS) $(HDRS) buildnum/*
-	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh
-	
+	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh	
 
 include .depend
 
