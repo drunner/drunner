@@ -1,9 +1,10 @@
+#ifndef __UTILS_H
+#define __UTILS_H
+
 #include <vector>
 #include <string>
 #include "params.h"
-
-#ifndef __UTILS_H
-#define __UTILS_H
+#include "drunner_settings.h"
 
 // Shell utilities
 namespace utils
@@ -40,6 +41,8 @@ namespace utils
    
    bool imageisbranch(std::string imagename);
    eResult pullimage(std::string imagename);
+   
+   bool getFolders(const std::string & parent, std::vector<std::string> & services);
 }
 
 #endif
