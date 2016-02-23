@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include <iostream>
 #include <map>
+#include <unistd.h>
+#include <sstream>
 
 #include "params.h"
 #include "utils.h"
@@ -72,6 +74,9 @@ while (1)
             {0, 0, 0, 0}
          };
 
+      // run getopt_long, hiding errors.
+      extern int opterr;
+      opterr = 0;
       c = getopt_long (argc, argv, "vs",
                      long_options, &option_index);
       if (c == -1)
@@ -79,14 +84,6 @@ while (1)
 
       switch (c)
       {
-         case 0:
-            // temp.
-            printf ("option %s", long_options[option_index].name);
-            if (optarg)
-            printf (" with arg %s", optarg);
-            printf ("\n");
-         break;
-
          case 's':
             mLogLevel=kLERROR;
             mDisplayServiceOutput=false;
@@ -108,13 +105,23 @@ while (1)
             break;
 
          default:
-            showhelp(*this,"Unrecognised option "+c);
+            char cc=c;
+            std::ostringstream ccs;
+            ccs << cc ;
+            showhelp(*this,"Unrecognised option "+ccs.str());
       }
    }
 
    // drunner with no command.
    bool inst=utils::isInstalled();
-   if (optind>=argc) showhelp(*this, inst ? "Please enter a command." : "Installation requires ROOTPATH to be specified." );
+   if (optind>=argc)
+      {
+      if (inst)
+         showhelp( *this, "Please enter a command.");
+      else
+         std::cerr << "Installation requires ROOTPATH to be specified."<<std::endl;
+         showhelp( *this, "Installation requires ROOTPATH to be specified." );
+      }
 
    // confirm the command is valid and convert to enum.
    int opx=optind;

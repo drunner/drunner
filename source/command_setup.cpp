@@ -128,7 +128,7 @@ namespace command_setup
       if (rval!=0)
          logmsg(kLERROR,"Unable to download updated drunner-install",p);
 
-      logmsg(kLINFO,"Updating...");
+      logmsg(kLINFO,"Updating...",p);
 
       std::ostringstream oss;
       oss << trgt.c_str() << " " << p.getLogLevelOption().c_str() << " "
