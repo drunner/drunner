@@ -21,7 +21,8 @@ drunner_settings::drunner_settings(std::string rootpath)
    mSettings["ROOTUTILIMAGE"]     ="drunner/install-rootutils";
    mSettings["DRUNNERINSTALLURL"] =R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF";
    mSettings["DRUNNERINSTALLTIME"]=timestamp;
-      
+   mSettings["PULLIMAGES"]="1";
+
    mRead=readSettings();
 }
 
@@ -38,7 +39,7 @@ bool parse(std::string line, std::string & left, std::string & right)
          left=utils::trim_copy(line.substr(0,end));
          right=utils::trim_copy(line.substr(end+1)); //If this is equal to the string length, substr returns an empty string.
          if (left.length()==0) return false;    // empty key
-         if (left[0]=='#') return false;        // comment line 
+         if (left[0]=='#') return false;        // comment line
          return true;
       }
    return false;
@@ -47,10 +48,10 @@ bool parse(std::string line, std::string & left, std::string & right)
 bool drunner_settings::readSettings()
 {
    std::string settingsfile=getPath_Root()+"/"+settingsFileName;
-   
-   if (! utils::fileexists(settingsfile)) 
+
+   if (! utils::fileexists(settingsfile))
       return false;
-   
+
    std::string line,left,right;
    std::ifstream configfile( settingsfile.c_str() );
    while (std::getline(configfile, line))
@@ -61,7 +62,7 @@ bool drunner_settings::readSettings()
             mSettings[left]=right;
          }
    }
-   
+
    return true;
 }
 
@@ -71,16 +72,14 @@ bool drunner_settings::writeSettings()
    std::ofstream ofile;
    ofile.open(settingsfile);
    if (!ofile.is_open()) return false; // can't open the file.
-   
+
    ofile << "# Docker Runner configuration file." << std::endl;
    ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
-   
-  // iterate through map. C++11 style.  
+
+  // iterate through map. C++11 style.
   for (auto const &entry : mSettings) {
      ofile << entry.first << "=" << entry.second << std::endl;
   }
   ofile.close();
   return true;
 }
-
-

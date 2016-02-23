@@ -9,21 +9,21 @@ class drunner_settings
 {
 public:
    drunner_settings(std::string rootpath); // sets defaults, reads from config.sh if present.
-   
+
    bool writeSettings();
    bool readFromFileOkay();
-   
-   std::string getPath_Root()         const {   return mSettings.at("ROOTPATH");    }
-   std::string getPath_Services()     const {   return getPath_Root()+"/services"; }
+
+   std::string getPath_Root()         const { return mSettings.at("ROOTPATH");    }
+   std::string getPath_Services()     const { return getPath_Root()+"/services"; }
 
    //std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
-   std::string getRootUtilImage()     const {   return mSettings.at("ROOTUTILIMAGE");       }
-   std::string getdrunnerInstallURL() const {   return mSettings.at("DRUNNERINSTALLURL");   }
-   std::string getdrunnerInstallTime()const {   return mSettings.at("DRUNNERINSTALLTIME");  }
-   
-   static std::string getSettingsFileName()   {   return settingsFileName;                 }
-   
-private:   
+   std::string getRootUtilImage()     const { return mSettings.at("ROOTUTILIMAGE");       }
+   std::string getdrunnerInstallURL() const { return mSettings.at("DRUNNERINSTALLURL");   }
+   std::string getdrunnerInstallTime()const { return mSettings.at("DRUNNERINSTALLTIME");  }
+   bool getPullImages() const               { return mSettings.at("PULLIMAGES")=="1"; }
+   static std::string getSettingsFileName() { return settingsFileName;                 }
+
+private:
    bool readSettings();
    std::map< std::string, std::string > mSettings;
    bool mRead;

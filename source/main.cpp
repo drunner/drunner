@@ -22,7 +22,7 @@ using namespace utils;
 
 int main(int argc, char **argv)
 {
-   try 
+   try
    {
       mainroutines::check_basics();
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
       mainroutines::process(p);
    }
-   
+
    catch (const eExit & e) {
       return e.exitCode();
    }
@@ -60,7 +60,7 @@ void mainroutines::check_basics()
 
    if (!utils::commandexists("wget"))
       logmsg(kLERROR,"Please install wget before using dRunner.");
-      
+
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
       logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?");
@@ -77,7 +77,7 @@ void mainroutines::process(const params & p)
       if (rval!=0) throw eExit("Setup failed.",rval);
       return;
    }
-   
+
    if (!utils::isInstalled())
       showhelp(p,"Please run "+utils::get_exename()+" setup ROOTPATH");
 
@@ -86,26 +86,26 @@ void mainroutines::process(const params & p)
    drunner_settings settings(rootpath);
    if (!settings.readFromFileOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
-      
+
    logmsg(kLDEBUG,"Settings read from "+rootpath+"/"+drunner_settings::getSettingsFileName(),p);
-      
-      
+
+
    // ----------------
-   // command handling   
+   // command handling
    switch (p.getCommand())
-   {      
+   {
       case c_clean:
       {
          command_general::clean(p,settings);
          break;
       }
-      
+
       case c_list:
       {
          command_general::showservices(p,settings);
          break;
       }
-      
+
       case c_update:
       {
          if (p.getArgs().size()==0)
@@ -113,8 +113,8 @@ void mainroutines::process(const params & p)
          else
             logmsg(kLERROR,"E_NOTIMPL",p);
          break;
-      }         
-         
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(
@@ -124,7 +124,7 @@ void mainroutines::process(const params & p)
           \-------------------------------------------------------------/
 )EOF",p);
          }
-   } 
+   }
 }
 
 

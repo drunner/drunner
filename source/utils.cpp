@@ -23,11 +23,11 @@
 
 namespace utils
 {
-   
-   bool fileexists (const std::string& name) 
+
+   bool fileexists (const std::string& name)
    {
-      struct stat buffer;   
-      return (stat (name.c_str(), &buffer) == 0); 
+      struct stat buffer;
+      return (stat (name.c_str(), &buffer) == 0);
    }
 
    bool stringisame(const std::string & s1, const std::string &s2 )
@@ -35,7 +35,7 @@ namespace utils
       boost::locale::comparator<char,boost::locale::collator_base::secondary> stringcompare;
       return stringcompare(s1,s2);
    }
-   
+
    // trim from left
    inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
    {
@@ -112,7 +112,7 @@ namespace utils
       {
          return "";
       }
-      return rval.string();     
+      return rval.string();
    }
 
 
@@ -152,7 +152,7 @@ namespace utils
    //    {
    //       std::ostringstream m;
    //       m << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
-   //       throw eExit(m.str().c_str(),exit_code);     
+   //       throw eExit(m.str().c_str(),exit_code);
    //    }
    //    else
    //       throw eExit("",exit_code);
@@ -188,11 +188,11 @@ namespace utils
       return (rval==0);
    }
 
-   std::string get_exefullpath() 
+   std::string get_exefullpath()
    {
       char buff[PATH_MAX];
       ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-      if (len != -1) 
+      if (len != -1)
       {
          buff[len] = '\0';
          return std::string(buff);
@@ -204,7 +204,7 @@ namespace utils
    std::string get_exename()
    {
       boost::filesystem::path p( get_exefullpath() );
-      return p.filename().string();      
+      return p.filename().string();
    }
 
    std::string get_exepath()
@@ -219,9 +219,9 @@ namespace utils
       int rval = bashcommand("echo $HOME",op);
       if (rval!=0)
          logmsg(kLERROR,"Couldn't get current user's home directory.");
-      return op+"/bin";      
+      return op+"/bin";
    }
-   
+
    bool imageisbranch(std::string imagename)
    {
       std::size_t end=0;
@@ -230,7 +230,7 @@ namespace utils
       std::string branchname=imagename.substr(end+1);
       if (stringisame(branchname,"master"))
          return false;
-         
+
       return true;
    }
 
@@ -239,12 +239,12 @@ namespace utils
       if (imageisbranch(imagename))
          return kRNoChange;
       std::string op;
-      
+
       int rval = bashcommand("docker pull "+imagename, op);
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
-         return kRNoChange; 
-      
-      return rval==0 ? kRSuccess : kRError; 
+         return kRNoChange;
+
+      return rval==0 ? kRSuccess : kRError;
    }
 
 
