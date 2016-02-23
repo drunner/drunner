@@ -3,7 +3,6 @@
 
 readonly MYDIR=$( dirname "$(readlink -f "$0")" )
 
-
 (
 cd "$MYDIR"
 
