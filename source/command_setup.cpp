@@ -1,4 +1,5 @@
 #include <boost/filesystem.hpp>
+#include <sstream>
 
 #include "command_setup.h"
 #include "utils.h"
@@ -128,10 +129,12 @@ namespace command_setup
          logmsg(kLERROR,"Unable to download updated drunner-install",p);
 
       logmsg(kLINFO,"Updating...");
-         // std::cerr << trgt.c_str() << " "
-         //    << p.getLogLevelOption().c_str() << " "
-         //    << "setup" << " "
-         //    << s.getPath_Root().c_str() << std::endl;
+
+      std::ostringstream oss;
+      oss << trgt.c_str() << " " << p.getLogLevelOption().c_str() << " "
+            << "setup" << " " << s.getPath_Root().c_str();
+      logmsg(kLDEBUG,oss.str(),p);
+
       execl(
          trgt.c_str(),
          "drunner-install",
