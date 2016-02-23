@@ -134,6 +134,7 @@ namespace command_setup
          //    << s.getPath_Root().c_str() << std::endl;
       execl(
          trgt.c_str(),
+         "drunner-install",
          p.getLogLevelOption().c_str(),
          "setup",
          s.getPath_Root().c_str(),
