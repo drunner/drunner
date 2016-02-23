@@ -9,23 +9,26 @@ CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
 
+OBJECTS_DIR=objs
 SRCS=$(shell find source -maxdepth 1 -name "*.cpp")
-OBJS=$(patsubst source/%,objs/%,$(SRCS:.cpp=.o))
+HDRS=$(shell find source -maxdepth 1 -name "*.h")
+OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
 
 $(APP): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
-objs/%.o: source/%.cpp
-	$(CXX) $(CPPFLAGS) -c -o $@ $<
-
-
 depend: .depend
 
-.depend: $(SRCS)
+.depend: $(SRCS) $(HDRS)
 	rm -f ./.depend
-	$(CXX) $(CPPFLAGS) -MM $^>>./.depend;
+	$(CXX) $(CPPFLAGS) -MM $^ | sed 's#^\(.*:\)#$(OBJECTS_DIR)/\1#' >>./.depend;
+
+include .depend
+
+$(OBJECTS_DIR)/%.o: source/%.cpp
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	$(RM) $(OBJS)
@@ -33,17 +36,17 @@ clean:
 dist-clean: clean
 	$(RM) *~ .depend
 
-buildnum/build_number.h: $(SRCS) buildnum/major_version
+buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	@echo
 	@echo Bumping build number..
 	buildnum/make_buildnum.sh
 
+
+
 permissions:
 	mkdir -p objs
-	chmod 0644 $(SRCS) $(HDRS) buildnum/* source/*
+	chmod 0644 source/* buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
-
-include .depend
 
 upload: $(APP)
 	cd bin/ ; upload drunner-install

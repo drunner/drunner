@@ -8,33 +8,27 @@
 #include "logmsg.h"
 #include "exceptions.h"
 #include "utils.h"
- 
+
 using namespace std;
 
-// ostream& operator<<(ostream& ost, const LogStatement& ls)
-// {
-//         ost<<"~|"<<ls.mTime<<'|'<<ls.mData<<"|~";
-//         return ost;
-// }
- 
-std::string timestamp() 
+std::string timestamp()
 {
         //Notice the use of a stringstream, yet another useful stream medium!
-        ostringstream stream;    
+        ostringstream stream;
         time_t rawtime;
         tm * timeinfo;
- 
+
         time(&rawtime);
         timeinfo = localtime( &rawtime );
- 
+
         stream << (timeinfo->tm_year)+1900<<"/"<<timeinfo->tm_mon
         <<"/"<<timeinfo->tm_mday<<" "<<timeinfo->tm_hour
         <<":"<<timeinfo->tm_min;
         // The str() function of output stringstreams return a std::string.
-        return stream.str();   
+        return stream.str();
 }
 
-std::string levelname(eLogLevel level) 
+std::string levelname(eLogLevel level)
 {
    switch (level)
    {
@@ -59,9 +53,11 @@ std::string getcolor(eLogLevel level)
 }
 
 void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
-{  
+{
    if (level<cutoff)
       return;
+
+   // we use stdout for normal messages, stderr for warn and error.
    if (level<=kLINFO)
       std::cout << "\e[0m" << getcolor(level) << s << "\e[0m";
    else
@@ -71,21 +67,13 @@ void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
       throw eExit(s.c_str());
 }
 
-// void logmultiline(eLogLevel level, std::string s, eLogLevel cutoff)
-// {
-//    std::ostringstream ost;
-//    ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| "<<std::endl<< s;
-//    logverbatim(level,ost.str(),cutoff);
-// }
-
 void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
 {
    std::ostringstream ost;
    ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| ";
    std::string info=ost.str();
-   std::string s2=utils::replacestring(s,"\n","\n"+info);   
-   
+   std::string s2=utils::replacestring(s,"\n","\n"+info);
+
    ost << s2 <<std::endl;
    logverbatim(level,ost.str(),cutoff);
 }
-
