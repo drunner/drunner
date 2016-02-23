@@ -67,6 +67,7 @@ while (1)
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
             {"getoutput", 0, 0, 'g'},
+            {"normal",0,0,'n'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
          };
@@ -101,11 +102,16 @@ while (1)
             mDisplayServiceOutput=true;
             break;
 
+         case 'n':
+            mLogLevel=kLINFO;
+            mDisplayServiceOutput=true;
+            break;
+
          default:
             showhelp(*this,"Unrecognised option "+c);
       }
    }
-   
+
    // drunner with no command.
    bool inst=utils::isInstalled();
    if (optind>=argc) showhelp(*this, inst ? "Please enter a command." : "Installation requires ROOTPATH to be specified." );
@@ -113,9 +119,19 @@ while (1)
    // confirm the command is valid and convert to enum.
    int opx=optind;
    mCmd = inst ? parsecmd(argv[opx++]) : c_setup;
-      
+
    // store the arguments to the command.
    for (int i=opx;i<argc;++i)
-      mArgs.push_back(argv[i]);      
+      mArgs.push_back(argv[i]);
 }
 
+std::string params::getLogLevelOption() const
+{
+   switch (mLogLevel)
+   {
+      case kLERROR: return "-s";
+      case kLDEBUG: return "-v";
+      default:
+         return "-n";
+   }
+}

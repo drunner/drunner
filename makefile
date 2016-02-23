@@ -12,7 +12,7 @@ LDLIBS=
 SRCS=$(shell find source -maxdepth 1 -name "*.cpp")
 OBJS=$(patsubst source/%,objs/%,$(SRCS:.cpp=.o))
 
-all: buildnum/build_number.h $(APP)
+all: $(APP)
 
 $(APP): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
@@ -41,7 +41,7 @@ buildnum/build_number.h: $(SRCS) buildnum/major_version
 permissions:
 	mkdir -p objs
 	chmod 0644 $(SRCS) $(HDRS) buildnum/* source/*
-	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source	
+	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
 
 include .depend
 

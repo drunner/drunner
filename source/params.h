@@ -20,6 +20,8 @@ public:
    // implicit conversion to allow easy logging.
    operator eLogLevel() const                         {return mLogLevel;}
 
+   std::string getLogLevelOption() const;
+
 private:
    std::string mVersion;
    eCommand mCmd;

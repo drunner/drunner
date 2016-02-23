@@ -20,13 +20,14 @@ public:
    std::string getRootUtilImage()     const { return mSettings.at("ROOTUTILIMAGE");       }
    std::string getdrunnerInstallURL() const { return mSettings.at("DRUNNERINSTALLURL");   }
    std::string getdrunnerInstallTime()const { return mSettings.at("DRUNNERINSTALLTIME");  }
-   bool getPullImages() const               { return mSettings.at("PULLIMAGES")=="1"; }
+   bool getPullImages() const               { return istrue(mSettings.at("PULLIMAGES")); }
    static std::string getSettingsFileName() { return settingsFileName;                 }
 
 private:
    bool readSettings();
    std::map< std::string, std::string > mSettings;
    bool mRead;
+   bool istrue(const std::string & s) const;
 };
 
 #endif

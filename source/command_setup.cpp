@@ -8,22 +8,25 @@
 namespace command_setup
 {
 
-   void pullImage(const params & p,std::string image)
+   void pullImage(const params & p,const drunner_settings & s, std::string image)
    {
       // -----------------------------------------------------------------------------
       // pull the rootutils image to ensure we have the latest.
-      logmsg(kLDEBUG,"Pulling Docker image " + image,p);
-      eResult rslt = utils::pullimage( image );
-      if (rslt==kRError)
-         logmsg(kLERROR,"Couldn't pull "+image ,p);
-      if (rslt==kRNoChange)
+      if (s.getPullImages())
       {
-         if (utils::imageisbranch(image))
-            logmsg(kLDEBUG,"No change to Docker image (it's not on the master branch, so assuming dev environment).",p);
-         else
-            logmsg(kLDEBUG,"No change to Docker image (it's already up to date).",p);
-      } else
-         logmsg(kLINFO,"Successfully pulled "+image ,p);
+         logmsg(kLDEBUG,"Pulling Docker image " + image,p);
+         eResult rslt = utils::pullimage( image );
+         if (rslt==kRError)
+            logmsg(kLERROR,"Couldn't pull "+image ,p);
+         if (rslt==kRNoChange)
+         {
+            if (utils::imageisbranch(image))
+               logmsg(kLDEBUG,"No change to Docker image (it's not on the master branch, so assuming dev environment).",p);
+            else
+               logmsg(kLDEBUG,"No change to Docker image (it's already up to date).",p);
+         } else
+            logmsg(kLINFO,"Successfully pulled "+image ,p);
+      }
    }
 
    int setup(const params & p)
@@ -91,7 +94,7 @@ namespace command_setup
          logmsg(kLERROR,"Failed to create symbolic link for drunner.",p);
 
       // get latest root util image.
-      pullImage(p,settings.getRootUtilImage());
+      pullImage(p,settings,settings.getRootUtilImage());
 
       // -----------------------------------------------------------------------------
       // create services directory
@@ -118,17 +121,26 @@ namespace command_setup
    {
       logmsg(kLDEBUG,"Updating dRunner in "+s.getPath_Root(),p);
 
-      std::string op,url( s.getdrunnerInstallURL() ),trgt( utils::get_exefullpath() );
-      int rval = utils::bashcommand("wget --no-cache -nv -O "+trgt+" "+url+" && chmod 0755 "+trgt, op);
-
+      std::string op,url( s.getdrunnerInstallURL() ),trgt( s.getPath_Root() + "/drunner-install" );
+      int rval = utils::bashcommand("wget --no-cache -nv -O "+trgt+" "+url+" 2>&1 && chmod 0755 "+trgt, op);
+         logmsg(kLDEBUG,op,p);
       if (rval!=0)
          logmsg(kLERROR,"Unable to download updated drunner-install",p);
 
-      // get latest root util image.
-      pullImage(p,s.getRootUtilImage());
-
-      logmsg(kLINFO,"Update successful.");
-      return 0;
+      logmsg(kLINFO,"Updating...");
+         // std::cerr << trgt.c_str() << " "
+         //    << p.getLogLevelOption().c_str() << " "
+         //    << "setup" << " "
+         //    << s.getPath_Root().c_str() << std::endl;
+      execl(
+         trgt.c_str(),
+         p.getLogLevelOption().c_str(),
+         "setup",
+         s.getPath_Root().c_str(),
+         (char *)0
+      );
+      logmsg(kLERROR,"Exec failed.");
+      return 1;
    }
 
 }

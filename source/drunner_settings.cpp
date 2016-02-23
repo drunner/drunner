@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <cstdio>
 
 #include "drunner_settings.h"
 #include "utils.h"
@@ -21,7 +22,7 @@ drunner_settings::drunner_settings(std::string rootpath)
    mSettings["ROOTUTILIMAGE"]     ="drunner/install-rootutils";
    mSettings["DRUNNERINSTALLURL"] =R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF";
    mSettings["DRUNNERINSTALLTIME"]=timestamp;
-   mSettings["PULLIMAGES"]="1";
+   mSettings["PULLIMAGES"]="yes";
 
    mRead=readSettings();
 }
@@ -45,6 +46,16 @@ bool parse(std::string line, std::string & left, std::string & right)
    return false;
 }
 
+std::string dequote(const std::string & s)
+{
+   std::string ss(s);
+   if (ss.length()==0) return ss;
+   if (ss[0]=='\"') ss.erase(0,1);
+   if (ss.length()==0) return ss;
+   if (ss[ss.length()-1]=='\"') ss.erase(ss.length()-1,std::string::npos);
+   return ss;
+}
+
 bool drunner_settings::readSettings()
 {
    std::string settingsfile=getPath_Root()+"/"+settingsFileName;
@@ -59,9 +70,10 @@ bool drunner_settings::readSettings()
       if (parse(line,left,right))
          {
          if (mSettings.find(left)!=mSettings.end()) // we only update entries, not add random stuff.
-            mSettings[left]=right;
+            mSettings[left]=dequote(right);
          }
    }
+   configfile.close();
 
    return true;
 }
@@ -69,6 +81,9 @@ bool drunner_settings::readSettings()
 bool drunner_settings::writeSettings()
 {
    std::string settingsfile=getPath_Root()+"/"+settingsFileName;
+   if (utils::fileexists(settingsfile))
+      std::remove(settingsfile.c_str());
+
    std::ofstream ofile;
    ofile.open(settingsfile);
    if (!ofile.is_open()) return false; // can't open the file.
@@ -78,8 +93,14 @@ bool drunner_settings::writeSettings()
 
   // iterate through map. C++11 style.
   for (auto const &entry : mSettings) {
-     ofile << entry.first << "=" << entry.second << std::endl;
+     ofile << entry.first << "=\"" << entry.second << "\"" << std::endl;
   }
   ofile.close();
   return true;
+}
+
+bool drunner_settings::istrue(const std::string & s) const
+{
+   if (s.length()==0) return false;
+   return (tolower(s[0])=='y' || s[0]=='1' || tolower(s[0])=='t');
 }
