@@ -107,9 +107,7 @@ while (1)
             break;
 
          default:
-            std::ostringstream ccs;
-            ccs << static_cast<char>(c) ;
-            showhelp(*this,"Unrecognised option "+ccs.str());
+            showhelp(*this,"Unrecognised option.");
       }
    }
 
