@@ -123,6 +123,18 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_install:
+      {
+         if (p.getArgs().size()<1 || p.getArgs().size()>2)
+            logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
+         std::string imagename = p.getArgs().at(0);
+         std::string servicename;
+         if ( p.getArgs().size()==2)
+            servicename=p.getArgs()[1];
+         command_general::installService(p,settings,imagename,servicename);
+         break;
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(

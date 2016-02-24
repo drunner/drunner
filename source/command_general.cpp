@@ -65,5 +65,22 @@ namespace command_general
       logmsg(kLINFO,"\u2714  " + imagename + " is dRunner compatible.");
    }
 
+   void installService(const params & p,const drunner_settings & settings,
+      const std::string & imagename, std::string servicename)
+   {
+      if (servicename.length()==0)
+      {
+         servicename=imagename;
+         size_t found;
+         while ((found=servicename.find("/")) != std::string::npos)
+            servicename.erase(0,found+1);
+         while ((found=servicename.find(":")) != std::string::npos)
+            servicename.erase(found);
+      }
+
+      logmsg(kLDEBUG,"Installing "+imagename+" to "+servicename,p);
+   }
+
+
 
 }
