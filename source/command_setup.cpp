@@ -5,11 +5,12 @@
 #include "utils.h"
 #include "drunner_settings.h"
 #include "logmsg.h"
+#include "createsupportfiles.h"
 
 namespace command_setup
 {
 
-   void pullImage(const params & p,const drunner_settings & s, std::string image)
+   void pullImage(const params & p,const drunner_settings & s, const std::string & image)
    {
       // -----------------------------------------------------------------------------
       // pull the rootutils image to ensure we have the latest.
@@ -98,15 +99,10 @@ namespace command_setup
       pullImage(p,settings,settings.getRootUtilImage());
 
       // -----------------------------------------------------------------------------
-      // create services directory
-      eResult rslt = utils::mkdirp(settings.getPath_Services());
-      if (rslt==kRError)
-         logmsg(kLERROR,"Couldn't create "+settings.getPath_Services(),p);
-      if (rslt==kRSuccess)
-         logmsg(kLINFO,"Created "+settings.getPath_Services(),p);
-      if (rslt==kRNoChange)
-         logmsg(kLDEBUG,"Services directory exists. Services left unchanged.",p);
+      // create services and support directories
+      makedirectory(settings.getPath_Services(),p);
 
+      create_support_files(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------
       // Finished!

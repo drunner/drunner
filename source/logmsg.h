@@ -8,4 +8,7 @@
 void logmsg(eLogLevel level, std::string s, eLogLevel cutoff=kLINFO);
 void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff);
 
+
+
+
 #endif

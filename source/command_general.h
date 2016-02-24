@@ -8,7 +8,8 @@
 namespace command_general
 {
    void showservices(const params & p, const drunner_settings & settings);
-   void clean(const params & p, const drunner_settings settings);
+   void clean(const params & p, const drunner_settings & settings);
+   void validateImage(const params & p,const drunner_settings & settings, std::string imagename);
 }
 
 #endif

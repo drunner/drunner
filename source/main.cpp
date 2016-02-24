@@ -115,6 +115,14 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_checkimage:
+      {
+         if (p.getArgs().size()==0)
+            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
+         command_general::validateImage(p,settings,p.getArgs()[0]);
+         break;
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(
