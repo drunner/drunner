@@ -63,16 +63,6 @@ namespace command_general
       if (rval!=0)
          logmsg(kLERROR,op,p);
       logmsg(kLINFO,"\u2714  " + imagename + " is dRunner compatible.");
-
-      // if (!utils::fileexists())
-      // if [ ! -e "${ROOTPATH}/support/run_on_service/validator-image" ]; then
-      //    die "Missing dRunner file: ${ROOTPATH}/support/run_on_service/validator-image"
-      // fi
-      //
-      // # need to get validator-image into the container and run it with the containers UID (non-root)
-      // docker run --rm -v "${ROOTPATH}/support/run_on_service:/support" "${IMAGENAME}" "/support/validator-image"
-      // [ "$?" -eq 0 ] || die "${IMAGENAME} is not dRunner compatible."
-      // echo "${IMAGENAME} is dRunner compatible."
    }
 
 
