@@ -13,6 +13,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
 
@@ -32,8 +33,7 @@ namespace utils
 
    bool stringisame(const std::string & s1, const std::string &s2 )
    {
-      boost::locale::comparator<char,boost::locale::collator_base::secondary> stringcompare;
-      return stringcompare(s1,s2);
+      return boost::iequals(s1,s2);
    }
 
    // trim from left
@@ -222,7 +222,7 @@ namespace utils
       return op+"/bin";
    }
 
-   bool imageisbranch(std::string imagename)
+   bool imageisbranch(const std::string & imagename)
    {
       std::size_t end=0;
       if ((end=imagename.find(":",0)) == std::string::npos)
@@ -234,13 +234,14 @@ namespace utils
       return true;
    }
 
-   eResult pullimage(std::string imagename)
+   eResult pullimage(const std::string & imagename)
    {
       if (imageisbranch(imagename))
          return kRNoChange;
       std::string op;
 
       int rval = bashcommand("docker pull "+imagename, op);
+
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;
 

@@ -40,8 +40,8 @@ namespace utils
    std::string get_exename();
    std::string get_usersbindir();   // dies if fails.
 
-   bool imageisbranch(std::string imagename);
-   eResult pullimage(std::string imagename);
+   bool imageisbranch(const std::string & imagename);
+   eResult pullimage(const std::string & imagename);
 
    bool getFolders(const std::string & parent, std::vector<std::string> & services);
 

@@ -1,6 +1,8 @@
 #include "command_general.h"
 #include "logmsg.h"
+#include "enums.h"
 #include "utils.h"
+#include "command_setup.h"
 
 namespace command_general
 {
@@ -25,7 +27,8 @@ namespace command_general
    {
       std::string op;
       logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
-      utils::pullimage("spotify/docker-gc");
+      if (utils::pullimage("spotify/docker-gc")==kRError)
+         logmsg(kLERROR,"Failed to pull spotify/docker-gc");
 
       logmsg(kLINFO,"Cleaning.",p);
       if (utils::bashcommand("docker run --rm -v /var/run/docker.sock:/var/run/docker.sock spotify/docker-gc",op) != 0)
@@ -58,7 +61,7 @@ namespace command_general
 
       std::string op;
       int rval = utils::bashcommand("docker run --rm -v \""+settings.getPath_Support()+
-         ":/support\" \""+imagename+"\" /support/validator-image",op);
+         ":/support\" \""+imagename+"\" /support/validator-image 2>&1",op);
 
       if (rval!=0)
          logmsg(kLERROR,op,p);
@@ -78,7 +81,15 @@ namespace command_general
             servicename.erase(found);
       }
 
-      logmsg(kLDEBUG,"Installing "+imagename+" to "+servicename,p);
+      std::string targetdir=settings.getPath_Services() + "/" + servicename;
+      logmsg(kLDEBUG,"Installing "+servicename+" at "+targetdir+", using image "+imagename,p);
+      if (utils::fileexists(targetdir))
+         logmsg(kLERROR,"Service already exists. Try:   drunner update "+servicename,p);
+
+      command_setup::pullImage(p,settings,imagename);
+
+      logmsg(kLDEBUG,"Attempting to validate "+imagename,p);
+      validateImage(p,settings,imagename);
    }
 
 
