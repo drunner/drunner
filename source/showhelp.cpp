@@ -23,6 +23,7 @@ SYNOPSIS
    ${EXENAME} [OPTION] [COMMAND] [ARGS]...
 
 OPTIONS
+   -n    normal [default]
    -v    verbose
    -s    silent
    -g    drunner silent, service normal (for capturing service output)

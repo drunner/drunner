@@ -10,6 +10,7 @@
 #include "params.h"
 #include "utils.h"
 #include "showhelp.h"
+#include "logmsg.h"
 #include "build_number.h"
 
 
@@ -69,7 +70,7 @@ while (1)
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
             {"getoutput", 0, 0, 'g'},
-            {"normal",0,0,'n'},
+            {"normal", 0, 0, 'n'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
          };
@@ -77,9 +78,10 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vs",
+      c = getopt_long (argc, argv, "vsng",
                      long_options, &option_index);
-      if (c == -1)
+
+      if (c == -1) // no more options.
          break;
 
       switch (c)
@@ -105,9 +107,8 @@ while (1)
             break;
 
          default:
-            char cc=c;
             std::ostringstream ccs;
-            ccs << cc ;
+            ccs << static_cast<char>(c) ;
             showhelp(*this,"Unrecognised option "+ccs.str());
       }
    }
