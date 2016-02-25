@@ -16,6 +16,8 @@ namespace utils
    std::string getcanonicalpath(std::string path);
 
    eResult mkdirp(std::string path);
+   void makedirectory(const std::string & d, const params & p);
+   void deltree(const std::string & s,const params & p);
 
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
@@ -46,6 +48,8 @@ namespace utils
    bool getFolders(const std::string & parent, std::vector<std::string> & services);
 
    bool isInstalled();
+
+   bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
 }
 
 #endif

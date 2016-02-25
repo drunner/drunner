@@ -100,7 +100,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create services and support directories
-      makedirectory(settings.getPath_Services(),p);
+      utils::makedirectory(settings.getPath_Services(),p);
 
       create_support_files(settings.getPath_Support(),p);
 

@@ -73,9 +73,6 @@ namespace utils
        return utils::trim(s, t);
    }
 
-   // std::string getVersion()    {
-   //    return "0.1 dev";
-   // }
    int bashcommand(std::string command, std::string & output)
    {
       redi::ipstream in(command);
@@ -145,18 +142,6 @@ namespace utils
       }
       return subject;
    }
-
-   // void die( std::string msg, int exit_code )
-   // {
-   //    if (msg.length()>0)
-   //    {
-   //       std::ostringstream m;
-   //       m << std::endl << "\e[31m" << msg << "\e[0m" << std::endl << std::endl;
-   //       throw eExit(m.str().c_str(),exit_code);
-   //    }
-   //    else
-   //       throw eExit("",exit_code);
-   // }
 
    bool isindockergroup(std::string username)
    {
@@ -245,7 +230,7 @@ namespace utils
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;
 
-      return rval==0 ? kRSuccess : kRError;
+      return (rval==0) ? kRSuccess : kRError;
    }
 
 
@@ -269,6 +254,45 @@ namespace utils
    {
       std::string rootpath = get_exepath();
       return (boost::filesystem::exists(rootpath + "/" + settingsFileName));
+   }
+
+
+   /// Try to find in the Haystack the Needle - ignore case
+   bool findStringIC(const std::string & strHaystack, const std::string & strNeedle)
+   {
+     auto it = std::search(
+       strHaystack.begin(), strHaystack.end(),
+       strNeedle.begin(),   strNeedle.end(),
+       [](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+     );
+     return (it != strHaystack.end() );
+   }
+
+
+   void makedirectory(const std::string & d, const params & p)
+   {
+      eResult rslt = utils::mkdirp(d);
+      if (rslt==kRError)
+         logmsg(kLERROR,"Couldn't create "+d,p);
+      if (rslt==kRSuccess)
+         logmsg(kLDEBUG,"Created "+d,p);
+      if (rslt==kRNoChange)
+         logmsg(kLDEBUG,d+" exists. Unchanged.",p);
+   }
+
+   void deltree(const std::string & s,const params & p)
+   {
+      std::string op;
+      if (!fileexists(s))
+      {
+         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
+      }
+      else
+      {
+         if (bashcommand("rm -rf "+s, op) != 0)
+            logmsg(kLERROR, "Unable to remove existing support directory at "+s,p);
+         logmsg(kLDEBUG,"Recursively deleted "+s,p);
+      }
    }
 
 

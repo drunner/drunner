@@ -13,17 +13,6 @@ void create_validator_image(const std::string & supportpath, const params & p);
 //---------------------------------------------------------------------------------
 
 
-void makedirectory(const std::string & d, const params & p)
-{
-   eResult rslt = utils::mkdirp(d);
-   if (rslt==kRError)
-      logmsg(kLERROR,"Couldn't create "+d,p);
-   if (rslt==kRSuccess)
-      logmsg(kLDEBUG,"Created "+d,p);
-   if (rslt==kRNoChange)
-      logmsg(kLDEBUG,d+" exists. Unchanged.",p);
-}
-
 
 eResult create_support_files(const std::string & supportpath, const params & p)
 {
@@ -31,14 +20,9 @@ eResult create_support_files(const std::string & supportpath, const params & p)
 //   int bashcommand(std::string command, std::string & output);
 
    if (utils::fileexists(supportpath))
-      {
-      std::string op;
-      if (utils::bashcommand("rm -rf "+supportpath, op) != 0)
-         logmsg(kLERROR, "Unable to remove existing support directory at "+supportpath,p);
-      logmsg(kLDEBUG,"Recursively deleted "+supportpath,p);
-      }
+      utils::deltree(supportpath,p);
 
-   makedirectory(supportpath,p);
+   utils::makedirectory(supportpath,p);
 
    create_validator_image(supportpath,p);
    return kRSuccess;

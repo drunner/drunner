@@ -1,8 +1,11 @@
+#include <sys/stat.h>
+
 #include "command_general.h"
 #include "logmsg.h"
 #include "enums.h"
 #include "utils.h"
 #include "command_setup.h"
+#include "exceptions.h"
 
 namespace command_general
 {
@@ -64,7 +67,12 @@ namespace command_general
          ":/support\" \""+imagename+"\" /support/validator-image 2>&1",op);
 
       if (rval!=0)
-         logmsg(kLERROR,op,p);
+         {
+         if ( utils::findStringIC(op, "Unable to find image") )
+            logmsg(kLERROR,"Couldn't find image "+imagename,p);
+         else
+            logmsg(kLERROR,op,p);
+         }
       logmsg(kLINFO,"\u2714  " + imagename + " is dRunner compatible.");
    }
 
@@ -90,6 +98,21 @@ namespace command_general
 
       logmsg(kLDEBUG,"Attempting to validate "+imagename,p);
       validateImage(p,settings,imagename);
+
+      try
+      {
+         utils::makedirectory(targetdir,p);
+         if (0!= chmod(targetdir.c_str(), S_IRWXU | S_IRWXG	| S_IRWXO )) // http://linux.die.net/include/sys/stat.h
+            logmsg(kLERROR,"Unable to set permissions on "+targetdir);
+      }
+
+      catch (const eExit & e) {
+         // tidy up.
+         if (utils::fileexists(targetdir))
+            utils::deltree(targetdir,p);
+
+         throw (e);
+      }
    }
 
 

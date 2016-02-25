@@ -107,7 +107,7 @@ while (1)
             break;
 
          default:
-            showhelp(*this,"Unrecognised option.");
+            showhelp(*this,"Unrecognised option."); //" -" + std::string(1,c));
       }
    }
 
