@@ -118,6 +118,7 @@ namespace command_general
          if (r!=0)
             logmsg(kLERROR,"Couldn't copy the service files. You will need to reinstall the service.",p);
 
+         
       }
 
       catch (const eExit & e) {

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <ctime>
 #include <cstdio>
+#include <sstream>
 
 #include "settingsbash.h"
 #include "utils.h"
@@ -16,7 +17,7 @@ settingsbash::settingsbash(std::string settingspath) : mPath(settingspath)
 {
 }
 
-bool settingsbash::parse(std::string line, std::string & left, std::string & right)
+bool settingsbash::parse(std::string line, std::string & left, std::string & right) const
 {
    std::size_t end=0;
    if ((end=line.find("=",0)) != std::string::npos)
@@ -30,13 +31,13 @@ bool settingsbash::parse(std::string line, std::string & left, std::string & rig
    return false;
 }
 
-std::string settingsbash::dequote(const std::string & s)
+std::string settingsbash::dequote(const std::string & s, char c) const
 {
    std::string ss(s);
    if (ss.length()==0) return ss;
-   if (ss[0]=='\"') ss.erase(0,1);
+   if (ss[0]==c) ss.erase(0,1);
    if (ss.length()==0) return ss;
-   if (ss[ss.length()-1]=='\"') ss.erase(ss.length()-1,std::string::npos);
+   if (ss[ss.length()-1]==c) ss.erase(ss.length()-1,std::string::npos);
    return ss;
 }
 
@@ -52,7 +53,7 @@ bool settingsbash::readSettings()
       if (parse(line,left,right))
          {
          if (mSettings.find(left)!=mSettings.end()) // we only update entries, not add random stuff.
-            mSettings[left]=dequote(right);
+            mSettings[left]=dequote(right,'\"');
          }
    }
    configfile.close();
@@ -99,10 +100,38 @@ bool settingsbash::getSettingb(const std::string &  key) const
    logmsg(kLWARN,"Couldn't find setting "+key,kLWARN);
    return false;
 }
+void settingsbash::getSettingv(const std::string &  key, std::vector<std::string> & vec) const
+{ // needs to be compatible with bash scripts!!
+   std::string astr=dequote(dequote(getSetting(key),'('),')');
+   std::stringstream ss(astr);
+   while (ss.good())
+      {
+         ss >> astr;
+         vec.push_back(dequote(astr,'\"'));
+      }
+}
+
 void settingsbash::setSetting(const std::string &  key, const std::string & value)
 {
-   mSettings[key]=dequote(value);
+   mSettings[key]=dequote(value,'\"');
 }
+void settingsbash::setSettingb(const std::string &  key, bool value)
+{
+   mSettings[key] = value ? "yes" : "no";
+}
+void settingsbash::setSettingv(const std::string &  key, const std::vector<std::string> vec)
+{
+   std::stringstream ss;
+   ss << key << "=(";
+   for (uint i=0;i<vec.size();++i)
+   {
+      if (i>0) ss << " ";
+      ss << "\"" << vec[i] << "\"";
+   }
+   ss << ")";
+   setSetting(key,ss.str());
+}
+
 
 std::string settingsbash::getPath() const
 {
