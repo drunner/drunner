@@ -50,6 +50,8 @@ namespace utils
    bool isInstalled();
 
    bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
+
+   std::string getTime();
 }
 
 #endif

@@ -87,7 +87,7 @@ void mainroutines::process(const params & p)
    if (!settings.readFromFileOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
 
-   logmsg(kLDEBUG,"Settings read from "+rootpath+"/"+drunner_settings::getSettingsFileName(),p);
+   logmsg(kLDEBUG,"Settings read from "+settings.getPath(),p);
 
 
    // ----------------

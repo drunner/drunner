@@ -89,6 +89,11 @@ namespace command_general
             servicename.erase(found);
       }
 
+      std::string datestamp = utils::getTime(),hostIP;
+      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'",hostIP) !=0)
+         logmsg(kLERROR,"Couldn't get host IP.",p);
+      logmsg(kLDEBUG,"date = "+datestamp+"  hostIP = "+hostIP,p);
+
       std::string targetdir=settings.getPath_Services() + "/" + servicename;
       logmsg(kLDEBUG,"Installing "+servicename+" at "+targetdir+", using image "+imagename,p);
       if (utils::fileexists(targetdir))
@@ -101,9 +106,18 @@ namespace command_general
 
       try
       {
-         utils::makedirectory(targetdir,p);
-         if (0!= chmod(targetdir.c_str(), S_IRWXU | S_IRWXG	| S_IRWXO )) // http://linux.die.net/include/sys/stat.h
-            logmsg(kLERROR,"Unable to set permissions on "+targetdir);
+         std::string drd=targetdir+"/drunner";
+         utils::makedirectory(drd,p);
+         if (0!= chmod(drd.c_str(), S_IRWXU | S_IRWXG	| S_IRWXO )) // http://linux.die.net/include/sys/stat.h
+            logmsg(kLERROR,"Unable to set permissions on "+drd);
+
+         // copy files
+         std::string op;
+         int r=utils::bashcommand("docker run --rm -it -v "+
+               drd+":/tempcopy "+imagename+" /bin/bash -c \"cp -r /drunner/* /tempcopy/\"",op);
+         if (r!=0)
+            logmsg(kLERROR,"Couldn't copy the service files. You will need to reinstall the service.",p);
+
       }
 
       catch (const eExit & e) {

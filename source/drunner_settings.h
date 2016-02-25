@@ -1,34 +1,30 @@
 #include <map>
 
+#include "settingsbash.h"
+
 #ifndef __DRUNNER_SETTINGS_H
 #define __DRUNNER_SETTINGS_H
 
-static const char * settingsFileName = "config.sh";
 
-class drunner_settings
+class drunner_settings : public settingsbash
 {
 public:
    drunner_settings(std::string rootpath); // sets defaults, reads from config.sh if present.
 
-   bool writeSettings();
-   bool readFromFileOkay();
+   bool readFromFileOkay()            const { return mRead; }
 
-   std::string getPath_Root()         const { return mSettings.at("ROOTPATH");    }
+   std::string getPath_Root()         const { return getSetting("ROOTPATH");    }
    std::string getPath_Services()     const { return getPath_Root()+"/services"; }
    std::string getPath_Support()      const { return getPath_Root()+"/support"; }
 
    //std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
-   std::string getRootUtilImage()     const { return mSettings.at("ROOTUTILIMAGE");       }
-   std::string getdrunnerInstallURL() const { return mSettings.at("DRUNNERINSTALLURL");   }
-   std::string getdrunnerInstallTime()const { return mSettings.at("DRUNNERINSTALLTIME");  }
-   bool getPullImages() const               { return istrue(mSettings.at("PULLIMAGES")); }
-   static std::string getSettingsFileName() { return settingsFileName;                 }
+   std::string getRootUtilImage()     const { return getSetting("ROOTUTILIMAGE");       }
+   std::string getdrunnerInstallURL() const { return getSetting("DRUNNERINSTALLURL");   }
+   std::string getdrunnerInstallTime()const { return getSetting("DRUNNERINSTALLTIME");  }
+   bool getPullImages() const               { return getSettingb("PULLIMAGES"); }
 
 private:
-   bool readSettings();
-   std::map< std::string, std::string > mSettings;
    bool mRead;
-   bool istrue(const std::string & s) const;
 };
 
 #endif

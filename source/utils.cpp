@@ -253,7 +253,7 @@ namespace utils
    bool isInstalled()
    {
       std::string rootpath = get_exepath();
-      return (boost::filesystem::exists(rootpath + "/" + settingsFileName));
+      return (boost::filesystem::exists(rootpath + "/" + "config.sh"));
    }
 
 
@@ -295,5 +295,10 @@ namespace utils
       }
    }
 
+   std::string getTime()
+   {
+      std::time_t rtime = std::time(nullptr);
+      return utils::trim_copy(std::asctime(std::localtime(&rtime)));
+   }
 
 } // namespace utils
