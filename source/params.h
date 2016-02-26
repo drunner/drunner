@@ -16,6 +16,7 @@ public:
    eLogLevel getLogLevel() const                      {return mLogLevel;}
    bool getDisplayServiceOutput() const               {return mDisplayServiceOutput;}
    const std::vector<std::string> & getArgs() const   {return mArgs;}
+   int numArgs() const                                {return mArgs.size();}
 
    // implicit conversion to allow easy logging.
    operator eLogLevel() const                         {return mLogLevel;}

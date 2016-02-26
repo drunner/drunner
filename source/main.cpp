@@ -126,7 +126,7 @@ void mainroutines::process(const params & p)
 
       case c_install:
       {
-         if (p.getArgs().size()<1 || p.getArgs().size()>2)
+         if (p.numArgs()<1 || p.numArgs()>2)
             logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
          std::string imagename = p.getArgs().at(0);
          std::string servicename;
@@ -138,7 +138,10 @@ void mainroutines::process(const params & p)
 
       case c_build:
       {
-         command_dev::build(p,settings);
+         if (p.numArgs()<1)
+            command_dev::build(p,settings);
+         else
+            command_dev::build(p,settings,p.getArgs()[0]);
       }
 
       default:

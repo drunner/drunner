@@ -7,7 +7,7 @@
 
 namespace command_dev
 {
-   void build(const params & p, const drunner_settings & settings);
+   void build(const params & p, const drunner_settings & settings,const std::string & thedir="");
 
 }
 
