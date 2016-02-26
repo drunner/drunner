@@ -130,10 +130,5 @@ namespace command_general
       }
    }
 
-   void build(const params & p, const drunner_settings & settings)
-   {
-      
-   }
-
 
 }

@@ -9,6 +9,7 @@
 #include "logmsg.h"
 #include "command_setup.h"
 #include "command_general.h"
+#include "command_dev.h"
 #include "drunner_settings.h"
 #include "showhelp.h"
 #include "main.h"
@@ -137,7 +138,7 @@ void mainroutines::process(const params & p)
 
       case c_build:
       {
-         command_general::build(p,settings);
+         command_dev::build(p,settings);
       }
 
       default:
