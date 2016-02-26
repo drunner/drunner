@@ -3,7 +3,7 @@
 
 // enumerators used often.
 
-enum eResult 
+enum eResult
 {
    kRSuccess=0,
    kRError=1,
@@ -34,9 +34,9 @@ enum eCommand {
    c_uninstall,
    c_obliterate,
    c_enter,
-   c_status
+   c_status,
+   c_build,
 };
 
 
 #endif
-

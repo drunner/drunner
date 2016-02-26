@@ -135,6 +135,11 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_build:
+      {
+         command_general::build(p,settings);
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(

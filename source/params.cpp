@@ -45,6 +45,7 @@ eCommand params::parsecmd(std::string s) const
    commandlist["obliterate"]=c_obliterate;
    commandlist["enter"]=c_enter;
    commandlist["status"]=c_status;
+   commandlist["build"]=c_build;
 
    it=commandlist.find(s);
    if (it==commandlist.end())

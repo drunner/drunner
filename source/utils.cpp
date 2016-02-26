@@ -16,6 +16,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "pstream.h"
 #include "utils.h"
@@ -300,5 +301,13 @@ namespace utils
       std::time_t rtime = std::time(nullptr);
       return utils::trim_copy(std::asctime(std::localtime(&rtime)));
    }
+
+   std::string getPWD()
+   {
+      char p[300];
+      getcwd(p,300);
+      return std::string(p);
+   }
+
 
 } // namespace utils

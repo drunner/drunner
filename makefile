@@ -53,3 +53,7 @@ upload: $(APP)
 
 push: $(APP)
 	git pull ; git add . ; git commit ; git push
+
+install: $(APP)
+	$(APP) ~/temp
+
