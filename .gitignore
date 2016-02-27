@@ -30,4 +30,6 @@
 .depend
 drunnerc
 drunner-install
+build_number.h
+version.number
 
