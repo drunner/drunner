@@ -51,6 +51,8 @@ namespace utils
 
    bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
 
+   std::string getHostIP(const params & p );
+
    std::string getTime();
    std::string getPWD();
 }

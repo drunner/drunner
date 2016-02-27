@@ -47,13 +47,8 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      if (!boost::filesystem::exists(rootpath))
-      {
-         logmsg(kLDEBUG,"Setting up to directory "+rootpath,p.getLogLevel());
-         if (utils::mkdirp(rootpath)==kRError)
-            logmsg(kLERROR,"Couldn't create directory "+rootpath,p);
-      } else
-         logmsg(kLDEBUG,"Rootpath "+rootpath+" already exists.",p);
+      utils::makedirectory(rootpath,p);
+      utils::makedirectory(rootpath+"/temp/services",p);
 
       // -----------------------------------------------------------------------------
       // now that rootpath is created we can get concrete path to it.

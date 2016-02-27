@@ -16,6 +16,7 @@ public:
    std::string getPath_Root()         const { return getSetting("ROOTPATH");    }
    std::string getPath_Services()     const { return getPath_Root()+"/services"; }
    std::string getPath_Support()      const { return getPath_Root()+"/support"; }
+   std::string getPath_TempServices() const { return getPath_Root()+"/temp/services"; }
 
    //std::string getSupportImage()       {   return mSettings["SUPPORTIMAGE"];        }
    std::string getRootUtilImage()     const { return getSetting("ROOTUTILIMAGE");       }

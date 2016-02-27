@@ -7,6 +7,7 @@
 #include "settingsbash.h"
 #include "command_setup.h"
 #include "command_install.h"
+#include "createutils_sh.h"
 
 namespace command_install
 {
@@ -27,11 +28,25 @@ using namespace utils;
    public:
       std::vector<std::string> volumes,extracontainers,dockervols,dockeropts;
 
-      servicecfg(const params & p, std::string pwd, std::string servicename) : settingsbash(pwd+"/servicecfg.sh")
+      servicecfg(
+         const params & p,
+         const drunner_settings & settings,
+         std::string pwd,
+         std::string servicename,
+         std::string imagename,
+         std::string hostIP,
+         std::string serviceTempDir
+         )
+         :  settingsbash(pwd+"/servicecfg.sh")
       {
          std::vector<std::string> nothing;
          setSettingv("VOLUMES",nothing);
          setSettingv("EXTRACONTAINERS",nothing);
+         setSetting("SERVICENAME",servicename);
+         setSetting("IMAGENAME",imagename);
+         setSetting("INSTALLTIME",utils::getTime());
+         setSetting("HOSTIP",hostIP);
+         setSetting("SERVICETEMPDIR",serviceTempDir);
 
          bool readok = readSettings();
          if (!readok)
@@ -47,6 +62,9 @@ using namespace utils;
             dockeropts.push_back("-v");
             dockeropts.push_back(dockervols[i]+":"+volumes[i]);
             }
+         setSettingv("DOCKERVOLS",dockervols);
+         setSettingv("DOCKEROPTS",dockeropts);
+
          for (uint i=0;i<extracontainers.size();++i)
             logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
       } // ctor
@@ -86,9 +104,7 @@ using namespace utils;
             servicename.erase(found);
       }
 
-      std::string datestamp = utils::getTime(),hostIP;
-      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'",hostIP) !=0)
-         logmsg(kLERROR,"Couldn't get host IP.",p);
+      std::string datestamp = utils::getTime(),hostIP = utils::getHostIP(p);
       logmsg(kLDEBUG,"date = "+datestamp+"  hostIP = "+hostIP,p);
 
       std::string targetdir=settings.getPath_Services() + "/" + servicename;
@@ -96,6 +112,7 @@ using namespace utils;
       if (utils::fileexists(targetdir))
          logmsg(kLERROR,"Service already exists. Try:   drunner update "+servicename,p);
 
+      // make sure we have the latest version of the service.
       command_setup::pullImage(p,settings,imagename);
 
       logmsg(kLDEBUG,"Attempting to validate "+imagename,p);
@@ -109,6 +126,10 @@ using namespace utils;
          if (0!= chmod(drd.c_str(), S_IRWXU | S_IRWXG	| S_IRWXO )) // http://linux.die.net/include/sys/stat.h
             logmsg(kLERROR,"Unable to set permissions on "+drd);
 
+         // create service's temp directory
+         std::string serviceTempDir=settings.getPath_TempServices()+"/"+servicename;
+         utils::makedirectory(serviceTempDir,p);
+
          // copy files to service directory on host.
          std::string op;
          int r=utils::bashcommand("docker run --rm -it -v "+
@@ -117,8 +138,16 @@ using namespace utils;
             logmsg(kLERROR,"Couldn't copy the service files. You will need to reinstall the service.",p);
 
          // read in servicecfg.sh
-         servicecfg sc(p,drd,servicename);
+         servicecfg sc(p,settings,drd,servicename,imagename,hostIP,serviceTempDir);
 
+         // make sure we have the latest of all exra containers.
+         for (uint i=0;i<sc.extracontainers.size();++i)
+            command_setup::pullImage(p,settings,sc.extracontainers[i]);
+
+         // create the utils.sh file for the dService.
+         createutils_sh(drd,p);
+
+         // create variables.sh for the dService.
 
       }
 
