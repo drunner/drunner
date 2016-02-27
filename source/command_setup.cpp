@@ -3,14 +3,14 @@
 
 #include "command_setup.h"
 #include "utils.h"
-#include "drunner_settings.h"
+#include "sh_drunnercfg.h"
 #include "logmsg.h"
-#include "createsupportfiles.h"
+#include "generate_validator_image.h"
 
 namespace command_setup
 {
 
-   void pullImage(const params & p,const drunner_settings & s, const std::string & image)
+   void pullImage(const params & p,const sh_drunnercfg & s, const std::string & image)
    {
       // -----------------------------------------------------------------------------
       // pull the rootutils image to ensure we have the latest.
@@ -56,7 +56,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create the settings and write to config.sh
-      drunner_settings settings(p,rootpath);
+      sh_drunnercfg settings(p,rootpath);
       if (!settings.writeSettings())
          logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
 
@@ -96,8 +96,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create services and support directories
       utils::makedirectory(settings.getPath_Services(),p);
-
-      create_support_files(settings.getPath_Support(),p);
+      generate_validator_image(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------
       // Finished!
@@ -109,7 +108,7 @@ namespace command_setup
       return 0;
    }
 
-   int update(const params & p , const drunner_settings & s)
+   int update(const params & p , const sh_drunnercfg & s)
    {
       logmsg(kLDEBUG,"Updating dRunner in "+s.getPath_Root(),p);
 

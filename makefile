@@ -3,15 +3,15 @@ CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum
+INC=-Isource -Ibuildnum -Isource/settings
 
 CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
 
 OBJECTS_DIR=objs
-SRCS=$(shell find source -maxdepth 1 -name "*.cpp")
-HDRS=$(shell find source -maxdepth 1 -name "*.h")
+SRCS=$(shell find source -maxdepth 2 -name "*.cpp")
+HDRS=$(shell find source -maxdepth 2 -name "*.h")
 OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
@@ -56,4 +56,3 @@ push: $(APP)
 
 install: $(APP)
 	$(APP) ~/temp
-

@@ -11,7 +11,7 @@
 #include "command_general.h"
 #include "command_dev.h"
 #include "command_install.h"
-#include "drunner_settings.h"
+#include "sh_drunnercfg.h"
 #include "showhelp.h"
 #include "main.h"
 
@@ -85,7 +85,7 @@ void mainroutines::process(const params & p)
 
    // load settings. We require the basic install to be okay at this point!
    std::string rootpath = utils::get_exepath();
-   drunner_settings settings(p,rootpath);
+   sh_drunnercfg settings(p,rootpath);
    if (!settings.readFromFileOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
 

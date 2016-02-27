@@ -10,7 +10,7 @@
 namespace command_general
 {
 
-   void showservices(const params & p, const drunner_settings & settings)
+   void showservices(const params & p, const sh_drunnercfg & settings)
    {
       std::string parent = settings.getPath_Services();
       std::vector<std::string> services;
@@ -26,7 +26,7 @@ namespace command_general
    }
 
 
-   void clean(const params & p, const drunner_settings & settings)
+   void clean(const params & p, const sh_drunnercfg & settings)
    {
       std::string op;
       logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
@@ -40,14 +40,14 @@ namespace command_general
       logmsg(kLINFO,"Cleaning is complete.",p);
    }
 
-   void update(const params & p, const drunner_settings & settings)
+   void update(const params & p, const sh_drunnercfg & settings)
    {
 
       logmsg(kLERROR,"Soon!",p);
    }
 
 
-   void asdf(const params & p, const drunner_settings & settings)
+   void asdf(const params & p, const sh_drunnercfg & settings)
    {
       logmsg(kLERROR,R"EOF(
 

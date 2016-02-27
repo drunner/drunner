@@ -8,30 +8,6 @@ namespace command_dev
 
 using namespace utils;
 
-   class ddevsh : public settingsbash
-   {
-   public:
-      std::string buildname, devservicename;
-      bool isdService;
-
-      ddevsh(const params & p, std::string pwd) : settingsbash(p,pwd+"/ddev.sh")
-      {
-         setSetting("BUILDNAME","undefined");
-         setSettingb("DSERVICE",false);
-         setSetting("DEVSERVICENAME","undefined");
-
-         isdService=readSettings();
-         buildname=getSetting("BUILDNAME");
-         devservicename=getSetting("DEVSERVICENAME");
-         if (isdService)
-         {
-            logmsg(kLDEBUG, "DIRECTORY:        "+pwd,p);
-            logmsg(kLDEBUG, "DDEV COMPATIBLE:  yes",p);
-            logmsg(kLDEBUG, "BUILDNAME:        "+buildname,p);
-            logmsg(kLDEBUG, "DEVSERVICENAME:   "+devservicename,p);
-         }
-      } // ctor
-   }; //class
 
    bool isrepo(const params & p, const std::string & d,std::string & branch)
    {
@@ -42,7 +18,7 @@ using namespace utils;
       return (r==0);
    }
 
-   void build(const params & p, const drunner_settings & settings,const std::string & thedir)
+   void build(const params & p, const sh_drunnercfg & settings,const std::string & thedir)
    {
       std::string pwd=(thedir.length()>0 ? thedir : getPWD());
       std::string dfile=pwd+"/Dockerfile";

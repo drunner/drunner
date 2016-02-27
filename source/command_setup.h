@@ -2,13 +2,13 @@
 #define __COMMAND_SETUP_H
 
 #include "params.h"
-#include "drunner_settings.h"
+#include "settings/sh_drunnercfg.h"
 
 namespace command_setup
 {
-   void pullImage(const params & p,const drunner_settings & s, const std::string & image);
+   void pullImage(const params & p,const sh_drunnercfg & s, const std::string & image);
    int setup(const params & p);
-   int update(const params & p , const drunner_settings & s);
+   int update(const params & p , const sh_drunnercfg & s);
 
 }
 #endif

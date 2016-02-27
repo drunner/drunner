@@ -3,14 +3,23 @@
 #include "settingsbash.h"
 #include "params.h"
 
-#ifndef __DRUNNER_SETTINGS_H
-#define __DRUNNER_SETTINGS_H
+#ifndef __sh_drunnercfg_H
+#define __sh_drunnercfg_H
 
 
-class drunner_settings : public settingsbash
+class sh_drunnercfg : public settingsbash
 {
 public:
-   drunner_settings(const params & p, std::string rootpath); // sets defaults, reads from config.sh if present.
+   sh_drunnercfg(const params & p, std::string rootpath) :
+      settingsbash(p,rootpath+"/"+"drunnercfg.sh")
+   {
+      setSetting("ROOTPATH",rootpath);
+      setSetting("ROOTUTILIMAGE","drunner/install-rootutils");
+      setSetting("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
+      setSetting("DRUNNERINSTALLTIME",utils::getTime());
+      setSetting("PULLIMAGES","yes");
+      mRead=readSettings();
+   }
 
    bool readFromFileOkay()            const { return mRead; }
 

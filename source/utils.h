@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "params.h"
-#include "drunner_settings.h"
+#include "sh_drunnercfg.h"
 
 // Shell utilities
 namespace utils
