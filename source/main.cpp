@@ -10,6 +10,7 @@
 #include "command_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
+#include "command_install.h"
 #include "drunner_settings.h"
 #include "showhelp.h"
 #include "main.h"
@@ -120,7 +121,7 @@ void mainroutines::process(const params & p)
       {
          if (p.getArgs().size()==0)
             logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
-         command_general::validateImage(p,settings,p.getArgs()[0]);
+         command_install::validateImage(p,settings,p.getArgs()[0]);
          break;
       }
 
@@ -132,7 +133,7 @@ void mainroutines::process(const params & p)
          std::string servicename;
          if ( p.getArgs().size()==2)
             servicename=p.getArgs()[1];
-         command_general::installService(p,settings,imagename,servicename);
+         command_install::installService(p,settings,imagename,servicename);
          break;
       }
 
