@@ -1,6 +1,7 @@
 #include <map>
 
 #include "settingsbash.h"
+#include "params.h"
 
 #ifndef __DRUNNER_SETTINGS_H
 #define __DRUNNER_SETTINGS_H
@@ -9,7 +10,7 @@
 class drunner_settings : public settingsbash
 {
 public:
-   drunner_settings(std::string rootpath); // sets defaults, reads from config.sh if present.
+   drunner_settings(const params & p, std::string rootpath); // sets defaults, reads from config.sh if present.
 
    bool readFromFileOkay()            const { return mRead; }
 

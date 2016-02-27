@@ -1,15 +1,17 @@
 #include <map>
 
+#include "params.h"
+
 #ifndef __SETTINGSBASH_H
 #define __SETTINGSBASH_H
 
 class settingsbash
 {
 public:
-   settingsbash(std::string settingspath); // sets defaults, reads from config.sh if present.
+   settingsbash(const params & par, std::string settingspath); // sets defaults, reads from config.sh if present.
 
    bool readSettings();
-   bool writeSettings() const;
+   bool writeSettings(const std::string & fullpath="") const;
 
    std::string getSetting(const std::string &  key) const;
    bool getSettingb(const std::string &  key) const;
@@ -26,6 +28,9 @@ private:
    bool istrue(const std::string & s) const;
    bool parse(std::string line, std::string & left, std::string & right) const;
    std::string dequote(const std::string & s, char c) const;
+   void checkkeyexists(const std::string & key) const;
+
+   const params & p;
 };
 
 #endif

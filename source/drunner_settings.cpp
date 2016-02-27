@@ -11,8 +11,8 @@
 #include "utils.h"
 
 
-drunner_settings::drunner_settings(std::string rootpath) :
-   settingsbash(rootpath+"/"+"config.sh")
+drunner_settings::drunner_settings(const params & p, std::string rootpath) :
+   settingsbash(p,rootpath+"/"+"config.sh")
 {
 //   std::cerr << "Setting defaults."<<std::endl;
    // set defaults.

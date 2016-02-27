@@ -13,7 +13,7 @@
 #include "logmsg.h"
 
 
-settingsbash::settingsbash(std::string settingspath) : mPath(settingspath)
+settingsbash::settingsbash(const params & par, std::string settingspath) : mPath(settingspath), p(par)
 {
 }
 
@@ -61,14 +61,20 @@ bool settingsbash::readSettings()
    return true;
 }
 
-bool settingsbash::writeSettings() const
+bool settingsbash::writeSettings(const std::string & fullpath) const
 {
-   if (utils::fileexists(mPath))
-      std::remove(mPath.c_str());
+   std::string path = (fullpath.length()==0  ? mPath : fullpath );
 
-   std::ofstream ofile( mPath.c_str() );
+   if (path.find(".sh")==std::string::npos)
+      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+fullpath,p);
+
+   if (utils::fileexists(path))
+      std::remove(path.c_str());
+
+   std::ofstream ofile( path.c_str() );
    if (!ofile.is_open()) return false; // can't open the file.
 
+   ofile << "# "+path << std::endl;
    ofile << "# dRunner configuration file." << std::endl;
    ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
 
@@ -86,22 +92,26 @@ bool settingsbash::istrue(const std::string & s) const
    return (tolower(s[0])=='y' || s[0]=='1' || tolower(s[0])=='t');
 }
 
+void settingsbash::checkkeyexists(const std::string & key) const
+{
+   if (mSettings.find(key)==mSettings.end())
+      logmsg(kLERROR,"Couldn't find setting "+key,p);
+}
+
 std::string settingsbash::getSetting(const std::string &  key) const
 {
-   if (mSettings.find(key)!=mSettings.end()) // we only update entries, not add random stuff.
-      return mSettings.at(key);
-   logmsg(kLWARN,"Couldn't find setting "+key,kLWARN);
-   return "";
+   checkkeyexists(key);
+   return mSettings.at(key);
 }
 bool settingsbash::getSettingb(const std::string &  key) const
 {
-   if (mSettings.find(key)!=mSettings.end()) // we only update entries, not add random stuff.
-      return istrue(mSettings.at(key));
-   logmsg(kLWARN,"Couldn't find setting "+key,kLWARN);
-   return false;
+   checkkeyexists(key);
+   return istrue(mSettings.at(key));
 }
 void settingsbash::getSettingv(const std::string &  key, std::vector<std::string> & vec) const
 { // needs to be compatible with bash scripts!!
+   checkkeyexists(key);
+
    std::string astr=dequote(dequote(getSetting(key),'('),')');
    std::stringstream ss(astr);
    while (ss.good())

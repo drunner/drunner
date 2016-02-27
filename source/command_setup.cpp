@@ -56,7 +56,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create the settings and write to config.sh
-      drunner_settings settings(rootpath);
+      drunner_settings settings(p,rootpath);
       if (!settings.writeSettings())
          logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
 

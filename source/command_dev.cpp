@@ -14,7 +14,7 @@ using namespace utils;
       std::string buildname, devservicename;
       bool isdService;
 
-      ddevsh(const params & p, std::string pwd) : settingsbash(pwd+"/ddev.sh")
+      ddevsh(const params & p, std::string pwd) : settingsbash(p,pwd+"/ddev.sh")
       {
          setSetting("BUILDNAME","undefined");
          setSettingb("DSERVICE",false);

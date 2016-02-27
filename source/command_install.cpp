@@ -37,7 +37,7 @@ using namespace utils;
          std::string hostIP,
          std::string serviceTempDir
          )
-         :  settingsbash(pwd+"/servicecfg.sh")
+         :  settingsbash(p,pwd+"/servicecfg.sh")
       {
          std::vector<std::string> nothing;
          setSettingv("VOLUMES",nothing);
@@ -148,7 +148,7 @@ using namespace utils;
          createutils_sh(drd,p);
 
          // create variables.sh for the dService.
-
+         sc.writeSettings(drd+"/variables.sh");
       }
 
       catch (const eExit & e) {
