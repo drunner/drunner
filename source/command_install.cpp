@@ -13,12 +13,21 @@ namespace command_install
 
 using namespace utils;
 
+   std::string alphanumericfilter(std::string s)
+   {
+      std::string validchars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      size_t pos;
+      while((pos = s.find_first_not_of(validchars)) != std::string::npos)
+         s.erase(pos,1);
+      return s;
+   }
+
    class servicecfg : public settingsbash
    {
    public:
-      std::vector<std::string> volumes,extracontainers;
+      std::vector<std::string> volumes,extracontainers,dockervols,dockeropts;
 
-      servicecfg(const params & p, std::string pwd) : settingsbash(pwd+"/servicecfg.sh")
+      servicecfg(const params & p, std::string pwd, std::string servicename) : settingsbash(pwd+"/servicecfg.sh")
       {
          std::vector<std::string> nothing;
          setSettingv("VOLUMES",nothing);
@@ -31,7 +40,13 @@ using namespace utils;
          getSettingv("EXTRACONTAINERS",extracontainers);
 
          for (uint i=0;i<volumes.size();++i)
+            {
             logmsg(kLDEBUG, "VOLUME:          "+volumes[i],p);
+            dockervols.push_back("drunner-"+servicename+"-"+alphanumericfilter(volumes[i]));
+            logmsg(kLDEBUG, "Docker Volume:   "+dockervols[i],p);
+            dockeropts.push_back("-v");
+            dockeropts.push_back(dockervols[i]+":"+volumes[i]);
+            }
          for (uint i=0;i<extracontainers.size();++i)
             logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
       } // ctor
@@ -100,6 +115,9 @@ using namespace utils;
                drd+":/tempcopy "+imagename+" /bin/bash -c \"cp -r /drunner/* /tempcopy/\"",op);
          if (r!=0)
             logmsg(kLERROR,"Couldn't copy the service files. You will need to reinstall the service.",p);
+
+         // read in servicecfg.sh
+         servicecfg sc(p,drd,servicename);
 
 
       }
