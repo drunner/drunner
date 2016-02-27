@@ -2263,4 +2263,3 @@ namespace redi
 #endif  // REDI_PSTREAM_H_SEEN
 
 // vim: ts=2 sw=2 expandtab
-
