@@ -11,31 +11,34 @@ using namespace utils;
    class ddevsh : public settingsbash
    {
    public:
-      std::string buildname, dservicename;
+      std::string buildname, devservicename;
       bool isdService;
 
       ddevsh(const params & p, std::string pwd) : settingsbash(pwd+"/ddev.sh")
       {
          setSetting("BUILDNAME","undefined");
          setSettingb("DSERVICE",false);
-         setSetting("DSERVICENAME","undefined");
+         setSetting("DEVSERVICENAME","undefined");
 
          isdService=readSettings();
          buildname=getSetting("BUILDNAME");
-         dservicename=getSetting("DSERVICENAME");
+         devservicename=getSetting("DEVSERVICENAME");
          if (isdService)
          {
             logmsg(kLDEBUG, "DIRECTORY:        "+pwd,p);
             logmsg(kLDEBUG, "DDEV COMPATIBLE:  yes",p);
             logmsg(kLDEBUG, "BUILDNAME:        "+buildname,p);
-            logmsg(kLDEBUG, "DSERVICENAME:     "+dservicename,p);
+            logmsg(kLDEBUG, "DEVSERVICENAME:   "+devservicename,p);
          }
       } // ctor
    }; //class
 
-   bool isrepo(const params & p, const std::string & d,std::string branch)
+   bool isrepo(const params & p, const std::string & d,std::string & branch)
    {
       int r=bashcommand("git rev-parse --abbrev-ref HEAD "+d+" 2>/dev/null",branch);
+      // drop everything after branch name
+      branch.erase( branch.find_first_of("\r\n ") );
+      logmsg(kLDEBUG,"Branch:           "+branch,p);
       return (r==0);
    }
 
@@ -56,9 +59,10 @@ using namespace utils;
       std::string branch;
       if (isrepo(p,pwd,branch))
          {
-         if (!stringisame(branch,"master"))
-            branchedimagename+=":"+branch;
-         logmsg(kLDEBUG, "FULLNAME:         "+branchedimagename,p);
+         if (!stringisame(branch,"master")) {
+         logmsg(kLDEBUG,"Branch is "+branch,p);
+            branchedimagename+=":"+branch;}
+         logmsg(kLDEBUG, "Full name:        "+branchedimagename,p);
          }
 
       // build it
