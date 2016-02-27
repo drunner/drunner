@@ -16,25 +16,24 @@ using namespace utils;
    class servicecfg : public settingsbash
    {
    public:
-      std::string buildname, devservicename;
-      bool isdService;
+      std::vector<std::string> volumes,extracontainers;
 
-      servicecfg(const params & p, std::string pwd) : settingsbash(pwd+"/ddev.sh")
+      servicecfg(const params & p, std::string pwd) : settingsbash(pwd+"/servicecfg.sh")
       {
-         setSetting("BUILDNAME","undefined");
-         setSettingb("DSERVICE",false);
-         setSetting("DEVSERVICENAME","undefined");
+         std::vector<std::string> nothing;
+         setSettingv("VOLUMES",nothing);
+         setSettingv("EXTRACONTAINERS",nothing);
 
-         isdService=readSettings();
-         buildname=getSetting("BUILDNAME");
-         devservicename=getSetting("DEVSERVICENAME");
-         if (isdService)
-         {
-            logmsg(kLDEBUG, "DIRECTORY:        "+pwd,p);
-            logmsg(kLDEBUG, "DDEV COMPATIBLE:  yes",p);
-            logmsg(kLDEBUG, "BUILDNAME:        "+buildname,p);
-            logmsg(kLDEBUG, "DEVSERVICENAME:   "+devservicename,p);
-         }
+         bool readok = readSettings();
+         if (!readok)
+            logmsg(kLERROR,"Not a valid dService. Couldn't read servicecfg.sh file from "+pwd,p);
+         getSettingv("VOLUMES",volumes);
+         getSettingv("EXTRACONTAINERS",extracontainers);
+
+         for (uint i=0;i<volumes.size();++i)
+            logmsg(kLDEBUG, "VOLUME:          "+volumes[i],p);
+         for (uint i=0;i<extracontainers.size();++i)
+            logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
       } // ctor
    }; //class
 
