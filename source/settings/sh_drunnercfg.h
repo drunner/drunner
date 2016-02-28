@@ -1,25 +1,15 @@
 #include <map>
 
-#include "settingsbash.h"
-#include "params.h"
-
 #ifndef __sh_drunnercfg_H
 #define __sh_drunnercfg_H
 
+#include "settingsbash.h"
+#include "params.h"
 
 class sh_drunnercfg : public settingsbash
 {
 public:
-   sh_drunnercfg(const params & p, std::string rootpath) :
-      settingsbash(p,rootpath+"/"+"drunnercfg.sh")
-   {
-      setSetting("ROOTPATH",rootpath);
-      setSetting("ROOTUTILIMAGE","drunner/install-rootutils");
-      setSetting("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
-      setSetting("DRUNNERINSTALLTIME",utils::getTime());
-      setSetting("PULLIMAGES","yes");
-      mRead=readSettings();
-   }
+   sh_drunnercfg(const params & p, std::string rootpath);
 
    bool readFromFileOkay()            const { return mRead; }
 

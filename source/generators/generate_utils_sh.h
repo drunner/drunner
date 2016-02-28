@@ -3,6 +3,8 @@
 
 #include "enums.h"
 #include "params.h"
+#include "utils.h"
+#include "generate.h"
 
 void generate_utils_sh(const std::string & supportpath, const params & p)
 {

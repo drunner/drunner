@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "logmsg.h"
 #include "settingsbash.h"
+#include "utils.h"
+#include "sh_ddev.h"
 
 namespace command_dev
 {
@@ -26,7 +28,7 @@ using namespace utils;
       if (!fileexists(dfile)) logmsg(kLERROR,"No Dockerfile in "+pwd+", it's not a valid dService.",p);
 
       // read in service settings.
-      ddevsh dd(p,pwd);
+      sh_ddev dd(p,pwd);
       if (!dd.isdService) logmsg(kLERROR,"No dService found at "+pwd,p);
 
       std::string baseimagename=dd.buildname;

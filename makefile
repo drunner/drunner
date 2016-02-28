@@ -3,7 +3,7 @@ CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/settings
+INC=-Isource -Ibuildnum -Isource/settings -Isource/generators
 
 CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-lboost_filesystem -lboost_system
@@ -44,7 +44,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 
 
 permissions:
-	mkdir -p objs
+	mkdir -p objs/settings objs/generators
 	chmod 0644 source/* buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
 
@@ -55,4 +55,4 @@ push: $(APP)
 	git pull ; git add . ; git commit ; git push
 
 install: $(APP)
-	$(APP) ~/temp
+	$(APP) -v ~/temp

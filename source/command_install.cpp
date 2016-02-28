@@ -16,14 +16,6 @@ namespace command_install
 
 using namespace utils;
 
-   std::string alphanumericfilter(std::string s)
-   {
-      std::string validchars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      size_t pos;
-      while((pos = s.find_first_not_of(validchars)) != std::string::npos)
-         s.erase(pos,1);
-      return s;
-   }
 
    void validateImage(const params & p,const sh_drunnercfg & settings, std::string imagename)
    {

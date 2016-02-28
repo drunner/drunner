@@ -2,6 +2,17 @@
 #define __SH_VARIABLES_H
 
 
+
+   std::string alphanumericfilter(std::string s)
+   {
+      std::string validchars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      size_t pos;
+      while((pos = s.find_first_not_of(validchars)) != std::string::npos)
+         s.erase(pos,1);
+      return s;
+   }
+   
+
    class sh_variables : public settingsbash
    {
    public:
