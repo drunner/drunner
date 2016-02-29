@@ -82,7 +82,7 @@ using namespace utils;
             logmsg(kLERROR,"Couldn't copy the service files. You will need to reinstall the service.",p);
 
          // read in servicecfg.sh
-         sh_servicecfg servicecfg(p,settings,drd);
+         sh_servicecfg servicecfg(p,drd);
 
          // write out variables.sh
          sh_variables variables(p,settings,drd,servicecfg,servicename,imagename,hostIP,serviceTempDir);

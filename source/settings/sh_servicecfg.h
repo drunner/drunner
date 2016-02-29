@@ -8,7 +8,6 @@
       // read ctor
       sh_servicecfg(
          const params & p,
-         const sh_drunnercfg & settings,
          std::string path
          )
          :  settingsbash(p,path+"/servicecfg.sh")

@@ -11,7 +11,7 @@
          s.erase(pos,1);
       return s;
    }
-   
+
 
    class sh_variables : public settingsbash
    {
@@ -29,7 +29,6 @@
       // writing ctor
       sh_variables(
          const params & p,
-         const sh_drunnercfg & settings,
          std::string path,
          const sh_servicecfg & servicecfg,
          std::string servicename,
