@@ -5,7 +5,8 @@ CXX=bin/colorgcc.pl
 RM=rm -f
 INC=-Isource -Ibuildnum -Isource/settings -Isource/generators
 
-CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC)
+BOOSTSTATIC=-pthread -DBOOST_ALL_NO_LIB=1
+CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC) $(BOOSTSTATIC)
 LDFLAGS=-lboost_filesystem -lboost_system
 LDLIBS=
 

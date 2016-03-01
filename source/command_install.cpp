@@ -85,7 +85,7 @@ using namespace utils;
          sh_servicecfg servicecfg(p,drd);
 
          // write out variables.sh
-         sh_variables variables(p,settings,drd,servicecfg,servicename,imagename,hostIP,serviceTempDir);
+         sh_variables variables(p,drd,servicecfg,servicename,imagename,hostIP,serviceTempDir);
 
          // make sure we have the latest of all exra containers.
          std::vector<std::string> extracontainers;
