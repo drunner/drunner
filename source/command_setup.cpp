@@ -59,9 +59,6 @@ namespace command_setup
       if (!settings.writeSettings())
          logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
 
-      // create the support directory (e.g. for validator-image)
-      utils::makedirectory( settings.getPath_Support(),p);
-
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
       int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
@@ -98,6 +95,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create services and support directories
       utils::makedirectory(settings.getPath_Services(),p);
+      utils::makedirectory(settings.getPath_Support(),p);
       generate_validator_image(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------

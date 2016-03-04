@@ -254,7 +254,7 @@ namespace utils
    bool isInstalled()
    {
       std::string rootpath = get_exepath();
-      return (boost::filesystem::exists(rootpath + "/" + "config.sh"));
+      return (boost::filesystem::exists(rootpath + "/" + "drunnercfg.sh"));
    }
 
 
