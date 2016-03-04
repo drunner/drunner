@@ -5,10 +5,10 @@ CXX=bin/colorgcc.pl
 RM=rm -f
 INC=-Isource -Ibuildnum -Isource/settings -Isource/generators
 
-BOOSTSTATIC=-pthread -DBOOST_ALL_NO_LIB=1
-CPPFLAGS=-g -Wall -std=c++11 $(BUILD_NUMBER_LDFLAGS) $(INC) $(BOOSTSTATIC)
-LDFLAGS=-lboost_filesystem -lboost_system
-LDLIBS=
+BOOSTSTATIC=-static -pthread
+CPPFLAGS=-Wall -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
+LDFLAGS=-static
+LDLIBS=-lboost_filesystem -lboost_system
 
 OBJECTS_DIR=objs
 SRCS=$(shell find source -maxdepth 2 -name "*.cpp")
