@@ -82,7 +82,7 @@ function utils_export {
 
 )EOF";
 
-   generate(supportpath+"/utils.sh",p,vdata);
+   generate(supportpath+"/utils.sh",p,S_ALLREAD,vdata);
 }
 
 #endif
