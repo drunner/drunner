@@ -49,7 +49,6 @@ namespace command_setup
       // create rootpath if it doesn't exist.
       utils::makedirectory(rootpath,p);
       utils::makedirectory(rootpath+"/temp/services",p);
-
       // -----------------------------------------------------------------------------
       // now that rootpath is created we can get concrete path to it.
       rootpath = utils::getcanonicalpath(rootpath);
@@ -59,6 +58,9 @@ namespace command_setup
       sh_drunnercfg settings(p,rootpath);
       if (!settings.writeSettings())
          logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
+
+      // create the support directory (e.g. for validator-image)
+      utils::makedirectory( settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
