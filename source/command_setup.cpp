@@ -47,8 +47,8 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      utils::makedirectory(rootpath,p);
-      utils::makedirectory(rootpath+"/temp/services",p);
+      utils::makedirectory(rootpath,p,S_700);
+      //utils::makedirectory(rootpath+"/temp/services",p);
       // -----------------------------------------------------------------------------
       // now that rootpath is created we can get concrete path to it.
       rootpath = utils::getcanonicalpath(rootpath);
@@ -94,8 +94,8 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create services and support directories
-      utils::makedirectory(settings.getPath_Services(),p);
-      utils::makedirectory(settings.getPath_Support(),p);
+      utils::makedirectory(settings.getPath_Services(),p,S_700);
+      utils::makedirectory(settings.getPath_Support(),p,S_700);
       generate_validator_image(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------

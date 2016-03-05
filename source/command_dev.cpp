@@ -1,5 +1,4 @@
 #include "command_dev.h"
-#include "utils.h"
 #include "logmsg.h"
 #include "settingsbash.h"
 #include "utils.h"

@@ -66,15 +66,11 @@ using namespace utils;
       {
          // create service's drunner directory on host.
          std::string drd=targetdir+"/drunner";
-         utils::makedirectory(drd,p);
-         if (0!= chmod(drd.c_str(), S_IRWXU | S_IRWXG	| S_IRWXO )) // http://linux.die.net/include/sys/stat.h
-            logmsg(kLERROR,"Unable to set permissions on "+drd);
+         utils::makedirectory(drd,p, S_777 );
 
          // create service's temp directory
          std::string tmpdir=targetdir+"/temp";
-         utils::makedirectory(tmpdir,p,S_IRWXU | S_IRWXG	| S_IRWXO);
-         //std::string serviceTempDir=settings.getPath_TempServices()+"/"+servicename;
-         //utils::makedirectory(serviceTempDir,p);
+         utils::makedirectory(tmpdir,p,S_777);
 
          // copy files to service directory on host.
          std::string op;
@@ -87,7 +83,7 @@ using namespace utils;
          sh_servicecfg servicecfg(p,drd);
 
          // write out variables.sh
-         sh_variables variables(p,drd,servicecfg,servicename,imagename,hostIP,serviceTempDir);
+         sh_variables variables(p,drd,servicecfg,servicename,imagename,hostIP,tmpdir);
 
          // make sure we have the latest of all exra containers.
          std::vector<std::string> extracontainers;

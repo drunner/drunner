@@ -16,7 +16,7 @@ namespace utils
    std::string getcanonicalpath(std::string path);
 
    eResult mkdirp(std::string path);
-   void makedirectory(const std::string & d, const params & p);
+   void makedirectory(const std::string & d, const params & p, mode_t mode);
    void deltree(const std::string & s,const params & p);
 
    bool fileexists (const std::string& name);

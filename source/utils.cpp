@@ -270,7 +270,7 @@ namespace utils
    }
 
 
-   void makedirectory(const std::string & d, const params & p)
+   void makedirectory(const std::string & d, const params & p, mode_t mode)
    {
       eResult rslt = utils::mkdirp(d);
       if (rslt==kRError)
@@ -279,6 +279,10 @@ namespace utils
          logmsg(kLDEBUG,"Created "+d,p);
       if (rslt==kRNoChange)
          logmsg(kLDEBUG,d+" exists. Unchanged.",p);
+
+      if (chmod(d.c_str(), mode)!=0)
+         logmsg(kLERROR, "Unable to change permissions on "+d,p);
+         //logmsg(kLDEBUG,"Created "+fullpath,p);
    }
 
    void deltree(const std::string & s,const params & p)

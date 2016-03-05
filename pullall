@@ -3,6 +3,7 @@
 docker pull alpine
 docker pull debian
 docker pull kitematic/minecraft
+docker pull phusion/baseimage
 docker pull drunner/helloworld
 docker pull drunner/simplesecrets
 docker pull drunner/ddev
