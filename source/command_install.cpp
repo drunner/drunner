@@ -22,7 +22,8 @@ using namespace utils;
       if (!utils::fileexists(settings.getPath_Root())) logmsg(kLERROR,"ROOTPATH not set.",p);
 
       std::string op;
-      int rval = utils::bashcommand("docker run --rm -v \""+settings.getPath_Support()+
+      int rval = utils::bashcommand(
+         "docker run --rm -v \""+settings.getPath_Support()+
          ":/support\" \""+imagename+"\" /support/validator-image 2>&1",op);
 
       if (rval!=0)

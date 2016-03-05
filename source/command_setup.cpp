@@ -95,7 +95,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create services and support directories
       utils::makedirectory(settings.getPath_Services(),p,S_700);
-      utils::makedirectory(settings.getPath_Support(),p,S_700);
+      utils::makedirectory(settings.getPath_Support(),p,S_ALLEXEC);
       generate_validator_image(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------

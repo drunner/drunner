@@ -9,6 +9,10 @@ void generate(
    const std::string & content
 )
 {
+   // for now we force the generation. In future should check
+   // whether any changes have been made.
+   utils::delfile(fullpath,p);
+
    std::string op;
    std::ofstream ofs;
    ofs.open(fullpath);

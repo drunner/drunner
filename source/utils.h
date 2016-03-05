@@ -18,6 +18,7 @@ namespace utils
    eResult mkdirp(std::string path);
    void makedirectory(const std::string & d, const params & p, mode_t mode);
    void deltree(const std::string & s,const params & p);
+   void delfile(const std::string & fullpath, const params & p);
 
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);

@@ -6,7 +6,7 @@
 
 // some statics.
 
-static const mode_t S_ALLEXEC = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+static const mode_t S_ALLEXEC = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 static const mode_t S_ALLREAD = S_IRUSR | S_IRGRP | S_IROTH;
 static const mode_t S_777  = S_IRWXU | S_IRWXG	| S_IRWXO;
 static const mode_t S_700  = S_IRWXU;

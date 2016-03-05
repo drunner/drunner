@@ -288,16 +288,25 @@ namespace utils
    void deltree(const std::string & s,const params & p)
    {
       std::string op;
-      if (!fileexists(s))
+      if (fileexists(s))
       {
-         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
-      }
-      else
-      {
-         if (bashcommand("rm -rf "+s, op) != 0)
-            logmsg(kLERROR, "Unable to remove existing support directory at "+s,p);
+         if (bashcommand("rm -rf "+s+" 2>&1", op) != 0)
+            logmsg(kLERROR, "Unable to remove existing support directory at "+s+" - "+op,p);
          logmsg(kLDEBUG,"Recursively deleted "+s,p);
       }
+      else
+         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
+   }
+
+   void delfile(const std::string & fullpath,const params & p)
+   {
+      if (utils::fileexists(fullpath))
+         {
+         std::string op;
+         if (bashcommand("rm -f "+fullpath+" 2>&1", op) != 0)
+            logmsg(kLERROR, "Unable to remove "+fullpath + " - "+op,p);
+         logmsg(kLDEBUG,"Deleted "+fullpath);
+         }
    }
 
    std::string getHostIP(const params & p )
