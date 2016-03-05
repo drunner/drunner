@@ -71,8 +71,10 @@ using namespace utils;
             logmsg(kLERROR,"Unable to set permissions on "+drd);
 
          // create service's temp directory
-         std::string serviceTempDir=settings.getPath_TempServices()+"/"+servicename;
-         utils::makedirectory(serviceTempDir,p);
+         std::string tmpdir=targetdir+"/temp";
+         utils::makedirectory(tmpdir,p,S_IRWXU | S_IRWXG	| S_IRWXO);
+         //std::string serviceTempDir=settings.getPath_TempServices()+"/"+servicename;
+         //utils::makedirectory(serviceTempDir,p);
 
          // copy files to service directory on host.
          std::string op;

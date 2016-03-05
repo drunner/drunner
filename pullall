@@ -1,0 +1,15 @@
+#!/bin/bash
+
+docker pull alpine
+docker pull debian
+docker pull kitematic/minecraft
+docker pull drunner/helloworld
+docker pull drunner/simplesecrets
+docker pull drunner/ddev
+docker pull drunner/dtest
+docker pull drunner/install-rootutils
+docker pull drunner/baseimage-alpine
+docker pull drunner/instll-support
+docker pull drunner/samba
+docker pull drunner/minecraft
+docker pull drunner/install
