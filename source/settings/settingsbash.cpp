@@ -95,46 +95,34 @@ const sbelement & settingsbash::getElement(const std::string & key) const
       if (utils::stringisame(mElements[i].getKey(),key))
          return mElements[i];
    logmsg(kLERROR,"Couldn't find key "+key,p);
+   return sbelement("ERROR","ERROR");
 }
 
 std::string settingsbash::getString(const std::string &  key) const
 {
    return getElement(key).getString();
 }
-bool settingsbash::getSettingb(const std::string &  key) const
+bool settingsbash::getBool(const std::string &  key) const
 {
    return getElement(key).getBool();
 }
-void settingsbash::getSettingv(const std::string &  key, std::vector<std::string> & vec) const
+void settingsbash::getVec(const std::string &  key, std::vector<std::string> & vec) const
 { // needs to be compatible with bash scripts!!
    getElement(key).getVec(vec);
 }
-
-void settingsbash::setSetting(const std::string &  key, const std::string & value)
-{
-   mSettings[key]='\"'+value+'\"';//dequote(value,'\"');
-}
-void settingsbash::setSettingb(const std::string &  key, bool value)
-{
-   mSettings[key] = value ? "yes" : "no";
-}
-void settingsbash::setSettingv(const std::string &  key, const std::vector<std::string> vec)
-{
-}
-
 
 std::string settingsbash::getPath() const
 {
    return mPath;
 }
 
-sbelement(const std::string & bashline)
+sbelement::sbelement(const std::string & bashline)
 {
    std::string left,right;
    if (parse(bashline,left,right))
       {
          mKey = left;
-         mValue = dequote(trim(right),'\"');
+         mValue = dequote(utils::trim(right),'\"');
          mType = kString;
 
          // sniff type.
@@ -150,21 +138,21 @@ sbelement(const std::string & bashline)
       }
 }
 
-void sbelement::sbelement(const std::string & key , bool b)
+sbelement::sbelement(const std::string & key , bool b)
 {
    mKey = key;
    mValue = b ? "yes" : "no";
    mType = kBool;
 }
 
-void sbelement::sbelement(const std::string & key , const std::string & s)
+sbelement::sbelement(const std::string & key , const std::string & s)
 {
    mKey=key;
    mValue=s;
    mType=kString;
 }
 
-void sbelment::sbelement(const std::string & key , const std::vector<std::sting> & v)
+sbelement::sbelement(const std::string & key , const std::vector<std::string> & vec)
 {
    std::stringstream ss;
    ss << "(";
@@ -183,11 +171,11 @@ bool sbelement::getBool() const
 {
    return istrue(mValue);
 }
-std::string sbelement::getString const
+std::string sbelement::getString() const
 {
    return mValue;
 }
-void sbelement::getVec( std::vector<std::string> & v ) const
+void sbelement::getVec( std::vector<std::string> & vec ) const
 {
    std::string astr=dequote(dequote(mValue,'('),')');
    std::stringstream ss(astr);
