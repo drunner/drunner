@@ -17,7 +17,7 @@ settingsbash::settingsbash(const params & par, std::string settingspath) : mPath
 {
 }
 
-bool settingsbash::parse(std::string line, std::string & left, std::string & right) const
+bool sbelement::parse(std::string line, std::string & left, std::string & right) const
 {
    std::size_t end=0;
    if ((end=line.find("=",0)) != std::string::npos)
@@ -31,7 +31,7 @@ bool settingsbash::parse(std::string line, std::string & left, std::string & rig
    return false;
 }
 
-std::string settingsbash::dequote(const std::string & s, char c) const
+std::string sbelement::dequote(const std::string & s, char c) const
 {
    std::string ss(s);
    if (ss.length()==0) return ss;
@@ -50,11 +50,8 @@ bool settingsbash::readSettings()
    std::ifstream configfile( mPath.c_str() );
    while (std::getline(configfile, line))
    {
-      if (parse(line,left,right))
-         {
-         if (mSettings.find(left)!=mSettings.end()) // we only update entries, not add random stuff.
-            mSettings[left]=dequote(right,'\"');
-         }
+      sbelement sbe(line);
+      mElements.push_back(sbe);
    }
    configfile.close();
 
@@ -79,51 +76,43 @@ bool settingsbash::writeSettings(const std::string & fullpath) const
    ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
 
   // iterate through map. C++11 style.
-  for (auto const &entry : mSettings) {
-     ofile << entry.first << "=\"" << entry.second << "\"" << std::endl;
+  for (auto const &entry : mElements) {
+     ofile << entry.getBashLine() << std::endl;
   }
   ofile.close();
   return true;
 }
 
-bool settingsbash::istrue(const std::string & s) const
+bool sbelement::istrue(const std::string & s) const
 {
    if (s.length()==0) return false;
-   return (tolower(s[0])=='y' || s[0]=='1' || tolower(s[0])=='t');
+   return (tolower(s[0])=='y' || tolower(s[0])=='t');
 }
 
-void settingsbash::checkkeyexists(const std::string & key) const
+const sbelement & settingsbash::getElement(const std::string & key) const
 {
-   if (mSettings.find(key)==mSettings.end())
-      logmsg(kLERROR,"Couldn't find setting "+key,p);
+   for (uint i=0;i<mElements.size();++i)
+      if (utils::stringisame(mElements[i].getKey(),key))
+         return mElements[i];
+   logmsg(kLERROR,"Couldn't find key "+key,p);
 }
 
-std::string settingsbash::getSetting(const std::string &  key) const
+std::string settingsbash::getString(const std::string &  key) const
 {
-   checkkeyexists(key);
-   return mSettings.at(key);
+   return getElement(key).getString();
 }
 bool settingsbash::getSettingb(const std::string &  key) const
 {
-   checkkeyexists(key);
-   return istrue(mSettings.at(key));
+   return getElement(key).getBool();
 }
 void settingsbash::getSettingv(const std::string &  key, std::vector<std::string> & vec) const
 { // needs to be compatible with bash scripts!!
-   checkkeyexists(key);
-
-   std::string astr=dequote(dequote(getSetting(key),'('),')');
-   std::stringstream ss(astr);
-   while (ss.good())
-      {
-         ss >> astr;
-         vec.push_back(dequote(astr,'\"'));
-      }
+   getElement(key).getVec(vec);
 }
 
 void settingsbash::setSetting(const std::string &  key, const std::string & value)
 {
-   mSettings[key]=dequote(value,'\"');
+   mSettings[key]='\"'+value+'\"';//dequote(value,'\"');
 }
 void settingsbash::setSettingb(const std::string &  key, bool value)
 {
@@ -131,19 +120,83 @@ void settingsbash::setSettingb(const std::string &  key, bool value)
 }
 void settingsbash::setSettingv(const std::string &  key, const std::vector<std::string> vec)
 {
-   std::stringstream ss;
-   ss << key << "=(";
-   for (uint i=0;i<vec.size();++i)
-   {
-      if (i>0) ss << " ";
-      ss << "\"" << vec[i] << "\"";
-   }
-   ss << ")";
-   setSetting(key,ss.str());
 }
 
 
 std::string settingsbash::getPath() const
 {
    return mPath;
+}
+
+sbelement(const std::string & bashline)
+{
+   std::string left,right;
+   if (parse(bashline,left,right))
+      {
+         mKey = left;
+         mValue = dequote(trim(right),'\"');
+         mType = kString;
+
+         // sniff type.
+         if (utils::stringisame(mValue,"yes") ||
+            utils::stringisame(mValue,"no") ||
+            utils::stringisame(mValue,"true") ||
+            utils::stringisame(mValue,"false") )
+            mType=kBool;
+
+         if (mValue.find('(')!=std::string::npos ||
+            mValue.find(')')!=std::string::npos)
+            mType=kVec;
+      }
+}
+
+void sbelement::sbelement(const std::string & key , bool b)
+{
+   mKey = key;
+   mValue = b ? "yes" : "no";
+   mType = kBool;
+}
+
+void sbelement::sbelement(const std::string & key , const std::string & s)
+{
+   mKey=key;
+   mValue=s;
+   mType=kString;
+}
+
+void sbelment::sbelement(const std::string & key , const std::vector<std::sting> & v)
+{
+   std::stringstream ss;
+   ss << "(";
+   for (uint i=0;i<vec.size();++i)
+   {
+      if (i>0) ss << " ";
+      ss << "\"" << vec[i] << "\"";
+   }
+   ss << ")";
+   mKey=key;
+   mValue=ss.str();
+   mType=kVec;
+}
+
+bool sbelement::getBool() const
+{
+   return istrue(mValue);
+}
+std::string sbelement::getString const
+{
+   return mValue;
+}
+void sbelement::getVec( std::vector<std::string> & v ) const
+{
+   std::string astr=dequote(dequote(mValue,'('),')');
+   std::stringstream ss(astr);
+   while (ss.good())
+      {
+         ss >> astr;
+         utils::trim(astr);
+         std::string element=dequote(astr,'\"');
+         if (element.length()>0)
+            vec.push_back(element);
+      }
 }

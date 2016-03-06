@@ -12,13 +12,13 @@
 
       sh_ddev(const params & p, std::string pwd) : settingsbash(p,pwd+"/ddev.sh")
       {
-         setSetting("BUILDNAME","undefined");
-         setSettingb("DSERVICE",false);
-         setSetting("DEVSERVICENAME","undefined");
+         setSetting( sbelement("BUILDNAME","undefined") );
+         setSetting( sbelement("DSERVICE",false) );
+         setSetting( sbelement("DEVSERVICENAME","undefined") );
 
          isdService=readSettings();
-         buildname=getSetting("BUILDNAME");
-         devservicename=getSetting("DEVSERVICENAME");
+         buildname=getString("BUILDNAME");
+         devservicename=getString("DEVSERVICENAME");
          if (isdService)
          {
             logmsg(kLDEBUG, "DIRECTORY:        "+pwd,p);

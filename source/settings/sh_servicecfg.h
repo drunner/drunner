@@ -13,8 +13,8 @@
          :  settingsbash(p,path+"/servicecfg.sh")
       {
          std::vector<std::string> nothing;
-         setSettingv("VOLUMES",nothing);
-         setSettingv("EXTRACONTAINERS",nothing);
+         setSetting(sbelement("VOLUMES",nothing));
+         setSetting(sbelement("EXTRACONTAINERS",nothing));
 
          bool readok = readSettings();
          if (!readok)
@@ -22,9 +22,9 @@
       } // ctor
 
       void getVolumes(std::vector<std::string> & volumes) const
-         {getSettingv("VOLUMES",volumes);}
+         {getVec("VOLUMES",volumes);}
       void getExtraContainers(std::vector<std::string> & extracontainers) const
-         {getSettingv("EXTRACONTAINERS",extracontainers);}
+         {getVec("EXTRACONTAINERS",extracontainers);}
    }; //class
 
 
