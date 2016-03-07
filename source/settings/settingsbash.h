@@ -57,7 +57,7 @@ private:
    const std::string mPath;
 //   std::map< std::string, std::string > mSettings;
 //   void checkkeyexists(const std::string & key) const;
-   const sbelement & getElement(const std::string & key) const;
+   sbelement getElement(const std::string & key) const;
 
    const params & p;
    std::vector<sbelement> mElements;

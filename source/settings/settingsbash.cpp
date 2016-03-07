@@ -51,12 +51,18 @@ bool settingsbash::readSettings()
    while (std::getline(configfile, line))
    {
       sbelement sbe(line);
-      mElements.push_back(sbe);
+      setSetting(sbe);
    }
    configfile.close();
 
    return true;
 }
+
+void settingsbash::setSetting(const sbelement & value)
+{
+   mElements.push_back(value);
+}
+
 
 bool settingsbash::writeSettings(const std::string & fullpath) const
 {
@@ -89,7 +95,7 @@ bool sbelement::istrue(const std::string & s) const
    return (tolower(s[0])=='y' || tolower(s[0])=='t');
 }
 
-const sbelement & settingsbash::getElement(const std::string & key) const
+sbelement settingsbash::getElement(const std::string & key) const
 {
    for (uint i=0;i<mElements.size();++i)
       if (utils::stringisame(mElements[i].getKey(),key))
@@ -187,4 +193,17 @@ void sbelement::getVec( std::vector<std::string> & vec ) const
          if (element.length()>0)
             vec.push_back(element);
       }
+}
+
+std::string sbelement::getBashLine() const // {return mKey+"="+mValue;}
+{
+   switch (mType)
+   {
+      case kBool:
+         return mKey+"="+mValue;
+      case kVec:
+         return mKey+"="+mValue;
+      default:
+         return mKey+"=\""+mValue+"\"";
+   };
 }
