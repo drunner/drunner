@@ -17,7 +17,7 @@ OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
 
-$(APP): $(OBJS)
+$(APP): buildnum/build_number.h $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
@@ -40,9 +40,7 @@ dist-clean: clean
 buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	@echo
 	@echo Bumping build number..
-	buildnum/make_buildnum.sh
-
-
+	cd buildnum ; ./make_buildnum.sh
 
 permissions:
 	mkdir -p objs/settings objs/generators
