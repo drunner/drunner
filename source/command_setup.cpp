@@ -33,9 +33,6 @@ namespace command_setup
 
    int setup(const params & p)
    {
-      std::string ROOTUTILIMAGE="drunner/install-rootutils";
-      std::string DRUNNERINSTALLURL="https://raw.githubusercontent.com/drunner/install/master/drunner-install";
-
       if (p.getArgs().size()<1)
          logmsg(kLERROR,"Usage:\n   drunner setup ROOTPATH",p);
 
@@ -48,7 +45,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
       utils::makedirectory(rootpath,p,S_700);
-      //utils::makedirectory(rootpath+"/temp/services",p);
+
       // -----------------------------------------------------------------------------
       // now that rootpath is created we can get concrete path to it.
       rootpath = utils::getcanonicalpath(rootpath);
@@ -68,15 +65,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create bin directory
       std::string bindir = utils::get_usersbindir();
-      if (!boost::filesystem::exists(bindir))
-      {
-         logmsg(kLINFO,"Creating "+bindir,p.getLogLevel());
-         if (utils::mkdirp(bindir)==kRError)
-            logmsg(kLERROR,"Couldn't create ~/bin.",p);
-         if (!utils::fileexists(bindir))
-            logmsg(kLERROR,"Failed to create ~/bin.",p);
-      } else
-         logmsg(kLDEBUG,bindir+" exists and was left unchanged.",p);
+      utils::makedirectory( bindir, p, S_700 );
 
       // -----------------------------------------------------------------------------
       // create symlink
@@ -90,6 +79,7 @@ namespace command_setup
          logmsg(kLERROR,"Failed to create symbolic link for drunner.",p);
 
       // get latest root util image.
+      std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
       pullImage(p,settings,settings.getRootUtilImage());
 
       // -----------------------------------------------------------------------------

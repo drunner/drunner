@@ -46,6 +46,7 @@ eCommand params::parsecmd(std::string s) const
    commandlist["enter"]=c_enter;
    commandlist["status"]=c_status;
    commandlist["build"]=c_build;
+   commandlist["unittest"]=c_unittest;
 
    it=commandlist.find(s);
    if (it==commandlist.end())
@@ -53,13 +54,24 @@ eCommand params::parsecmd(std::string s) const
    return it->second;
 }
 
+void params::setdefaults()
+{
+   mVersion=VERSION_STR;
+   mLogLevel=kLINFO;
+   mDisplayServiceOutput=true;
+   mCmd=c_UNDEFINED;
+}
+
+params::params(eLogLevel ll)
+{
+   setdefaults();
+   mLogLevel=ll;
+}
+
 // Parse command line parameters.
 params::params(int argc, char **argv)
 {
-mVersion=VERSION_STR;
-mLogLevel=kLINFO;
-mDisplayServiceOutput=true;
-mCmd=c_UNDEFINED;
+setdefaults();
 
 // parse command line stuff.
 int c;
@@ -113,19 +125,27 @@ while (1)
    }
 
    // drunner with no command.
-   bool inst=utils::isInstalled();
-   if (optind>=argc)
-      {
-      if (inst)
-         showhelp( *this, "Please enter a command.");
-      else
-         std::cerr << "Installation requires ROOTPATH to be specified."<<std::endl;
-         showhelp( *this, "Installation requires ROOTPATH to be specified." );
-      }
-
-   // confirm the command is valid and convert to enum.
    int opx=optind;
-   mCmd = inst ? parsecmd(argv[opx++]) : c_setup;
+   if (utils::isInstalled())
+   {
+      if (opx>=argc)
+         showhelp( *this, "Please enter a command.");
+      mCmd=parsecmd(argv[opx++]);
+   } else {
+      // NOT installed.
+      if (opx>=argc)
+         showhelp( *this, R"EOF(Not yet installed.
+Please provide command line argument:
+ 1) the ROOTPATH to install to, or
+ 2) unittest to run unittests
+)EOF");
+      if (utils::stringisame(argv[opx],"unittest"))
+      {
+         ++opx;
+         mCmd=c_unittest;
+      } else
+         mCmd=c_setup;
+   }
 
    // store the arguments to the command.
    for (int i=opx;i<argc;++i)

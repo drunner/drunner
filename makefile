@@ -3,10 +3,10 @@ CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/settings -Isource/generators
+INC=-Isource -Ibuildnum -Isource/settings -Isource/generators -Isource/tests
 
 BOOSTSTATIC=-static -pthread
-CPPFLAGS=-Wall -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
+CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-static
 LDLIBS=-lboost_filesystem -lboost_system
 
@@ -43,7 +43,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	cd buildnum ; ./make_buildnum.sh
 
 permissions:
-	mkdir -p objs/settings objs/generators
+	mkdir -p objs/settings objs/generators objs/tests
 	chmod 0644 source/* buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
 

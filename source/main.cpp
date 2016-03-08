@@ -14,6 +14,7 @@
 #include "sh_drunnercfg.h"
 #include "showhelp.h"
 #include "main.h"
+#include "unittests.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -80,6 +81,18 @@ void mainroutines::process(const params & p)
       return;
    }
 
+   // allow unit tests to be run directly from installer.
+   if (p.getCommand()==c_unittest)
+   {
+      // todo: pass args through to catch.
+      // int result = Catch::Session().run( argc, argv );
+      int result = UnitTest();
+      if (result!=0)
+         logmsg(kLERROR,"Unit tests failed.",p);
+      logmsg(kLINFO,"All unit tests passed.",p);
+      return;
+   }
+
    if (!utils::isInstalled())
       showhelp(p,"Please run "+utils::get_exename()+" setup ROOTPATH");
 
@@ -143,6 +156,7 @@ void mainroutines::process(const params & p)
             command_dev::build(p,settings);
          else
             command_dev::build(p,settings,p.getArgs()[0]);
+         break;
       }
 
       default:

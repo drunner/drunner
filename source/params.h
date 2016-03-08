@@ -9,6 +9,7 @@
 class params {
 public:
    params(int argc, char **argv);
+   params(eLogLevel ll);
    std::string substitute( const std::string & source ) const;
 
    const std::string & getVersion() const             {return mVersion;}
@@ -31,6 +32,7 @@ private:
    bool mDisplayServiceOutput;
    eCommand parsecmd(std::string s) const;
    params();
+   void setdefaults();
 };
 
 #endif

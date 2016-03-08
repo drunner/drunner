@@ -45,6 +45,7 @@ enum eCommand {
    c_enter,
    c_status,
    c_build,
+   c_unittest,
 };
 
 
