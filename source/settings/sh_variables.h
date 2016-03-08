@@ -36,8 +36,8 @@ public:
       :  settingsbash(p,path+"/variables.sh")
    {
       std::vector<std::string> volumes, extracontainers,dockervols,dockeropts;
-      servicecfg.getVolumes(volumes);
-      servicecfg.getExtraContainers(extracontainers);
+      volumes = servicecfg.getVolumes();
+      extracontainers = servicecfg.getExtraContainers();
 
       for (uint i=0;i<volumes.size();++i)
          {
@@ -50,15 +50,15 @@ public:
       for (uint i=0;i<extracontainers.size();++i)
          logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
 
-      setSetting(sbelement("VOLUMES",volumes));
-      setSetting(sbelement("EXTRACONTAINERS",extracontainers));
-      setSetting(sbelement("SERVICENAME",servicename));
-      setSetting(sbelement("IMAGENAME",imagename));
-      setSetting(sbelement("INSTALLTIME",utils::getTime()));
-      setSetting(sbelement("HOSTIP",hostIP));
-      setSetting(sbelement("SERVICETEMPDIR",serviceTempDir));
-      setSetting(sbelement("DOCKERVOLS",dockervols));
-      setSetting(sbelement("DOCKEROPTS",dockeropts));
+      setSetting(sb_vec("VOLUMES",volumes));
+      setSetting(sb_vec("EXTRACONTAINERS",extracontainers));
+      setSetting(sb_string("SERVICENAME",servicename));
+      setSetting(sb_string("IMAGENAME",imagename));
+      setSetting(sb_string("INSTALLTIME",utils::getTime()));
+      setSetting(sb_string("HOSTIP",hostIP));
+      setSetting(sb_string("SERVICETEMPDIR",serviceTempDir));
+      setSetting(sb_vec("DOCKERVOLS",dockervols));
+      setSetting(sb_vec("DOCKEROPTS",dockeropts));
       writeSettings();
    }
 }; // sh_variables

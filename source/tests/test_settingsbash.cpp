@@ -8,8 +8,8 @@ TEST_CASE("read/write bool works","[settingsbash]") {
 
    SECTION("Test true functions")
    {
-      sbelement e("bool",true);
-      REQUIRE(e.getBashLine()=="bool=yes");
+      sb_bool e("bool",true);
+      REQUIRE(e.getBashLine().str()=="bool=yes");
 
       sb.setSetting(e);
       REQUIRE(sb.getBool("bool"));
@@ -17,8 +17,8 @@ TEST_CASE("read/write bool works","[settingsbash]") {
 
    SECTION("Test false functions")
    {
-      sbelement e("bool",false);
-      REQUIRE(e.getBashLine() == "bool=no");
+      sb_bool e("bool",false);
+      REQUIRE(e.getBashLine().str() == "bool=no");
 
       sb.setSetting(e);
       REQUIRE_FALSE(sb.getBool("bool"));
@@ -26,11 +26,11 @@ TEST_CASE("read/write bool works","[settingsbash]") {
 
    SECTION("Test bunch'o'Stuff")
    {
-      sb.setSetting(sbelement("ROOTPATH","/home/j"));
-      sb.setSetting(sbelement("ROOTUTILIMAGE","drunner/install-rootutils"));
-      sb.setSetting(sbelement("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF"));
-      sb.setSetting(sbelement("DRUNNERINSTALLTIME",utils::getTime()));
-      sb.setSetting(sbelement("PULLIMAGES","yes"));
+      sb.setSetting(sb_string("ROOTPATH","/home/j"));
+      sb.setSetting(sb_string("ROOTUTILIMAGE","drunner/install-rootutils"));
+      sb.setSetting(sb_string("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF"));
+      sb.setSetting(sb_string("DRUNNERINSTALLTIME",utils::getTime()));
+      sb.setSetting(sb_bool("PULLIMAGES",true));
 
       REQUIRE( sb.getString("ROOTUTILIMAGE")=="drunner/install-rootutils" );
    }

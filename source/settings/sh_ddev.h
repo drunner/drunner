@@ -12,9 +12,9 @@
 
       sh_ddev(const params & p, std::string pwd) : settingsbash(p,pwd+"/ddev.sh")
       {
-         setSetting( sbelement("BUILDNAME","undefined") );
-         setSetting( sbelement("DSERVICE",false) );
-         setSetting( sbelement("DEVSERVICENAME","undefined") );
+         setSetting( sb_string("BUILDNAME","undefined") );
+         setSetting( sb_bool("DSERVICE",false) );
+         setSetting( sb_string("DEVSERVICENAME","undefined") );
 
          isdService=readSettings();
          buildname=getString("BUILDNAME");

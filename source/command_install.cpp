@@ -88,7 +88,7 @@ using namespace utils;
 
          // make sure we have the latest of all exra containers.
          std::vector<std::string> extracontainers;
-         servicecfg.getExtraContainers(extracontainers);
+         extracontainers = servicecfg.getExtraContainers();
          for (uint i=0;i<extracontainers.size();++i)
             command_setup::pullImage(p,settings,extracontainers[i]);
 
