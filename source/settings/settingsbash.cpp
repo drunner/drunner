@@ -210,13 +210,14 @@ std::string settingsbash::getPath() const
 
 void settingsbash::setBool(const std::string & key, bool b)
 {
-
+	setSetting(std::make_shared<sb_bool>(sb_bool(key, b)));
 }
 void settingsbash::setString(const std::string & key, const std::string & s )
 {
-
+	setSetting(std::make_shared<sb_string>(sb_string(key, s)));
 }
 void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
 {
-
+	setSetting(std::make_shared<sb_vec>(sb_vec(key, v)));
 }
+
