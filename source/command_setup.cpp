@@ -79,7 +79,7 @@ namespace command_setup
          logmsg(kLERROR,"Failed to create symbolic link for drunner.",p);
 
       // get latest root util image.
-      std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
+      //std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
       pullImage(p,settings,settings.getRootUtilImage());
 
       // -----------------------------------------------------------------------------

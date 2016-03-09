@@ -123,7 +123,8 @@ bool settingsbash::readSettings()
    while (std::getline(configfile, line))
    {
       bashline bl(line);
-      setSetting( bl.getElement() );
+	  if (bl.valid())
+	      setSetting( bl.getElement() );
    }
    configfile.close();
 
