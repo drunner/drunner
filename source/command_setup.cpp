@@ -69,14 +69,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create symlink
-      std::string symtarget=bindir+"/drunner";
-      if (utils::fileexists(symtarget))
-         if (remove(symtarget.c_str())!=0)
-            logmsg(kLERROR,"Couldn't remove stale symlink at "+symtarget,p);
-      std::string cmd = "ln -s " + rootpath + "/drunner" + " " + bindir + "/drunner";
-      std::string op;
-      if ( utils::bashcommand(cmd,op) != 0 )
-         logmsg(kLERROR,"Failed to create symbolic link for drunner.",p);
+	  utils::makesymlink(rootpath + "/drunner", bindir + "/drunner",p);
 
       // get latest root util image.
       //std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;

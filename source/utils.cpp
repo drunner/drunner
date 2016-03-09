@@ -285,6 +285,19 @@ namespace utils
          //logmsg(kLDEBUG,"Created "+fullpath,p);
    }
 
+   void makesymlink(const std::string & file, const std::string & link, const params & p)
+   {
+	if (!utils::fileexists(file))
+		logmsg(kLERROR, "Can't link to " + file + " because it doesn't exist", p);
+	if (utils::fileexists(link))
+		if (remove(link.c_str()) != 0)
+			logmsg(kLERROR, "Couldn't remove stale symlink at " + link, p);
+	std::string cmd = "ln -s " + file + " " + link;
+	std::string op;
+	if (utils::bashcommand(cmd, op) != 0)
+		logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op, p);
+   }
+
    void deltree(const std::string & s,const params & p)
    {
       std::string op;

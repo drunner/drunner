@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <sys/stat.h>
+
 #include "params.h"
 #include "sh_drunnercfg.h"
 
@@ -17,6 +19,7 @@ namespace utils
 
    eResult mkdirp(std::string path);
    void makedirectory(const std::string & d, const params & p, mode_t mode);
+   void makesymlink(const std::string & file, const std::string & link, const params & p);
    void deltree(const std::string & s,const params & p);
    void delfile(const std::string & fullpath, const params & p);
 
