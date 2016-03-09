@@ -84,16 +84,16 @@ bashline::bashline(const std::string & bashline_str)
       {
          key=utils::trim_copy(bashline_str.substr(0,end));
          value=utils::trim_copy(bashline_str.substr(end+1)); //If this is equal to the string length, substr returns an empty string.
+         value = dequote(utils::trim(value), '\"');
          if (key.length()>0 && key[0]=='#')
             key.clear();
-      }
+   }
 }
 
 bashline::bashline(const std::string & k, const std::string & v)
 {
    key = k;
    value = v;
-   value = dequote(utils::trim(value),'\"');
 }
 
 

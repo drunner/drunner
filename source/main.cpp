@@ -159,6 +159,27 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_servicecmd:
+      {
+         if (p.numArgs() < 1)
+            logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
+
+         std::string servicename = p.getArgs()[0];
+         std::string reservedwords = "install backupstart backupend backup restore update enter uninstall obliterate";
+
+         if (p.numArgs() < 2 || utils::stringisame(p.getArgs()[0], "help"))
+            logmsg(kLERROR, "E_NOTIMPL", p); // todo: show service help!
+
+         std::string command = p.getArgs()[1];
+         if (utils::findStringIC(reservedwords, command))
+            logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + servicename + "  instead.", p);
+
+         //std::string op;
+         bashcommand(settings.getPath_Services() + "/" + servicename + "/drunner/servicerunner " + command); // +" ")
+
+         break;
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(

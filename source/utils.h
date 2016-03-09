@@ -34,6 +34,7 @@ namespace utils
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
 
    int bashcommand(std::string command, std::string & output);
+   int bashcommand(std::string command);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");

@@ -32,21 +32,22 @@ eCommand params::parsecmd(std::string s) const
    std::map<std::string, eCommand> commandlist;
    std::map<std::string, eCommand>::iterator it;
 
-   commandlist["setup"]=c_setup;
-   commandlist["clean"]=c_clean;
-   commandlist["list"]=c_list;
-   commandlist["update"]=c_update;
-   commandlist["checkimage"]=c_checkimage;
-   commandlist["backup"]=c_backup;
-   commandlist["restore"]=c_restore;
-   commandlist["install"]=c_install;
-   commandlist["recover"]=c_recover;
-   commandlist["uninstall"]=c_uninstall;
-   commandlist["obliterate"]=c_obliterate;
-   commandlist["enter"]=c_enter;
-   commandlist["status"]=c_status;
-   commandlist["build"]=c_build;
-   commandlist["unittest"]=c_unittest;
+   commandlist["setup"] = c_setup;
+   commandlist["clean"] = c_clean;
+   commandlist["list"] = c_list;
+   commandlist["update"] = c_update;
+   commandlist["checkimage"] = c_checkimage;
+   commandlist["backup"] = c_backup;
+   commandlist["restore"] = c_restore;
+   commandlist["install"] = c_install;
+   commandlist["recover"] = c_recover;
+   commandlist["uninstall"] = c_uninstall;
+   commandlist["obliterate"] = c_obliterate;
+   commandlist["enter"] = c_enter;
+   commandlist["status"] = c_status;
+   commandlist["build"] = c_build;
+   commandlist["unittest"] = c_unittest;
+   commandlist["servicecmd"] = c_servicecmd;
 
    it=commandlist.find(s);
    if (it==commandlist.end())
