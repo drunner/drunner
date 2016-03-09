@@ -176,11 +176,12 @@ bool sb_bool::istrue(const std::string & s) const
    return (tolower(s[0])=='y' || tolower(s[0])=='t');
 }
 
-std::shared_ptr<sbelement> settingsbash::getElement(const std::string & key) const
+std::shared_ptr<const sbelement> settingsbash::getElement(const std::string & key) const
 {
-   for (uint i=0;i<mElements.size();++i)
-      if (utils::stringisame(mElements[i]->getKey(),key))
-         return mElements[i];
+	for (auto const &entry : mElements)
+		if (utils::stringisame(entry->getKey(), key))
+			return entry;
+
    logmsg(kLERROR,"Couldn't find key "+key,p);
    return std::make_shared<sb_string>(sb_string("ERROR","ERROR"));
 }

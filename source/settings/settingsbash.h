@@ -112,7 +112,7 @@ private:
    const std::string mPath;
 //   std::map< std::string, std::string > mSettings;
 //   void checkkeyexists(const std::string & key) const;
-   std::shared_ptr<sbelement> getElement(const std::string & key) const;
+   std::shared_ptr<const sbelement> getElement(const std::string & key) const;
 
    const params & p;
    std::vector<std::shared_ptr<sbelement>> mElements;

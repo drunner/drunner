@@ -61,6 +61,10 @@ public:
       setVec("DOCKEROPTS",dockeropts);
       writeSettings();
    }
+
+   const std::vector<std::string> & getDockerVols() const { return getVec("DOCKERVOLS"); }
+   const std::vector<std::string> & getVolumes()	const { return getVec("VOLUMES"); }
+
 }; // sh_variables
 
 #endif
