@@ -50,15 +50,15 @@ public:
       for (uint i=0;i<extracontainers.size();++i)
          logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
 
-      setSetting(sb_vec("VOLUMES",volumes));
-      setSetting(sb_vec("EXTRACONTAINERS",extracontainers));
-      setSetting(sb_string("SERVICENAME",servicename));
-      setSetting(sb_string("IMAGENAME",imagename));
-      setSetting(sb_string("INSTALLTIME",utils::getTime()));
-      setSetting(sb_string("HOSTIP",hostIP));
-      setSetting(sb_string("SERVICETEMPDIR",serviceTempDir));
-      setSetting(sb_vec("DOCKERVOLS",dockervols));
-      setSetting(sb_vec("DOCKEROPTS",dockeropts));
+      setVec("VOLUMES",volumes);
+      setVec("EXTRACONTAINERS",extracontainers);
+      setString("SERVICENAME",servicename);
+      setString("IMAGENAME",imagename);
+      setString("INSTALLTIME",utils::getTime());
+      setString("HOSTIP",hostIP);
+      setString("SERVICETEMPDIR",serviceTempDir);
+      setVec("DOCKERVOLS",dockervols);
+      setVec("DOCKEROPTS",dockeropts);
       writeSettings();
    }
 }; // sh_variables

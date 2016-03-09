@@ -97,21 +97,20 @@ bashline::bashline(const std::string & k, const std::string & v)
 }
 
 
-sbelement bashline::getElement()
+std::shared_ptr<sbelement> bashline::getElement()
 {
    // sniff type.
    if (utils::stringisame(value,"yes") ||
       utils::stringisame(value,"no") ||
       utils::stringisame(value,"true") ||
       utils::stringisame(value,"false") )
-      return sb_bool(*this);
+      return std::make_shared<sb_bool>( sb_bool(*this) );
 
    if (value.length()>0 && value[0]=='(')
-      return sb_vec(*this);
+      return std::make_shared<sb_vec>( sb_vec(*this) );
 
-   return sb_string(*this);
+   return std::make_shared<sb_string>( sb_string(*this) );
 }
-
 
 
 bool settingsbash::readSettings()
@@ -123,21 +122,25 @@ bool settingsbash::readSettings()
    std::ifstream configfile( mPath.c_str() );
    while (std::getline(configfile, line))
    {
-      sbelement sbe(line);
-      setSetting(sbe);
+      bashline bl(line);
+      setSetting( bl.getElement() );
    }
    configfile.close();
 
    return true;
 }
 
-void settingsbash::setSetting(const sbelement & value)
+void settingsbash::setSetting(std::shared_ptr<sbelement> value)
 {
-   for (uint i=0;i<mElements.size();++i)
-      if (utils::stringisame(mElements[i].getKey(),value.getKey()))
-         mElements[i] = value;
+   auto newelement = value->clone();
 
-   mElements.push_back(value);
+   for (uint i=0;i<mElements.size();++i)
+      if (utils::stringisame(mElements[i]->getKey(),newelement->getKey()))
+      {
+         mElements[i] = newelement;
+         return;
+      }
+   mElements.push_back(newelement);
 }
 
 
@@ -160,7 +163,7 @@ bool settingsbash::writeSettings(const std::string & fullpath) const
 
   // iterate through map. C++11 style.
   for (auto const &entry : mElements) {
-     ofile << entry.getBashLine().str() << std::endl;
+     ofile << entry->getBashLine().str() << std::endl;
   }
   ofile.close();
   return true;
@@ -172,51 +175,48 @@ bool sb_bool::istrue(const std::string & s) const
    return (tolower(s[0])=='y' || tolower(s[0])=='t');
 }
 
-sbelement settingsbash::getElement(const std::string & key) const
+std::shared_ptr<sbelement> settingsbash::getElement(const std::string & key) const
 {
    for (uint i=0;i<mElements.size();++i)
-      if (utils::stringisame(mElements[i].getKey(),key))
+      if (utils::stringisame(mElements[i]->getKey(),key))
          return mElements[i];
    logmsg(kLERROR,"Couldn't find key "+key,p);
-   return sb_string("ERROR","ERROR");
+   return std::make_shared<sb_string>(sb_string("ERROR","ERROR"));
 }
 
-std::string settingsbash::getString(const std::string &  key) const
+const std::vector<std::string> & settingsbash::getVec(const std::string &  key) const
 {
-   return getElement(key).getString();
+   const auto b = dynamic_cast<const sb_vec *>(getElement(key).get());
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.",kLERROR);
+   return b->get();
 }
 bool settingsbash::getBool(const std::string &  key) const
 {
-   return getElement(key).getBool();
-}
-const std::vector<std::string> & settingsbash::getVec(const std::string &  key) const
-{
-   return getElement(key).getVec();
-}
-
-
-const std::vector<std::string> & sbelement::getVec() const
-{ // needs to be compatible with bash scripts!!
-   const sb_vec * b = dynamic_cast<const sb_vec *>(this);
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+mKey+" as string array.",kLERROR);
+   const auto b = dynamic_cast<const sb_bool *>(getElement(key).get());
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.",kLERROR);
    return b->get();
 }
-
-bool sbelement::getBool() const
+std::string settingsbash::getString(const std::string &  key) const
 {
-   const sb_bool * b = dynamic_cast<const sb_bool *>(this);
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+mKey+" as bool.",kLERROR);
-   return b->get();
-}
-
-std::string sbelement::getString() const
-{
-   const sb_string * b = dynamic_cast<const sb_string *>(this);
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+mKey+" as string.",kLERROR);
+   const auto b = dynamic_cast<const sb_string *>(getElement(key).get());
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string.",kLERROR);
    return b->get();
 }
 
 std::string settingsbash::getPath() const
 {
    return mPath;
+}
+
+void settingsbash::setBool(const std::string & key, bool b)
+{
+
+}
+void settingsbash::setString(const std::string & key, const std::string & s )
+{
+
+}
+void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
+{
+
 }

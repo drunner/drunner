@@ -6,10 +6,10 @@
 sh_drunnercfg::sh_drunnercfg(const params & p, std::string rootpath) :
    settingsbash(p,rootpath+"/"+"drunnercfg.sh")
 {
-   setSetting(sb_string("ROOTPATH",rootpath));
-   setSetting(sb_string("ROOTUTILIMAGE","drunner/install-rootutils"));
-   setSetting(sb_string("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF"));
-   setSetting(sb_string("DRUNNERINSTALLTIME",utils::getTime()));
-   setSetting(sb_bool("PULLIMAGES",true));
+   setString("ROOTPATH",rootpath);
+   setString("ROOTUTILIMAGE","drunner/install-rootutils");
+   setString("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
+   setString("DRUNNERINSTALLTIME",utils::getTime());
+   setBool("PULLIMAGES",true);
    mRead=readSettings();
 }

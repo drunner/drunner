@@ -13,8 +13,8 @@
          :  settingsbash(p,path+"/servicecfg.sh")
       {
          std::vector<std::string> nothing;
-         setSetting(sb_vec("VOLUMES"));
-         setSetting(sb_vec("EXTRACONTAINERS"));
+         setVec("VOLUMES",nothing);
+         setVec("EXTRACONTAINERS",nothing);
 
          bool readok = readSettings();
          if (!readok)

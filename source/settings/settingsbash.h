@@ -1,4 +1,5 @@
 #include <map>
+#include <memory>
 
 #include "params.h"
 
@@ -14,6 +15,7 @@ class sbelement
       sbelement(const std::string & key) {mKey=key;}
       virtual ~sbelement() {}
       virtual bashline getBashLine() const;
+      virtual std::shared_ptr<sbelement> clone() const =0;
 
       bool getBool() const;
       std::string getString() const;
@@ -24,8 +26,8 @@ class sbelement
       sbelement();
 
    protected:
+      sbelement(const sbelement & other) {mKey=other.mKey;}
       std::string mKey;
-      std::string mValueString;
 };
 
 class bashline
@@ -37,7 +39,7 @@ public:
 
    bool valid() {return key.length()>0;}
 
-   sbelement getElement();
+   std::shared_ptr<sbelement> getElement();
 
    const std::string & getkey() const {return key;}
    const std::string & getvalue() const {return value;}
@@ -54,6 +56,7 @@ class sb_bool : public sbelement
       sb_bool(const std::string & key , bool b);
       bool get() const {return mValue;}
       bashline getBashLine() const {return bashline(mKey,mValue?"yes":"no");}
+      std::shared_ptr<sbelement> clone() const override { return std::make_shared<sb_bool>(*this); }
    private:
       bool mValue;
       bool istrue(const std::string & s) const;
@@ -66,6 +69,7 @@ class sb_string : public sbelement
       sb_string(const std::string & key, const std::string & s) : sbelement(key),mValue(s) {}
       const std::string & get() const {return mValue;}
       bashline getBashLine() const {return bashline(mKey,"\""+mValue+"\"");}
+      std::shared_ptr<sbelement> clone() const override { return std::make_shared<sb_string>(*this); }
    private:
       std::string mValue;
 };
@@ -78,6 +82,7 @@ class sb_vec : public sbelement
       sb_vec(const std::string & key , std::vector<std::string> v);
       const std::vector<std::string> & get() const {return mValue;}
       bashline getBashLine() const;
+      std::shared_ptr<sbelement> clone() const override { return std::make_shared<sb_vec>(*this); }
    private:
       std::vector<std::string> mValue;
 };
@@ -95,7 +100,11 @@ public:
    std::string getString(const std::string & key) const;
    const std::vector<std::string> & getVec(const std::string &  key) const;
 
-   void setSetting(const sbelement & value);
+   void setBool(const std::string & key, bool b);
+   void setString(const std::string & key, const std::string & s );
+   void setVec(const std::string & key, const std::vector<std::string> & v);
+
+   void setSetting(std::shared_ptr<sbelement> value);
 
    std::string getPath() const;
 private:
@@ -103,10 +112,10 @@ private:
    const std::string mPath;
 //   std::map< std::string, std::string > mSettings;
 //   void checkkeyexists(const std::string & key) const;
-   sbelement getElement(const std::string & key) const;
+   std::shared_ptr<sbelement> getElement(const std::string & key) const;
 
    const params & p;
-   std::vector<sbelement> mElements;
+   std::vector<std::shared_ptr<sbelement>> mElements;
 };
 
 #endif
