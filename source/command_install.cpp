@@ -115,6 +115,61 @@ namespace command_install
 		}
 	}
 
+   void recreateService(const params & p, const sh_drunnercfg & settings,
+      const std::string & imagename, const service & svc, bool updating)
+   {
+      std::string datestamp = utils::getTime(), hostIP = utils::getHostIP(p);
+      logmsg(kLDEBUG, "date = " + datestamp + "  hostIP = " + hostIP, p);
+
+      if (updating)
+         command_setup::pullImage(p, settings, imagename);
+
+      try
+      {
+         // nuke any existing dService files on host (but preserve volume containers!).
+         if (utils::fileexists(svc.getPath()))
+            utils::deltree(svc.getPath(), p);
+
+         // create the basic directories.
+         svc.ensureDirectoriesExist();
+
+         // copy files to service directory on host.
+         std::string op;
+         int r = utils::bashcommand("docker run --rm -it -v " +
+            svc.getPathdRunner() + ":/tempcopy " + imagename + " /bin/bash -c \"cp -r /drunner/* /tempcopy/\"", op);
+         if (r != 0)
+            logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.", p);
+
+         // read in servicecfg.sh
+         sh_servicecfg servicecfg(p, svc);
+
+         // write out variables.sh
+         sh_variables variables(p, svc, servicecfg, imagename, hostIP);
+
+         // make sure we have the latest of all exra containers.
+         std::vector<std::string> extracontainers;
+         extracontainers = servicecfg.getExtraContainers();
+         for (uint i = 0; i < extracontainers.size(); ++i)
+            command_setup::pullImage(p, settings, extracontainers[i]);
+
+         // create the utils.sh file for the dService.
+         generate_utils_sh(svc.getPathdRunner(), p);
+
+         // create launch script
+         createLaunchScript(svc.getName(), p);
+
+         // create volumes
+         createVolumes(imagename, variables, p);
+      }
+
+      catch (const eExit & e) {
+         // tidy up.
+         if (utils::fileexists(svc.getPath()))
+            utils::deltree(svc.getPath(), p);
+
+         throw (e);
+      }
+   }
 
 	void installService(const params & p, const sh_drunnercfg & settings,
 		const std::string & imagename, service & svc)
@@ -130,9 +185,6 @@ namespace command_install
          svc.setName(servicename);
 		}
 
-		std::string datestamp = utils::getTime(), hostIP = utils::getHostIP(p);
-		logmsg(kLDEBUG, "date = " + datestamp + "  hostIP = " + hostIP, p);
-
       logmsg(kLDEBUG, "Installing " + svc.getName() + " at " + svc.getPath() + ", using image " + imagename, p);
 		if (utils::fileexists(svc.getPath()))
 			logmsg(kLERROR, "Service already exists. Try:   drunner update " + svc.getName(), p);
@@ -143,46 +195,7 @@ namespace command_install
 		logmsg(kLDEBUG, "Attempting to validate " + imagename, p);
 		validateImage(p, settings, imagename);
 
-		try
-		{
-         svc.ensureDirectoriesExist();
-
-			// copy files to service directory on host.
-			std::string op;
-			int r = utils::bashcommand("docker run --rm -it -v " +
-				svc.getPathdRunner() + ":/tempcopy " + imagename + " /bin/bash -c \"cp -r /drunner/* /tempcopy/\"", op);
-			if (r != 0)
-				logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.", p);
-
-			// read in servicecfg.sh
-			sh_servicecfg servicecfg(p, svc.getPathdRunner());
-
-			// write out variables.sh
-			sh_variables variables(p, svc, servicecfg, imagename, hostIP);
-
-			// make sure we have the latest of all exra containers.
-			std::vector<std::string> extracontainers;
-			extracontainers = servicecfg.getExtraContainers();
-			for (uint i = 0; i < extracontainers.size(); ++i)
-				command_setup::pullImage(p, settings, extracontainers[i]);
-
-			// create the utils.sh file for the dService.
-			generate_utils_sh(svc.getPathdRunner(), p);
-
-			// create launch script
-			createLaunchScript(svc.getName(), p);
-
-			// create volumes
-			createVolumes(imagename, variables, p);
-		}
-
-		catch (const eExit & e) {
-			// tidy up.
-			if (utils::fileexists(svc.getPath()))
-				utils::deltree(svc.getPath(), p);
-
-			throw (e);
-		}
+      recreateService(p, settings, imagename, svc, false);
 	}
 
 

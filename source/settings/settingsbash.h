@@ -1,10 +1,11 @@
+#ifndef __SETTINGSBASH_H
+#define __SETTINGSBASH_H
+
 #include <map>
 #include <memory>
 
 #include "params.h"
 
-#ifndef __SETTINGSBASH_H
-#define __SETTINGSBASH_H
 
 class bashline;
 

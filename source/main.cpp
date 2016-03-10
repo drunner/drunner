@@ -169,11 +169,11 @@ void mainroutines::process(const params & p)
          if (p.numArgs() < 1)
             logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
 
-         service s(p.getArgs()[0], settings, p);
-         if (!s.isValid())
-            logmsg(kLERROR, "Service " + s.getName() + " is not valid - try recover.", p);
+         service svc(p.getArgs()[0], settings, p);
+         if (!svc.isValid())
+            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
 
-         s.servicecmd();
+         svc.servicecmd();
          break;
       }
 

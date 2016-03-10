@@ -1,7 +1,7 @@
-#include <map>
-
 #ifndef __sh_drunnercfg_H
 #define __sh_drunnercfg_H
+
+#include <map>
 
 #include "settingsbash.h"
 #include "params.h"

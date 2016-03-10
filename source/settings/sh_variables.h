@@ -1,28 +1,21 @@
 #ifndef __SH_VARIABLES_H
 #define __SH_VARIABLES_H
 
+#include "utils.h"
+#include "sh_servicecfg.h"
 #include "service.h"
-
-std::string alphanumericfilter(std::string s)
-{
-   std::string validchars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-   size_t pos;
-   while((pos = s.find_first_not_of(validchars)) != std::string::npos)
-      s.erase(pos,1);
-   return s;
-}
 
 class sh_variables : public settingsbash
 {
 public:
 
    // reading ctor
-   sh_variables(const params & p, std::string path)
-      : settingsbash(p,path+"/variables.sh")
+   sh_variables(const params & p, const service & svc)
+      : settingsbash(p,svc.getPathVariables())
       {
       bool readok = readSettings();
       if (!readok)
-         logmsg(kLERROR,"Broken dService. Couldn't read "+path+"/variables.sh",p);
+         logmsg(kLERROR,"Broken dService. Couldn't read "+svc.getPathVariables(),p);
       }
 
    // writing ctor
@@ -64,6 +57,18 @@ public:
 
    const std::vector<std::string> & getDockerVols() const { return getVec("DOCKERVOLS"); }
    const std::vector<std::string> & getVolumes()	const { return getVec("VOLUMES"); }
+   std::string getImageName() const { return getString("IMAGENAME"); }
+
+private:
+   std::string alphanumericfilter(std::string s) const
+   {
+      std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      size_t pos;
+      while ((pos = s.find_first_not_of(validchars)) != std::string::npos)
+         s.erase(pos, 1);
+      return s;
+   }
+
 
 }; // sh_variables
 

@@ -1,8 +1,8 @@
-#include "params.h"
-#include "sh_drunnercfg.h"
 #include "service.h"
-#include "utils.h"
 #include "logmsg.h"
+#include "sh_variables.h"
+#include "utils.h"
+#include "command_install.h"
 
 service::service(const std::string & servicename, const sh_drunnercfg & settings, const params & prms) :
    mName(servicename),
@@ -37,6 +37,11 @@ std::string service::getPathVariables() const
    return getPathdRunner() + "/variables.sh";
 }
 
+std::string service::getPathServiceCfg() const
+{
+   return getPathdRunner() + "/servicecfg.sh";
+}
+
 std::string service::getName() const
 {
    return mName;
@@ -47,9 +52,10 @@ void service::setName(const std::string & servicename)
    mName = servicename;
 }
 
-void service::ensureDirectoriesExist()
+void service::ensureDirectoriesExist() const
 {
    // create service's drunner and temp directories on host.
+   utils::makedirectory(getPath(), mParams, S_755);
    utils::makedirectory(getPathdRunner(), mParams, S_777);
    utils::makedirectory(getPathTemp(), mParams, S_777);
 }
@@ -91,7 +97,10 @@ void service::servicecmd()
 }
 
 void service::update()
-{ // update the service (recreate it).
-   logmsg(kLERROR, "E_NOTIMPL", mParams); // todo: show service help!
+{ // update the service (recreate it)
+   sh_variables vars(mParams, *this);
+   std::string imagename = vars.getImageName();
+
+   command_install::recreateService(mParams, mSettings, imagename, *this, true);
 }
 

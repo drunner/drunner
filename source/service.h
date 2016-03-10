@@ -1,5 +1,5 @@
-#ifndef __SERVICE_H
-#define __SERVICE_H
+#ifndef __SERVICECLASS_H
+#define __SERVICECLASS_H
 
 #include "params.h"
 #include "sh_drunnercfg.h"
@@ -14,10 +14,11 @@ public:
    std::string getPathTemp() const;
    std::string getPathServiceRunner() const;
    std::string getPathVariables() const;
+   std::string getPathServiceCfg() const;
    std::string getName() const;
 
    void setName(const std::string & servicename);
-   void ensureDirectoriesExist();
+   void ensureDirectoriesExist() const;
 
    bool isValid() const;
 

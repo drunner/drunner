@@ -30,7 +30,7 @@ exit 0
 }
 )EOF";
 
-   generate(supportpath+"/validator-image",p,S_ALLEXEC,vdata);
+   generate(supportpath+"/validator-image",p,S_755,vdata);
 }
 
 

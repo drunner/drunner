@@ -8,6 +8,7 @@
 namespace command_install
 {
    void validateImage(const params & p,const sh_drunnercfg & settings, std::string imagename);
+   void recreateService(const params & p, const sh_drunnercfg & settings, const std::string & imagename, const service & svc, bool updating);
    void installService(const params & p,const sh_drunnercfg & settings,
       const std::string & imagename, service & svc);
 
