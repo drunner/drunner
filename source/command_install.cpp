@@ -10,6 +10,7 @@
 #include "generate_utils_sh.h"
 #include "sh_servicecfg.h"
 #include "sh_variables.h"
+#include "service.h"
 
 namespace command_install
 {
@@ -101,7 +102,8 @@ namespace command_install
 					logmsg(kLERROR, "Unable to create docker volume " + volname, p);
 				// set permissions on volume.
 				std::string chowncmd = "docker run --name=\"" + dname + "\" -v \"" + volname + ":" + volpath +
-					"\" \"drunner/baseimage-alpine\" /bin/bash -c \"chown " + userid + ":root " + volpath + " && date >> " + volpath + "/install_date";
+					"\" \"drunner/baseimage-alpine\" /bin/bash -c \"chown " + userid + ":root " + volpath + 
+               " && date >> " + volpath + "/install_date";
 				logmsg(kLDEBUG, chowncmd, p);
 				rval = utils::bashcommand(chowncmd, op);
 				if (rval != 0)
@@ -115,25 +117,25 @@ namespace command_install
 
 
 	void installService(const params & p, const sh_drunnercfg & settings,
-		const std::string & imagename, std::string servicename)
+		const std::string & imagename, service & svc)
 	{
-		if (servicename.length() == 0)
+		if (svc.getName().length() == 0)
 		{
-			servicename = imagename;
+			std::string servicename = imagename;
 			size_t found;
 			while ((found = servicename.find("/")) != std::string::npos)
 				servicename.erase(0, found + 1);
 			while ((found = servicename.find(":")) != std::string::npos)
 				servicename.erase(found);
+         svc.setName(servicename);
 		}
 
 		std::string datestamp = utils::getTime(), hostIP = utils::getHostIP(p);
 		logmsg(kLDEBUG, "date = " + datestamp + "  hostIP = " + hostIP, p);
 
-		std::string targetdir = settings.getPath_Services() + "/" + servicename;
-		logmsg(kLDEBUG, "Installing " + servicename + " at " + targetdir + ", using image " + imagename, p);
-		if (utils::fileexists(targetdir))
-			logmsg(kLERROR, "Service already exists. Try:   drunner update " + servicename, p);
+      logmsg(kLDEBUG, "Installing " + svc.getName() + " at " + svc.getPath() + ", using image " + imagename, p);
+		if (utils::fileexists(svc.getPath()))
+			logmsg(kLERROR, "Service already exists. Try:   drunner update " + svc.getName(), p);
 
 		// make sure we have the latest version of the service.
 		command_setup::pullImage(p, settings, imagename);
@@ -143,26 +145,20 @@ namespace command_install
 
 		try
 		{
-			// create service's drunner directory on host.
-			std::string drd = targetdir + "/drunner";
-			utils::makedirectory(drd, p, S_777);
-
-			// create service's temp directory
-			std::string tmpdir = targetdir + "/temp";
-			utils::makedirectory(tmpdir, p, S_777);
+         svc.ensureDirectoriesExist();
 
 			// copy files to service directory on host.
 			std::string op;
 			int r = utils::bashcommand("docker run --rm -it -v " +
-				drd + ":/tempcopy " + imagename + " /bin/bash -c \"cp -r /drunner/* /tempcopy/\"", op);
+				svc.getPathdRunner() + ":/tempcopy " + imagename + " /bin/bash -c \"cp -r /drunner/* /tempcopy/\"", op);
 			if (r != 0)
 				logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.", p);
 
 			// read in servicecfg.sh
-			sh_servicecfg servicecfg(p, drd);
+			sh_servicecfg servicecfg(p, svc.getPathdRunner());
 
 			// write out variables.sh
-			sh_variables variables(p, drd, servicecfg, servicename, imagename, hostIP, tmpdir);
+			sh_variables variables(p, svc, servicecfg, imagename, hostIP);
 
 			// make sure we have the latest of all exra containers.
 			std::vector<std::string> extracontainers;
@@ -171,10 +167,10 @@ namespace command_install
 				command_setup::pullImage(p, settings, extracontainers[i]);
 
 			// create the utils.sh file for the dService.
-			generate_utils_sh(drd, p);
+			generate_utils_sh(svc.getPathdRunner(), p);
 
 			// create launch script
-			createLaunchScript(servicename, p);
+			createLaunchScript(svc.getName(), p);
 
 			// create volumes
 			createVolumes(imagename, variables, p);
@@ -182,8 +178,8 @@ namespace command_install
 
 		catch (const eExit & e) {
 			// tidy up.
-			if (utils::fileexists(targetdir))
-				utils::deltree(targetdir, p);
+			if (utils::fileexists(svc.getPath()))
+				utils::deltree(svc.getPath(), p);
 
 			throw (e);
 		}

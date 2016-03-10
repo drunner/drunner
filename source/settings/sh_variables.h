@@ -1,6 +1,8 @@
 #ifndef __SH_VARIABLES_H
 #define __SH_VARIABLES_H
 
+#include "service.h"
+
 std::string alphanumericfilter(std::string s)
 {
    std::string validchars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -26,14 +28,12 @@ public:
    // writing ctor
    sh_variables(
       const params & p,
-      std::string path,
+      const service &svc,
       const sh_servicecfg & servicecfg,
-      std::string servicename,
       std::string imagename,
-      std::string hostIP,
-      std::string serviceTempDir
+      std::string hostIP
       )
-      :  settingsbash(p,path+"/variables.sh")
+      :  settingsbash(p,svc.getPathVariables())
    {
       std::vector<std::string> volumes, extracontainers,dockervols,dockeropts;
       volumes = servicecfg.getVolumes();
@@ -42,7 +42,7 @@ public:
       for (uint i=0;i<volumes.size();++i)
          {
          logmsg(kLDEBUG, "VOLUME:          "+volumes[i],p);
-         dockervols.push_back("drunner-"+servicename+"-"+alphanumericfilter(volumes[i]));
+         dockervols.push_back("drunner-"+svc.getName()+"-"+alphanumericfilter(volumes[i]));
          logmsg(kLDEBUG, "Docker Volume:   "+dockervols[i],p);
          dockeropts.push_back("-v");
          dockeropts.push_back(dockervols[i]+":"+volumes[i]);
@@ -52,11 +52,11 @@ public:
 
       setVec("VOLUMES",volumes);
       setVec("EXTRACONTAINERS",extracontainers);
-      setString("SERVICENAME",servicename);
+      setString("SERVICENAME",svc.getName());
       setString("IMAGENAME",imagename);
       setString("INSTALLTIME",utils::getTime());
       setString("HOSTIP",hostIP);
-      setString("SERVICETEMPDIR",serviceTempDir);
+      setString("SERVICETEMPDIR",svc.getPathTemp());
       setVec("DOCKERVOLS",dockervols);
       setVec("DOCKEROPTS",dockeropts);
       writeSettings();

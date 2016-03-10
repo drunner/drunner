@@ -11,11 +11,11 @@
 #include "command_general.h"
 #include "command_dev.h"
 #include "command_install.h"
-#include "command_services.h"
 #include "sh_drunnercfg.h"
 #include "showhelp.h"
 #include "main.h"
 #include "unittests.h"
+#include "service.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -124,10 +124,13 @@ void mainroutines::process(const params & p)
 
       case c_update:
       {
-         if (p.getArgs().size()==0)
-            command_setup::update(p,settings); // defined in command_setup
+         if (p.getArgs().size() == 0)
+            command_setup::update(p, settings); // defined in command_setup
          else
-            logmsg(kLERROR,"E_NOTIMPL",p);
+         { // first argument is service name.
+            service s(p.getArgs()[0], settings, p);
+            s.update();
+         }
          break;
       }
 
@@ -147,7 +150,8 @@ void mainroutines::process(const params & p)
          std::string servicename;
          if ( p.getArgs().size()==2)
             servicename=p.getArgs()[1];
-         command_install::installService(p,settings,imagename,servicename);
+         service svc(servicename,settings,p);
+         command_install::installService(p,settings,imagename,svc);
          break;
       }
 
@@ -165,7 +169,11 @@ void mainroutines::process(const params & p)
          if (p.numArgs() < 1)
             logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
 
-         command_services::servicecmd(p, settings);
+         service s(p.getArgs()[0], settings, p);
+         if (!s.isValid())
+            logmsg(kLERROR, "Service " + s.getName() + " is not valid - try recover.", p);
+
+         s.servicecmd();
          break;
       }
 
