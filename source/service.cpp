@@ -56,11 +56,7 @@ void service::ensureDirectoriesExist()
 
 bool service::isValid() const
 {
-   if (!utils::fileexists(getPath()))
-      return false;
-   if (!utils::fileexists(getPathdRunner()))
-      return false;
-   if (!utils::fileexists(getPathTemp()))
+   if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner()) || !utils::fileexists(getPathTemp()))
       return false;
 
    return true;
@@ -68,25 +64,30 @@ bool service::isValid() const
 
 void service::servicecmd()
 {
+   std::vector<std::string> cargs;
+   cargs.push_back("servicerunner");
+
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
-      logmsg(kLERROR, "E_NOTIMPL", mParams); // todo: show service help!
+   {
+      cargs.push_back("help");
+      utils::bashcommand(getPathServiceRunner(), cargs);
+      return;
+   }
 
    std::string command = mParams.getArgs()[1];
    std::string reservedwords = "install backupstart backupend backup restore update enter uninstall obliterate";
    if (utils::findStringIC(reservedwords, command))
       logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.", mParams);
 
-   std::vector<std::string> c;
-   c.push_back("servicerunner");
    for (uint i = 1; i < mParams.getArgs().size(); ++i)
-      c.push_back(mParams.getArgs()[i]);
+      cargs.push_back(mParams.getArgs()[i]);
 
    std::string lmsg;
-   for (auto &entry : c)
+   for (auto &entry : cargs)
       lmsg += "[" + entry + "] ";
    logmsg(kLDEBUG, lmsg, mParams);
 
-   utils::bashcommand(getPathServiceRunner(), c);
+   utils::bashcommand(getPathServiceRunner(), cargs);
 }
 
 void service::update()
