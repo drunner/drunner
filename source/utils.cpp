@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <fcntl.h>
+#include <memory>
+#include <utility>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -85,10 +86,11 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   int bashcommand(std::string command)
+   int bashcommand(std::string command, const std::vector<std::string> & args)
    { // don't capture output, non-blocking streaming!
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
-      redi::ipstream child(command, mode);
+      redi::ipstream child(command, args, mode);
+
       char buf[1024];
       std::streamsize n;
       bool finished[2] = { false, false };
@@ -119,7 +121,8 @@ namespace utils
          }
       }
 
-      return child.rdbuf()->status(); // return child status.
+      int rval= child.rdbuf()->status(); // return child status.
+      return rval;
    }
 
 
