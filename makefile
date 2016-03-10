@@ -48,7 +48,7 @@ permissions:
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
 
 upload: $(APP)
-	cd ~ ; upload drunner-install
+	cd ~ ; ./upload drunner-install
 
 push: $(APP)
 	git pull ; git add . ; git commit ; git push

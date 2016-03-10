@@ -11,6 +11,7 @@
 #include "command_general.h"
 #include "command_dev.h"
 #include "command_install.h"
+#include "command_services.h"
 #include "sh_drunnercfg.h"
 #include "showhelp.h"
 #include "main.h"
@@ -164,7 +165,7 @@ void mainroutines::process(const params & p)
          if (p.numArgs() < 1)
             logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
 
-         command_general::service(p, settings);
+         command_services::servicecmd(p, settings);
          break;
       }
 
