@@ -91,10 +91,10 @@ private:
 class settingsbash
 {
 public:
-   settingsbash(const params & par, std::string settingspath); // sets defaults, reads from config.sh if present.
-
-   bool readSettings();
-   bool writeSettings() const;
+   settingsbash() {}
+   
+   bool readSettings(const std::string & settingspath);
+   bool writeSettings(const std::string & settingspath) const;
 
    bool getBool(const std::string & key) const;
    const std::string & getString(const std::string & key) const;
@@ -104,20 +104,31 @@ public:
    void setString(const std::string & key, const std::string & s);
    void setVec(const std::string & key, const std::vector<std::string> & v);
 
-   void setSetting(std::shared_ptr<sbelement> value);
 
-   const std::string & getPath() const;
    void setPath(const std::string & path);
 private:
-   settingsbash();
-   std::string mPath;
-   std::shared_ptr<const sbelement> getElement(const std::string & key) const;
-
-   const params & p;
    std::vector<std::shared_ptr<sbelement>> mElements;
 
 protected:
-   void logmsg(eLogLevel level, std::string s) const;
+   void setSetting(std::shared_ptr<sbelement> value, bool createOK);
+   std::shared_ptr<const sbelement> getElement(const std::string & key) const;
+   const params & getParams();
+};
+
+
+class settingsbash_reader : protected settingsbash
+{
+public:
+   settingsbash_reader(std::string settingspath);
+   const std::string & getPath() const;
+   bool readOkay() const;
+
+protected:
+   bool read();
+
+private:
+   const std::string mPath;
+   bool mReadOkay;
 };
 
 #endif

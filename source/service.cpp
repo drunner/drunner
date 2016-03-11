@@ -110,7 +110,9 @@ const std::string service::getImageName() const
 {
    if (mImageName.length() == 0)
    {
-      sh_variables shv(*this);
+      sh_variables shv(getPathVariables());
+      if (!shv.readOkay())
+         logmsg(kLERROR, "Couldn't read " + getPathVariables());
       mImageName = shv.getImageName(); // mutable.
    }
    return mImageName;

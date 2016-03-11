@@ -5,30 +5,33 @@
 #include "sh_servicecfg.h"
 #include "service.h"
 
-class sh_variables : public settingsbash
+class sh_variables : public settingsbash_reader
 {
 public:
 
    // reading ctor
-   sh_variables(const service & svc)
-      : settingsbash(svc.getParams(),svc.getPathVariables())
+   sh_variables(std::string fullpath) // sets defaults and reads the file if present.
+      : settingsbash_reader(fullpath)
    {
-      load();
+      setDefaults();
+      read();
    }
 
-   // reading ctor (from other location)
-   sh_variables(const params & p, const std::string & path)
-      : settingsbash(p, path)
+   // creates variables.sh from servicecfg.sh
+   bool createFromServiceCfg(const service & svc)
    {
-      load();
+      setDefaults();
+      return populate(svc);
    }
 
-   // creating ctor - creates variables.sh from sh_servicecfg
-   sh_variables(std::string imagename, const sh_servicecfg & sc)
-      :  settingsbash(sc.getService().getParams(), sc.getService().getPathVariables())
+   bool write() const
    {
-      populate(imagename, sc);
-      writeSettings();
+      return writeSettings(getPath());
+   }
+
+   bool writecopy(const std::string & fullpath) const
+   {
+      return writeSettings(fullpath);
    }
 
    const std::vector<std::string> & getDockerVols() const { return getVec("DOCKERVOLS"); }
@@ -36,15 +39,23 @@ public:
    const std::vector<std::string> & getExtraContainers()	const { return getVec("EXTRACONTAINERS"); }
    const std::string & getImageName() const { return getString("IMAGENAME"); }
 
-private:
-
-   void load()
+protected:
+   void setDefaults()
    {
-      bool readok = readSettings();
-      if (!readok)
-         logmsg(kLERROR, "Broken dService. Couldn't read " + getPath());
+      std::vector<std::string> nothing;
+      setVec("VOLUMES", nothing);
+      setVec("EXTRACONTAINERS", nothing);
+      setString("SERVICENAME", "not set");
+      setString("IMAGENAME", "not set");
+      setString("SERVICETEMPDIR", "not set");
+      setVec("DOCKERVOLS", nothing);
+      setVec("DOCKEROPTS", nothing);
+
+      setString("INSTALLTIME", utils::getTime());
+      setString("HOSTIP", utils::getHostIP());
    }
 
+private:
    std::string alphanumericfilter(std::string s) const
    {
       std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -54,9 +65,11 @@ private:
       return s;
    }
 
-   void populate(std::string imagename, const sh_servicecfg & servicecfg)
+   bool populate(const service & svc)
    {
-      const service & svc(servicecfg.getService());
+      sh_servicecfg servicecfg(svc.getPathServiceCfg());
+      if (!servicecfg.readOkay())
+         return false;
 
       std::vector<std::string> volumes, extracontainers, dockervols, dockeropts;
       volumes = servicecfg.getVolumes();
@@ -64,24 +77,21 @@ private:
 
       for (uint i = 0; i<volumes.size(); ++i)
       {
-         logmsg(kLDEBUG, "VOLUME:          " + volumes[i]);
          dockervols.push_back("drunner-" + svc.getName() + "-" + alphanumericfilter(volumes[i]));
-         logmsg(kLDEBUG, "Docker Volume:   " + dockervols[i]);
          dockeropts.push_back("-v");
          dockeropts.push_back(dockervols[i] + ":" + volumes[i]);
       }
-      for (uint i = 0; i<extracontainers.size(); ++i)
-         logmsg(kLDEBUG, "EXTRACONTAINER:  " + extracontainers[i]);
 
       setVec("VOLUMES", volumes);
       setVec("EXTRACONTAINERS", extracontainers);
-      setString("SERVICENAME", svc.getName());
-      setString("IMAGENAME", imagename);
-      setString("INSTALLTIME", utils::getTime());
-      setString("HOSTIP", utils::getHostIP(svc.getParams()));
-      setString("SERVICETEMPDIR", svc.getPathTemp());
       setVec("DOCKERVOLS", dockervols);
       setVec("DOCKEROPTS", dockeropts);
+
+      setString("SERVICENAME", svc.getName());
+      setString("IMAGENAME", svc.getImageName());
+      setString("SERVICETEMPDIR", svc.getPathTemp());
+
+      return true;
    }
 
 

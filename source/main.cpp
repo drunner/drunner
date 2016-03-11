@@ -98,8 +98,8 @@ void mainroutines::process(const params & p)
 
    // load settings. We require the basic install to be okay at this point!
    std::string rootpath = utils::get_exepath();
-   sh_drunnercfg settings(p,rootpath);
-   if (!settings.readFromFileOkay())
+   sh_drunnercfg settings(rootpath);
+   if (!settings.readOkay())
       throw eExit("Couldn't read settings file. Try running drunner setup.",1);
 
    logmsg(kLDEBUG,"Settings read from "+settings.getPath(),p);

@@ -72,10 +72,7 @@ sb_bool::sb_bool(const std::string & key , bool b) : sbelement(key),mValue(b)
 {
 }
 
-
-settingsbash::settingsbash(const params & par, std::string settingspath) : mPath(settingspath), p(par)
-{
-}
+// ----------------------------------------------------------------------------------------------------------------------
 
 bashline::bashline(const std::string & bashline_str)
 {
@@ -112,26 +109,30 @@ std::shared_ptr<sbelement> bashline::getElement()
    return std::make_shared<sb_string>( sb_string(*this) );
 }
 
+// ----------------------------------------------------------------------------------------------------------------------
 
-bool settingsbash::readSettings()
+bool settingsbash::readSettings(const std::string & settingspath)
 {
-   if (! utils::fileexists(mPath))
+   if (settingspath.length() == 0)
+      fatal("settingsbash::readSettings - empty string passed as path to read from.");
+
+   if (! utils::fileexists(settingspath))
       return false;
 
    std::string line,left,right;
-   std::ifstream configfile( mPath.c_str() );
+   std::ifstream configfile(settingspath.c_str() );
    while (std::getline(configfile, line))
    {
       bashline bl(line);
 	  if (bl.valid())
-	      setSetting( bl.getElement() );
+	      setSetting( bl.getElement() , false );
    }
    configfile.close();
 
    return true;
 }
 
-void settingsbash::setSetting(std::shared_ptr<sbelement> value)
+void settingsbash::setSetting(std::shared_ptr<sbelement> value, bool createOK)
 {
    auto newelement = value->clone();
 
@@ -141,24 +142,28 @@ void settingsbash::setSetting(std::shared_ptr<sbelement> value)
          mElements[i] = newelement;
          return;
       }
+   if (!createOK)
+      fatal("Trying to create setting " + newelement->getKey() + " but not permitted.");
    mElements.push_back(newelement);
 }
 
 
-bool settingsbash::writeSettings() const
+bool settingsbash::writeSettings(const std::string & settingspath) const
 {
-   if (mPath.find(".sh")==std::string::npos)
-      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+ mPath);
+   if (settingspath.length() == 0)
+      fatal("settingsbash::writeSettings - empty string passed as path to write to.");
 
-   if (utils::fileexists(mPath))
-      std::remove(mPath.c_str());
+   if (settingspath.find(".sh")==std::string::npos)
+      fatal("All bash style settings files should have .sh file extension. Offender: "+ settingspath);
 
-   std::ofstream ofile(mPath.c_str() );
+   if (utils::fileexists(settingspath))
+      std::remove(settingspath.c_str());
+
+   std::ofstream ofile(settingspath.c_str() );
    if (!ofile.is_open()) return false; // can't open the file.
 
-   ofile << "# "+ mPath << std::endl;
-   ofile << "# dRunner configuration file." << std::endl;
-   ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
+   ofile << "# "+ settingspath << std::endl;
+   ofile << "# dRunner bash configuration file." << std::endl;
 
   // iterate through map. C++11 style.
   for (auto const &entry : mElements) {
@@ -180,53 +185,61 @@ std::shared_ptr<const sbelement> settingsbash::getElement(const std::string & ke
 		if (utils::stringisame(entry->getKey(), key))
 			return entry;
 
-   logmsg(kLERROR,"Couldn't find key "+key);
+   fatal("Couldn't find key "+key);
    return std::make_shared<sb_string>(sb_string("ERROR","ERROR"));
-}
-
-void settingsbash::logmsg(eLogLevel level, std::string s) const
-{
-   ::logmsg(level, s, p);
 }
 
 const std::vector<std::string> & settingsbash::getVec(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_vec *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.");
+   if (!b) fatal("Couldn't interpret "+key+" as string array.");
    return b->get();
 }
 bool settingsbash::getBool(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_bool *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.");
+   if (!b) fatal("Couldn't interpret "+key+" as string array.");
    return b->get();
 }
 const std::string & settingsbash::getString(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_string *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string.");
+   if (!b) fatal("Couldn't interpret "+key+" as string.");
    return b->get();
-}
-
-const std::string & settingsbash::getPath() const
-{
-   return mPath;
-}
-void settingsbash::setPath(const std::string & path)
-{
-   mPath = path;
 }
 
 void settingsbash::setBool(const std::string & key, bool b)
 {
-	setSetting(std::make_shared<sb_bool>(sb_bool(key, b)));
+	setSetting(std::make_shared<sb_bool>(sb_bool(key, b)), true);
 }
 void settingsbash::setString(const std::string & key, const std::string & s )
 {
-	setSetting(std::make_shared<sb_string>(sb_string(key, s)));
+	setSetting(std::make_shared<sb_string>(sb_string(key, s)), true);
 }
 void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
 {
-	setSetting(std::make_shared<sb_vec>(sb_vec(key, v)));
+	setSetting(std::make_shared<sb_vec>(sb_vec(key, v)), true);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+settingsbash_reader::settingsbash_reader(std::string settingspath) :
+   mPath(settingspath), mReadOkay(false)
+{
+}
+bool settingsbash_reader::read()
+{
+   mReadOkay = false;
+   if (mPath.length()>0)
+      mReadOkay = readSettings(mPath);
+   return mReadOkay;
+}
+const std::string & settingsbash_reader::getPath() const 
+{ 
+   return mPath; 
+}
+bool settingsbash_reader::readOkay() const
+{ 
+   return mReadOkay; 
 }
 

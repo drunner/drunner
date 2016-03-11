@@ -3,9 +3,9 @@
 #include "utils.h"
 
 TEST_CASE("read/write bool works","[settingsbash]") {
-   params p(kLDEBUG);
-   settingsbash sb(p,"/tmp/sbtest");
-
+   //params p(kLDEBUG);
+   settingsbash sb;
+   
    SECTION("Test true functions")
    {
       sb_bool e("bool",true);

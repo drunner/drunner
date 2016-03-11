@@ -72,3 +72,8 @@ void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
    ost << s2 <<std::endl;
    logverbatim(level,ost.str(),cutoff);
 }
+
+void fatal(std::string s)
+{
+   logmsg(kLERROR, s, kLERROR);
+}

@@ -52,9 +52,9 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create the settings and write to config.sh
-      sh_drunnercfg settings(p,rootpath);
-      if (!settings.writeSettings())
-         logmsg(kLERROR,"Couldn't write settings file!",p.getLogLevel());
+      sh_drunnercfg settings(rootpath);
+      if (!settings.write())
+         logmsg(kLERROR,"Couldn't write settings file!",p);
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
@@ -86,7 +86,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // Finished!
-      if (settings.readFromFileOkay())
+      if (settings.readOkay())
          logmsg(kLINFO,"Update of drunner to "+p.getVersion()+" completed succesfully.",p);
       else
          logmsg(kLINFO,"Setup of drunner "+p.getVersion()+" completed succesfully.",p);

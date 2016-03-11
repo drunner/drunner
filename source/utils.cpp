@@ -362,13 +362,12 @@ namespace utils
          }
    }
 
-   std::string getHostIP(const params & p )
+   std::string getHostIP()
    {
-   std::string hostIP;
-   if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'",hostIP) !=0)
-      logmsg(kLERROR,"Couldn't get host IP.",p);
-   logmsg(kLDEBUG,"Using "+hostIP+" for hostIP.",p);
-   return hostIP;
+      std::string hostIP;
+      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'", hostIP) != 0)
+         return "";
+      return hostIP;
    }
 
    std::string getTime()

@@ -33,9 +33,8 @@ void service::backup(const std::string & backupfile)
    tempfolder tempparent(mSettings.getPath_Temp() + "/backup-"+getName(), mParams);
 
    // write out variables that we need to decompress everything.
-   sh_variables shv(*this); // loads variables.sh from the service.
-   shv.setPath(tempparent.getpath() + "/variables.sh"); // change output path.
-   shv.writeSettings(); // output.
+   sh_variables shv(getPathVariables()); // loads variables.sh from the service.
+   shv.writecopy(tempparent.getpath() + "/variables.sh"); // output.
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    std::string tempf = tempparent.getpath() + "/drbackup";

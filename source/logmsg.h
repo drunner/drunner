@@ -8,4 +8,6 @@
 void logmsg(eLogLevel level, std::string s, eLogLevel cutoff);
 void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff);
 
+void fatal(std::string s);
+
 #endif
