@@ -145,20 +145,18 @@ void settingsbash::setSetting(std::shared_ptr<sbelement> value)
 }
 
 
-bool settingsbash::writeSettings(const std::string & fullpath) const
+bool settingsbash::writeSettings() const
 {
-   std::string path = (fullpath.length()==0  ? mPath : fullpath );
+   if (mPath.find(".sh")==std::string::npos)
+      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+ mPath);
 
-   if (path.find(".sh")==std::string::npos)
-      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+fullpath);
+   if (utils::fileexists(mPath))
+      std::remove(mPath.c_str());
 
-   if (utils::fileexists(path))
-      std::remove(path.c_str());
-
-   std::ofstream ofile( path.c_str() );
+   std::ofstream ofile(mPath.c_str() );
    if (!ofile.is_open()) return false; // can't open the file.
 
-   ofile << "# "+path << std::endl;
+   ofile << "# "+ mPath << std::endl;
    ofile << "# dRunner configuration file." << std::endl;
    ofile << "# You can edit this file - user changes are preserved on update." << std::endl << std::endl;
 
@@ -203,16 +201,20 @@ bool settingsbash::getBool(const std::string &  key) const
    if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.");
    return b->get();
 }
-std::string settingsbash::getString(const std::string &  key) const
+const std::string & settingsbash::getString(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_string *>(getElement(key).get());
    if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string.");
    return b->get();
 }
 
-std::string settingsbash::getPath() const
+const std::string & settingsbash::getPath() const
 {
    return mPath;
+}
+void settingsbash::setPath(const std::string & path)
+{
+   mPath = path;
 }
 
 void settingsbash::setBool(const std::string & key, bool b)

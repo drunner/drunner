@@ -156,6 +156,24 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_restore:
+      {
+         if (p.getArgs().size() < 2)
+            logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME", p);
+         service svc(p, settings, p.getArgs()[1]);
+         svc.restore(p.getArgs()[0]);
+         break;
+      }
+
+      case c_backup:
+      {
+         if (p.getArgs().size() < 2)
+            logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE", p);
+         service svc(p, settings, p.getArgs()[0]);
+         svc.backup(p.getArgs()[1]);
+         break;
+      }
+
       case c_build:
       {
          if (p.numArgs()<1)

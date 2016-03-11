@@ -76,9 +76,12 @@ namespace command_setup
       pullImage(p,settings,settings.getRootUtilImage());
 
       // -----------------------------------------------------------------------------
-      // create services and support directories
+      // create services, support and temp directories
       utils::makedirectory(settings.getPath_Services(),p,S_755);
       utils::makedirectory(settings.getPath_Support(),p,S_755);
+      utils::makedirectory(settings.getPath_Temp(), p, S_755);
+
+      // create the validator script that is run inside containers
       generate_validator_image(settings.getPath_Support(),p);
 
       // -----------------------------------------------------------------------------

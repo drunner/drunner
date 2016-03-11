@@ -143,7 +143,8 @@ void service::recreate(bool updating)
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.");
 
       // read in servicecfg.sh and write out variables.sh
-      sh_variables variables(*this, getImageName());
+      sh_servicecfg servicecfg(*this);
+      sh_variables variables(getImageName(), servicecfg);
 
       // make sure we have the latest of all exra containers.
       std::vector<std::string> extracontainers;

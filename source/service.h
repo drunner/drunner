@@ -26,6 +26,8 @@ public:
    void update();
    void install();
    void recreate(bool updating);
+   void backup(const std::string & backupfile);
+   void restore(const std::string & backupfile);
 
    const params & getParams() const;
 

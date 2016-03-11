@@ -323,7 +323,6 @@ namespace utils
 
       if (chmod(d.c_str(), mode)!=0)
          logmsg(kLERROR, "Unable to change permissions on "+d,p);
-         //logmsg(kLDEBUG,"Created "+fullpath,p);
    }
 
    void makesymlink(const std::string & file, const std::string & link, const params & p)
