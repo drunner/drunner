@@ -4,10 +4,12 @@
 #include "params.h"
 #include "sh_drunnercfg.h"
 
+class sh_variables;
+
 class service
 {
 public:
-   service(const std::string & servicename, const sh_drunnercfg & settings, const params & prms);
+   service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename="" );
 
    std::string getPath() const;
    std::string getPathdRunner() const;
@@ -17,21 +19,31 @@ public:
    std::string getPathServiceCfg() const;
    std::string getName() const;
 
-   void setName(const std::string & servicename);
-   void ensureDirectoriesExist() const;
-
    bool isValid() const;
+   void validateImage();
 
    void servicecmd();
    void update();
+   void install();
+   void recreate(bool updating);
+
+   const params & getParams() const;
+
+   const std::string getImageName() const;
 
 private:
+   void setName(const std::string & servicename);
+   void ensureDirectoriesExist() const;
+   void createVolumes(const sh_variables * variables);
+   void createLaunchScript();
+   std::string getUserID();
+   void logmsg(eLogLevel level, std::string s) const;
+
    std::string mName;
+   mutable std::string mImageName;
    const sh_drunnercfg & mSettings;
    const params & mParams;
 };
-
-
 
 #endif
 

@@ -116,7 +116,7 @@ namespace command_setup
          s.getPath_Root().c_str(),
          (char *)0
       );
-      logmsg(kLERROR,"Exec failed.");
+      logmsg(kLERROR,"Exec failed.",p);
       return 1;
    }
 

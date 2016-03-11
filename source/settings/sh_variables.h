@@ -10,45 +10,45 @@ class sh_variables : public settingsbash
 public:
 
    // reading ctor
-   sh_variables(const params & p, const service & svc)
-      : settingsbash(p,svc.getPathVariables())
+   sh_variables(const service & svc)
+      : settingsbash(svc.getParams(),svc.getPathVariables())
       {
       bool readok = readSettings();
       if (!readok)
-         logmsg(kLERROR,"Broken dService. Couldn't read "+svc.getPathVariables(),p);
+         logmsg(kLERROR,"Broken dService. Couldn't read "+svc.getPathVariables());
       }
 
    // writing ctor
    sh_variables(
-      const params & p,
       const service &svc,
-      const sh_servicecfg & servicecfg,
-      std::string imagename,
-      std::string hostIP
+      std::string imagename
       )
-      :  settingsbash(p,svc.getPathVariables())
+      :  settingsbash(svc.getParams(),svc.getPathVariables())
    {
+      // read in servicecfg.
+      sh_servicecfg servicecfg(svc);
+
       std::vector<std::string> volumes, extracontainers,dockervols,dockeropts;
       volumes = servicecfg.getVolumes();
       extracontainers = servicecfg.getExtraContainers();
 
       for (uint i=0;i<volumes.size();++i)
          {
-         logmsg(kLDEBUG, "VOLUME:          "+volumes[i],p);
+         logmsg(kLDEBUG, "VOLUME:          "+volumes[i]);
          dockervols.push_back("drunner-"+svc.getName()+"-"+alphanumericfilter(volumes[i]));
-         logmsg(kLDEBUG, "Docker Volume:   "+dockervols[i],p);
+         logmsg(kLDEBUG, "Docker Volume:   "+dockervols[i]);
          dockeropts.push_back("-v");
          dockeropts.push_back(dockervols[i]+":"+volumes[i]);
          }
       for (uint i=0;i<extracontainers.size();++i)
-         logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i],p);
+         logmsg(kLDEBUG, "EXTRACONTAINER:  "+extracontainers[i]);
 
       setVec("VOLUMES",volumes);
       setVec("EXTRACONTAINERS",extracontainers);
       setString("SERVICENAME",svc.getName());
       setString("IMAGENAME",imagename);
       setString("INSTALLTIME",utils::getTime());
-      setString("HOSTIP",hostIP);
+      setString("HOSTIP",utils::getHostIP(svc.getParams()));
       setString("SERVICETEMPDIR",svc.getPathTemp());
       setVec("DOCKERVOLS",dockervols);
       setVec("DOCKEROPTS",dockeropts);
@@ -57,6 +57,8 @@ public:
 
    const std::vector<std::string> & getDockerVols() const { return getVec("DOCKERVOLS"); }
    const std::vector<std::string> & getVolumes()	const { return getVec("VOLUMES"); }
+   const std::vector<std::string> & getExtraContainers()	const { return getVec("EXTRACONTAINERS"); }
+
    std::string getImageName() const { return getString("IMAGENAME"); }
 
 private:

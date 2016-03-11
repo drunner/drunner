@@ -5,7 +5,7 @@
 #include "params.h"
 #include <string>
 
-void logmsg(eLogLevel level, std::string s, eLogLevel cutoff=kLINFO);
+void logmsg(eLogLevel level, std::string s, eLogLevel cutoff);
 void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff);
 
 #endif

@@ -117,6 +117,9 @@ private:
 
    const params & p;
    std::vector<std::shared_ptr<sbelement>> mElements;
+
+protected:
+   void logmsg(eLogLevel level, std::string s) const;
 };
 
 #endif

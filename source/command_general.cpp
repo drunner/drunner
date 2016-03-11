@@ -31,7 +31,7 @@ namespace command_general
       std::string op;
       logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
       if (utils::pullimage("spotify/docker-gc")==kRError)
-         logmsg(kLERROR,"Failed to pull spotify/docker-gc");
+         logmsg(kLERROR,"Failed to pull spotify/docker-gc",p);
 
       logmsg(kLINFO,"Cleaning.",p);
       if (utils::bashcommand("docker run --rm -v /var/run/docker.sock:/var/run/docker.sock spotify/docker-gc",op) != 0)

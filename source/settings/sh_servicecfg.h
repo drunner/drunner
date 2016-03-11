@@ -7,8 +7,8 @@
    {
    public:
       // read ctor
-      sh_servicecfg(const params & p, const service & svc)
-         :  settingsbash(p,svc.getPathServiceCfg())
+      sh_servicecfg(const service & svc)
+         :  settingsbash(svc.getParams(),svc.getPathServiceCfg())
       {
          std::vector<std::string> nothing;
          setVec("VOLUMES",nothing);
@@ -16,7 +16,7 @@
 
          bool readok = readSettings();
          if (!readok)
-            logmsg(kLERROR,"Not a valid dService. Couldn't read "+svc.getPathServiceCfg(),p);
+            logmsg(kLERROR,"Not a valid dService. Couldn't read "+svc.getPathServiceCfg());
       } // ctor
 
       const std::vector<std::string> & getVolumes() const

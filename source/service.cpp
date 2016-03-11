@@ -2,10 +2,10 @@
 #include "logmsg.h"
 #include "sh_variables.h"
 #include "utils.h"
-#include "command_install.h"
 
-service::service(const std::string & servicename, const sh_drunnercfg & settings, const params & prms) :
+service::service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename /*= ""*/) :
    mName(servicename),
+   mImageName(imagename),
    mSettings(settings),
    mParams(prms)
 {
@@ -83,7 +83,7 @@ void service::servicecmd()
    std::string command = mParams.getArgs()[1];
    std::string reservedwords = "install backupstart backupend backup restore update enter uninstall obliterate";
    if (utils::findStringIC(reservedwords, command))
-      logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.", mParams);
+      logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
 
    for (uint i = 1; i < mParams.getArgs().size(); ++i)
       cargs.push_back(mParams.getArgs()[i]);
@@ -91,16 +91,28 @@ void service::servicecmd()
    std::string lmsg;
    for (auto &entry : cargs)
       lmsg += "[" + entry + "] ";
-   logmsg(kLDEBUG, lmsg, mParams);
+   logmsg(kLDEBUG, lmsg);
 
    utils::bashcommand(getPathServiceRunner(), cargs);
 }
 
 void service::update()
 { // update the service (recreate it)
-   sh_variables vars(mParams, *this);
-   std::string imagename = vars.getImageName();
+   recreate(true);
+}
 
-   command_install::recreateService(mParams, mSettings, imagename, *this, true);
+const params & service::getParams() const
+{
+   return mParams;
+}
+
+const std::string service::getImageName() const
+{
+   if (mImageName.length() == 0)
+   {
+      sh_variables shv(*this);
+      mImageName = shv.getImageName(); // mutable.
+   }
+   return mImageName;
 }
 

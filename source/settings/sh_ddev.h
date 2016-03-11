@@ -21,10 +21,10 @@
          devservicename=getString("DEVSERVICENAME");
          if (isdService)
          {
-            logmsg(kLDEBUG, "DIRECTORY:        "+pwd,p);
-            logmsg(kLDEBUG, "DDEV COMPATIBLE:  yes",p);
-            logmsg(kLDEBUG, "BUILDNAME:        "+buildname,p);
-            logmsg(kLDEBUG, "DEVSERVICENAME:   "+devservicename,p);
+            logmsg(kLDEBUG, "DIRECTORY:        "+pwd);
+            logmsg(kLDEBUG, "DDEV COMPATIBLE:  yes");
+            logmsg(kLDEBUG, "BUILDNAME:        "+buildname);
+            logmsg(kLDEBUG, "DEVSERVICENAME:   "+devservicename);
          }
       } // ctor
    }; //class

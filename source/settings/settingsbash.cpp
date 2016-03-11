@@ -150,7 +150,7 @@ bool settingsbash::writeSettings(const std::string & fullpath) const
    std::string path = (fullpath.length()==0  ? mPath : fullpath );
 
    if (path.find(".sh")==std::string::npos)
-      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+fullpath,p);
+      logmsg(kLERROR,"All bash style settings files should have .sh file extension. Offender: "+fullpath);
 
    if (utils::fileexists(path))
       std::remove(path.c_str());
@@ -182,26 +182,31 @@ std::shared_ptr<const sbelement> settingsbash::getElement(const std::string & ke
 		if (utils::stringisame(entry->getKey(), key))
 			return entry;
 
-   logmsg(kLERROR,"Couldn't find key "+key,p);
+   logmsg(kLERROR,"Couldn't find key "+key);
    return std::make_shared<sb_string>(sb_string("ERROR","ERROR"));
+}
+
+void settingsbash::logmsg(eLogLevel level, std::string s) const
+{
+   ::logmsg(level, s, p);
 }
 
 const std::vector<std::string> & settingsbash::getVec(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_vec *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.",kLERROR);
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.");
    return b->get();
 }
 bool settingsbash::getBool(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_bool *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.",kLERROR);
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string array.");
    return b->get();
 }
 std::string settingsbash::getString(const std::string &  key) const
 {
    const auto b = dynamic_cast<const sb_string *>(getElement(key).get());
-   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string.",kLERROR);
+   if (!b) logmsg(kLERROR,"Couldn't interpret "+key+" as string.");
    return b->get();
 }
 

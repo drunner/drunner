@@ -10,7 +10,6 @@
 #include "command_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
-#include "command_install.h"
 #include "sh_drunnercfg.h"
 #include "showhelp.h"
 #include "main.h"
@@ -50,24 +49,24 @@ void mainroutines::check_basics()
 {
    uid_t euid=geteuid();
    if (euid == 0)
-      logmsg(kLERROR,"Please run as a standard user, not as root.");
+      logmsg(kLERROR,"Please run as a standard user, not as root.",kLERROR);
 
    std::string user=utils::getUSER();
    if (!utils::isindockergroup(user))
-      logmsg(kLERROR,"Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
+      logmsg(kLERROR,"Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E, kLERROR);
 
    if (!utils::canrundocker(user))
-      logmsg(kLERROR,user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
+      logmsg(kLERROR,user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E, kLERROR);
 
    if (!utils::commandexists("docker"))
-      logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
+      logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )", kLERROR);
 
    if (!utils::commandexists("wget"))
-      logmsg(kLERROR,"Please install wget before using dRunner.");
+      logmsg(kLERROR,"Please install wget before using dRunner.", kLERROR);
 
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
-      logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?");
+      logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?", kLERROR);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
@@ -128,7 +127,7 @@ void mainroutines::process(const params & p)
             command_setup::update(p, settings); // defined in command_setup
          else
          { // first argument is service name.
-            service s(p.getArgs()[0], settings, p);
+            service s(p, settings, p.getArgs()[0]);
             s.update();
          }
          break;
@@ -137,21 +136,23 @@ void mainroutines::process(const params & p)
       case c_checkimage:
       {
          if (p.getArgs().size()==0)
-            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
-         command_install::validateImage(p,settings,p.getArgs()[0]);
+            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME",p);
+
+         service s(p, settings, p.getArgs()[0]);
+         s.validateImage();
          break;
       }
 
       case c_install:
       {
          if (p.numArgs()<1 || p.numArgs()>2)
-            logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
+            logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]",p);
          std::string imagename = p.getArgs().at(0);
          std::string servicename;
          if ( p.getArgs().size()==2)
-            servicename=p.getArgs()[1];
-         service svc(servicename,settings,p);
-         command_install::installService(p,settings,imagename,svc);
+            servicename=p.getArgs()[1]; // if empty then install will set to default from imagename.
+         service svc(p, settings, servicename, imagename);
+         svc.install();
          break;
       }
 
@@ -169,7 +170,7 @@ void mainroutines::process(const params & p)
          if (p.numArgs() < 1)
             logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
 
-         service svc(p.getArgs()[0], settings, p);
+         service svc(p, settings, p.getArgs()[0]);
          if (!svc.isValid())
             logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
 

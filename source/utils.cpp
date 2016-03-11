@@ -204,7 +204,7 @@ namespace utils
       std::string op;
       int rval = bashcommand("echo $USER",op);
       if (rval!=0)
-         logmsg(kLERROR,"Couldn't get current user.");
+         logmsg(kLERROR,"Couldn't get current user.", kLERROR);
       return op;
    }
 
@@ -224,7 +224,7 @@ namespace utils
          buff[len] = '\0';
          return std::string(buff);
       }
-      logmsg(kLERROR,"Couldn't get path to drunner executable!");
+      logmsg(kLERROR,"Couldn't get path to drunner executable!", kLERROR);
       return "";
    }
 
@@ -245,7 +245,7 @@ namespace utils
       std::string op;
       int rval = bashcommand("echo $HOME",op);
       if (rval!=0)
-         logmsg(kLERROR,"Couldn't get current user's home directory.");
+         logmsg(kLERROR,"Couldn't get current user's home directory.", kLERROR);
       return op+"/bin";
    }
 
@@ -349,7 +349,7 @@ namespace utils
          logmsg(kLDEBUG,"Recursively deleted "+s,p);
       }
       else
-         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
+         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).",p);
    }
 
    void delfile(const std::string & fullpath,const params & p)
@@ -359,7 +359,7 @@ namespace utils
          std::string op;
          if (bashcommand("rm -f "+fullpath+" 2>&1", op) != 0)
             logmsg(kLERROR, "Unable to remove "+fullpath + " - "+op,p);
-         logmsg(kLDEBUG,"Deleted "+fullpath);
+         logmsg(kLDEBUG,"Deleted "+fullpath,p);
          }
    }
 
@@ -368,7 +368,7 @@ namespace utils
    std::string hostIP;
    if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'",hostIP) !=0)
       logmsg(kLERROR,"Couldn't get host IP.",p);
-   logmsg(kLDEBUG,"Using "+hostIP+" for hostIP.");
+   logmsg(kLDEBUG,"Using "+hostIP+" for hostIP.",p);
    return hostIP;
    }
 
