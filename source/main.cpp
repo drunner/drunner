@@ -34,7 +34,7 @@ int main(int argc, char **argv)
       bool canRunDocker=utils::canrundocker(getUSER());
       logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath(), p);
 
-      mainroutines::process(p);
+      return mainroutines::process(p);
    }
 
    catch (const eExit & e) {
@@ -71,14 +71,14 @@ void mainroutines::check_basics()
 
 // ----------------------------------------------------------------------------------------------------------------------
 
-void mainroutines::process(const params & p)
+int mainroutines::process(const params & p)
 {
    // handle setup specially.
    if (p.getCommand()==c_setup)
    {
       int rval=command_setup::setup(p);
       if (rval!=0) throw eExit("Setup failed.",rval);
-      return;
+      return 0;
    }
 
    // allow unit tests to be run directly from installer.
@@ -90,7 +90,7 @@ void mainroutines::process(const params & p)
       if (result!=0)
          logmsg(kLERROR,"Unit tests failed.",p);
       logmsg(kLINFO,"All unit tests passed.",p);
-      return;
+      return 0;
    }
 
    if (!utils::isInstalled())
@@ -215,6 +215,14 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_status:
+      {
+         if (p.getArgs().size() < 1)
+            logmsg(kLERROR, "Usage: drunner status SERVICENAME", p);
+         service svc(p, settings, p.getArgs()[0]);
+         return svc.status();
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(
@@ -223,8 +231,10 @@ void mainroutines::process(const params & p)
           |   That command has not been implemented and I am sad. :,(   |
           \-------------------------------------------------------------/
 )EOF",p);
-         }
+            return 1;
+      }
    }
+   return 0;
 }
 
 

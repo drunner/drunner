@@ -29,6 +29,7 @@ public:
    void backup(const std::string & backupfile);
    void restore(const std::string & backupfile);
    void enter();
+   int status();
 
    const params & getParams() const;
 

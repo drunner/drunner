@@ -130,3 +130,18 @@ void service::enter()
    execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
 }
 
+int service::status()
+{
+   if (!utils::fileexists(getPath()))
+   {
+      logmsg(kLINFO, getName() + " is not installed.");
+      return 1;
+   }
+   if (!isValid())
+   {
+      logmsg(kLINFO, getName() + " is not a valid service. Try  drunner recover "+getName());
+      return 1;
+   }
+   logmsg(kLINFO, getName() + " is installed and valid.");
+   return 0;
+}

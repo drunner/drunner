@@ -7,7 +7,7 @@ namespace mainroutines
 {
 
    void check_basics();
-   void process(const params & p);
+   int process(const params & p);
 
 } // namespace
 
