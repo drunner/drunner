@@ -60,6 +60,7 @@ namespace utils
 
    std::string getTime();
    std::string getPWD();
+   bool dockerVolExists(const std::string & vol);
 }
 
 #endif

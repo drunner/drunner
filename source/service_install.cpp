@@ -97,13 +97,12 @@ void service::createVolumes(const sh_variables * variables)
 		std::string volname = dockervols[i];
 		std::string volpath = volumes[i];
 
-		std::string op;
-		int rval = utils::bashcommand("docker volume ls | grep \"" + volname + "\"", op);
-		if (rval == 0)
+      if (utils::dockerVolExists(volname))
 			logmsg(kLINFO, "A docker volume already exists for " + volname + ", reusing it.");
 		else
 		{
-			rval = utils::bashcommand("docker volume create --name=\"" + volname + "\"", op);
+         std::string op;
+			int rval = utils::bashcommand("docker volume create --name=\"" + volname + "\"", op);
 			if (rval != 0)
 				logmsg(kLERROR, "Unable to create docker volume " + volname);
 			// set permissions on volume.

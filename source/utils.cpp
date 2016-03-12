@@ -383,5 +383,13 @@ namespace utils
       return std::string(p);
    }
 
+   bool dockerVolExists(const std::string & vol)
+   { // this could be better - will match substrings rather than whole volume name. :/ 
+      // We name with big unique names so unlikely to be a problem for us.
+      std::string op;
+      int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"", op);
+      return (rval == 0); 
+   }
+
 
 } // namespace utils

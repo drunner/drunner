@@ -1,11 +1,14 @@
+#include <cstdlib>
+
 #include "service.h"
 #include "utils.h"
 #include "sh_variables.h"
+#include "compress.h"
 
 class tempfolder
 {
 public:
-   tempfolder(const std::string & s, const params & p) : mPath(s), mP(p) {
+   tempfolder(std::string s, const params & p) : mPath(s), mP(p) {   // http://stackoverflow.com/a/10232761
       utils::makedirectory(mPath, mP, S_777);
    }
 
@@ -21,6 +24,7 @@ private:
 };
 
 
+// Back up this service to backupfile.
 void service::backup(const std::string & backupfile)
 {
    std::string op, bf = utils::getabsolutepath(backupfile);
@@ -46,10 +50,17 @@ void service::backup(const std::string & backupfile)
    utils::bashcommand(getPathServiceRunner() + " backupstart \"" + tempc + "\"", op);
 
    // back up volume containers
+   const char * password = std::getenv("PASS");
    const std::vector<std::string> & dockervols(shv.getDockerVols());
    for (auto const & entry : dockervols)
    {
-      // check if docker volume exists, if so back it up.
+      if (utils::dockerVolExists(entry))
+      {
+         compress::compress_volume(password, entry, tempf, entry + ".tar.7z");
+         logmsg(kLDEBUG, "Backed up docker volume " + entry);
+      }
+      else
+         logmsg(kLINFO, "Couldn't find docker volume " + entry + " ... skipping.");
    }
 }
 
