@@ -62,6 +62,7 @@ namespace utils
    std::string getPWD();
    bool dockerVolExists(const std::string & vol);
 
+   std::string getenv(std::string envParam);
 
    class tempfolder
    {

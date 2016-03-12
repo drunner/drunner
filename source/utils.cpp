@@ -392,6 +392,15 @@ namespace utils
       return (rval == 0); 
    }
 
+   std::string getenv(std::string envParam)
+   {
+      const char * cstr = std::getenv(envParam.c_str());
+      std::string r;
+      if (cstr != NULL)
+         r = std::string(cstr);
+      return r;
+   }
+
 
 
    tempfolder::tempfolder(std::string d, const params & p) : mPath(d), mP(p) 
@@ -445,7 +454,9 @@ namespace utils
             oss << entry << " ";
          logmsg(kLDEBUG, oss.str(), mP);
          tidy(); // throwing from ctor does not invoke dtor!
-         logmsg(kLERROR, "Docker command failed.", mP);
+         std::ostringstream oss2;
+         oss2 << "Docker command failed. Return code=" << rval;
+         logmsg(kLERROR, oss2.str(), mP);
       }
    }
    dockerrun::~dockerrun()

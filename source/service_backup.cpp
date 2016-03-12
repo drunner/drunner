@@ -37,7 +37,7 @@ void service::backup(const std::string & backupfile)
    utils::bashcommand(getPathServiceRunner() + " backupstart \"" + tempc + "\"", op);
 
    // back up volume containers
-   const char * password = std::getenv("PASS");
+   std::string password = utils::getenv("PASS");
    const std::vector<std::string> & dockervols(shv.getDockerVols());
    for (auto const & entry : dockervols)
    {

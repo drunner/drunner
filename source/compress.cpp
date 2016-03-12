@@ -42,7 +42,7 @@ namespace compress
       args.push_back(archivename);
       //args.push_back("bash");
       //args.push_back("-c");
-      //args.push_back("dr_compress " + archivename + " && chmod 0755 /dst/" + archivename);
+      //args.push_back("\"dr_compress " + archivename + " && chmod 0755 /dst/" + archivename+"\"");
 
       utils::dockerrun dr(cmd, args,"dr_compress",p);
 
@@ -69,7 +69,7 @@ namespace compress
       if (!utils::dockerVolExists(volumename))
          fatal("Can't compress non-existant volume " + volumename);
 
-      return compress(password, volumename, archivefolder, archivename,p);
+      return compress(password, volumename, archivefolder+"/", archivename,p);
    }
          
          
@@ -82,7 +82,7 @@ namespace compress
          fatal("Can't archive non-existant folder " + foldername);
       std::string ap = utils::getcanonicalpath(foldername);
 
-      return compress(password, ap, archivefolder, archivename,p);
+      return compress(password, ap+"/", archivefolder+"/", archivename,p);
    }
 
 
