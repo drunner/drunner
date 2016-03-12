@@ -411,6 +411,17 @@ namespace utils
       return r;
    }
 
+   bool copyfile(std::string src, std::string dest)
+   {
+      // boost bug makes copy_file grumpy with c++11x.
+      // also can't copy to another filesystem.
+      // so we just use bash.
+
+      std::string op;
+      int r = bashcommand("cp -a " + src + " " + dest,op);
+      return (r == 0);
+   }
+
 
 
    tempfolder::tempfolder(std::string d, const params & p) : mPath(d), mP(p) 

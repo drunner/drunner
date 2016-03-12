@@ -9,7 +9,7 @@ class sh_variables;
 class service
 {
 public:
-   service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename="" );
+   service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename = "" );
 
    std::string getPath() const;
    std::string getPathdRunner() const;
@@ -34,15 +34,15 @@ public:
    const std::string getImageName() const;
 
 private:
-   void setName(const std::string & servicename);
+   void setImageName(std::string imagename);
    void ensureDirectoriesExist() const;
    void createVolumes(const sh_variables * variables);
    void createLaunchScript();
    std::string getUserID();
    void logmsg(eLogLevel level, std::string s) const;
 
-   std::string mName;
-   mutable std::string mImageName;
+   const std::string mName;
+   std::string mImageName;
    const sh_drunnercfg & mSettings;
    const params & mParams;
 };

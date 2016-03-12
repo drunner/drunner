@@ -65,6 +65,8 @@ namespace utils
 
    std::string getenv(std::string envParam);
 
+   bool copyfile(std::string src, std::string dest);
+
    class tempfolder
    {
    public:

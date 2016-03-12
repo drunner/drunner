@@ -13,7 +13,11 @@ namespace compress
    bool compress_folder(std::string password, std::string foldername,
       std::string archivefolder, std::string archivename, const params & p);
 
+   bool decompress_volume(std::string password, std::string targetvolumename,
+      std::string archivefolder, std::string archivename, const params & p);
 
+   bool decompress_folder(std::string password, std::string targetfoldername,
+      std::string archivefolder, std::string archivename, const params & p);
 
 } // namespace
 

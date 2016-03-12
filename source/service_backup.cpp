@@ -25,7 +25,7 @@ void service::backup(const std::string & backupfile)
 
    // write out variables that we need to decompress everything.
    sh_variables shv(getPathVariables()); // loads variables.sh from the service.
-   shv.writecopy(tempparent.getpath() + "/variables.sh"); // output.
+   shv.writecopy(tempparent.getpath() + "/oldvariables.sh"); // output.
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    std::string tempf = tempparent.getpath() + "/drbackup";
@@ -55,12 +55,12 @@ void service::backup(const std::string & backupfile)
 
    // compress everything together
    boost::filesystem::path fullpath(bf);
-   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), fullpath.filename().string(),mParams);
+   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z",mParams);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
    // move compressed file to target dir.
-   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/" + fullpath.filename().string());
+   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar.7z");
    std::string dest = fullpath.string();
    if (!utils::fileexists(source))
       logmsg(kLERROR, "Expected archive not found at " + source);
@@ -68,6 +68,7 @@ void service::backup(const std::string & backupfile)
       //exit(0);
       logmsg(kLERROR, "Couldn't move archive from "+source+" to " + dest);
 
+   logmsg(kLINFO, "Archive of service " + getName() + " created at " + dest);
 }
 
 
@@ -92,6 +93,48 @@ void service::restore(const std::string & backupfile)
    // for container custom backups (e.g. mysqldump)
    std::string tempc = tempparent.getpath() + "/containerbackup";
 
+   // decompress main backup
+   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar.7z"))
+      logmsg(kLERROR, "Couldn't copy archive to temp folder.");
 
+   std::string password = utils::getenv("PASS");
+   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z", mParams);
 
+   // read in old variables, just need imagename and olddockervols from them.
+   sh_variables oldvars(tempparent.getpath() + "/oldvariables.sh");
+   if (!oldvars.readOkay())
+      logmsg(kLERROR, "Backup corrupt - oldvariables.sh missing.");
+
+   if (!utils::fileexists(tempc))
+      logmsg(kLERROR, "Backup corrupt - missing " + tempc);
+   for (auto entry : oldvars.getDockerVols())
+      if (!utils::fileexists(tempf + "/" + entry + ".tar.7z"))
+         logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
+
+   // backup seems okay - lets go!
+   setImageName(oldvars.getImageName());
+   install();
+
+   // load in the new variables.
+   sh_variables newvars(getPathVariables());
+   if (!newvars.readOkay())
+      logmsg(kLERROR, "Installation failed - variables.sh broken.");
+
+   // sort out all the volumes. Allow names to change between backup and restore, but not number of
+   // volumes or order.
+   if (oldvars.getDockerVols().size() != newvars.getDockerVols().size())
+      logmsg(kLERROR, "Number of docker volumes stored does not match what we expect. Can't restore backup.");
+   for (uint i = 0; i < oldvars.getDockerVols().size(); ++i)
+   {
+      if (utils::dockerVolExists(newvars.getDockerVols()[i]))
+         logmsg(kLERROR, "Restore failed - there's an existing volume in the way: " + newvars.getDockerVols()[i] + " ... install then obliterate to clear it.");
+      compress::decompress_volume(password, newvars.getDockerVols()[i], tempf, oldvars.getDockerVols()[i] + ".tar.7z", mParams);
+   }
+
+   // tell the dService to do its restore.
+   std::string op;
+   utils::bashcommand(getPathServiceRunner() + " restore \"" + tempc + "\"", op);
+
+   logmsg(kLINFO, "The backup " + bf + " has been restored to service " + getName() + ". Try it!");
 }
+

@@ -175,17 +175,6 @@ void service::recreate(bool updating)
 
 void service::install()
 {
-	if (getName().length() == 0)
-	{
-		std::string servicename = getImageName();
-		size_t found;
-		while ((found = servicename.find("/")) != std::string::npos)
-			servicename.erase(0, found + 1);
-		while ((found = servicename.find(":")) != std::string::npos)
-			servicename.erase(found);
-      setName(servicename);
-	}
-
    logmsg(kLDEBUG, "Installing " + getName() + " at " + getPath() + ", using image " + getImageName());
 	if (utils::fileexists(getPath()))
 		logmsg(kLERROR, "Service already exists. Try:   drunner update " + getName());

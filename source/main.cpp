@@ -151,6 +151,16 @@ void mainroutines::process(const params & p)
          std::string servicename;
          if ( p.getArgs().size()==2)
             servicename=p.getArgs()[1]; // if empty then install will set to default from imagename.
+         else
+         {
+            servicename = imagename;
+            size_t found;
+            while ((found = servicename.find("/")) != std::string::npos)
+               servicename.erase(0, found + 1);
+            while ((found = servicename.find(":")) != std::string::npos)
+               servicename.erase(found);
+         }
+
          service svc(p, settings, servicename, imagename);
          svc.install();
          break;

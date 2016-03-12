@@ -9,7 +9,18 @@ service::service(const params & prms, const sh_drunnercfg & settings, const std:
    mSettings(settings),
    mParams(prms)
 {
-
+   if (utils::fileexists(getPathVariables()))
+   {
+      if (mImageName.length() == 0)
+      { // if imagename override not provided and variables.sh exists then load it from variables.sh
+         sh_variables shv(getPathVariables());
+         if (!shv.readOkay())
+            logmsg(kLERROR, "Couldn't read " + getPathVariables());
+         mImageName = shv.getImageName();
+      }
+      else
+         logmsg(kLERROR, "Coding logic error - ImageName provided as override to service class, but the service already exists with a variable.sh file.");
+   }
 }
 
 std::string service::getPath() const
@@ -47,10 +58,11 @@ std::string service::getName() const
    return mName;
 }
 
-void service::setName(const std::string & servicename)
+void service::setImageName(std::string imagename)
 {
-   mName = servicename;
+   mImageName = imagename;
 }
+
 
 void service::ensureDirectoriesExist() const
 {
@@ -108,13 +120,6 @@ const params & service::getParams() const
 
 const std::string service::getImageName() const
 {
-   if (mImageName.length() == 0)
-   {
-      sh_variables shv(getPathVariables());
-      if (!shv.readOkay())
-         logmsg(kLERROR, "Couldn't read " + getPathVariables());
-      mImageName = shv.getImageName(); // mutable.
-   }
    return mImageName;
 }
 
