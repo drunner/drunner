@@ -1,5 +1,7 @@
 #include <cstdlib>
 
+#include <boost/filesystem.hpp>
+
 #include "service.h"
 #include "utils.h"
 #include "sh_variables.h"
@@ -62,7 +64,19 @@ void service::backup(const std::string & backupfile)
       else
          logmsg(kLINFO, "Couldn't find docker volume " + entry + " ... skipping.");
    }
+
+   // notify service we've finished our backup.
+   utils::bashcommand(getPathServiceRunner() + " backupend \"" + tempc + "\"", op);
+
+   // compress everything together
+   boost::filesystem::path p(bf);
+   bool ok=compress::compress_folder(password, tempparent.getpath(), p.parent_path().string(), p.filename().string());
+   if (!ok)
+      logmsg(kLERROR, "Couldn't archive service " + getName());
 }
+
+
+
 
 
 void service::restore(const std::string & backupfile)
