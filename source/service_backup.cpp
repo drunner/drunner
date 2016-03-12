@@ -54,10 +54,20 @@ void service::backup(const std::string & backupfile)
    utils::bashcommand(getPathServiceRunner() + " backupend \"" + tempc + "\"", op);
 
    // compress everything together
-   boost::filesystem::path p(bf);
-   bool ok=compress::compress_folder(password, tempparent.getpath(), p.parent_path().string(), p.filename().string(),mParams);
+   boost::filesystem::path fullpath(bf);
+   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), fullpath.filename().string(),mParams);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
+
+   // move compressed file to target dir.
+   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/" + fullpath.filename().string());
+   std::string dest = fullpath.string();
+   if (!utils::fileexists(source))
+      logmsg(kLERROR, "Expected archive not found at " + source);
+   if (0 != rename(source.c_str(), dest.c_str()))
+      //exit(0);
+      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + dest);
+
 }
 
 
@@ -75,7 +85,8 @@ void service::restore(const std::string & backupfile)
       logmsg(kLERROR, "Service " + getName() + " already exists. Uninstall it before restoring from backup.");
 
    utils::tempfolder tempparent(mSettings.getPath_Temp() + "/restore-"+getName(), mParams);
-   
+   utils::tempfolder archivefolder(mSettings.getPath_Temp() + "/archivefolder-" + getName(), mParams);
+
    // for docker volumes
    std::string tempf = tempparent.getpath() + "/drbackup";
    // for container custom backups (e.g. mysqldump)
