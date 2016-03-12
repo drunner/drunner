@@ -30,6 +30,7 @@ namespace compress
       args.push_back("--name=\"dr_compress\"");
       if (password.length() > 0)
       {
+         logmsg(kLDEBUG, "Using password supplied.", p);
          args.push_back("-e");
          args.push_back("PASS=\"" + password + "\"");
       }
@@ -38,26 +39,11 @@ namespace compress
       args.push_back("-v");
       args.push_back(archivefolder + ":/dst");
       args.push_back("drunner/install-rootutils");
-      args.push_back("/usr/local/bin/dr_compress");
-      args.push_back(archivename);
-      //args.push_back("bash");
-      //args.push_back("-c");
-      //args.push_back("\"dr_compress " + archivename + " && chmod 0755 /dst/" + archivename+"\"");
+      args.push_back("bash");
+      args.push_back("-c");
+      args.push_back("/usr/local/bin/dr_compress " + archivename + " && chmod 0666 /dst/" + archivename);
 
       utils::dockerrun dr(cmd, args,"dr_compress",p);
-
-
-      //std::string op, cmd;
-      //cmd = "docker run -i --name=dr_compress ";
-      //if (password.length() > 0)
-      //   cmd += "-e \"PASS=" + password + "\" ";
-      //cmd += " -v " + volumename + ":/src -v " + archivefolder + ":/dst drunner/install-rootutils ";
-      //cmd += "bash -c \"dr_compress " + archivename + " && chmod 0755 /dst/" + archivename + "\"";
-
-      //logmsg(kLDEBUG, cmd, kLDEBUG);
-
-      //if (0 != utils::bashcommand(cmd, op))
-      //   fatal("Failed to archive volume " + volumename);
 
       return true;
    }

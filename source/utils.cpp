@@ -87,7 +87,7 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   int bashcommand(std::string command, const std::vector<std::string> & args)
+   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr)
    { // don't capture output, non-blocking streaming!
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
       redi::ipstream child(command, args, mode);
@@ -100,7 +100,8 @@ namespace utils
          if (!finished[0])
          {
             while ((n = child.err().readsome(buf, sizeof(buf))) > 0)
-               std::cerr.write(buf, n).flush();
+               if (printstderr)
+                  std::cerr.write(buf, n).flush();
             if (child.eof())
             {
                finished[0] = true;
@@ -112,7 +113,8 @@ namespace utils
          if (!finished[1])
          {
             while ((n = child.out().readsome(buf, sizeof(buf))) > 0)
-               std::cout.write(buf, n).flush();
+               if (printstdout)
+                  std::cout.write(buf, n).flush();
             if (child.eof())
             {
                finished[1] = true;
@@ -122,8 +124,16 @@ namespace utils
          }
       }
 
+      child.rdbuf()->close();
       int rval= child.rdbuf()->status(); // return child status.
       return rval;
+   }
+
+   int bashcommand(std::string command, const std::vector<std::string> & args, const params & p)
+   {
+      bool printstdout = p.getDisplayServiceOutput();
+      bool printstderr = p.getDisplayServiceOutput();
+      return bashcommand(command, args, printstdout, printstderr);
    }
 
 
@@ -446,7 +456,7 @@ namespace utils
    dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername, const params & p)
       : mDockerName(dockername), mP(p)
    {
-      int rval = utils::bashcommand(cmd, args);
+      int rval = utils::bashcommand(cmd, args,p);
       if (rval != 0)
       {
          std::ostringstream oss;

@@ -76,7 +76,7 @@ void service::servicecmd()
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
       cargs.push_back("help");
-      utils::bashcommand(getPathServiceRunner(), cargs);
+      utils::bashcommand(getPathServiceRunner(), cargs, true,true);
       return;
    }
 
@@ -93,7 +93,7 @@ void service::servicecmd()
       lmsg += "[" + entry + "] ";
    logmsg(kLDEBUG, lmsg);
 
-   utils::bashcommand(getPathServiceRunner(), cargs);
+   utils::bashcommand(getPathServiceRunner(), cargs,mParams);
 }
 
 void service::update()
