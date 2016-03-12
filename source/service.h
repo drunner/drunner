@@ -30,6 +30,8 @@ public:
    void restore(const std::string & backupfile);
    void enter();
    int status();
+   int recover();
+   int uninstall();
 
    const params & getParams() const;
 

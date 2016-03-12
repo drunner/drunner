@@ -223,6 +223,34 @@ int mainroutines::process(const params & p)
          return svc.status();
       }
 
+      case c_recover:
+      {
+         if (p.getArgs().size() < 1)
+            logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]", p);
+         std::string servicename = p.getArgs()[0];
+         std::string imagename;
+         if (p.getArgs().size() < 2)
+         { // see if we can read the imagename from the damaged service.
+            service svc1(p, settings, p.getArgs()[0]);
+            if (!utils::fileexists(svc1.getPath()))
+               logmsg(kLERROR, "That service is not installed. Try installing, which will preserve any data volumes.",p);
+
+            imagename = svc1.getImageName();
+            if (imagename.length() == 0)
+               logmsg(kLERROR, "Service " + svc1.getName() + " is too broken to determine the imagename. Please use   drunner recover SERVICENAME IMAGENAME",p);
+         }
+         else
+            imagename = p.getArgs()[1];
+
+         logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename, p);
+         service svc(p, settings, servicename, imagename);
+         svc.uninstall();
+         svc.install();
+
+         logmsg(kLINFO, servicename + " recovered.", p);
+         return 0;
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(

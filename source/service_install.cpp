@@ -188,3 +188,8 @@ void service::install()
    recreate(false);
 }
 
+int service::uninstall()
+{
+   logmsg(kLWARN, "uninstall E_NOTIMPL.");
+   return 0;
+}

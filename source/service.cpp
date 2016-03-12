@@ -21,7 +21,7 @@ service::service(const params & prms, const sh_drunnercfg & settings, const std:
          mImageName = shv.getImageName();
       }
       else
-         logmsg(kLERROR, "Coding logic error - ImageName provided as override to service class, but the service already exists with a variable.sh file.");
+         logmsg(kLDEBUG, "variables.sh exists, but forcing imagename to be " + imagename);
    }
 }
 
