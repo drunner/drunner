@@ -7,23 +7,7 @@
 #include "sh_variables.h"
 #include "compress.h"
 
-class tempfolder
-{
-public:
-   tempfolder(std::string s, const params & p) : mPath(s), mP(p) {   // http://stackoverflow.com/a/10232761
-      utils::makedirectory(mPath, mP, S_777);
-   }
 
-   ~tempfolder() {
-      utils::deltree(mPath, mP);
-   }
-
-   const std::string & getpath() { return mPath; }
-
-private:
-   std::string mPath;
-   const params & mP;
-};
 
 
 // Back up this service to backupfile.
@@ -36,7 +20,8 @@ void service::backup(const std::string & backupfile)
    if (!isValid())
       logmsg(kLERROR, "Validation of " + getName() + " failed. Try drunner recover " + getName());
 
-   tempfolder tempparent(mSettings.getPath_Temp() + "/backup-"+getName(), mParams);
+   utils::tempfolder archivefolder(mSettings.getPath_Temp() + "/archivefolder-" + getName(), mParams);
+   utils::tempfolder tempparent(mSettings.getPath_Temp() + "/backup-"+getName(), mParams);
 
    // write out variables that we need to decompress everything.
    sh_variables shv(getPathVariables()); // loads variables.sh from the service.
@@ -58,7 +43,7 @@ void service::backup(const std::string & backupfile)
    {
       if (utils::dockerVolExists(entry))
       {
-         compress::compress_volume(password, entry, tempf, entry + ".tar.7z");
+         compress::compress_volume(password, entry, tempf, entry + ".tar.7z",mParams);
          logmsg(kLDEBUG, "Backed up docker volume " + entry);
       }
       else
@@ -70,7 +55,7 @@ void service::backup(const std::string & backupfile)
 
    // compress everything together
    boost::filesystem::path p(bf);
-   bool ok=compress::compress_folder(password, tempparent.getpath(), p.parent_path().string(), p.filename().string());
+   bool ok=compress::compress_folder(password, tempparent.getpath(), p.parent_path().string(), p.filename().string(),mParams);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 }
@@ -89,7 +74,7 @@ void service::restore(const std::string & backupfile)
    if (utils::fileexists(getPath()))
       logmsg(kLERROR, "Service " + getName() + " already exists. Uninstall it before restoring from backup.");
 
-   tempfolder tempparent(mSettings.getPath_Temp() + "/restore-"+getName(), mParams);
+   utils::tempfolder tempparent(mSettings.getPath_Temp() + "/restore-"+getName(), mParams);
    
    // for docker volumes
    std::string tempf = tempparent.getpath() + "/drbackup";

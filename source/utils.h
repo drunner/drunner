@@ -61,6 +61,36 @@ namespace utils
    std::string getTime();
    std::string getPWD();
    bool dockerVolExists(const std::string & vol);
+
+
+   class tempfolder
+   {
+   public:
+      tempfolder(std::string d, const params & p);
+      ~tempfolder();
+      const std::string & getpath();
+      
+   private:
+      void die(std::string msg);
+      void tidy();
+      std::string mPath;
+      const params & mP;
+   };
+
+   class dockerrun
+   {
+   public:
+      dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername, const params & p);
+      ~dockerrun();
+
+   private:
+      void tidy();
+
+      std::string mDockerName;
+      const params & mP;
+   };
+
+
 }
 
 #endif

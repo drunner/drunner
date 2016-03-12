@@ -1,3 +1,4 @@
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -344,7 +345,7 @@ namespace utils
       if (fileexists(s))
       {
          if (bashcommand("rm -rf "+s+" 2>&1", op) != 0)
-            logmsg(kLERROR, "Unable to remove existing support directory at "+s+" - "+op,p);
+            logmsg(kLERROR, "Unable to remove existing directory at "+s+" - "+op,p);
          logmsg(kLDEBUG,"Recursively deleted "+s,p);
       }
       else
@@ -389,6 +390,77 @@ namespace utils
       std::string op;
       int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"", op);
       return (rval == 0); 
+   }
+
+
+
+   tempfolder::tempfolder(std::string d, const params & p) : mPath(d), mP(p) 
+   {   // http://stackoverflow.com/a/10232761
+      eResult rslt = utils::mkdirp(d);
+      if (rslt == kRError)
+         die("Couldn't create " + d);
+      if (rslt == kRSuccess)
+         logmsg(kLDEBUG, "Created " + d, p);
+      if (rslt == kRNoChange)
+         die(d+ " already exists. Can't use as temp folder. Aborting.");
+
+      if (chmod(d.c_str(), S_777) != 0)
+         die("Unable to change permissions on " + d);
+   }
+
+   tempfolder::~tempfolder() 
+   {
+      tidy();
+   }
+
+   const std::string & tempfolder::getpath() 
+   { 
+      return mPath; 
+   }
+
+   void tempfolder::die(std::string msg)
+   {
+      tidy();
+      logmsg(kLERROR, msg, mP); // throws. dtor won't be called since die is only called from ctor.
+   }
+   void tempfolder::tidy()
+   {
+      std::string op;
+      if (bashcommand("rm -rf " + mPath + " 2>&1", op) != 0)
+         std::cerr << "ERROR: failed to remove " + mPath << std::endl; // don't throw on dtor.
+      else
+         logmsg(kLDEBUG, "Recursively deleted " + mPath,mP);
+   }
+
+
+
+   dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername, const params & p)
+      : mDockerName(dockername), mP(p)
+   {
+      int rval = utils::bashcommand(cmd, args);
+      if (rval != 0)
+      {
+         std::ostringstream oss;
+         for (auto entry : args)
+            oss << entry << " ";
+         logmsg(kLDEBUG, oss.str(), mP);
+         tidy(); // throwing from ctor does not invoke dtor!
+         logmsg(kLERROR, "Docker command failed.", mP);
+      }
+   }
+   dockerrun::~dockerrun()
+   {
+      tidy();
+   }
+
+   void dockerrun::tidy()
+   {
+      std::string op;
+      int rval = utils::bashcommand("docker rm " + mDockerName, op);
+      if (rval != 0)
+         std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
+      else
+         logmsg(kLDEBUG, "Deleted docker volume " + mDockerName, mP);
    }
 
 
