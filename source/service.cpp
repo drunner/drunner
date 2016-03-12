@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "service.h"
 #include "logmsg.h"
 #include "sh_variables.h"
@@ -121,5 +123,10 @@ const params & service::getParams() const
 const std::string service::getImageName() const
 {
    return mImageName;
+}
+
+void service::enter()
+{
+   execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
 }
 

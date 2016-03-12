@@ -184,6 +184,15 @@ void mainroutines::process(const params & p)
          break;
       }
 
+      case c_enter:
+      {
+         if (p.getArgs().size() < 1)
+            logmsg(kLERROR, "Usage: drunner enter SERVICENAME", p);
+         service svc(p, settings, p.getArgs()[0]);
+         svc.enter();
+         break;
+      }
+
       case c_build:
       {
          if (p.numArgs()<1)
