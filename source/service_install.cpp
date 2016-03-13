@@ -138,7 +138,7 @@ void service::recreate(bool updating)
       // copy files to service directory on host.
       std::string op;
       int r = utils::bashcommand("docker run --rm -it -v " +
-         getPathdRunner() + ":/tempcopy " + getImageName() + " /bin/bash -c \"cp -r /drunner/* /tempcopy/\"", op);
+         getPathdRunner() + ":/tempcopy " + getImageName() + " /bin/bash -c \"cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*\"", op);
       if (r != 0)
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.");
 
