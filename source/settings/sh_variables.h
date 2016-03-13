@@ -1,9 +1,13 @@
 #ifndef __SH_VARIABLES_H
 #define __SH_VARIABLES_H
 
+#include <string>
+#include <vector>
+
 #include "utils.h"
 #include "sh_servicecfg.h"
 #include "service.h"
+#include "settingsbash.h"
 
 class sh_variables : public settingsbash_reader
 {
@@ -67,7 +71,7 @@ private:
       volumes = servicecfg.getVolumes();
       extracontainers = servicecfg.getExtraContainers();
 
-      for (uint i = 0; i<volumes.size(); ++i)
+      for (unsigned int i = 0; i<volumes.size(); ++i)
       {
          dockervols.push_back("drunner-" + svc.getName() + "-" + utils::alphanumericfilter(volumes[i],false));
          dockeropts.push_back("-v");

@@ -211,8 +211,7 @@ int mainroutines::process(const params & p)
          if (!svc.isValid())
             logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
 
-         svc.servicecmd();
-         break;
+         return svc.servicecmd();
       }
 
       case c_status:
@@ -244,11 +243,7 @@ int mainroutines::process(const params & p)
 
          logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename, p);
          service svc(p, settings, servicename, imagename);
-         svc.uninstall();
-         svc.install();
-
-         logmsg(kLINFO, servicename + " recovered.", p);
-         return 0;
+         return (int)svc.recover();
       }
 
       case c_uninstall:
@@ -257,6 +252,14 @@ int mainroutines::process(const params & p)
             logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME", p);
          service svc(p, settings, p.getArgs()[0]);
          return (int)svc.uninstall();
+      }
+
+      case c_obliterate:
+      {
+         if (p.getArgs().size() < 1)
+            logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME", p);
+         service svc(p, settings, p.getArgs()[0]);
+         return (int)svc.obliterate();
       }
 
       default:

@@ -53,7 +53,7 @@ void servicehook::setNeedsHook(const service * const svc)
 {
    sh_servicecfg sc(svc->getPathServiceCfg());
    if (!sc.readOkay())
-      logmsg(kLERROR,"Service is broken (can't read servicecfg.sh: " + svc->getName(), mParams);
+      logmsg(kLWARN,"Service is broken (can't read servicecfg.sh: " + svc->getName()+")", mParams);
 
    mServiceRunner = svc->getPathServiceRunner();
    mStartCmd = "";

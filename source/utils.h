@@ -99,7 +99,7 @@ namespace utils
       const params & mP;
    };
 
+} // namespace
 
-}
 
 #endif

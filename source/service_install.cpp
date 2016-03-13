@@ -195,12 +195,59 @@ void service::install()
 
 eResult service::uninstall()
 {
+   if (!utils::fileexists(getPath()))
+      logmsg(kLERROR, "Can't uninstall " + getName() + " - it does not exist.");
+
    tVecStr args;
    servicehook hook(this, "uninstall", args, mParams);
    hook.starthook();
 
-   logmsg(kLWARN, "uninstall E_NOTIMPL.");
+   utils::deltree(getPath(), mParams);
 
    hook.endhook();
+   return kRSuccess;
+}
+
+eResult service::obliterate()
+{
+   if (!utils::fileexists(getPath()))
+      logmsg(kLERROR, "Can't obliterate " + getName() + " - it does not exist.");
+
+   tVecStr args;
+   servicehook hook(this, "obliterate", args, mParams);
+   hook.starthook();
+
+   logmsg(kLDEBUG, "Deleting all the docker volumes.");
+   {// [start] deleting docker volumes.
+
+      sh_variables variables(getPathVariables());
+      if (!variables.readOkay())
+         variables.createFromServiceCfg(*this);
+
+      for (auto entry : variables.getDockerVols())
+      {
+         logmsg(kLINFO, "Deleting docker volume " + entry);
+         std::string op;
+         if (0 != utils::bashcommand("docker volume rm " + entry, op))
+            logmsg(kLWARN, "Failed to delete " + entry + " -- " + op);
+      }
+   }// [end] deleting docker volumes.
+
+   // delete the service tree.
+   logmsg(kLDEBUG, "Deleting the service files.");
+   utils::deltree(getPath(), mParams);
+
+   logmsg(kLINFO, "Obliterated " + getName());
+   return kRSuccess;
+}
+
+eResult service::recover()
+{
+   if (utils::fileexists(getPath()))
+      uninstall();
+
+   install();
+
+   logmsg(kLINFO, getName() + " recovered.");
    return kRSuccess;
 }

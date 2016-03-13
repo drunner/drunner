@@ -3,6 +3,7 @@
 
 #include "params.h"
 #include "sh_drunnercfg.h"
+#include "cresult.h"
 
 class sh_variables;
 
@@ -23,10 +24,11 @@ public:
    bool isValid() const;
    void validateImage();
 
-   eResult servicecmd();
+   cResult servicecmd();
    eResult uninstall();
+   eResult obliterate();
+   eResult recover();
    int status();
-   int recover();
    void update();
    void install();
    void recreate(bool updating);

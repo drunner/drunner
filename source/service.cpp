@@ -99,7 +99,7 @@ bool service::isValid() const
    return true;
 }
 
-eResult service::servicecmd()
+cResult service::servicecmd()
 {
    std::vector<std::string> cargs( mParams.getArgs().begin(), mParams.getArgs().end() );
    cargs[0] = "servicerunner";
@@ -108,7 +108,7 @@ eResult service::servicecmd()
    {
       cargs.push_back("help");
       utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
-      return kRError;
+      return kRSuccess;
    }
 
    std::string command = mParams.getArgs()[1];
@@ -116,21 +116,15 @@ eResult service::servicecmd()
    if (utils::findStringIC(reservedwords, command))
       logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
 
-   //std::string lmsg;
-   //for (auto &entry : cargs)
-   //   lmsg += entry + " ";
-   //utils::trim(lmsg);
-   //logmsg(kLDEBUG, lmsg);
-
    std::vector<std::string> hookargs(cargs.begin() + 1, cargs.end());
    servicehook hook(this, "servicecmd", hookargs, mParams);
    hook.starthook();
 
-   utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
+   cResult rval( utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true) );
 
    hook.endhook();
 
-   return kRSuccess;
+   return rval;
 }
 
 void service::update()
