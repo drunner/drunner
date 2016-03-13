@@ -463,7 +463,6 @@ namespace utils
    }
 
 
-
    tempfolder::tempfolder(std::string d, const params & p) : mPath(d), mP(p) 
    {   // http://stackoverflow.com/a/10232761
       eResult rslt = utils::mkdirp(d);

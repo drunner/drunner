@@ -124,9 +124,9 @@ void dServiceLogger::nonrawoutput(std::string s)
       logverbatim(kLINFO, s, mP);
 }
 
-
 void dServiceLogger::processbuffer(std::string buffer)
 {
+   mEscapeFilter.strip(buffer);
    while (buffer.length() > 0) {
       if (!mInitialised)
       {
@@ -145,3 +145,49 @@ void dServiceLogger::processbuffer(std::string buffer)
       mInitialised = false;
    }
 }
+
+escapefilter::escapefilter() : mStage(kSearching)
+{
+}
+
+void escapefilter::strip(std::string & buffer)
+{
+   mPos = 0; // new string so if we're triggered etc consider from beginning.
+
+   while (true)
+   { // breakable loop
+
+      if (mStage == kSearching)
+      {
+         mPos = buffer.find('\033');
+         if (mPos == std::string::npos)
+            return;
+         buffer.erase(mPos, 1);
+         mStage = kGotEscape;
+      }
+
+      if (mStage == kGotEscape)
+      {
+         if (mPos >= buffer.length())
+            return;
+
+         if (buffer[mPos] != '[')
+            mStage = kSearching;            
+         else
+            mStage = kTriggered;
+      }
+
+      if (mStage == kTriggered)
+      {
+         size_t epos = buffer.find('m', mPos);
+         if (epos == std::string::npos)
+         {
+            buffer.erase(mPos);
+            return;
+         }
+         buffer.erase(mPos, epos - mPos + 1);
+         mStage = kSearching;
+      }
+   }
+}
+

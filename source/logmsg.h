@@ -10,6 +10,22 @@ void logverbatim(eLogLevel level, std::string s, const params & p);
 
 std::string getheader();
 
+enum eStage
+{
+   kSearching,
+   kGotEscape,
+   kTriggered
+};
+
+class escapefilter
+{
+public:
+   escapefilter();
+   void strip(std::string & buffer);
+   eStage mStage;
+   size_t mPos;
+};
+
 class dServiceLogger
 {
 public:
@@ -25,6 +41,7 @@ private:
    bool mCErr;
    const params & mP;
    bool mInitialised;
+   escapefilter mEscapeFilter;
 };
 
 void fatal(std::string s);
