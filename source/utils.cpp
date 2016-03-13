@@ -114,6 +114,8 @@ namespace utils
 
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
       redi::ipstream child(command, args, mode);
+      if (!child.is_open())
+         fatal("Couldn't run " + command);
 
       char buf[1024];
       std::streamsize n;
