@@ -4,7 +4,7 @@ This is the C++ version of dRunner, inteded to soon replace http://drunner.io
 
 # Status
 
-In development, not yet usable.
+In development, partially working.
 
 # Overview
 
@@ -55,60 +55,3 @@ git clone git@github.com:j842/drunnerc.git
 make
 ```
 
-Samba:
-```
-[global]
-        netbios name = ${HOSTNAME}
-        server string = %h server (Samba, Docker)
-        server role = standalone server
-        map to guest = Bad User
-        guest account = PCGUEST
-        syslog = 0
-        log file = /var/log/samba/log.%m
-        max log size = 1000
-        dns proxy = No
-        idmap config * : backend = tdb
-        security = user
-        encrypt passwords = true
-        passdb backend = tdbsam
-        obey pam restrictions = yes
-        unix password sync = no
-        pam password change = no
-        hosts allow = ALL
-        load printers = no
-        printing = bsd
-        printcap name = /dev/null
-        disable spoolss = yes
-        domain master=no
-        local master=no
-        preferred master=no
-        interfaces = eth0
-[j]
-   browseable = yes
-   read list =
-   write list = j
-   path = /home/j
-   guest ok = no
-   directory mode = 0775
-   force directory mode = 0775
-   create mode = 0664
-   force create mode = 0664
-```
-
-
-
-devmount:
-```
-apt-get install cifs-utils
-mount -t cifs \
-        -o username=j,uid=1000,gid=1000,noexec,workgroup=JOHNE-XPS \
-        //10.10.100.199/dev  \
-        /home/j/dev
-```
-NOT
-```
-mount -t cifs \
-        -o username=j,rw,nounix,iocharset=utf8,file_mode=0644,dir_mode=0755,user=j,uid=1000,gid=1000,workgroup=JOHNE-XPS,password=$PASSWD \
-        //10.10.100.199/dev  \
-        /home/j/dev
-```
