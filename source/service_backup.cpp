@@ -124,15 +124,21 @@ void service::restore(const std::string & backupfile)
    if (!newvars.readOkay())
       logmsg(kLERROR, "Installation failed - variables.sh broken.");
 
-   // sort out all the volumes. Allow names to change between backup and restore, but not number of
-   // volumes or order.
+   // check that nothing about the volumes has changed in the dService.
    if (oldvars.getDockerVols().size() != newvars.getDockerVols().size())
-      logmsg(kLERROR, "Number of docker volumes stored does not match what we expect. Can't restore backup.");
-   for (uint i = 0; i < oldvars.getDockerVols().size(); ++i)
    {
-      if (utils::dockerVolExists(newvars.getDockerVols()[i]))
-         logmsg(kLERROR, "Restore failed - there's an existing volume in the way: " + newvars.getDockerVols()[i] + " ... install then obliterate to clear it.");
-      compress::decompress_volume(password, newvars.getDockerVols()[i], tempf, oldvars.getDockerVols()[i] + ".tar.7z", mParams);
+      logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.");
+      uninstall();
+      logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
+   }
+
+   // restore all the volumes.
+   for (unsigned int i = 0; i < newvars.getDockerVols().size(); ++i)
+   {
+      if (!utils::dockerVolExists(newvars.getDockerVols()[i]))
+         logmsg(kLERROR, "Installation should have created " + newvars.getDockerVols()[i] + " but didn't!");
+      compress::decompress_volume(password, newvars.getDockerVols()[i], 
+         tempf, oldvars.getDockerVols()[i] + ".tar.7z", mParams);
    }
 
    // tell the dService to do its restore_end action.
