@@ -10,6 +10,7 @@
 #include "sh_servicecfg.h"
 #include "sh_variables.h"
 #include "service.h"
+#include "servicehook.h"
 
 
 //using namespace utils;
@@ -108,7 +109,7 @@ void service::createVolumes(const sh_variables * variables)
 			// set permissions on volume.
 			std::string chowncmd = "docker run --name=\"" + dname + "\" -v \"" + volname + ":" + volpath +
 				"\" \"drunner/baseimage-alpine\" /bin/bash -c \"chown " + userid + ":root " + volpath + 
-            " && date >> " + volpath + "/install_date";
+            " && date >> " + volpath + "/install_date\"";
 			logmsg(kLDEBUG, chowncmd);
 			rval = utils::bashcommand(chowncmd, op);
 			if (rval != 0)
@@ -186,6 +187,10 @@ void service::install()
    validateImage();
 
    recreate(false);
+
+   tVecStr args;
+   servicehook hook(this, "install", args, mParams);
+   hook.endhook();
 }
 
 int service::uninstall()

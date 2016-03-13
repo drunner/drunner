@@ -101,8 +101,8 @@ bool service::isValid() const
 
 eResult service::servicecmd()
 {
-   std::vector<std::string> cargs;
-   cargs.push_back("servicerunner");
+   std::vector<std::string> cargs( mParams.getArgs().begin(), mParams.getArgs().end() );
+   cargs[0] = "servicerunner";
 
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
@@ -116,16 +116,14 @@ eResult service::servicecmd()
    if (utils::findStringIC(reservedwords, command))
       logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
 
-   for (uint i = 1; i < mParams.getArgs().size(); ++i)
-      cargs.push_back(mParams.getArgs()[i]);
+   //std::string lmsg;
+   //for (auto &entry : cargs)
+   //   lmsg += entry + " ";
+   //utils::trim(lmsg);
+   //logmsg(kLDEBUG, lmsg);
 
-   std::string lmsg;
-   for (auto &entry : cargs)
-      lmsg += utils::doquote(entry) + " ";
-   utils::trim(lmsg);
-   logmsg(kLDEBUG, lmsg);
-
-   servicehook hook(this, "servicecmd", lmsg, mParams);
+   std::vector<std::string> hookargs(cargs.begin() + 1, cargs.end());
+   servicehook hook(this, "servicecmd", hookargs, mParams);
    hook.starthook();
 
    utils::dServiceCmd(getPathServiceRunner(), cargs, mParams);
@@ -137,7 +135,8 @@ eResult service::servicecmd()
 
 void service::update()
 { // update the service (recreate it)
-   servicehook hook(this, "update", "", mParams);
+   tVecStr args;
+   servicehook hook(this, "update", args, mParams);
    hook.starthook();
 
    recreate(true);
@@ -157,7 +156,8 @@ const std::string service::getImageName() const
 
 void service::enter()
 {
-   servicehook hook(this, "enter", "", mParams);
+   tVecStr args;
+   servicehook hook(this, "enter", args, mParams);
    hook.starthook();
 
    execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
@@ -165,7 +165,8 @@ void service::enter()
 
 int service::status()
 {
-   servicehook hook(this, "status", "", mParams);
+   tVecStr args;
+   servicehook hook(this, "status", args, mParams);
    hook.starthook();
 
    if (!utils::fileexists(getPath()))

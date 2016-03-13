@@ -12,7 +12,7 @@ class service;
 class servicehook
 {
 public:
-   servicehook(const service * const svc, std::string actionname, std::string hookparams, const params & p);
+   servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p);
    eResult starthook();
    eResult endhook();
 private:
@@ -20,7 +20,7 @@ private:
    eResult runHook(std::string se);
 
    std::string mActionName;
-   std::string mHookParams;
+   const std::vector<std::string> & mHookParams;
    const params & mParams;
 
    std::string mServiceRunner;

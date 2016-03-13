@@ -8,6 +8,8 @@
 #include "params.h"
 #include "sh_drunnercfg.h"
 
+typedef std::vector<std::string> tVecStr;
+
 // Shell utilities
 namespace utils
 {

@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "sh_servicecfg.h"
 
-servicehook::servicehook(const service * const svc, std::string actionname, std::string hookparams, const params & p) :
+servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p) :
    mActionName(actionname), mHookParams(hookparams), mParams(p)
 {
    setNeedsHook(svc);
@@ -31,8 +31,13 @@ eResult servicehook::endhook()
 
 eResult servicehook::runHook(std::string se)
 {
-   std::string op;
-   int rval = utils::bashcommand(mServiceRunner + " " + se + " " + mHookParams, op);
+   std::vector<std::string> args;
+   args.push_back("servicerunner");
+   args.push_back(se);
+   for (const auto & entry : mHookParams)
+      args.push_back(entry);
+
+   int rval = utils::dServiceCmd(mServiceRunner, args, mParams);
    if (rval != 0 && rval != 3)
    {
       logmsg(kLWARN, se + " failed.", mParams);
@@ -40,8 +45,6 @@ eResult servicehook::runHook(std::string se)
    }
 
    logmsg(kLDEBUG, "dService hook for " + se + " complete", mParams);
-   if (mHookParams.length() > 0)
-      logmsg(kLDEBUG, "  (params were: " + mHookParams + ")", mParams);
    return eResult(rval);
 }
 

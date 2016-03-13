@@ -94,6 +94,21 @@ namespace utils
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p)
    { // non-blocking streaming
+      { // sanity check parameters.
+         if (args.size() < 1)
+            fatal("dServiceCmd: arguments must include the actual command being run.");
+         boost::filesystem::path bfp(command);
+         if (bfp.filename().string() != args[0])
+            fatal("dServiceCmd: command doesn't match args - " + bfp.filename().string() + " versus " + args[0]);
+      }
+
+      { // log the command, getting the args right is non-trivial in some cases so this is useful.
+         std::string cmd;
+         for (const auto & entry : args)
+            cmd += "[" + entry + "] ";
+         logmsg(kLDEBUG, "dServiceCmd: " + cmd, p);
+      }
+
       dServiceLogger logcout(false, p);
       dServiceLogger logcerr(true, p);
 
@@ -134,6 +149,11 @@ namespace utils
 
       child.rdbuf()->close();
       int rval= child.rdbuf()->status(); // return child status.
+
+      std::ostringstream oss;
+      oss << args[0] << " returned " << rval;
+      logmsg(kLDEBUG, oss.str(), p);
+
       return rval;
    }
 

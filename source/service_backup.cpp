@@ -34,7 +34,9 @@ void service::backup(const std::string & backupfile)
    utils::makedirectory(tempc, mParams, S_777);
 
    // notify service we're starting our backup.
-   servicehook hook(this, "backup", utils::doquote(tempc), mParams);
+   tVecStr args;
+   args.push_back(tempc);
+   servicehook hook(this, "backup", args, mParams);
    hook.starthook();
 
    // back up volume containers
@@ -134,7 +136,9 @@ void service::restore(const std::string & backupfile)
    }
 
    // tell the dService to do its restore_end action.
-   servicehook hook(this, "restore", utils::doquote(tempc), mParams);
+   tVecStr args;
+   args.push_back(tempc);
+   servicehook hook(this, "restore", args, mParams);
    hook.endhook();
 
    logmsg(kLINFO, "The backup " + bf + " has been restored to service " + getName() + ". Try it!");
