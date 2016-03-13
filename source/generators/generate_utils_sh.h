@@ -8,9 +8,9 @@
 
 void generate_utils_sh(const std::string & supportpath, const params & p)
 {
-std::string vdata=R"EOF(#!/bin/bash
+   std::string vdata = R"EOF(#!/bin/bash
 
-# --- some useful utility functions
+            # --- some useful utility functions
 # --- generally should be okay if used with 'set -e'.
 
 # Formatting for comamnds - standardised.
@@ -60,7 +60,7 @@ function utils_import {
    [ "$#" -eq 2 ] || die "utils_import -- requires two arguments (the path to be imported and the container's destination path)."
    [ -d "$1" ] || die "utils_import -- source path does not exist: $1"
 
-   dockerrun bash -c "rm -r $2/*"
+               dockerrun bash -c "rm -r $2/*"
    tar cf - -C "$1" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-importfn" >/dev/null
@@ -74,11 +74,40 @@ function utils_export {
    [ "$#" -eq 2 ] || die "utils_export -- requires two arguments (the container's source path and the path to be exported to)."
    [ -d "$2" ] || die "utils_export -- destination path does not exist."
 
-   docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$2"
+               docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-exportfn" >/dev/null
    [ $RVAL -eq 0 ] || die "utils_export failed to transfer the files."
 }
+
+
+#------------------------------------------------------------------------------------
+# Element is contained in an array
+
+# elementIn element array
+# if elementIn "a string" "${array[@]}" ; then ...
+function elementIn {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
+#------------------------------------------------------------------------------------
+# Command is one of the standard hooks provided by dRunner
+# If you don't implement these make sure there is no output and you return 127.
+
+function isHook {
+   local HOOKS=("install_end" "backup_start" "backup_end" \
+      "restore_start" "restore_end" "uninstall_start" "obliterate_start" \
+      "servicecmd_start" "servicecmd_end" "update_start" "update_end" \
+      "enter_start" "enter_end" "status_start" "status_end" )
+   
+   if elementIn "$1" "${HOOKS[@]}"; then
+      return 0;
+   fi
+   return 1
+}
+
 
 )EOF";
 

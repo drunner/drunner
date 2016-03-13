@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <memory>
 #include <utility>
 #include <errno.h>
@@ -89,7 +90,8 @@ namespace utils
          output+=trim_copy(str)+" ";
       in.close();
       utils::trim(output);
-      return in.rdbuf()->status();
+      int status = in.rdbuf()->status();
+      return WEXITSTATUS(status);
    }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p, bool isServiceCmd)
@@ -150,7 +152,8 @@ namespace utils
       }
 
       child.rdbuf()->close();
-      int rval= child.rdbuf()->status(); // return child status.
+      int status = child.rdbuf()->status();
+      int rval= WEXITSTATUS(status); // return child status.
 
       std::ostringstream oss;
       oss << args[0] << " returned " << rval;

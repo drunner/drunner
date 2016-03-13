@@ -204,6 +204,9 @@ eResult service::uninstall()
 
    utils::deltree(getPath(), mParams);
 
+   if (utils::fileexists(getPath()))
+      logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath());
+
    hook.endhook();
    return kRSuccess;
 }

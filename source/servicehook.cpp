@@ -45,10 +45,10 @@ cResult servicehook::runHook(std::string se)
       args.push_back(entry);
 
    cResult rval = utils::dServiceCmd(mServiceRunner, args, mParams);
-   if (rval == kRNotImplemented)
+   if (rval.isNOIMPL())
       rval=kRNoChange; // not implemented is perfectly fine for hooks.
 
-   if (rval == kRError)
+   if (rval.isError())
       logmsg(kLWARN, "dService hook " + se + " returned error.", mParams);
    else
       logmsg(kLDEBUG, "dService hook for " + se + " complete", mParams);
@@ -91,12 +91,12 @@ void servicehook::setNeedsHook(const service * const svc)
    else
    { // version 2 and up.
       mStartCmd = mActionName + "_start";
-      mStartCmd = mActionName + "_end";
+      mEndCmd   = mActionName + "_end";
 
       // some hooks don't make sense because the dService won't exist at that point.
-      if (utils::findStringIC(mStartCmd, "install_start"))
+      if (utils::findStringIC("install_start",mStartCmd))
          mStartCmd = "";
-      if (utils::findStringIC(mEndCmd, "uninstall_end obliterate_end enter_end"))
+      if (utils::findStringIC("uninstall_end obliterate_end enter_end",mEndCmd))
          mEndCmd = "";
    }
 }
