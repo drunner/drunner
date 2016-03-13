@@ -4,6 +4,7 @@
 #include "logmsg.h"
 #include "utils.h"
 #include "sh_servicecfg.h"
+#include "cresult.h"
 
 servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p) :
    mActionName(actionname), mHookParams(hookparams), mParams(p)
@@ -11,16 +12,16 @@ servicehook::servicehook(const service * const svc, std::string actionname, cons
    setNeedsHook(svc);
 }
 
-eResult servicehook::starthook()
+cResult servicehook::starthook()
 {
-   if (mStartCmd.length()>0)
-     return runHook(mStartCmd);
+   if (mStartCmd.length() > 0)
+      return runHook(mStartCmd);
 
    logmsg(kLDEBUG, "dService doesn't require hook for " + mActionName + " start",mParams);
    return kRNoChange;
 }
 
-eResult servicehook::endhook()
+cResult servicehook::endhook()
 {
    if (mEndCmd.length()>0)
       return runHook(mEndCmd);
@@ -29,23 +30,30 @@ eResult servicehook::endhook()
    return kRNoChange;
 }
 
-eResult servicehook::runHook(std::string se)
+cResult servicehook::runHook(std::string se)
 {
+   if (!utils::fileexists(mServiceRunner))
+   {
+      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's servicerunner is not installed.", mParams);
+      return kRError;
+   }
+
    std::vector<std::string> args;
    args.push_back("servicerunner");
    args.push_back(se);
    for (const auto & entry : mHookParams)
       args.push_back(entry);
 
-   int rval = utils::dServiceCmd(mServiceRunner, args, mParams);
-   if (rval != 0 && rval != 3)
-   {
-      logmsg(kLWARN, se + " failed.", mParams);
-      return kRError;
-   }
+   cResult rval = utils::dServiceCmd(mServiceRunner, args, mParams);
+   if (rval == kRNotImplemented)
+      rval=kRNoChange; // not implemented is perfectly fine for hooks.
 
-   logmsg(kLDEBUG, "dService hook for " + se + " complete", mParams);
-   return eResult(rval);
+   if (rval == kRError)
+      logmsg(kLWARN, "dService hook " + se + " returned error.", mParams);
+   else
+      logmsg(kLDEBUG, "dService hook for " + se + " complete", mParams);
+
+   return rval;
 }
 
 
@@ -60,7 +68,7 @@ void servicehook::setNeedsHook(const service * const svc)
    mEndCmd = "";
 
    if (sc.getVersion() == 1)
-   { // cope with old version - it expected a bunch of hooks to be present.
+   { // cope with old version - it expected a bunch of manual hooks to be present.
       if (utils::stringisame(mActionName, "backup"))
       {
          mStartCmd = "backupstart";
@@ -82,17 +90,14 @@ void servicehook::setNeedsHook(const service * const svc)
    }
    else
    { // version 2 and up.
-      if (sc.hasHook(mActionName) || sc.hasHook(mActionName + "_start"))
-         mStartCmd = mActionName + "_start";
-
-      if (sc.hasHook(mActionName) || sc.hasHook(mActionName + "_end"))
-         mStartCmd = mActionName + "_end";
+      mStartCmd = mActionName + "_start";
+      mStartCmd = mActionName + "_end";
 
       // some hooks don't make sense because the dService won't exist at that point.
       if (utils::findStringIC(mStartCmd, "install_start"))
-         logmsg(kLERROR, "dService wants impossible hook " + mStartCmd, mParams);
-      if (utils::findStringIC(mEndCmd,"uninstall_end obliterate_end enter_end"))
-         logmsg(kLERROR, "dService wants impossible hook " + mStartCmd, mParams);
+         mStartCmd = "";
+      if (utils::findStringIC(mEndCmd, "uninstall_end obliterate_end enter_end"))
+         mEndCmd = "";
    }
 }
 

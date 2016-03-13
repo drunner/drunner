@@ -16,7 +16,8 @@ enum eResult
 {
    kRSuccess=0,
    kRError=1,
-   kRNoChange=3
+   kRNoChange=3,
+   kRNotImplemented=127
 };
 
 
