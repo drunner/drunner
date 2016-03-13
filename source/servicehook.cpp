@@ -94,9 +94,10 @@ void servicehook::setNeedsHook(const service * const svc)
       mEndCmd   = mActionName + "_end";
 
       // some hooks don't make sense because the dService won't exist at that point.
-      if (utils::findStringIC("install_start",mStartCmd))
+      // spaces are to ensure whole word match.
+      if (utils::findStringIC(" install_start "," "+mStartCmd+" "))
          mStartCmd = "";
-      if (utils::findStringIC("uninstall_end obliterate_end enter_end",mEndCmd))
+      if (utils::findStringIC(" uninstall_end obliterate_end enter_end "," "+mEndCmd+" "))
          mEndCmd = "";
    }
 }

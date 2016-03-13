@@ -100,24 +100,27 @@ void service::createVolumes(const sh_variables * variables)
 
       if (utils::dockerVolExists(volname))
 			logmsg(kLINFO, "A docker volume already exists for " + volname + ", reusing it.");
-		else
-		{
+      else
+      {
          std::string op;
-			int rval = utils::bashcommand("docker volume create --name=\"" + volname + "\"", op);
-			if (rval != 0)
-				logmsg(kLERROR, "Unable to create docker volume " + volname);
-			// set permissions on volume.
-			std::string chowncmd = "docker run --name=\"" + dname + "\" -v \"" + volname + ":" + volpath +
-				"\" \"drunner/baseimage-alpine\" /bin/bash -c \"chown " + userid + ":root " + volpath + 
-            " && date >> " + volpath + "/install_date\"";
-			logmsg(kLDEBUG, chowncmd);
-			rval = utils::bashcommand(chowncmd, op);
-			if (rval != 0)
-				logmsg(kLERROR, "Unable to chown the docker volume to userID " + userid);
-			rval = utils::bashcommand("docker rm " + dname, op);
-			if (rval != 0)
-				logmsg(kLERROR, "Unable to remove temp docker container " + dname);
-		}
+         int rval = utils::bashcommand("docker volume create --name=\"" + volname + "\"", op);
+         if (rval != 0)
+            logmsg(kLERROR, "Unable to create docker volume " + volname);
+      }
+
+		// set permissions on volume.
+      tVecStr args;
+      args.push_back("docker");
+      args.push_back("run");
+      args.push_back("--name=\"" + dname + "\"");
+      args.push_back("-v");
+      args.push_back(volname + ":" + volpath);
+      args.push_back("drunner/install-rootutils");
+      args.push_back("chown");
+      args.push_back(userid + ":root");
+      args.push_back(volpath);
+
+      utils::dockerrun dr("/usr/bin/docker", args, dname, mParams);
 	}
 }
 
