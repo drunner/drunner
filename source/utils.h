@@ -34,11 +34,12 @@ namespace utils
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
 
    int bashcommand(std::string command, std::string & output);
-   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr);
-   int bashcommand(std::string command, const std::vector<std::string> & args, const params & p);
+//   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr);
+   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
+   std::string doquote(std::string s);
 
    // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2 );

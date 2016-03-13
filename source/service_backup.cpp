@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "sh_variables.h"
 #include "compress.h"
-
+#include "servicehook.h"
 
 
 
@@ -34,9 +34,11 @@ void service::backup(const std::string & backupfile)
    utils::makedirectory(tempc, mParams, S_777);
 
    // notify service we're starting our backup.
-   utils::bashcommand(getPathServiceRunner() + " backupstart \"" + tempc + "\"", op);
+   servicehook hook(this, "backup", utils::doquote(tempc), mParams);
+   hook.starthook();
 
    // back up volume containers
+   logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
    const std::vector<std::string> & dockervols(shv.getDockerVols());
    for (auto const & entry : dockervols)
@@ -51,7 +53,7 @@ void service::backup(const std::string & backupfile)
    }
 
    // notify service we've finished our backup.
-   utils::bashcommand(getPathServiceRunner() + " backupend \"" + tempc + "\"", op);
+   hook.endhook();
 
    // compress everything together
    boost::filesystem::path fullpath(bf);
@@ -131,9 +133,9 @@ void service::restore(const std::string & backupfile)
       compress::decompress_volume(password, newvars.getDockerVols()[i], tempf, oldvars.getDockerVols()[i] + ".tar.7z", mParams);
    }
 
-   // tell the dService to do its restore.
-   std::string op;
-   utils::bashcommand(getPathServiceRunner() + " restore \"" + tempc + "\"", op);
+   // tell the dService to do its restore_end action.
+   servicehook hook(this, "restore", utils::doquote(tempc), mParams);
+   hook.endhook();
 
    logmsg(kLINFO, "The backup " + bf + " has been restored to service " + getName() + ". Try it!");
 }

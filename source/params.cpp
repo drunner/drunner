@@ -57,10 +57,12 @@ eCommand params::parsecmd(std::string s) const
 
 void params::setdefaults()
 {
-   mVersion=VERSION_STR;
-   mLogLevel=kLINFO;
-   mDisplayServiceOutput=true;
-   mCmd=c_UNDEFINED;
+   mVersion = VERSION_STR;
+   mLogLevel = kLINFO;
+   mDisplayServiceOutput = true;
+   mServiceOutputRaw = false;
+   mOption = "-n";
+   mCmd = c_UNDEFINED;
 }
 
 params::params(eLogLevel ll)
@@ -83,7 +85,7 @@ while (1)
          { // name, has_arg, flag=0, val={0, character}
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
-            {"getoutput", 0, 0, 'g'},
+            {"getoutput", 0, 0, 'o'},
             {"normal", 0, 0, 'n'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
@@ -92,7 +94,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsng",
+      c = getopt_long (argc, argv, "vsno",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -103,21 +105,26 @@ while (1)
          case 's':
             mLogLevel=kLERROR;
             mDisplayServiceOutput=false;
+            mOption = "-s";
             break;
 
          case 'v':
             mLogLevel=kLDEBUG;
             mDisplayServiceOutput=true;
+            mOption = "-v";
             break;
 
-         case 'g':
+         case 'o':
             mLogLevel=kLERROR;
-            mDisplayServiceOutput=true;
+            mDisplayServiceOutput = true;
+            mServiceOutputRaw = true;
+            mOption = "-o";
             break;
 
          case 'n':
             mLogLevel=kLINFO;
             mDisplayServiceOutput=true;
+            mOption = "-n";
             break;
 
          default:
@@ -151,15 +158,4 @@ Please provide command line argument:
    // store the arguments to the command.
    for (int i=opx;i<argc;++i)
       mArgs.push_back(argv[i]);
-}
-
-std::string params::getLogLevelOption() const
-{
-   switch (mLogLevel)
-   {
-      case kLERROR: return "-s";
-      case kLDEBUG: return "-v";
-      default:
-         return "-n";
-   }
 }

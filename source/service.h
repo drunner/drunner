@@ -6,6 +6,7 @@
 
 class sh_variables;
 
+// class to manage the dService.
 class service
 {
 public:
@@ -22,7 +23,7 @@ public:
    bool isValid() const;
    void validateImage();
 
-   void servicecmd();
+   eResult servicecmd();
    void update();
    void install();
    void recreate(bool updating);

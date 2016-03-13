@@ -4,6 +4,7 @@
 #include "logmsg.h"
 #include "sh_variables.h"
 #include "utils.h"
+#include "servicehook.h"
 
 service::service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename /*= ""*/) :
    mName(servicename),
@@ -79,10 +80,26 @@ bool service::isValid() const
    if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner()) || !utils::fileexists(getPathTemp()))
       return false;
 
+   sh_servicecfg svc(getPathServiceCfg());
+   if (!svc.readOkay())
+   {
+      logmsg(kLDEBUG, "Couldn't read servicecfg.sh from service "+getName());
+      return false;
+   }
+   sh_variables shv(getPathVariables());
+   if (!shv.readOkay())
+   {
+      logmsg(kLDEBUG, "Couldn't read variables.sh from service " + getName());
+      return false;
+   }
+
+   if (svc.getVersion() < 2)
+      logmsg(kLDEBUG, "dService "+getImageName()+" is old (version 1) and should be updated.");
+
    return true;
 }
 
-void service::servicecmd()
+eResult service::servicecmd()
 {
    std::vector<std::string> cargs;
    cargs.push_back("servicerunner");
@@ -90,8 +107,8 @@ void service::servicecmd()
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
       cargs.push_back("help");
-      utils::bashcommand(getPathServiceRunner(), cargs, true,true);
-      return;
+      utils::dServiceCmd(getPathServiceRunner(), cargs, mParams);
+      return kRError;
    }
 
    std::string command = mParams.getArgs()[1];
@@ -104,15 +121,28 @@ void service::servicecmd()
 
    std::string lmsg;
    for (auto &entry : cargs)
-      lmsg += "[" + entry + "] ";
+      lmsg += utils::doquote(entry) + " ";
+   utils::trim(lmsg);
    logmsg(kLDEBUG, lmsg);
 
-   utils::bashcommand(getPathServiceRunner(), cargs,mParams);
+   servicehook hook(this, "servicecmd", lmsg, mParams);
+   hook.starthook();
+
+   utils::dServiceCmd(getPathServiceRunner(), cargs, mParams);
+
+   hook.endhook();
+
+   return kRSuccess;
 }
 
 void service::update()
 { // update the service (recreate it)
+   servicehook hook(this, "update", "", mParams);
+   hook.starthook();
+
    recreate(true);
+   
+   hook.endhook();
 }
 
 const params & service::getParams() const
@@ -127,21 +157,31 @@ const std::string service::getImageName() const
 
 void service::enter()
 {
+   servicehook hook(this, "enter", "", mParams);
+   hook.starthook();
+
    execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
 }
 
 int service::status()
 {
+   servicehook hook(this, "status", "", mParams);
+   hook.starthook();
+
    if (!utils::fileexists(getPath()))
    {
       logmsg(kLINFO, getName() + " is not installed.");
+      hook.endhook();
       return 1;
    }
    if (!isValid())
    {
       logmsg(kLINFO, getName() + " is not a valid service. Try  drunner recover "+getName());
+      hook.endhook();
       return 1;
    }
    logmsg(kLINFO, getName() + " is installed and valid.");
+   hook.endhook();
    return 0;
 }
+

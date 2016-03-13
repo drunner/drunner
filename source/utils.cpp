@@ -59,6 +59,11 @@ namespace utils
        return ltrim(rtrim(s, t), t);
    }
 
+   std::string doquote(std::string s)
+   {
+      return "\""+s+"\"";
+   }
+
    // copying versions
 
    inline std::string ltrim_copy(std::string s, const char* t = " \t\n\r\f\v")
@@ -87,8 +92,11 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr)
-   { // don't capture output, non-blocking streaming!
+   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p)
+   { // non-blocking streaming
+      dServiceLogger logcout(false, p);
+      dServiceLogger logcerr(true, p);
+
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
       redi::ipstream child(command, args, mode);
 
@@ -100,8 +108,8 @@ namespace utils
          if (!finished[0])
          {
             while ((n = child.err().readsome(buf, sizeof(buf))) > 0)
-               if (printstderr)
-                  std::cerr.write(buf, n).flush();
+               logcerr.log(buf, n);
+//                  std::cerr.write(buf, n).flush();
             if (child.eof())
             {
                finished[0] = true;
@@ -113,8 +121,8 @@ namespace utils
          if (!finished[1])
          {
             while ((n = child.out().readsome(buf, sizeof(buf))) > 0)
-               if (printstdout)
-                  std::cout.write(buf, n).flush();
+               logcout.log(buf, n);
+//                  std::cout.write(buf, n).flush();
             if (child.eof())
             {
                finished[1] = true;
@@ -129,12 +137,12 @@ namespace utils
       return rval;
    }
 
-   int bashcommand(std::string command, const std::vector<std::string> & args, const params & p)
-   {
-      bool printstdout = p.getDisplayServiceOutput();
-      bool printstderr = p.getDisplayServiceOutput();
-      return bashcommand(command, args, printstdout, printstderr);
-   }
+   //int bashcommand(std::string command, const std::vector<std::string> & args, const params & p)
+   //{
+   //   bool printstdout = p.getDisplayServiceOutput();
+   //   bool printstderr = p.getDisplayServiceOutput();
+   //   return bashcommand(command, args, printstdout, printstderr);
+   //}
 
 
    std::string getabsolutepath(std::string path)
@@ -467,7 +475,7 @@ namespace utils
    dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername, const params & p)
       : mDockerName(dockername), mP(p)
    {
-      int rval = utils::bashcommand(cmd, args,p);
+      int rval = utils::dServiceCmd(cmd, args,p);
       if (rval != 0)
       {
          std::ostringstream oss;

@@ -42,8 +42,9 @@ std::string levelname(eLogLevel level)
    }
 }
 
-void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
+void logverbatim(eLogLevel level, std::string s, const params & p)
 {
+   eLogLevel cutoff = p;
    if (level<cutoff)
       return;
 
@@ -61,8 +62,12 @@ void logverbatim(eLogLevel level, std::string s, eLogLevel cutoff)
    }
 }
 
-void logmsg(eLogLevel level, std::string s, eLogLevel cutoff)
-{
+void logmsg(eLogLevel level, std::string s, const params & p)
+{   
+   eLogLevel cutoff = p;
+   if (level < cutoff)
+      return;
+
    std::ostringstream ost;
    ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| ";
    std::string info=ost.str();
@@ -77,3 +82,47 @@ void fatal(std::string s)
 {
    logmsg(kLERROR, s, kLERROR);
 }
+
+
+dServiceLogger::dServiceLogger(bool cerr, const params & p) :
+   mCErr(cerr), mP(p), mInitialised(false)
+{
+}
+
+void dServiceLogger::init()
+{
+   if (!mInitialised)
+   {
+      mInitialised = true;
+      if (!mP.getServiceOutputRaw())
+         logmsg(kLDEBUG, "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv " + std::string(mCErr ? "cerr" : "cout") +" vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv", mP);
+   }
+}
+
+void dServiceLogger::finish()
+{
+   if (mInitialised)
+   {
+      if (!mP.getServiceOutputRaw())
+         logmsg(kLDEBUG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", mP);
+   }
+}
+
+dServiceLogger::dServiceLogger::~dServiceLogger()
+{
+   finish();
+}
+
+void dServiceLogger::log(const char * const buf, int n)
+{
+   if (mP.getDisplayServiceOutput() && n>0)
+   {
+      init();
+
+      if (mCErr)
+         std::cerr.write(buf, n).flush();
+      else
+         std::cout.write(buf, n).flush();
+   }
+}
+

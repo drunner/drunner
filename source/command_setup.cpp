@@ -107,14 +107,14 @@ namespace command_setup
       logmsg(kLINFO,"Updating...",p);
 
       std::ostringstream oss;
-      oss << trgt.c_str() << " " << p.getLogLevelOption().c_str() << " "
+      oss << trgt.c_str() << " " << p.getOption().c_str() << " "
             << "setup" << " " << s.getPath_Root().c_str();
       logmsg(kLDEBUG,oss.str(),p);
 
       execl(
          trgt.c_str(),
          "drunner-install",
-         p.getLogLevelOption().c_str(),
+         p.getOption().c_str(),
          "setup",
          s.getPath_Root().c_str(),
          (char *)0
