@@ -193,8 +193,14 @@ void service::install()
    hook.endhook();
 }
 
-int service::uninstall()
+eResult service::uninstall()
 {
+   tVecStr args;
+   servicehook hook(this, "uninstall", args, mParams);
+   hook.starthook();
+
    logmsg(kLWARN, "uninstall E_NOTIMPL.");
-   return 0;
+
+   hook.endhook();
+   return kRSuccess;
 }

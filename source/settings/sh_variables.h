@@ -56,14 +56,6 @@ protected:
    }
 
 private:
-   std::string alphanumericfilter(std::string s) const
-   {
-      std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      size_t pos;
-      while ((pos = s.find_first_not_of(validchars)) != std::string::npos)
-         s.erase(pos, 1);
-      return s;
-   }
 
    bool populate(const service & svc)
    {
@@ -77,7 +69,7 @@ private:
 
       for (uint i = 0; i<volumes.size(); ++i)
       {
-         dockervols.push_back("drunner-" + svc.getName() + "-" + alphanumericfilter(volumes[i]));
+         dockervols.push_back("drunner-" + svc.getName() + "-" + utils::alphanumericfilter(volumes[i],false));
          dockeropts.push_back("-v");
          dockeropts.push_back(dockervols[i] + ":" + volumes[i]);
       }

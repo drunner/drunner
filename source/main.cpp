@@ -251,6 +251,14 @@ int mainroutines::process(const params & p)
          return 0;
       }
 
+      case c_uninstall:
+      {
+         if (p.getArgs().size() < 1)
+            logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME", p);
+         service svc(p, settings, p.getArgs()[0]);
+         return (int)svc.uninstall();
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(

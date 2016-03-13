@@ -24,15 +24,15 @@ public:
    void validateImage();
 
    eResult servicecmd();
+   eResult uninstall();
+   int status();
+   int recover();
    void update();
    void install();
    void recreate(bool updating);
    void backup(const std::string & backupfile);
    void restore(const std::string & backupfile);
    void enter();
-   int status();
-   int recover();
-   int uninstall();
 
    const params & getParams() const;
 

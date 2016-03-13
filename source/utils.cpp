@@ -452,6 +452,16 @@ namespace utils
       return (r == 0);
    }
 
+   std::string alphanumericfilter(std::string s, bool whitespace)
+   {
+      std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      if (whitespace) validchars += " \n";
+      size_t pos;
+      while ((pos = s.find_first_not_of(validchars)) != std::string::npos)
+         s.erase(pos, 1);
+      return s;
+   }
+
 
 
    tempfolder::tempfolder(std::string d, const params & p) : mPath(d), mP(p) 

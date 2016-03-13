@@ -62,20 +62,25 @@ void logverbatim(eLogLevel level, std::string s, const params & p)
    }
 }
 
+std::string getheader(eLogLevel level)
+{
+   std::ostringstream ost;
+   ost << "|" << levelname(level) << "|" << timestamp() << "| ";
+   return ost.str();
+}
+
+
 void logmsg(eLogLevel level, std::string s, const params & p)
 {   
    eLogLevel cutoff = p;
    if (level < cutoff)
       return;
 
-   std::ostringstream ost;
-   ost<<"|"<<levelname(level)<<"|"<<timestamp()<<"| ";
-   std::string info=ost.str();
+   std::string info = getheader(level);
    std::string s2=utils::replacestring(s,"\n","\n"+info);
    boost::erase_all(s2, "\r");
 
-   ost << s2 <<std::endl;
-   logverbatim(level,ost.str(),cutoff);
+   logverbatim(level,info+s2+"\n",cutoff);
 }
 
 void fatal(std::string s)
@@ -89,40 +94,54 @@ dServiceLogger::dServiceLogger(bool cerr, const params & p) :
 {
 }
 
-void dServiceLogger::init()
-{
-   if (!mInitialised)
-   {
-      mInitialised = true;
-      if (!mP.getServiceOutputRaw())
-         logmsg(kLDEBUG, "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv " + std::string(mCErr ? "cerr" : "cout") +" vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv", mP);
-   }
-}
-
-void dServiceLogger::finish()
-{
-   if (mInitialised)
-   {
-      if (!mP.getServiceOutputRaw())
-         logmsg(kLDEBUG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", mP);
-   }
-}
-
-dServiceLogger::dServiceLogger::~dServiceLogger()
-{
-   finish();
-}
-
 void dServiceLogger::log(const char * const buf, int n)
 {
    if (mP.getDisplayServiceOutput() && n>0)
-   {
-      init();
-
-      if (mCErr)
-         std::cerr.write(buf, n).flush();
+   { // something to output.
+      if (mP.getServiceOutputRaw())
+      { // output raw.
+         if (mCErr)
+            std::cerr.write(buf, n).flush();
+         else
+            std::cout.write(buf, n).flush();
+      }
       else
-         std::cout.write(buf, n).flush();
+      { // buffer and log.
+         std::ostringstream oss;
+         oss.write(buf, n).flush();
+
+         processbuffer(oss.str());
+      }
+
    }
 }
 
+void dServiceLogger::nonrawoutput(std::string s)
+{
+   if (mCErr)
+      logverbatim(kLWARN, s, mP);
+   else
+      logverbatim(kLINFO, s, mP);
+}
+
+
+void dServiceLogger::processbuffer(std::string buffer)
+{
+   while (buffer.length() > 0) {
+      if (!mInitialised)
+      {
+         mInitialised = true;
+         nonrawoutput(getheader(mCErr ? kLWARN : kLINFO));
+      }
+
+      size_t pos = buffer.find('\n');
+      if (pos == std::string::npos)
+      {
+         nonrawoutput(buffer);
+         return;
+      }
+      nonrawoutput(buffer.substr(0, pos + 1));
+      buffer.erase(0, pos + 1);
+      mInitialised = false;
+   }
+}

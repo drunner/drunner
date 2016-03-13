@@ -70,6 +70,8 @@ namespace utils
 
    bool copyfile(std::string src, std::string dest);
 
+   std::string alphanumericfilter(std::string s, bool whitespace);
+
    class tempfolder
    {
    public:
