@@ -92,7 +92,7 @@ namespace utils
       return in.rdbuf()->status();
    }
 
-   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p)
+   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p, bool isServiceCmd)
    { // non-blocking streaming
       { // sanity check parameters.
          if (args.size() < 1)
@@ -109,8 +109,8 @@ namespace utils
          logmsg(kLDEBUG, "dServiceCmd: " + cmd, p);
       }
 
-      dServiceLogger logcout(false, p);
-      dServiceLogger logcerr(true, p);
+      dServiceLogger logcout(false, p, isServiceCmd);
+      dServiceLogger logcerr(true, p, isServiceCmd);
 
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
       redi::ipstream child(command, args, mode);

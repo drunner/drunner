@@ -28,6 +28,13 @@ enum eLogLevel
    kLERROR=3
 };
 
+enum edServiceOutput
+{
+   kOLogged,
+   kORaw,
+   kOSuppressed
+};
+
 
 enum eCommand {
    c_UNDEFINED,

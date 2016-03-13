@@ -89,31 +89,35 @@ void fatal(std::string s)
 }
 
 
-dServiceLogger::dServiceLogger(bool cerr, const params & p) :
+dServiceLogger::dServiceLogger(bool cerr, const params & p, bool isServiceCmd) :
    mCErr(cerr), mP(p), mInitialised(false)
 {
+   if (isServiceCmd)
+      mOutputMode = p.getServiceOutput_servicecmd();
+   else
+      mOutputMode = p.getServiceOutput_hooks();
 }
 
 void dServiceLogger::log(const char * const buf, int n)
 {
-   if (mP.getDisplayServiceOutput() && n>0)
-   { // something to output.
-      if (mP.getServiceOutputRaw())
-      { // output raw.
-         if (mCErr)
-            std::cerr.write(buf, n).flush();
-         else
-            std::cout.write(buf, n).flush();
-      }
+   if (mOutputMode == kOSuppressed)
+      return;
+   if (n == 0)
+      return;
+
+   if (mOutputMode==kORaw)
+   { // output raw.
+      if (mCErr)
+         std::cerr.write(buf, n).flush();
       else
-      { // buffer and log.
-         std::ostringstream oss;
-         oss.write(buf, n).flush();
-
-         processbuffer(oss.str());
-      }
-
+         std::cout.write(buf, n).flush();
+      return;
    }
+
+   // buffer and log.
+   std::ostringstream oss;
+   oss.write(buf, n).flush();
+   processbuffer(oss.str());
 }
 
 void dServiceLogger::nonrawoutput(std::string s)
@@ -150,6 +154,10 @@ escapefilter::escapefilter() : mStage(kSearching)
 {
 }
 
+// This class strips standard escape sequences used for terminal color
+// from a stream (e.g. raw reads that can stop at any character, including
+// in the middle of an escape sequence). It stores state across calls
+// to know what to strip.
 void escapefilter::strip(std::string & buffer)
 {
    mPos = 0; // new string so if we're triggered etc consider from beginning.

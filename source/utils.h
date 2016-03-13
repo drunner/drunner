@@ -37,7 +37,7 @@ namespace utils
 
    int bashcommand(std::string command, std::string & output);
 //   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr);
-   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p);
+   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p, bool isServiceCmd=false);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");

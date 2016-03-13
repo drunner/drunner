@@ -29,7 +29,7 @@ public:
 class dServiceLogger
 {
 public:
-   dServiceLogger(bool cerr, const params & p);
+   dServiceLogger(bool cerr, const params & p, bool isServiceCmd);
    void log(const char * const buf, int n);
 
 private:
@@ -37,6 +37,8 @@ private:
    void finish();
    void processbuffer(std::string buffer);
    void nonrawoutput(std::string s);
+
+   edServiceOutput mOutputMode;
 
    bool mCErr;
    const params & mP;

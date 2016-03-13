@@ -25,6 +25,7 @@ SYNOPSIS
 OPTIONS
    -n    normal (default)
    -v    verbose
+   -l    logged (dService output is logged)
    -s    silent
    -o    capture dService output (drunner silent, dService output unmodified, logging disabled)
 

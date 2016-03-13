@@ -107,7 +107,7 @@ eResult service::servicecmd()
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
       cargs.push_back("help");
-      utils::dServiceCmd(getPathServiceRunner(), cargs, mParams);
+      utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
       return kRError;
    }
 
@@ -126,7 +126,7 @@ eResult service::servicecmd()
    servicehook hook(this, "servicecmd", hookargs, mParams);
    hook.starthook();
 
-   utils::dServiceCmd(getPathServiceRunner(), cargs, mParams);
+   utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
 
    hook.endhook();
 

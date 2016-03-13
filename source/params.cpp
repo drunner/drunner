@@ -59,8 +59,10 @@ void params::setdefaults()
 {
    mVersion = VERSION_STR;
    mLogLevel = kLINFO;
-   mDisplayServiceOutput = true;
-   mServiceOutputRaw = false;
+   
+   mServiceOutput_hooks = kOLogged;
+   mServiceOutput_servicecmd = kORaw;
+
    mOption = "-n";
    mCmd = c_UNDEFINED;
 }
@@ -87,6 +89,7 @@ while (1)
             {"silent", 0, 0, 's'},
             {"getoutput", 0, 0, 'o'},
             {"normal", 0, 0, 'n'},
+            {"logged",0,0,'l'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
          };
@@ -94,7 +97,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsno",
+      c = getopt_long (argc, argv, "vsnol",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -104,26 +107,36 @@ while (1)
       {
          case 's':
             mLogLevel=kLERROR;
-            mDisplayServiceOutput=false;
+            mServiceOutput_hooks = kOSuppressed;
+            mServiceOutput_servicecmd = kOSuppressed;
             mOption = "-s";
             break;
 
          case 'v':
             mLogLevel=kLDEBUG;
-            mDisplayServiceOutput=true;
+            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_servicecmd = kORaw;
             mOption = "-v";
             break;
 
          case 'o':
             mLogLevel=kLERROR;
-            mDisplayServiceOutput = true;
-            mServiceOutputRaw = true;
+            mServiceOutput_hooks = kORaw;
+            mServiceOutput_servicecmd = kORaw;
             mOption = "-o";
             break;
 
          case 'n':
             mLogLevel=kLINFO;
-            mDisplayServiceOutput=true;
+            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_servicecmd = kORaw;
+            mOption = "-n";
+            break;
+
+         case 'l':
+            mLogLevel = kLINFO;
+            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_servicecmd = kOLogged;
             mOption = "-n";
             break;
 
