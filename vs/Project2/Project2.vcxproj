@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E22599A1-E6FA-4F68-84B6-B65C771EA386}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+    <ProjectName>dRunnerC</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <IncludePath>$(SolutionDir)\..\source;$(SolutionDir)\..\source\generators;$(SolutionDir)\..\source\settings;$(SolutionDir)\..\source\tests;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\generators;$(SolutionDir)..\source\settings;$(SolutionDir)..\source\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SolutionDir)\..\buildnum\build_number.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\command_dev.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\command_general.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\command_setup.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\compress.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\cresult.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\enums.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\exceptions.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_utils_sh.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_validator_image.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\logmsg.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\main.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\params.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\pstream.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\service.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\servicehook.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\settings\settingsbash.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_ddev.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_servicecfg.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_variables.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\showhelp.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\termcolor.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
+    <ClInclude Include="$(SolutionDir)\..\source\utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(SolutionDir)\..\source\command_dev.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\command_general.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\compress.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\servicehook.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\service_backup.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\service_install.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\command_setup.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\generators\generate.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\logmsg.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\main.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\params.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\service.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\settings\settingsbash.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\showhelp.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\source\utils.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

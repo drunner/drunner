@@ -33,3 +33,21 @@ drunner-install
 build_number.h
 version.number
 
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+*.pch
+*.pdb
+*.tmp
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
