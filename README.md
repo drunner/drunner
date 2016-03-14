@@ -64,10 +64,65 @@ Then you can run drunner. E.g. try
  drunner install drunner/helloworld
  helloworld run
 ```
+helloworld is now in your path, you can run it directly, e.g. with no arguments
+to see the help.
 
-## Output
+Back up helloworld to an encrypted archive (including all settings and local data),
+then obliterate it, leaving the machine clean:
+```
+PASS=shh drunner backup helloworld hw.b
+drunner obliterate helloworld
+```
+Restore the backup as hithere, and run it:
+```   
+PASS=shh drrunner restore hw.b hi
+hi run
+```
 
-| Command |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
+### Running some tests
+
+dRunner can test containers for compatibility and functionality. Try it out with:
+```
+drunner install drunner/dtest
+dtest test drunner/helloworld
+```
+
+### dRunner Images to play with
+
+Other images to try:
+* [minecraft](https://github.com/j842/drunner-minecraft) - really easy minecraft server.
+* [simplesecrets](https://github.com/j842/drunner-simplesecrets) - store low security secrets in S3.
+
+
+## General Use
+
+Install a container (e.g. from DockerHub) that supports dr and call the service 'SERVICENAME'.
+```
+drunner install IMAGENAME SERVICENAME
+```
+
+Manage that service:
+```
+SERVICENAME COMMAND ARGS
+```
+The available COMMANDs depend on the service; they can be things like run and configure. You can get help on the service
+which also lists the available COMMANDs with
+```
+SERVICENAME
+```
+
+Other commands that work on all services:
+```
+drunner obliterate SERVICENAME                 -- uninstalls service and removes ALL data! Leaves host in clean state.
+drunner update SERVICENAME                     -- update service scripts from container (and docker pull)
+
+PASS=? drunner backup SERVICENAME BACKUPFILE   -- backup container, configuration and local data.
+PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configuration and local data.
+```
+
+## Output Flags
+
+| Flag    |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
 | -n      | normal         | info and above  | logged         | raw                 |
 | -v      | verbose        | debug and above | logged         | raw                 |
@@ -75,6 +130,10 @@ Then you can run drunner. E.g. try
 | -o      | capture output | errors only     | raw            | raw                 |
 | -s      | silent         | errors only     | suppressed     | suppressed          |
 
+
+## The Anatomy of a dService
+
+To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/MAKECOMPATIBLE.md).
 
 ## Developing dRunner itself
 
