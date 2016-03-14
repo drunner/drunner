@@ -4,7 +4,7 @@ This is the C++ version of dRunner, inteded to soon replace http://drunner.io
 
 # Status
 
-In development, partially working.
+In development, generally working.
 
 # Overview
 
