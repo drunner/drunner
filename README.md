@@ -129,9 +129,28 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 | -s      | silent         | errors only     | suppressed     | suppressed          |
 
 
+
+## Exit Codes
+
+The convention for exit codes is:
+| Exit Code | Description |
+|:---------:|:-----------:|
+| 0         | success     |
+| 1         | error       | 
+| 3         | no change   |
+| 127       | not implemented |
+
+This is to aid Ansible use.
+
+## Security
+See [Docker's Security Statement](https://docs.docker.com/engine/security/security) for information on security and docker.
+
+
 ## The Anatomy of a dService
 
 To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/MAKECOMPATIBLE.md).
+
+
 
 ## Developing dRunner itself
 
