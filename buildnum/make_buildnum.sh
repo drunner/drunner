@@ -9,7 +9,7 @@ cd "$MYDIR"
 version=$(cat major_version | tr -d '\r\n')
 old=$(cat build.number | tr -d '\r\n')
 ((++old))
-combo="${version}.${old}"
+combo="${version}${old}"
 
 echo "Build is ${version}${old}"
 
