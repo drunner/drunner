@@ -50,12 +50,10 @@ adduser testuser docker
 
 ### Installing dRunner
 
-Logged in as the non-root user, download drunner-install:
+Logged in as the non-root user, download the installer and run it:
 ```
-wget https://drunner.s3.amazonaws.com/drunner-install ; chmod a+x drunner-install
-```
-Install it:
-```
+wget https://drunner.s3.amazonaws.com/drunner-install
+chmod a+x drunner-install
 drunner-install -v ~/drunner
 ```
 
