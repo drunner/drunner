@@ -1,10 +1,10 @@
-## dRunner
+# dRunner
 
-# Status
+## Status
 
 In active development, generally working. Supports both version 1 and version 2 dServices.
 
-# Overview
+## Overview
 
 dRunner is a stand-alone executable and a set of conventions to make it easy to make, install,
 configure and use compatible Docker containers ("dServices") on a Debian host via the 
@@ -14,7 +14,8 @@ dRunner eliminates the need to manually store and manage scripts to use the Dock
 or type in long docker run commands. It also provides a configurable way (per host) to bring up 
 services that consist of multiple Docker containers.
 
-Features:
+## Features
+
 * dRunner compatible Docker Images are self contained - everything dRunner needs is inside
 * Simple discoverable commands for using compatible services (no manual needed)
 * Flexible configuration for each service, stored in Docker Volume containers that are managed for you
@@ -28,7 +29,7 @@ Features:
 * Tools to build dServices and test them.
 
 
-# Install notes
+## Install notes
 
 Download drunner-install:
 ```
@@ -41,7 +42,7 @@ drunner-install -v ~/drunner
 
 Then you can run drunner.
 
-# Developing dRunner itself
+## Developing dRunner itself
 
 As root:
 ```
