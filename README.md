@@ -31,7 +31,26 @@ services that consist of multiple Docker containers.
 
 ## Install notes
 
-Download drunner-install:
+
+### First time installation
+
+We assume here you have a standard user account called testuser which you'll use for drunner.
+
+#### Dependencies
+
+dRunner needs docker. You can install it as root with:
+```
+wget -nv -O /tmp/install_docker.sh https://goo.gl/2cxobx ; bash /tmp/install_docker.sh
+```
+
+Then give the user you'll run dServices with (e.g. testuser) permissions to run docker with:
+```
+adduser testuser docker
+```
+
+### Installing dRunner
+
+Logged in as the non-root user, download drunner-install:
 ```
 wget https://drunner.s3.amazonaws.com/drunner-install ; chmod a+x drunner-install
 ```
@@ -40,7 +59,22 @@ Install it:
 drunner-install -v ~/drunner
 ```
 
-Then you can run drunner.
+Then you can run drunner. E.g. try
+```
+ drunner install drunner/helloworld
+ helloworld run
+```
+
+## Output
+
+| Command |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
+|:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
+| -n      | normal         | info and above  | logged         | raw                 |
+| -v      | verbose        | debug and above | logged         | raw                 |
+| -l      | logged         | errors only     | logged         | logged              |
+| -o      | capture output | errors only     | raw            | raw                 |
+| -s      | silent         | errors only     | suppressed     | suppressed          |
+
 
 ## Developing dRunner itself
 
