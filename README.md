@@ -133,6 +133,7 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 ## Exit Codes
 
 The convention for exit codes is:
+
 | Exit Code | Description |
 |:---------:|:-----------:|
 | 0         | success     |
