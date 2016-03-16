@@ -112,7 +112,7 @@ cResult service::servicecmd()
    }
 
    std::string command = mParams.getArgs()[1];
-   std::string reservedwords = " install backupstart backupend backup restore update enter uninstall obliterate ";
+   std::string reservedwords = " install backupstart backupend backup restore update enter uninstall obliterate recover ";
    if (utils::findStringIC(reservedwords, " "+command+" ")) // spaces are to ensure whole word match.
       logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
 

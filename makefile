@@ -42,7 +42,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	@echo Bumping build number..
 	cd buildnum ; ./make_buildnum.sh
 
-permissions:
+permissions: buildnum/build_number.h
 	mkdir -p objs/settings objs/generators objs/tests
 	chmod 0644 source/* buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
