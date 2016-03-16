@@ -22,7 +22,7 @@ $(APP): buildnum/build_number.h $(OBJS)
 
 depend: .depend
 
-.depend: $(SRCS) $(HDRS)
+.depend: buildnum/build_number.h $(SRCS) $(HDRS)
 	rm -f ./.depend
 	$(CXX) $(CPPFLAGS) -MM $^ | sed 's#^\(.*:\)#$(OBJECTS_DIR)/\1#' >>./.depend;
 
@@ -42,7 +42,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	@echo Bumping build number..
 	cd buildnum ; ./make_buildnum.sh
 
-permissions: buildnum/build_number.h
+permissions: 
 	mkdir -p objs/settings objs/generators objs/tests
 	chmod 0644 source/* buildnum/* source/*
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
