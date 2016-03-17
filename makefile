@@ -48,7 +48,7 @@ permissions:
 	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source output
 
 upload: $(APP)
-	upload bin/drunner-install
+	upload output/drunner-install
 
 install: $(APP)
 	$(APP) -v ~/temp
