@@ -58,9 +58,9 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
-      int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
-      if (result!=0)
-         logmsg(kLERROR,"Couldn't move drunner executable to "+rootpath+".",p);
+      //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
+      if (!utils::copyfile(utils::get_exefullpath(), rootpath + "/drunner"))
+         logmsg(kLERROR,"Couldn't copy drunner executable from "+utils::get_exefullpath()+" to "+rootpath+".",p);
 
       // -----------------------------------------------------------------------------
       // create bin directory

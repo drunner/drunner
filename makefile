@@ -1,4 +1,4 @@
-APP=~/drunner-install
+APP=output/drunner-install
 CC=gcc
 #CXX=g++
 CXX=bin/colorgcc.pl
@@ -17,7 +17,7 @@ OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
 
-$(APP): buildnum/build_number.h $(OBJS)
+$(APP): permissions buildnum/build_number.h $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 depend: .depend
@@ -43,15 +43,12 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	cd buildnum ; ./make_buildnum.sh
 
 permissions: 
-	mkdir -p objs/settings objs/generators objs/tests
+	mkdir -p objs/settings objs/generators objs/tests output
 	chmod 0644 source/* buildnum/* source/*
-	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source
+	chmod 0755 bin/* buildnum buildnum/make_buildnum.sh objs source output
 
 upload: $(APP)
-	cd ~ ; upload drunner-install
-
-push: $(APP)
-	git pull ; git add . ; git commit ; git push
+	upload bin/drunner-install
 
 install: $(APP)
 	$(APP) -v ~/temp
