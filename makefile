@@ -44,9 +44,9 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 
 permissions: 
 	mkdir -p objs/settings objs/generators objs/tests output
-	chmod -R 0644 source buildnum
 	find . -type d -exec chmod 0755 {} \;
-	chmod 0755 buildnum/make_buildnum.sh
+	find . -type f -exec chmod 0644 {} \;
+	chmod 0755 buildnum/make_buildnum.sh pullall output/* bin/*
 
 upload: $(APP)
 	upload output/drunner-install
