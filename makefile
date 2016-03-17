@@ -46,7 +46,7 @@ permissions:
 	mkdir -p objs/settings objs/generators objs/tests output
 	find . -type d -exec chmod 0755 {} \;
 	find . -type f -exec chmod 0644 {} \;
-	chmod 0755 buildnum/make_buildnum.sh pullall output/* bin/*
+	chmod 0755 buildnum/make_buildnum.sh pullall bin/*
 
 upload: $(APP)
 	upload output/drunner-install
