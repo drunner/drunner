@@ -113,8 +113,13 @@ cResult service::servicecmd()
 
    std::string command = mParams.getArgs()[1];
    std::string reservedwords = " install backupstart backupend backup restore update enter uninstall obliterate recover ";
-   if (utils::findStringIC(reservedwords, " "+command+" ")) // spaces are to ensure whole word match.
-      logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
+   if (utils::findStringIC(reservedwords, " " + command + " ")) // spaces are to ensure whole word match.
+   {
+      if (command != "enter")
+         logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
+      enter(); // uses execl so never returns.
+      logmsg(kLERROR, "Should never get here. Enter command shouldn't return.");
+   }
 
    std::vector<std::string> hookargs(cargs.begin() + 1, cargs.end());
    servicehook hook(this, "servicecmd", hookargs, mParams);

@@ -25,6 +25,7 @@ public:
    void validateImage();
 
    cResult servicecmd();
+
    eResult uninstall();
    eResult obliterate();
    eResult recover();
@@ -34,7 +35,7 @@ public:
    void recreate(bool updating);
    void backup(const std::string & backupfile);
    void restore(const std::string & backupfile);
-   void enter();
+   void enter(); // uses execl, so never returns.
 
    const params & getParams() const;
 
