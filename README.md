@@ -57,7 +57,7 @@ chmod a+x drunner-install
 drunner-install -v ~/drunner
 ```
 
-Then you can run drunner. E.g. try
+Log out then in again to pick up the ~/bin directory in your path, then you can run drunner. E.g. try
 ```
  drunner install drunner/helloworld
  helloworld run
