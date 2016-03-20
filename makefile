@@ -49,7 +49,7 @@ permissions:
 	chmod 0755 buildnum/make_buildnum.sh pullall bin/*
 
 upload: $(APP)
-	s3upload output/drunner-install
+	cd output ; s3upload drunner-install
 
 install: $(APP)
 	$(APP) -v ~/temp
