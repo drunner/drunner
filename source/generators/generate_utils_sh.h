@@ -60,7 +60,7 @@ function utils_import {
    [ "$#" -eq 2 ] || die "utils_import -- requires two arguments (the path to be imported and the container's destination path)."
    [ -d "$1" ] || die "utils_import -- source path does not exist: $1"
 
-               dockerrun bash -c "rm -r $2/*"
+   dockerrun bash -c "rm -rf $2/*"
    tar cf - -C "$1" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-importfn" >/dev/null
@@ -74,7 +74,7 @@ function utils_export {
    [ "$#" -eq 2 ] || die "utils_export -- requires two arguments (the container's source path and the path to be exported to)."
    [ -d "$2" ] || die "utils_export -- destination path does not exist."
 
-               docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$2"
+   docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-exportfn" >/dev/null
    [ $RVAL -eq 0 ] || die "utils_export failed to transfer the files."
