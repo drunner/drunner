@@ -7,7 +7,7 @@ In active development, generally working. Supports both version 1 and version 2 
 ## Overview
 
 dRunner is a stand-alone executable and a set of conventions to make it easy to make, install,
-configure and use compatible Docker containers ("dServices") on a Debian host via the 
+configure and use compatible Docker containers ("dServices") on a Debian Jessie host via the 
 command line interface.
 
 dRunner eliminates the need to manually store and manage scripts to use the Docker containers,
