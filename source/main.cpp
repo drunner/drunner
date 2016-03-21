@@ -61,8 +61,8 @@ void mainroutines::check_basics()
    if (!utils::commandexists("docker"))
       logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )", kLERROR);
 
-   if (!utils::commandexists("wget"))
-      logmsg(kLERROR,"Please install wget before using dRunner.", kLERROR);
+   if (!utils::commandexists("curl"))
+      logmsg(kLERROR,"Please install curl before using dRunner.", kLERROR);
 
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)

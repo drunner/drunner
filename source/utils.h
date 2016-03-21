@@ -70,7 +70,7 @@ namespace utils
 
    bool copyfile(std::string src, std::string dest);
 
-   void downloadexe(std::string url, std::string outputfile, const params & p);
+   void downloadexe(std::string url, std::string filepath, const params &p);
 
    std::string alphanumericfilter(std::string s, bool whitespace);
    

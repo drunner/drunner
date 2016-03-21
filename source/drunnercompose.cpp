@@ -27,11 +27,11 @@
 
 void InstallDockerCompose(const params & p)
 {
-
    std::string url("https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64");
    std::string trgt(utils::get_usersbindir() + "/docker-compose");
 
-   if (utils::fileexists(trgt))
-      utils::delfile(trgt, p);
+   logmsg(kLDEBUG, "Downloading docker-compose...", p);
    utils::downloadexe(url, trgt, p);
+
+   logmsg(kLDEBUG, "docker-compose installed.", p);
 }

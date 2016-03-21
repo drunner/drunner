@@ -455,14 +455,17 @@ namespace utils
       return (r == 0);
    }
 
-   void downloadexe(std::string url, std::string outputfile, const params &p)
+   void downloadexe(std::string url, std::string filepath, const params &p)
    {
       std::string op;
-      int rval = utils::bashcommand("wget --no-cache -nv -O " + 
-         outputfile + " " + url + " 2>&1 && chmod 0755 " + outputfile, op);
-      logmsg(kLDEBUG, op, p);
+
+      // only download if server has newer version.      
+      int rval = utils::bashcommand("curl " + url + " -z " + filepath + " -o " + filepath + " --silent --location 2>&1 && chmod 0755 " + filepath, op);
       if (rval != 0)
-         logmsg(kLERROR, "Unable to download "+url, p);
+         logmsg(kLERROR, "Unable to download " + url, p);
+      if (!utils::fileexists(filepath))
+         logmsg(kLERROR, "Failed to download " + url + ", curl return value is success but expected file "+ filepath +" does not exist.", p);
+      logmsg(kLDEBUG, "Successfully downloaded " + filepath, p);
    }
 
    std::string alphanumericfilter(std::string s, bool whitespace)
