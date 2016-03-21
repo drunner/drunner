@@ -98,11 +98,8 @@ namespace command_setup
    {
       logmsg(kLDEBUG,"Updating dRunner in "+s.getPath_Root(),p);
 
-      std::string op,url( s.getdrunnerInstallURL() ),trgt( s.getPath_Root() + "/drunner-install" );
-      int rval = utils::bashcommand("wget --no-cache -nv -O "+trgt+" "+url+" 2>&1 && chmod 0755 "+trgt, op);
-         logmsg(kLDEBUG,op,p);
-      if (rval!=0)
-         logmsg(kLERROR,"Unable to download updated drunner-install",p);
+      std::string url(s.getdrunnerInstallURL()), trgt(s.getPath_Root() + "/drunner-install");
+      utils::downloadexe(url, trgt, p);
 
       logmsg(kLINFO,"Updating...",p);
 

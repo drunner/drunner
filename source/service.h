@@ -7,11 +7,13 @@
 
 class sh_variables;
 
-// class to manage the dService.
-class service
+cResult service_restore(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, const std::string & backupfile);
+void validateImage(const params & prms, const sh_drunnercfg & settings, std::string imagename);
+
+class servicepaths
 {
 public:
-   service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename = "" );
+   servicepaths(const sh_drunnercfg & settings, const std::string & servicename);
 
    std::string getPath() const;
    std::string getPathdRunner() const;
@@ -21,8 +23,20 @@ public:
    std::string getPathServiceCfg() const;
    std::string getName() const;
 
+protected:
+   const std::string mName;
+   const sh_drunnercfg & mSettings;
+};
+
+
+// class to manage the dService.
+class service : public servicepaths
+{
+public:
+   // will load imagename from variables.sh unless overridden with parameter.
+   service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename = "" );
+
    bool isValid() const;
-   void validateImage();
 
    cResult servicecmd();
 
@@ -34,26 +48,25 @@ public:
    void install();
    void recreate(bool updating);
    void backup(const std::string & backupfile);
-   void restore(const std::string & backupfile);
    void enter(); // uses execl, so never returns.
 
+   const std::string getImageName() const;
    const params & getParams() const;
 
-   const std::string getImageName() const;
-
 private:
-   void setImageName(std::string imagename);
    void ensureDirectoriesExist() const;
    void createVolumes(const sh_variables * variables);
    void createLaunchScript();
    std::string getUserID();
    void logmsg(eLogLevel level, std::string s) const;
 
-   const std::string mName;
-   std::string mImageName;
-   const sh_drunnercfg & mSettings;
+   static std::string loadImageName(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename);
+
+   const std::string mImageName;
    const params & mParams;
 };
+
+
 
 #endif
 

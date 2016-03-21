@@ -172,3 +172,10 @@ Please provide command line argument:
    for (int i=opx;i<argc;++i)
       mArgs.push_back(argv[i]);
 }
+
+const std::string & params::getArg(int n) const 
+{ 
+   if (n >= (int)mArgs.size())
+      fatal("Coding error - attempting to get arg that doesn't exist.");
+   return mArgs[n]; 
+}

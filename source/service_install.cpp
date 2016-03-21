@@ -58,25 +58,6 @@ void service::createLaunchScript()
 }
 
 
-void service::validateImage()
-{
-	if (!utils::fileexists(mSettings.getPath_Root())) logmsg(kLERROR, "ROOTPATH not set.");
-
-	std::string op;
-	int rval = utils::bashcommand(
-		"docker run --rm -v \"" + mSettings.getPath_Support() +
-		":/support\" \"" + getImageName() + "\" /support/validator-image 2>&1", op);
-
-	if (rval != 0)
-	{
-		if (utils::findStringIC(op, "Unable to find image"))
-			logmsg(kLERROR, "Couldn't find image " + getImageName());
-		else
-			logmsg(kLERROR, op);
-	}
-	logmsg(kLINFO, "\u2714  " + getImageName() + " is dRunner compatible.");
-}
-
 
 void service::createVolumes(const sh_variables * variables)
 {
@@ -187,7 +168,7 @@ void service::install()
 	command_setup::pullImage(mParams, mSettings, getImageName());
 
 	logmsg(kLDEBUG, "Attempting to validate " + getImageName());
-   validateImage();
+   validateImage(mParams,mSettings,getImageName());
 
    recreate(false);
 

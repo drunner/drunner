@@ -455,6 +455,16 @@ namespace utils
       return (r == 0);
    }
 
+   void downloadexe(std::string url, std::string outputfile, const params &p)
+   {
+      std::string op;
+      int rval = utils::bashcommand("wget --no-cache -nv -O " + 
+         outputfile + " " + url + " 2>&1 && chmod 0755 " + outputfile, op);
+      logmsg(kLDEBUG, op, p);
+      if (rval != 0)
+         logmsg(kLERROR, "Unable to download "+url, p);
+   }
+
    std::string alphanumericfilter(std::string s, bool whitespace)
    {
       std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
