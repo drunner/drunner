@@ -27,7 +27,7 @@ OPTIONS
    -v    verbose
    -l    logged (dService output is logged)
    -s    silent
-   -o    capture dService output (drunner silent, dService output unmodified, logging disabled)
+   -o    capture dService output (drunner silent, raw dService output)
 
 COMMANDS
    ${EXENAME} clean
