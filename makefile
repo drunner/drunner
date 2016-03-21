@@ -51,5 +51,8 @@ permissions:
 upload: $(APP)
 	cd output ; s3upload drunner-install
 
+uploaddev: $(APP)
+	cd output ; mkdir dev ; cp drunner-install dev ; s3upload dev/drunner-install
+
 install: $(APP)
 	$(APP) -v ~/temp
