@@ -234,7 +234,7 @@ int mainroutines::process(const params & p)
 
             imagename = svc1.getImageName();
             if (imagename.length() == 0)
-               logmsg(kLERROR, "Service " + svc1.getName() + " is too broken to determine the imagename. Please use   drunner recover SERVICENAME IMAGENAME",p);
+               fatal("Programming error - imagename is empty.");
          }
          else
             imagename = p.getArg(1);

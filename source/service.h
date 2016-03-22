@@ -5,7 +5,7 @@
 #include "sh_drunnercfg.h"
 #include "cresult.h"
 
-class sh_variables;
+class drunnerCompose;
 
 cResult service_restore(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, const std::string & backupfile);
 void validateImage(const params & prms, const sh_drunnercfg & settings, std::string imagename);
@@ -55,7 +55,7 @@ public:
 
 private:
    void ensureDirectoriesExist() const;
-   void createVolumes(const sh_variables * variables);
+   void createVolumes(const drunnerCompose * const drc);
    void createLaunchScript();
    std::string getUserID();
    void logmsg(eLogLevel level, std::string s) const;

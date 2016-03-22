@@ -11,13 +11,13 @@ void InstallDockerCompose(const params & p);
 
 class cVolInfo {
 public:
-   std::string mName;
+   std::string mDockerVolumeName;
    std::string mMountPath;
 };
 
 class cServiceInfo {
 public:
-   std::string mName;
+   std::string mServiceName;
    std::string mImageName;
    std::vector<cVolInfo> mVolumes;
 };
@@ -31,16 +31,23 @@ public:
    // writes out variables.sh
    void writeVariables();
 
-   const std::vector<cServiceInfo> & getServices() const;
+   bool readOkay() const;
+
+   const std::vector<cServiceInfo> & getServicesInfo() const;
+   void getDockerVols(tVecStr & dv) const;
+   std::string getImageName() const;
+
+   const service & getService() const;
 
 private:
-   void load_docker_compose_yml();
-   void load_variables_sh();
+   bool load_docker_compose_yml();
+   bool load_servicecfg_sh();
 
    std::vector<cServiceInfo> mServices;
 
-   const params & mParams;
    const service & mService;
+   const params & mParams;
+   bool mReadOkay;
 };
 
 #endif

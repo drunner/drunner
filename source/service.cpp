@@ -2,9 +2,10 @@
 
 #include "service.h"
 #include "logmsg.h"
-#include "sh_variables.h"
 #include "utils.h"
 #include "servicehook.h"
+#include "sh_servicevars.h"
+#include "drunnercompose.h"
 
 service::service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename /*= ""*/) :
    servicepaths(settings,servicename),
@@ -22,12 +23,12 @@ servicepaths::servicepaths(const sh_drunnercfg & settings, const std::string & s
 
 std::string service::loadImageName(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename)
 {
-   std::string v = servicepaths(settings, servicename).getPathVariables();
+   std::string v = servicepaths(settings, servicename).getPath();
    if (utils::fileexists(v))
    {
       if (imagename.length() == 0)
       { // if imagename override not provided and variables.sh exists then load it from variables.sh
-         sh_variables shv(v);
+         sh_servicevars shv(v);
          if (!shv.readOkay())
             ::logmsg(kLERROR, "Couldn't read " + v,prms);
          imagename = shv.getImageName();
@@ -91,21 +92,18 @@ bool service::isValid() const
    if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner()) || !utils::fileexists(getPathTemp()))
       return false;
 
-   sh_servicecfg svc(getPathServiceCfg());
-   if (!svc.readOkay())
+   drunnerCompose drc(*this, mParams);
+   if (!drc.readOkay())
    {
-      logmsg(kLDEBUG, "Couldn't read servicecfg.sh from service "+getName());
+      logmsg(kLDEBUG, "Couldn't read servicecfg.sh or docker-compose.yml from service "+getName());
       return false;
    }
-   sh_variables shv(getPathVariables());
+   sh_servicevars shv(getPath());
    if (!shv.readOkay())
    {
-      logmsg(kLDEBUG, "Couldn't read variables.sh from service " + getName());
+      logmsg(kLDEBUG, "Couldn't read servicevars.sh from service " + getName());
       return false;
    }
-
-   if (svc.getVersion() < 2)
-      logmsg(kLDEBUG, "dService "+getImageName()+" is old (version 1) and should be updated.");
 
    return true;
 }

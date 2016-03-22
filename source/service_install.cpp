@@ -8,10 +8,10 @@
 #include "command_setup.h"
 #include "generate_utils_sh.h"
 #include "sh_servicecfg.h"
-#include "sh_variables.h"
 #include "service.h"
 #include "servicehook.h"
-
+#include "sh_servicevars.h"
+#include "drunnercompose.h"
 
 //using namespace utils;
 
@@ -59,50 +59,44 @@ void service::createLaunchScript()
 
 
 
-void service::createVolumes(const sh_variables * variables)
+void service::createVolumes(const drunnerCompose * const drc)
 {
-   if (variables == NULL)
-      logmsg(kLERROR, "createVolumes passed NULL variables.");
+   if (drc == NULL)
+      logmsg(kLERROR, "createVolumes passed NULL drunnerCompose.");
 
 	std::string userid = getUserID();
 	if (userid == "0")
 		logmsg(kLERROR, "Container is running as root user!"); // should never happen as we've validated the image already.
 
-	const std::vector<std::string> & dockervols = variables->getDockerVols(); //getVec("DOCKERVOLS");
-	const std::vector<std::string> & volumes = variables->getVolumes(); // getVec("VOLUMES");
-	std::string dname = "dRunner-install-volcreate";
+   std::string dname = "docker-volume-maker";
 
-	if (dockervols.size() != volumes.size())
-		logmsg(kLERROR, "Error in variables.sh - array sizes not equal for volumes and dockervols.");
-	for (uint i = 0; i < dockervols.size(); ++i)
-	{
-		std::string volname = dockervols[i];
-		std::string volpath = volumes[i];
-
-      if (utils::dockerVolExists(volname))
-			logmsg(kLINFO, "A docker volume already exists for " + volname + ", reusing it.");
-      else
+   for (const auto & entry : drc->getServicesInfo())
+      for (const auto & vol : entry.mVolumes)
       {
-         std::string op;
-         int rval = utils::bashcommand("docker volume create --name=\"" + volname + "\"", op);
-         if (rval != 0)
-            logmsg(kLERROR, "Unable to create docker volume " + volname);
+         if (utils::dockerVolExists(vol.mDockerVolumeName))
+            logmsg(kLINFO, "A docker volume already exists for " + vol.mDockerVolumeName + ", reusing it.");
+         else
+         {
+            std::string op;
+            int rval = utils::bashcommand("docker volume create --name=\"" + vol.mDockerVolumeName + "\"", op);
+            if (rval != 0)
+               logmsg(kLERROR, "Unable to create docker volume " + vol.mDockerVolumeName);
+         }
+
+         // set permissions on volume.
+         tVecStr args;
+         args.push_back("docker");
+         args.push_back("run");
+         args.push_back("--name=\"" + dname + "\"");
+         args.push_back("-v");
+         args.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
+         args.push_back("drunner/install-rootutils");
+         args.push_back("chown");
+         args.push_back(userid + ":root");
+         args.push_back(vol.mMountPath);
+
+         utils::dockerrun dr("/usr/bin/docker", args, dname, mParams);
       }
-
-		// set permissions on volume.
-      tVecStr args;
-      args.push_back("docker");
-      args.push_back("run");
-      args.push_back("--name=\"" + dname + "\"");
-      args.push_back("-v");
-      args.push_back(volname + ":" + volpath);
-      args.push_back("drunner/install-rootutils");
-      args.push_back("chown");
-      args.push_back(userid + ":root");
-      args.push_back(volpath);
-
-      utils::dockerrun dr("/usr/bin/docker", args, dname, mParams);
-	}
 }
 
 void service::recreate(bool updating)
@@ -126,18 +120,21 @@ void service::recreate(bool updating)
       if (r != 0)
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.");
 
-      // read in servicecfg.sh and write out variables.sh
-      sh_variables variables(getPathVariables()); 
-      if (variables.readOkay())
-         fatal("Unexpected error - variables.sh already exists.");
-      variables.createFromServiceCfg(*this);
-      variables.write();
+      // write out variables.sh for the dService.
+      drunnerCompose drc(*this, mParams);
+      if (!drc.readOkay())
+         fatal("Unexpected error - couldn't read docker-compose.yml or servicecfg.sh. Newer dService is broken?");
+      drc.writeVariables();
+
+      // write out servicevars.sh for ourselves.
+      sh_servicevars svcvars(getPath());
+      svcvars.create(getImageName());
+      if (!svcvars.write())
+         fatal("Unexpected error - couldn't write out servicevars.sh.");
 
       // make sure we have the latest of all exra containers.
-      std::vector<std::string> extracontainers;
-      extracontainers = variables.getExtraContainers();
-      for (uint i = 0; i < extracontainers.size(); ++i)
-         command_setup::pullImage(mParams, mSettings, extracontainers[i]);
+      for (const auto & entry : drc.getServicesInfo())
+         command_setup::pullImage(mParams, mSettings, entry.mImageName);
 
       // create the utils.sh file for the dService.
       generate_utils_sh(getPathdRunner(), mParams);
@@ -146,7 +143,7 @@ void service::recreate(bool updating)
       createLaunchScript();
 
       // create volumes
-      createVolumes(&variables);
+      createVolumes(&drc);
    }
 
    catch (const eExit & e) {
@@ -206,18 +203,20 @@ eResult service::obliterate()
 
    logmsg(kLDEBUG, "Deleting all the docker volumes.");
    {// [start] deleting docker volumes.
-
-      sh_variables variables(getPathVariables());
-      if (!variables.readOkay())
-         variables.createFromServiceCfg(*this);
-
-      for (auto entry : variables.getDockerVols())
+      drunnerCompose drc(*this, mParams);
+      if (drc.readOkay())
       {
-         logmsg(kLINFO, "Deleting docker volume " + entry);
-         std::string op;
-         if (0 != utils::bashcommand("docker volume rm " + entry, op))
-            logmsg(kLWARN, "Failed to delete " + entry + " -- " + op);
+         for (const auto & entry : drc.getServicesInfo())
+            for (const auto & vol : entry.mVolumes)
+            {
+               logmsg(kLINFO, "Deleting docker volume " + vol.mDockerVolumeName);
+               std::string op;
+               if (0 != utils::bashcommand("docker volume rm " + vol.mDockerVolumeName, op))
+                  logmsg(kLWARN, "Failed to delete " + vol.mDockerVolumeName + " -- " + op);
+            }
       }
+      else
+         logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");
    }// [end] deleting docker volumes.
 
    // delete the service tree.
