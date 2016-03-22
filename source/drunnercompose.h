@@ -39,15 +39,18 @@ public:
 
    const service & getService() const;
 
+   int getVersion() const;
+
 private:
    bool load_docker_compose_yml();
    bool load_servicecfg_sh();
 
-   std::vector<cServiceInfo> mServices;
+   std::vector<cServiceInfo> mServicesInfo;
 
    const service & mService;
    const params & mParams;
    bool mReadOkay;
+   int mVersion;
 };
 
 #endif

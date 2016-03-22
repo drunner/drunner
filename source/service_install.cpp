@@ -7,7 +7,6 @@
 #include "settingsbash.h"
 #include "command_setup.h"
 #include "generate_utils_sh.h"
-#include "sh_servicecfg.h"
 #include "service.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"

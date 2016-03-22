@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "utils.h"
-#include "sh_servicecfg.h"
 #include "service.h"
 #include "settingsbash.h"
 #include "drunnercompose.h"

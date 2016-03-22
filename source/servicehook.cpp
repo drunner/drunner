@@ -3,7 +3,7 @@
 #include "servicehook.h"
 #include "logmsg.h"
 #include "utils.h"
-#include "sh_servicecfg.h"
+#include "drunnercompose.h"
 #include "cresult.h"
 
 servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p) :
@@ -59,15 +59,21 @@ cResult servicehook::runHook(std::string se)
 
 void servicehook::setNeedsHook(const service * const svc)
 {
-   sh_servicecfg sc(svc->getPathServiceCfg());
-   if (!sc.readOkay())
-      logmsg(kLWARN,"Service is broken (can't read servicecfg.sh: " + svc->getName()+")", mParams);
-
+   drunnerCompose dc(*svc, mParams);
+   if (!dc.readOkay())
+      logmsg(kLWARN,"Service is broken (can't read docker-compose.yml or servicecfg.sh for service: " + svc->getName()+")", mParams);
+      
    mServiceRunner = svc->getPathServiceRunner();
    mStartCmd = "";
    mEndCmd = "";
 
-   if (sc.getVersion() == 1)
+   if (dc.getVersion() == 0)
+   {
+      logmsg(kLWARN, "Version of dService couldn't be determined. Aborting hook configuration (no hooks will be called).", mParams);
+      return;
+   }
+
+   if (dc.getVersion() == 1)
    { // cope with old version - it expected a bunch of manual hooks to be present.
       if (utils::stringisame(mActionName, "backup"))
       {
