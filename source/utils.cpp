@@ -162,14 +162,6 @@ namespace utils
       return rval;
    }
 
-   //int bashcommand(std::string command, const std::vector<std::string> & args, const params & p)
-   //{
-   //   bool printstdout = p.getDisplayServiceOutput();
-   //   bool printstderr = p.getDisplayServiceOutput();
-   //   return bashcommand(command, args, printstdout, printstderr);
-   //}
-
-
    std::string getabsolutepath(std::string path)
    {
       boost::filesystem::path rval;

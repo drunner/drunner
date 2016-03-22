@@ -11,7 +11,7 @@
 #include "utils.h"
 #include "showhelp.h"
 #include "logmsg.h"
-#include "build_number.h"
+#include "buildnum.h"
 
 
 std::string params::substitute( const std::string & source ) const
@@ -57,7 +57,7 @@ eCommand params::parsecmd(std::string s) const
 
 void params::setdefaults()
 {
-   mVersion = VERSION_STR;
+   mVersion = getVersionStr();
    mLogLevel = kLINFO;
    
    mServiceOutput_hooks = kOLogged;
