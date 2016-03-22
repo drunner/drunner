@@ -126,9 +126,8 @@ drunnerCompose::drunnerCompose(const service & svc, const params & p) :
    mReadOkay(false),
    mVersion(0)
 {
-   if (!load_docker_compose_yml())
-      if (!load_docker_compose_yml())
-         logmsg(kLDEBUG, "drunnerCompose - couldn't load either docker-compose.yml or servicecfg.sh for service "+svc.getName(), p);
+   if (!load_docker_compose_yml() && !load_servicecfg_sh())
+      logmsg(kLDEBUG, "drunnerCompose - couldn't load either docker-compose.yml or servicecfg.sh for service "+svc.getName(), p);
 }
 
 void drunnerCompose::writeVariables()
@@ -186,7 +185,7 @@ std::string makevolname(
 
 bool drunnerCompose::load_docker_compose_yml()
 {
-   mVersion = 2;
+   //mVersion = 2;
    return false;
 }
 
@@ -195,7 +194,10 @@ bool drunnerCompose::load_servicecfg_sh()
 {
    sh_legacy_servicecfg svcfg(mService.getPathServiceCfg());
    if (!svcfg.readOkay())
+   {
+      logmsg(kLDEBUG, "Couldn't read " + mService.getPathServiceCfg(),mParams);
       return false;
+   }
 
    mVersion = 1;
    mReadOkay = true;
@@ -217,6 +219,7 @@ bool drunnerCompose::load_servicecfg_sh()
    }
    mServicesInfo.push_back(ci);
 
+   logmsg(kLDEBUG, "Successfully read " + mService.getPathServiceCfg(), mParams);
    return true;
 }
 

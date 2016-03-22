@@ -40,7 +40,7 @@ COMMANDS
 
    ${EXENAME} install    IMAGENAME [SERVICENAME]
    ${EXENAME} update     SERVICENAME
-   ${EXENAME} recover    SERVICENAME
+   ${EXENAME} recover    SERVICENAME [IMAGENAME]
    ${EXENAME} uninstall  SERVICENAME
    ${EXENAME} obliterate SERVICENAME
    ${EXENAME} enter      SERVICENAME [ARGS]
