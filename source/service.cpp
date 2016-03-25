@@ -30,7 +30,7 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
       { // if imagename override not provided and variables.sh exists then load it from variables.sh
          sh_servicevars shv(v);
          if (!shv.readOkay())
-            ::logmsg(kLERROR, "Couldn't read " + v,prms);
+            ::logmsg(kLERROR, "Couldn't read servicevars.sh from " + v,prms);
          imagename = shv.getImageName();
       }
       else

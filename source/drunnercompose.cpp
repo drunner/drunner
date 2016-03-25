@@ -195,7 +195,7 @@ bool drunnerCompose::load_servicecfg_sh()
    sh_legacy_servicecfg svcfg(mService.getPathServiceCfg());
    if (!svcfg.readOkay())
    {
-      logmsg(kLDEBUG, "Couldn't read " + mService.getPathServiceCfg(),mParams);
+      logmsg(kLDEBUG, "Couldn't read servicecfg.sh from " + mService.getPathServiceCfg(),mParams);
       return false;
    }
 
