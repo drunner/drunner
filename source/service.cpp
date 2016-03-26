@@ -39,7 +39,7 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
          imagename = shv.getImageName();
       }
       else
-         ::logmsg(kLDEBUG, "variables.sh exists, but forcing imagename to be " + imagename,prms);
+         ::logmsg(kLDEBUG, "Forcing dService main image to be " + imagename,prms);
    }
 
    if (imagename.length() == 0)

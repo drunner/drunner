@@ -1,5 +1,6 @@
 #include <sstream>
 #include <fstream>
+#include <string>
 
 #include "yaml-cpp/yaml.h"
 
@@ -193,14 +194,61 @@ bool drunnerCompose::load_docker_compose_yml()
    if (!utils::fileexists(mService.getPathDockerCompose()))
       return false;
 
+   logmsg(kLDEBUG, "Parsing " + mService.getPathDockerCompose(), mParams);
+
    mVersion = 3;
    YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose());
+   if (config.IsNull())
+      logmsg(kLERROR, "Failed to load the docker-compose.yml file. Parse error?", mParams);
 
+   if (!config["version"] || config["version"].as<int>() != 2)
+      logmsg(kLERROR, "dRunner requires the docker-compose.yml file to be Version 2 format.", mParams);
+
+   // parse volumes.
+   if (!config["volumes"])
+      logmsg(kLERROR, "docker-compose.yml is missing the required volumes section.", mParams);
+
+   // parse services.
    if (!config["services"])
       logmsg(kLERROR, "docker-compose.yml is missing services section. Use servicecfg.sh not docker-compose.yml if there are no Docker services.", mParams);
+   YAML::Node services = config["services"];
+
+   if (services.Type() != YAML::NodeType::Map)
+      logmsg(kLERROR, "services is not a map?!", mParams);
+
+   for (auto it = services.begin(); it != services.end(); ++it)
+   {
+      cServiceInfo sinf;
+
+      sinf.mServiceName = it->first.as<std::string>();
+      logmsg(kLDEBUG, "Docker-compose service " + sinf.mServiceName + " found.", mParams);
+
+      if (!it->second["image"])
+         logmsg(kLERROR, "Service " + sinf.mServiceName + " is missing image definition.", mParams);
+      sinf.mImageName = it->second["image"].as<std::string>();
+      logmsg(kLDEBUG, sinf.mServiceName + " - Image:  " + sinf.mImageName, mParams);
+
+      YAML::Node volumes = it->second["volumes"];
+      if (volumes.IsNull())
+         logmsg(kLDEBUG, sinf.mServiceName + " - No volumes defined.",mParams);
+      else
+         for (auto vol = volumes.begin(); vol != volumes.end(); ++vol)
+         {
+            std::string volinfo = vol->as<std::string>();
+            logmsg(kLDEBUG, sinf.mServiceName + " - Volume: " + volinfo,mParams);
+
+         }
+
+   }
+
    if (!config["volumes"])
       logmsg(kLDEBUG, "docker-compose.yml has no volumes section.", mParams);
-   return true;
+
+//   YAML::Node 
+
+   logmsg(kLERROR, "Debug.", mParams);
+   mReadOkay = false;
+   return mReadOkay;
 }
 
 
