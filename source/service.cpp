@@ -69,10 +69,10 @@ std::string servicepaths::getPathServiceRunner() const
    return getPathdRunner() + "/servicerunner";
 }
 
-std::string servicepaths::getPathVariables() const
-{
-   return getPathdRunner() + "/variables.sh";
-}
+//std::string servicepaths::getPathVariables() const
+//{
+//   return getPathdRunner() + "/variables.sh";
+//}
 
 std::string servicepaths::getPathServiceCfg() const
 {
@@ -121,13 +121,15 @@ bool service::isValid() const
 
 cResult service::servicecmd()
 {
-   std::vector<std::string> cargs( mParams.getArgs().begin(), mParams.getArgs().end() );
-   cargs[0] = "servicerunner";
+   if (mParams.numArgs() < 1)
+      fatal("Programming error - number of arguments should never be 0 in service::servicecmd");
+
+   std::vector<std::string> cargs( mParams.getArgs().begin() + 1, mParams.getArgs().end() );
 
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
       cargs.push_back("help");
-      utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
+      serviceRunnerCommand(cargs);
       return kRSuccess;
    }
 
@@ -141,11 +143,10 @@ cResult service::servicecmd()
       logmsg(kLERROR, "Should never get here. Enter command shouldn't return.");
    }
 
-   std::vector<std::string> hookargs(cargs.begin() + 1, cargs.end());
-   servicehook hook(this, "servicecmd", hookargs, mParams);
+   servicehook hook(this, "servicecmd", cargs, mParams);
    hook.starthook();
 
-   cResult rval( utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true) );
+   cResult rval( serviceRunnerCommand(cargs) );
 
    hook.endhook();
 
@@ -224,4 +225,23 @@ void validateImage(const params & prms, const sh_drunnercfg & settings, std::str
          logmsg(kLERROR, op,prms);
    }
    logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.",prms);
+}
+
+
+cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
+{
+   // set environment.
+   drunnerCompose drc(*this, mParams);
+   if (!drc.readOkay())
+      logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correclty.");
+   else
+      drc.setServiceRunnerEnv();
+ 
+   if (args.size() > 0 && utils::stringisame(args[0],"servicerunner"))
+      logmsg(kLERROR, "Programming error - someone gave serviceRunnerCommand the first arg: servicerunner :/");
+   auto newargs(args);
+   newargs.insert(newargs.begin(), std::string("servicerunner"));
+
+   cResult rval(utils::dServiceCmd(getPathServiceRunner(), newargs, mParams, true));
+   return rval;
 }

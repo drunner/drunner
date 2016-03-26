@@ -7,9 +7,9 @@
 #include "cresult.h"
 
 servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p) :
-   mActionName(actionname), mHookParams(hookparams), mParams(p)
+   mService(svc), mActionName(actionname), mHookParams(hookparams), mParams(p)
 {
-   setNeedsHook(svc);
+   setNeedsHook();
 }
 
 cResult servicehook::starthook()
@@ -39,12 +39,13 @@ cResult servicehook::runHook(std::string se)
    }
 
    std::vector<std::string> args;
-   args.push_back("servicerunner");
+   //args.push_back("servicerunner");
    args.push_back(se);
    for (const auto & entry : mHookParams)
       args.push_back(entry);
 
-   cResult rval = utils::dServiceCmd(mServiceRunner, args, mParams);
+   cResult rval(mService->serviceRunnerCommand(args));
+   //cResult rval = utils::dServiceCmd(mServiceRunner, args, mParams);
    if (rval.isNOIMPL())
       rval=kRNoChange; // not implemented is perfectly fine for hooks.
 
@@ -57,13 +58,13 @@ cResult servicehook::runHook(std::string se)
 }
 
 
-void servicehook::setNeedsHook(const service * const svc)
+void servicehook::setNeedsHook()
 {
-   drunnerCompose dc(*svc, mParams);
+   drunnerCompose dc(*mService, mParams);
    if (!dc.readOkay())
-      logmsg(kLWARN,"Service is broken (can't read docker-compose.yml or servicecfg.sh for service: " + svc->getName()+")", mParams);
+      logmsg(kLWARN,"Service is broken (can't read docker-compose.yml or servicecfg.sh for service: " + mService->getName()+")", mParams);
       
-   mServiceRunner = svc->getPathServiceRunner();
+   mServiceRunner = mService->getPathServiceRunner();
    mStartCmd = "";
    mEndCmd = "";
 

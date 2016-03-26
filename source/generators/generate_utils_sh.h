@@ -55,12 +55,12 @@ function container_paused {
 #------------------------------------------------------------------------------------
 # Import directory into container. utils_import source-localpath dest-containerpath
 
-function utils_import {
+function utils_import_DEPRECATED {
    [ "$#" -eq 2 ] || die "utils_import -- requires two arguments (the path to be imported and the container's destination path)."
    [ -d "$1" ] || die "utils_import -- source path does not exist: $1"
    local SOURCEPATH=$(realpath "$1" | tr -d '\r\n')
 
-   dockerrun bash -c "rm -rf $2/*"
+   # docker run --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" bash -c "rm -rf $2/*"
    tar cf - -C "$SOURCEPATH" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-importfn" >/dev/null
@@ -70,7 +70,7 @@ function utils_import {
 #------------------------------------------------------------------------------------
 # Export directory from container. utils_export source-containerpath dest-localpath
 
-function utils_export {
+function utils_export_DEPRECATED {
    [ "$#" -eq 2 ] || die "utils_export -- requires two arguments (the container's source path and the path to be exported to)."
    [ -d "$2" ] || die "utils_export -- destination path does not exist."
    local DESTPATH=$(realpath "$2" | tr -d '\r\n')

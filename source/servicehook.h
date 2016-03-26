@@ -17,9 +17,10 @@ public:
    cResult starthook();
    cResult endhook();
 private:
-   void setNeedsHook(const service * const svc);
+   void setNeedsHook();
    cResult runHook(std::string se);
 
+   const service * const mService;
    std::string mActionName;
    const std::vector<std::string> & mHookParams;
    const params & mParams;

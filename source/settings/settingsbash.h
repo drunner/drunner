@@ -104,8 +104,6 @@ public:
    void setString(const std::string & key, const std::string & s);
    void setVec(const std::string & key, const std::vector<std::string> & v);
 
-
-   void setPath(const std::string & path);
 private:
    std::vector<std::shared_ptr<sbelement>> mElements;
 

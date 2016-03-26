@@ -19,7 +19,7 @@ public:
    std::string getPathdRunner() const;
    std::string getPathTemp() const;
    std::string getPathServiceRunner() const;
-   std::string getPathVariables() const;
+   //std::string getPathVariables() const;
    std::string getPathServiceCfg() const;
    std::string getPathDockerCompose() const;
    std::string getName() const;
@@ -53,6 +53,8 @@ public:
 
    const std::string getImageName() const;
    const params & getParams() const;
+
+   cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
 
 private:
    void ensureDirectoriesExist() const;

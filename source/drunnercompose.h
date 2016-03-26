@@ -34,7 +34,10 @@ public:
    drunnerCompose(const service & svc, const params & p);
 
    // writes out variables.sh
-   void writeVariables();
+   //void writeVariables();
+
+   // Set the variables in the environemnt for servicerunner.
+   void setServiceRunnerEnv() const;
 
    // was the servicecfg.sh or docker-compose.yml file read okay.
    bool readOkay() const;

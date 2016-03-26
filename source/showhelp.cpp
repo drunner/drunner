@@ -1,4 +1,7 @@
 #include <iostream>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
 
 #include "showhelp.h"
 #include "utils.h"
@@ -65,6 +68,8 @@ OPTIONS
    -s    silent
 )EOF"), p);
 
+   //setenv("Sniggle", "wiggle", 1);
+   //execl("/usr/bin/env", "env", 0);
    //std::cerr << cMsg << std::endl;
    logmsg(kLERROR, cMsg, p);
 }
