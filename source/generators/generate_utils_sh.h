@@ -9,8 +9,7 @@
 void generate_utils_sh(const std::string & supportpath, const params & p)
 {
    std::string vdata = R"EOF(#!/bin/bash
-
-            # --- some useful utility functions
+# --- some useful utility functions
 # --- generally should be okay if used with 'set -e'.
 
 # Formatting for comamnds - standardised.
@@ -109,6 +108,13 @@ function isHook {
    fi
    return 1
 }
+
+#-----------------------------------------------------------------------------------
+# We can be called from any directory, so set the current directory to where the
+# scripts are (including utils.h!).
+
+UTILS_H_MYDIR=$( dirname "$(readlink -f "$0")" )
+cd "${UTILS_H_MYDIR}"
 
 
 )EOF";

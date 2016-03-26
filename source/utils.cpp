@@ -539,7 +539,7 @@ namespace utils
       if (rval != 0)
          std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
       else
-         logmsg(kLDEBUG, "Deleted docker volume " + mDockerName, mP);
+         logmsg(kLDEBUG, "Deleted docker container " + mDockerName, mP);
    }
 
 
