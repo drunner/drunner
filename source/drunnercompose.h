@@ -33,9 +33,6 @@ public:
    // reads in servicecfg.sh or docker-compose.yml - whichever is present.
    drunnerCompose(const service & svc, const params & p);
 
-   // writes out variables.sh
-   //void writeVariables();
-
    // Set the variables in the environemnt for servicerunner.
    void setServiceRunnerEnv() const;
 
@@ -63,6 +60,8 @@ public:
 private:
    bool load_docker_compose_yml();
    bool load_servicecfg_sh();
+   void setvecenv(const sb_vec & v) const;
+   void setenv_log(std::string key, std::string val) const;
 
    std::vector<cServiceInfo> mServicesInfo;
    std::vector<cVolInfo> mVolumes;

@@ -148,12 +148,18 @@ drunnerCompose::drunnerCompose(const service & svc, const params & p) :
 //   sh_variables shv(*this);
 //}
 
-void setvecenv(const sb_vec & v)
+void drunnerCompose::setvecenv(const sb_vec & v) const
 {
    bashline bl = v.getBashLine();
    std::string key = bl.getkey();
    std::string val = bl.getvalue();
-   setenv(key.c_str(), val.c_str(),1);
+   setenv_log(key, val);
+}
+
+void drunnerCompose::setenv_log(std::string key, std::string val) const
+{
+   setenv(key.c_str(), val.c_str(), 1);
+   logmsg(kLDEBUG, "environment: "+key + "=" + val, mParams);
 }
 
 void drunnerCompose::setServiceRunnerEnv() const
@@ -185,10 +191,10 @@ void drunnerCompose::setServiceRunnerEnv() const
    sb_vec v_dockeropts("DOCKEROPTS", dockeropts);
    setvecenv(v_dockeropts);
 
-   setenv("SERVICENAME", getService().getName().c_str(), 1);
-   setenv("IMAGENAME", getService().getImageName().c_str(), 1);
-   setenv("SERVICETEMPDIR", getService().getPathTemp().c_str(), 1);
-   setenv("HOSTIP", utils::getHostIP().c_str(), 1);
+   setenv_log("SERVICENAME", getService().getName().c_str());
+   setenv_log("IMAGENAME", getService().getImageName().c_str());
+   setenv_log("SERVICETEMPDIR", getService().getPathTemp().c_str());
+   setenv_log("HOSTIP", utils::getHostIP().c_str());
 }
 
 bool drunnerCompose::readOkay() const
