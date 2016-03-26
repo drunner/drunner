@@ -79,6 +79,12 @@ std::string servicepaths::getPathServiceCfg() const
    return getPathdRunner() + "/servicecfg.sh";
 }
 
+std::string servicepaths::getPathDockerCompose() const
+{
+   return getPathdRunner() + "/docker-compose.yml";
+}
+
+
 std::string servicepaths::getName() const
 {
    return mName;

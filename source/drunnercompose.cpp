@@ -1,6 +1,8 @@
 #include <sstream>
 #include <fstream>
 
+#include "yaml-cpp/yaml.h"
+
 #include "drunnercompose.h"
 #include "utils.h"
 #include "logmsg.h"
@@ -180,23 +182,25 @@ int drunnerCompose::getVersion() const
 
 std::string makevolname(
    std::string mainServiceName,
-   std::string serviceName,
    std::string mountpath
    )
 {
-   std::string dvol;
-
-   if (serviceName.length()>0)
-      dvol = "drunner-" + mainServiceName + "-" + serviceName + "-" + utils::alphanumericfilter(mountpath, false);
-   else
-      dvol = "drunner-" + mainServiceName + "-" + utils::alphanumericfilter(mountpath, false);
-   return dvol;
+   return "drunner-" + mainServiceName + "-" + utils::alphanumericfilter(mountpath, false);
 }
 
 bool drunnerCompose::load_docker_compose_yml()
 {
-   //mVersion = 2;
-   return false;
+   if (!utils::fileexists(mService.getPathDockerCompose()))
+      return false;
+
+   mVersion = 3;
+   YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose());
+
+   if (!config["services"])
+      logmsg(kLERROR, "docker-compose.yml is missing services section. Use servicecfg.sh not docker-compose.yml if there are no Docker services.", mParams);
+   if (!config["volumes"])
+      logmsg(kLDEBUG, "docker-compose.yml has no volumes section.", mParams);
+   return true;
 }
 
 
@@ -223,7 +227,7 @@ bool drunnerCompose::load_servicecfg_sh()
    for (const auto & mtpt : mtpts)
    {
       cServiceVolInfo vsi;
-      vsi.mDockerVolumeName = makevolname(mService.getName(), "", mtpt);
+      vsi.mDockerVolumeName = makevolname(mService.getName(), mtpt);
       vsi.mMountPath = mtpt;
       vsi.mLabel = vsi.mDockerVolumeName;
       ci.mVolumes.push_back(vsi);
