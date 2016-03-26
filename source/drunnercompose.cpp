@@ -92,6 +92,7 @@ public:
       std::vector<std::string> nothing;
       setVec("VOLUMES", nothing);
       setVec("EXTRACONTAINERS", nothing);
+      setString("VERSION", "1");
    }
 
    const std::vector<std::string> & getVolumes() const
@@ -102,6 +103,11 @@ public:
    const std::vector<std::string> & getExtraContainers() const
    {
       return getVec("EXTRACONTAINERS");
+   }
+
+   int getVersion() const
+   {
+      return atoi(getString("VERSION").c_str());
    }
 };
 
@@ -146,11 +152,15 @@ const std::vector<cServiceInfo>& drunnerCompose::getServicesInfo() const
    return mServicesInfo;
 }
 
+const std::vector<cVolInfo>& drunnerCompose::getVolumes() const
+{
+   return mVolumes;
+}
+
 void drunnerCompose::getDockerVols(tVecStr & dv) const
 {
-   for (const auto & entry : mServicesInfo)
-      for (const auto & vol : entry.mVolumes)
-         dv.push_back(vol.mDockerVolumeName);
+   for (const auto & entry : mVolumes)
+      dv.push_back(entry.mDockerVolumeName);
 }
 
 std::string drunnerCompose::getImageName() const
@@ -199,7 +209,7 @@ bool drunnerCompose::load_servicecfg_sh()
       return false;
    }
 
-   mVersion = 1;
+   mVersion = svcfg.getVersion();
    mReadOkay = true;
 
    // load from servicecfg.
@@ -212,10 +222,16 @@ bool drunnerCompose::load_servicecfg_sh()
 
    for (const auto & mtpt : mtpts)
    {
+      cServiceVolInfo vsi;
+      vsi.mDockerVolumeName = makevolname(mService.getName(), "", mtpt);
+      vsi.mMountPath = mtpt;
+      vsi.mLabel = vsi.mDockerVolumeName;
+      ci.mVolumes.push_back(vsi);
+
       cVolInfo vi;
-      vi.mDockerVolumeName = makevolname(mService.getName(), "", mtpt);
-      vi.mMountPath = mtpt;
-      ci.mVolumes.push_back(vi);
+      vi.mDockerVolumeName = vsi.mDockerVolumeName;
+      vi.mLabel = vsi.mLabel;
+      mVolumes.push_back(vi);
    }
    mServicesInfo.push_back(ci);
 

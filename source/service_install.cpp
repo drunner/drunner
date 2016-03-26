@@ -69,17 +69,16 @@ void service::createVolumes(const drunnerCompose * const drc)
 
    std::string dname = "docker-volume-maker";
 
-   for (const auto & entry : drc->getServicesInfo())
-      for (const auto & vol : entry.mVolumes)
+   for (const auto & entry : drc->getVolumes())
       {
-         if (utils::dockerVolExists(vol.mDockerVolumeName))
-            logmsg(kLINFO, "A docker volume already exists for " + vol.mDockerVolumeName + ", reusing it.");
+         if (utils::dockerVolExists(entry.mDockerVolumeName))
+            logmsg(kLINFO, "A docker volume already exists for " + entry.mDockerVolumeName + ", reusing it.");
          else
          {
             std::string op;
-            int rval = utils::bashcommand("docker volume create --name=\"" + vol.mDockerVolumeName + "\"", op);
+            int rval = utils::bashcommand("docker volume create --name=\"" + entry.mDockerVolumeName + "\"", op);
             if (rval != 0)
-               logmsg(kLERROR, "Unable to create docker volume " + vol.mDockerVolumeName);
+               logmsg(kLERROR, "Unable to create docker volume " + entry.mDockerVolumeName);
          }
 
          // set permissions on volume.
@@ -88,11 +87,11 @@ void service::createVolumes(const drunnerCompose * const drc)
          args.push_back("run");
          args.push_back("--name=\"" + dname + "\"");
          args.push_back("-v");
-         args.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
+         args.push_back(entry.mDockerVolumeName + ":" + "/tempmount");
          args.push_back("drunner/install-rootutils");
          args.push_back("chown");
          args.push_back(userid + ":root");
-         args.push_back(vol.mMountPath);
+         args.push_back("/tempmount");
 
          utils::dockerrun dr("/usr/bin/docker", args, dname, mParams);
       }
@@ -200,19 +199,18 @@ eResult service::obliterate()
    servicehook hook(this, "obliterate", args, mParams);
    hook.starthook();
 
-   logmsg(kLDEBUG, "Deleting all the docker volumes.");
+   logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
    {// [start] deleting docker volumes.
       drunnerCompose drc(*this, mParams);
       if (drc.readOkay())
       {
-         for (const auto & entry : drc.getServicesInfo())
-            for (const auto & vol : entry.mVolumes)
-            {
-               logmsg(kLINFO, "Deleting docker volume " + vol.mDockerVolumeName);
-               std::string op;
-               if (0 != utils::bashcommand("docker volume rm " + vol.mDockerVolumeName, op))
-                  logmsg(kLWARN, "Failed to delete " + vol.mDockerVolumeName + " -- " + op);
-            }
+         for (const auto & vol : drc.getVolumes())
+         {
+            logmsg(kLINFO, "Obliterating docker volume " + vol.mDockerVolumeName);
+            std::string op;
+            if (0 != utils::bashcommand("docker volume rm " + vol.mDockerVolumeName, op))
+               logmsg(kLWARN, "Failed to remove " + vol.mDockerVolumeName + " -- " + op);
+         }
       }
       else
          logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");

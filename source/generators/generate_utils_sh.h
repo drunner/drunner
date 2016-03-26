@@ -59,9 +59,10 @@ function container_paused {
 function utils_import {
    [ "$#" -eq 2 ] || die "utils_import -- requires two arguments (the path to be imported and the container's destination path)."
    [ -d "$1" ] || die "utils_import -- source path does not exist: $1"
+   local SOURCEPATH=$(realpath "$1" | tr -d '\r\n')
 
    dockerrun bash -c "rm -rf $2/*"
-   tar cf - -C "$1" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
+   tar cf - -C "$SOURCEPATH" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-importfn" >/dev/null
    [ $RVAL -eq 0 ] || die "utils_import failed to transfer the files."
@@ -73,8 +74,9 @@ function utils_import {
 function utils_export {
    [ "$#" -eq 2 ] || die "utils_export -- requires two arguments (the container's source path and the path to be exported to)."
    [ -d "$2" ] || die "utils_export -- destination path does not exist."
+   local DESTPATH=$(realpath "$2" | tr -d '\r\n')
 
-   docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$2"
+   docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$DESTPATH"
    RVAL=$?
    docker rm "${SERVICENAME}-exportfn" >/dev/null
    [ $RVAL -eq 0 ] || die "utils_export failed to transfer the files."

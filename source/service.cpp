@@ -30,7 +30,12 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
       { // if imagename override not provided and variables.sh exists then load it from variables.sh
          sh_servicevars shv(v);
          if (!shv.readOkay())
-            ::logmsg(kLERROR, "Couldn't read servicevars.sh from " + v,prms);
+         {
+            ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v, prms);
+            ::logmsg(kLWARN, "Service old/broken. Recover with:", prms);
+            ::logmsg(kLWARN, "   drunner recover " + servicename + " IMAGENAME", prms);
+            ::logmsg(kLERROR, "Unable to determine the image name. Exiting.", prms);
+         }
          imagename = shv.getImageName();
       }
       else
