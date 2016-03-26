@@ -198,56 +198,86 @@ bool drunnerCompose::load_docker_compose_yml()
 
    mVersion = 3;
    YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose());
-   if (config.IsNull())
+   if (!config)
       logmsg(kLERROR, "Failed to load the docker-compose.yml file. Parse error?", mParams);
 
    if (!config["version"] || config["version"].as<int>() != 2)
       logmsg(kLERROR, "dRunner requires the docker-compose.yml file to be Version 2 format.", mParams);
 
    // parse volumes.
-   if (!config["volumes"])
-      logmsg(kLERROR, "docker-compose.yml is missing the required volumes section.", mParams);
-
-   // parse services.
-   if (!config["services"])
-      logmsg(kLERROR, "docker-compose.yml is missing services section. Use servicecfg.sh not docker-compose.yml if there are no Docker services.", mParams);
-   YAML::Node services = config["services"];
-
-   if (services.Type() != YAML::NodeType::Map)
-      logmsg(kLERROR, "services is not a map?!", mParams);
-
-   for (auto it = services.begin(); it != services.end(); ++it)
    {
-      cServiceInfo sinf;
-
-      sinf.mServiceName = it->first.as<std::string>();
-      logmsg(kLDEBUG, "Docker-compose service " + sinf.mServiceName + " found.", mParams);
-
-      if (!it->second["image"])
-         logmsg(kLERROR, "Service " + sinf.mServiceName + " is missing image definition.", mParams);
-      sinf.mImageName = it->second["image"].as<std::string>();
-      logmsg(kLDEBUG, sinf.mServiceName + " - Image:  " + sinf.mImageName, mParams);
-
-      YAML::Node volumes = it->second["volumes"];
-      if (volumes.IsNull())
-         logmsg(kLDEBUG, sinf.mServiceName + " - No volumes defined.",mParams);
-      else
-         for (auto vol = volumes.begin(); vol != volumes.end(); ++vol)
+      YAML::Node volumes = config["volumes"];
+      if (!volumes)
+         logmsg(kLERROR, "docker-compose.yml is missing the required volumes section.", mParams);
+      if (volumes.Type() != YAML::NodeType::Map)
+         logmsg(kLERROR, "docker-compose.yml is malformed - volumes is not a map.", mParams);
+      for (auto it = volumes.begin(); it != volumes.end(); ++it)
+      {
+         cVolInfo volinfo;
+         volinfo.mLabel = it->first.as<std::string>();
+         YAML::Node external = it->second["external"];
+         if (!external) logmsg(kLDEBUG,"Volume " + volinfo.mLabel + " is not managed by dRunner.", mParams);
+         else
          {
-            std::string volinfo = vol->as<std::string>();
-            logmsg(kLDEBUG, sinf.mServiceName + " - Volume: " + volinfo,mParams);
-
+            if (!external["name"]) logmsg(kLERROR, "Volume " + volinfo.mLabel + " is missing a required name:", mParams);
+            volinfo.mDockerVolumeName = external["name"].as<std::string>();
+            // need to var substitute ${SERVICENAME} in it.
+            volinfo.mDockerVolumeName = utils::replacestring(volinfo.mDockerVolumeName, "${SERVICENAME}", mService.getName());
+            logmsg(kLDEBUG, "dRunner managed volume: " + volinfo.mDockerVolumeName,mParams);
+            mVolumes.push_back(volinfo);
          }
-
+      }
    }
 
-   if (!config["volumes"])
-      logmsg(kLDEBUG, "docker-compose.yml has no volumes section.", mParams);
+   // parse services.
+   {
+      if (!config["services"])
+         logmsg(kLERROR, "docker-compose.yml is missing services section. Use servicecfg.sh not docker-compose.yml if there are no Docker services.", mParams);
+      YAML::Node services = config["services"];
+      if (services.Type() != YAML::NodeType::Map)
+         logmsg(kLERROR, "docker-compose.yml is malformed - services is not a map.", mParams);
 
-//   YAML::Node 
+      for (auto it = services.begin(); it != services.end(); ++it)
+      {
+         cServiceInfo sinf;
 
-   logmsg(kLERROR, "Debug.", mParams);
-   mReadOkay = false;
+         sinf.mServiceName = it->first.as<std::string>();
+         logmsg(kLDEBUG, "Docker-compose service " + sinf.mServiceName + " found.", mParams);
+
+         if (!it->second["image"])
+            logmsg(kLERROR, "Service " + sinf.mServiceName + " is missing image definition.", mParams);
+         sinf.mImageName = it->second["image"].as<std::string>();
+         logmsg(kLDEBUG, sinf.mServiceName + " - Image:  " + sinf.mImageName, mParams);
+
+         YAML::Node volumes = it->second["volumes"];
+         if (volumes.IsNull())
+            logmsg(kLDEBUG, sinf.mServiceName + " - No volumes defined.", mParams);
+         else
+            for (auto vol = volumes.begin(); vol != volumes.end(); ++vol)
+            {
+               cServiceVolInfo volinfo;
+               std::string v = vol->as<std::string>();
+               size_t pos = v.find(':');
+               if (pos == std::string::npos || pos==0 || pos==v.length()-1)
+                  logmsg(kLERROR, "Couldn't parse volume info from service " + sinf.mServiceName + " - missing : in " + v, mParams);
+
+               volinfo.mLabel = v.substr(0, pos);
+               volinfo.mMountPath = v.substr(pos + 1);
+               volinfo.mDockerVolumeName = "";
+               for (auto entry : mVolumes)
+                  if (entry.mLabel == volinfo.mLabel)
+                     volinfo.mDockerVolumeName = entry.mDockerVolumeName;
+               if (volinfo.mDockerVolumeName.length() == 0)
+                  logmsg(kLERROR, "Volume " + volinfo.mLabel + " is not defined in the volumes: section! docker-compose.yml is broken.", mParams);
+
+               logmsg(kLDEBUG, sinf.mServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at "+volinfo.mMountPath, mParams);
+               sinf.mVolumes.push_back(volinfo);
+            }
+         mServicesInfo.push_back(sinf);
+      }
+   }
+
+   mReadOkay = true;
    return mReadOkay;
 }
 
