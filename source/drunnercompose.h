@@ -22,7 +22,7 @@ public:
 
 class cServiceInfo {
 public:
-   std::string mServiceName;
+   std::string mDockerServiceName;
    std::string mImageName;
    std::vector<cServiceVolInfo> mVolumes;
 };

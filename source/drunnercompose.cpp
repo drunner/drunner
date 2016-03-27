@@ -52,19 +52,20 @@ void drunnerCompose::setenv_log(std::string key, std::string val) const
 
 void drunnerCompose::setServiceRunnerEnv() const
 {
-   std::vector<std::string> dockeropts;
 
    for (const auto & entry : getServicesInfo())
+   {
+      std::vector<std::string> dockeropts;
+
       for (const auto & vol : entry.mVolumes)
       {
          dockeropts.push_back("-v");
          dockeropts.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
       }
 
-   // allows mounting of all volumes (legacy). Should be improved to distinguish between
-   // different docker services!
-   sb_vec v_dockeropts("DOCKEROPTS", dockeropts);
-   setvecenv(v_dockeropts);
+      sb_vec v_dockeropts("DOCKEROPTS_"+entry.mDockerServiceName, dockeropts);
+      setvecenv(v_dockeropts);
+   }
 
    setenv_log("SERVICENAME", getService().getName().c_str());
    setenv_log("IMAGENAME", getService().getImageName().c_str());
@@ -170,17 +171,17 @@ void drunnerCompose::load_docker_compose_yml()
       {
          cServiceInfo sinf;
 
-         sinf.mServiceName = it->first.as<std::string>();
-         logmsg(kLDEBUG, "Docker-compose service " + sinf.mServiceName + " found.", mParams);
+         sinf.mDockerServiceName = it->first.as<std::string>();
+         logmsg(kLDEBUG, "Docker-compose service " + sinf.mDockerServiceName + " found.", mParams);
 
          if (!it->second["image"])
-            logmsg(kLERROR, "Service " + sinf.mServiceName + " is missing image definition.", mParams);
+            logmsg(kLERROR, "Docker-compose service " + sinf.mDockerServiceName + " is missing image definition.", mParams);
          sinf.mImageName = it->second["image"].as<std::string>();
-         logmsg(kLDEBUG, sinf.mServiceName + " - Image:  " + sinf.mImageName, mParams);
+         logmsg(kLDEBUG, sinf.mDockerServiceName + " - Image:  " + sinf.mImageName, mParams);
 
          YAML::Node volumes = it->second["volumes"];
          if (volumes.IsNull())
-            logmsg(kLDEBUG, sinf.mServiceName + " - No volumes defined.", mParams);
+            logmsg(kLDEBUG, sinf.mDockerServiceName + " - No volumes defined.", mParams);
          else
             for (auto vol = volumes.begin(); vol != volumes.end(); ++vol)
             {
@@ -188,7 +189,7 @@ void drunnerCompose::load_docker_compose_yml()
                std::string v = vol->as<std::string>();
                size_t pos = v.find(':');
                if (pos == std::string::npos || pos==0 || pos==v.length()-1)
-                  logmsg(kLERROR, "Couldn't parse volume info from service " + sinf.mServiceName + " - missing : in " + v, mParams);
+                  logmsg(kLERROR, "Couldn't parse volume info from service " + sinf.mDockerServiceName + " - missing : in " + v, mParams);
 
                volinfo.mLabel = v.substr(0, pos);
                volinfo.mMountPath = v.substr(pos + 1);
@@ -199,7 +200,7 @@ void drunnerCompose::load_docker_compose_yml()
                if (volinfo.mDockerVolumeName.length() == 0)
                   logmsg(kLERROR, "Volume " + volinfo.mLabel + " is not defined in the volumes: section! docker-compose.yml is broken.", mParams);
 
-               logmsg(kLDEBUG, sinf.mServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at "+volinfo.mMountPath, mParams);
+               logmsg(kLDEBUG, sinf.mDockerServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at "+volinfo.mMountPath, mParams);
                sinf.mVolumes.push_back(volinfo);
             }
          mServicesInfo.push_back(sinf);
