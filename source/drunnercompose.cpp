@@ -13,73 +13,6 @@
 #include "logmsg.h"
 #include "service.h"
 
-
-// ---------------------------------------------------------------------------------------------------
-//
-//
-//class sh_variables : public settingsbash_reader
-//{
-//public:
-//
-//   // creating ctor
-//   sh_variables(const drunnerCompose & drc) // sets defaults and reads the file if present.
-//      : settingsbash_reader(drc.getService().getPathVariables())
-//   {
-//      setDefaults();
-//      populate(drc);
-//      writeSettings(drc.getService().getPathVariables());
-//   }
-//
-//protected:
-//   void setDefaults()
-//   {
-//      std::vector<std::string> nothing;
-//      setVec("VOLUMES", nothing);
-//      setVec("EXTRACONTAINERS", nothing);
-//      setString("SERVICENAME", "not set");
-//      setString("IMAGENAME", "not set");
-//      setString("SERVICETEMPDIR", "not set");
-//      setVec("DOCKERVOLS", nothing);
-//      setVec("DOCKEROPTS", nothing);
-//
-//      setString("INSTALLTIME", utils::getTime());
-//      setString("HOSTIP", utils::getHostIP());
-//   }
-//
-//private:
-//
-//   bool populate(const drunnerCompose & drc)
-//   {
-//      std::vector<std::string> volumes, extracontainers, dockervols, dockeropts;
-//
-//      for (const auto & entry : drc.getServicesInfo())
-//      {
-//         extracontainers.push_back(entry.mImageName);
-//
-//         for (const auto & vol : entry.mVolumes)
-//         {
-//            volumes.push_back(vol.mMountPath);
-//            dockervols.push_back(vol.mDockerVolumeName);
-//            dockeropts.push_back("-v");
-//            dockeropts.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
-//         }
-//      }
-//
-//      setVec("VOLUMES", volumes);
-//      setVec("EXTRACONTAINERS", extracontainers);
-//      setVec("DOCKERVOLS", dockervols);
-//      setVec("DOCKEROPTS", dockeropts);
-//
-//      setString("SERVICENAME", drc.getService().getName());
-//      setString("IMAGENAME", drc.getService().getImageName());
-//      setString("SERVICETEMPDIR", drc.getService().getPathTemp());
-//
-//      return true;
-//   }
-//}; // sh_variables
-
-
-
 // ---------------------------------------------------------------------------------------------------
 //
 
@@ -142,11 +75,6 @@ drunnerCompose::drunnerCompose(const service & svc, const params & p) :
    if (!load_docker_compose_yml() && !load_servicecfg_sh())
       logmsg(kLDEBUG, "drunnerCompose - couldn't load either docker-compose.yml or servicecfg.sh for service "+svc.getName(), p);
 }
-
-//void drunnerCompose::writeVariables()
-//{
-//   sh_variables shv(*this);
-//}
 
 void drunnerCompose::setvecenv(const sb_vec & v) const
 {
