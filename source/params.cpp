@@ -30,7 +30,7 @@ eCommand params::parsecmd(std::string s) const
    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
    std::map<std::string, eCommand> commandlist;
-   std::map<std::string, eCommand>::iterator it;
+   //std::map<std::string, eCommand>::iterator it;
 
    commandlist["setup"] = c_setup;
    commandlist["clean"] = c_clean;
@@ -48,8 +48,9 @@ eCommand params::parsecmd(std::string s) const
    commandlist["build"] = c_build;
    commandlist["unittest"] = c_unittest;
    commandlist["servicecmd"] = c_servicecmd;
+   commandlist["__save-environment"] = c_saveenvironment;
 
-   it=commandlist.find(s);
+   auto it=commandlist.find(s);
    if (it==commandlist.end())
       showhelp(*this,"Unknown command \"" + s + "\".");
    return it->second;
