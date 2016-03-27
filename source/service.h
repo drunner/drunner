@@ -10,6 +10,8 @@ class drunnerCompose;
 cResult service_restore(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, const std::string & backupfile);
 void validateImage(const params & prms, const sh_drunnercfg & settings, std::string imagename);
 
+
+
 class servicepaths
 {
 public:
@@ -28,6 +30,18 @@ public:
 protected:
    const std::string mName;
    const sh_drunnercfg & mSettings;
+};
+
+class cServiceEnvironment : protected settingsbash
+{
+   public:
+      cServiceEnvironment(const servicepaths & paths);
+      void save_environment(std::string key, std::string value);
+      int getNumVars() const;
+      void getVar(const int position, std::string & key, std::string & value) const;
+
+protected:
+   std::string mPath;
 };
 
 
@@ -56,6 +70,8 @@ public:
    const params & getParams() const;
 
    cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
+   cServiceEnvironment & getEnvironment();
+   const cServiceEnvironment & getEnvironmentConst() const;
 
 private:
    void ensureDirectoriesExist() const;
@@ -68,6 +84,7 @@ private:
 
    const std::string mImageName;
    const params & mParams;
+   cServiceEnvironment mEnvironment;
 };
 
 

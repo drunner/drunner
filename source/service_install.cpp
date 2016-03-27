@@ -108,6 +108,10 @@ void service::recreate(bool updating)
       if (utils::fileexists(getPath()))
          utils::deltree(getPath(), mParams);
 
+      // notice for hostVolumes.
+      if (utils::fileexists(getPathHostVolume()))
+         logmsg(kLINFO, "A drunner hostVolume already exists for " + getName() + ", reusing it.");
+
       // create the basic directories.
       ensureDirectoriesExist();
 
@@ -169,6 +173,8 @@ void service::install()
    tVecStr args;
    servicehook hook(this, "install", args, mParams);
    hook.endhook();
+
+   logmsg(kLINFO, "Installation complete - try running " + getName()+ " now!");
 }
 
 eResult service::uninstall()

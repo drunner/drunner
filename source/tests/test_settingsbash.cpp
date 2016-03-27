@@ -4,7 +4,7 @@
 
 TEST_CASE("read/write bool works","[settingsbash]") {
    //params p(kLDEBUG);
-   settingsbash sb;
+   settingsbash sb(true);
    
    SECTION("Test true functions")
    {

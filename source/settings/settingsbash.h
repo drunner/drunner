@@ -17,9 +17,9 @@ public:
    virtual bashline getBashLine() const;
    virtual std::shared_ptr<sbelement> clone() const = 0;
 
-   bool getBool() const;
-   std::string getString() const;
-   const std::vector<std::string> & getVec() const;
+   //bool getBool() const;
+   //std::string getString() const;
+   //const std::vector<std::string> & getVec() const;
    const std::string & getKey() const { return mKey; }
 
 private:
@@ -91,7 +91,7 @@ private:
 class settingsbash
 {
 public:
-   settingsbash() {}
+   settingsbash(bool createonread) : mCreateOnRead(createonread) {}
    
    bool readSettings(const std::string & settingspath);
    bool writeSettings(const std::string & settingspath) const;
@@ -104,13 +104,14 @@ public:
    void setString(const std::string & key, const std::string & s);
    void setVec(const std::string & key, const std::vector<std::string> & v);
 
-private:
-   std::vector<std::shared_ptr<sbelement>> mElements;
 
 protected:
+   const bool mCreateOnRead;
    void setSetting(std::shared_ptr<sbelement> value, bool createOK);
    std::shared_ptr<const sbelement> getElement(const std::string & key) const;
    const params & getParams();
+
+   std::vector<std::shared_ptr<sbelement>> mElements;
 };
 
 

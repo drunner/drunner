@@ -10,7 +10,8 @@
 service::service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename /*= ""*/) :
    servicepaths(settings,servicename),
    mImageName( loadImageName(prms,settings,servicename,imagename) ),
-   mParams(prms)
+   mParams(prms),
+   mEnvironment(*this)
 {
 }
 
@@ -251,4 +252,49 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
 
    cResult rval(utils::dServiceCmd(getPathServiceRunner(), newargs, mParams, true));
    return rval;
+}
+
+cServiceEnvironment & service::getEnvironment()
+{
+   return mEnvironment;
+}
+
+const cServiceEnvironment & service::getEnvironmentConst() const
+{
+   return mEnvironment;
+}
+
+cServiceEnvironment::cServiceEnvironment(const servicepaths & paths) :
+   settingsbash(true)
+{
+   mPath = paths.getPathHostVolume_environment() + "/servicerunner_env.sh";
+   if (utils::fileexists(mPath))
+   {
+      if (!readSettings(mPath))
+         fatal("servicerunner_env.sh is corrupt.");
+   }
+}
+
+void cServiceEnvironment::save_environment(std::string key, std::string value)
+{
+   setString(key, value);
+   if (!writeSettings(mPath))
+      fatal("Failed to write environment file " + mPath);
+}
+
+int cServiceEnvironment::getNumVars() const
+{
+   return mElements.size();
+}
+
+void cServiceEnvironment::getVar(const int position, std::string & key, std::string & value) const
+{
+   if (position >= getNumVars())
+      fatal("cServiceEnvironment::getVar - position out of range.");
+   auto const & el(mElements.at(position));
+   const auto b = dynamic_cast<const sb_string *>(mElements.at(position).get());
+   if (!b) 
+      fatal("Couldn't interpret environment element as string.");
+   key = b->getKey();
+   value = b->get();
 }

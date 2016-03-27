@@ -260,6 +260,19 @@ int mainroutines::process(const params & p)
          return (int)svc.obliterate();
       }
 
+      case c_saveenvironment:
+      {
+         if (p.numArgs() < 3)
+            logmsg(kLERROR, "Usage: drunner __save-environment SERVICENAME KEY VALUE",p);
+         service svc(p, settings, p.getArg(0));
+         if (!svc.isValid())
+            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
+
+         svc.getEnvironment().save_environment(p.getArg(1), p.getArg(2));
+         logmsg(kLDEBUG, "Save environment variable " + p.getArg(1) + "=" + p.getArg(2),p);
+         return kRSuccess;
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(
