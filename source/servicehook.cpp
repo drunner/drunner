@@ -59,53 +59,19 @@ cResult servicehook::runHook(std::string se)
 
 
 void servicehook::setNeedsHook()
-{
-   drunnerCompose dc(*mService, mParams);
-   if (!dc.readOkay())
-      logmsg(kLWARN,"Service is broken (can't read docker-compose.yml or servicecfg.sh for service: " + mService->getName()+")", mParams);
-      
+{      
    mServiceRunner = mService->getPathServiceRunner();
    mStartCmd = "";
    mEndCmd = "";
 
-   if (dc.getVersion() == 0)
-   {
-      logmsg(kLWARN, "Version of dService couldn't be determined. Aborting hook configuration (no hooks will be called).", mParams);
-      return;
-   }
+   mStartCmd = mActionName + "_start";
+   mEndCmd   = mActionName + "_end";
 
-   if (dc.getVersion() == 1)
-   { // cope with old version - it expected a bunch of manual hooks to be present.
-      if (utils::stringisame(mActionName, "backup"))
-      {
-         mStartCmd = "backupstart";
-         mEndCmd = "backupend";
-      }
-      if (utils::stringisame(mActionName, "update"))
-      {
-         mStartCmd = "updatestart";
-         mEndCmd = "updateend";
-      }
-      if (utils::stringisame(mActionName, "restore"))
-         mEndCmd = "restore";
-      if (utils::stringisame(mActionName, "install"))
-         mEndCmd = "install";
-      if (utils::stringisame(mActionName, "obliterate"))
-         mStartCmd = "obliterate";
-      if (utils::stringisame(mActionName, "uninstall"))
-         mStartCmd = "uninstall";
-   }
-   else
-   { // version 2 and up.
-      mStartCmd = mActionName + "_start";
-      mEndCmd   = mActionName + "_end";
-
-      // some hooks don't make sense because the dService won't exist at that point.
-      // spaces are to ensure whole word match.
-      if (utils::findStringIC(" install_start "," "+mStartCmd+" "))
-         mStartCmd = "";
-      if (utils::findStringIC(" uninstall_end obliterate_end enter_end "," "+mEndCmd+" "))
-         mEndCmd = "";
-   }
+   // some hooks don't make sense because the dService won't exist at that point.
+   // spaces are to ensure whole word match.
+   if (utils::findStringIC(" install_start "," "+mStartCmd+" "))
+      mStartCmd = "";
+   if (utils::findStringIC(" uninstall_end obliterate_end enter_end "," "+mEndCmd+" "))
+      mEndCmd = "";
 }
 

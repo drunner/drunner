@@ -17,7 +17,6 @@ public:
       read();
    }
 
-   // creates variables.sh from servicecfg.sh
    bool create(std::string imagename)
    {
       setString("IMAGENAME", imagename);

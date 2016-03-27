@@ -22,8 +22,8 @@ if [ "$UID" -eq 0 ]; then die "the container runs as root." ; fi
 # Check mandatory files in image (global var IMAGENAME) before touching host. Is it a valid dService?
 [ -e "/drunner/servicerunner" ] || die "does not have servicerunner."
 
-[ -e "/drunner/docker-compose.yml" ] || [ -e "/drunner/servicecfg.sh" ] || \
-   die "does not have docker-compose.yml or servicecfg.sh (one is required)."
+[ ! -e "/drunner/servicecfg.sh" ] || \
+   die "Outdated dService with servicecfg.sh (no longer supported)."
 
 exit 0
 }

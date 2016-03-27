@@ -27,17 +27,17 @@ public:
    std::vector<cServiceVolInfo> mVolumes;
 };
 
-
 class drunnerCompose {
 public:
-   // reads in servicecfg.sh or docker-compose.yml - whichever is present.
+   // reads in docker-compose.yml - if present.
    drunnerCompose(const service & svc, const params & p);
 
    // Set the variables in the environemnt for servicerunner.
    void setServiceRunnerEnv() const;
 
-   // was the servicecfg.sh or docker-compose.yml file read okay.
-   bool readOkay() const;
+   // was the docker-compose.yml file read without errors.
+   // returns kRNotImplemented if there was no docker-compose.yml
+   cResult readOkay() const;
 
    // Services are as defined in the docker-compose.yml. These are not dServices.
    const std::vector<cServiceInfo> & getServicesInfo() const;
@@ -54,12 +54,8 @@ public:
 
    const service & getService() const;
 
-   // 1 = old servicecfg.sh, 2 = new servicecfg.sh, 3 = docker-compose.yml
-   int getVersion() const;
-
 private:
-   bool load_docker_compose_yml();
-   bool load_servicecfg_sh();
+   void load_docker_compose_yml();
    void setvecenv(const sb_vec & v) const;
    void setenv_log(std::string key, std::string val) const;
 
@@ -68,8 +64,7 @@ private:
 
    const service & mService;
    const params & mParams;
-   bool mReadOkay;
-   int mVersion;
+   cResult mReadOkay;
 };
 
 #endif

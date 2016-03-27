@@ -109,14 +109,6 @@ function isHook {
    return 1
 }
 
-#-----------------------------------------------------------------------------------
-# We can be called from any directory, so set the current directory to where the
-# scripts are (including utils.h!).
-
-UTILS_H_MYDIR=$( dirname "$(readlink -f "$0")" )
-cd "${UTILS_H_MYDIR}"
-
-
 )EOF";
 
    generate(supportpath+"/utils.sh",p,S_ALLREAD,vdata);

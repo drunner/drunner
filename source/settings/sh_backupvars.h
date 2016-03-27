@@ -21,7 +21,7 @@ public:
       read();
    }
 
-   // creates variables.sh from servicecfg.sh
+   // creates from drunnerCompose.
    bool createFromdrunnerCompose(const drunnerCompose & drc)
    {
       return populate(drc);
@@ -50,7 +50,10 @@ private:
       tVecStr dockervols;
       drc.getDockerVols(dockervols);
 
+      // all docker volumes that dRunner has to manage.
       setVec("DOCKERVOLS", dockervols);
+
+      // the main image name.
       setString("IMAGENAME", drc.getImageName());
 
       return true;
