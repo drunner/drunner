@@ -9,6 +9,15 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="settings">
+      <UniqueIdentifier>{573de306-c2b3-47c2-be8a-d6bcc0ccc8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="generators">
+      <UniqueIdentifier>{65a7f62a-d977-4470-acf7-7bcfbd90b1e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests">
+      <UniqueIdentifier>{40cd9842-c1d9-4b0e-8e32-7e1367202fcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\buildnum\build_number.h">
@@ -35,15 +44,6 @@
     <ClInclude Include="$(SolutionDir)\..\source\exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\generators\generate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_utils_sh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_validator_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\source\logmsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -62,35 +62,56 @@
     <ClInclude Include="$(SolutionDir)\..\source\servicehook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\settings\settingsbash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_ddev.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_servicecfg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_variables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\source\showhelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\source\termcolor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\source\utils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\settings\settingsbash.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_ddev.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_servicecfg.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\settings\sh_variables.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_validator_image.h">
+      <Filter>generators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate.h">
+      <Filter>generators</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\generators\generate_utils_sh.h">
+      <Filter>generators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\drunnercompose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\buildnum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h">
+      <Filter>UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
+      <Filter>UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\settings\sh_servicevars.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\settings\sh_backupvars.h">
+      <Filter>settings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -115,9 +136,6 @@
     <ClCompile Include="$(SolutionDir)\..\source\command_setup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\source\generators\generate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\logmsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,23 +148,32 @@
     <ClCompile Include="$(SolutionDir)\..\source\service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\source\settings\settingsbash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\showhelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\utils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\source\settings\sh_drunnercfg.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\source\generators\generate.cpp">
+      <Filter>generators</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\source\settings\settingsbash.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\drunnercompose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\buildnum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">
+      <Filter>UnitTests</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

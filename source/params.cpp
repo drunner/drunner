@@ -11,7 +11,7 @@
 #include "utils.h"
 #include "showhelp.h"
 #include "logmsg.h"
-#include "build_number.h"
+#include "buildnum.h"
 
 
 std::string params::substitute( const std::string & source ) const
@@ -57,7 +57,7 @@ eCommand params::parsecmd(std::string s) const
 
 void params::setdefaults()
 {
-   mVersion = VERSION_STR;
+   mVersion = getVersionStr();
    mLogLevel = kLINFO;
    
    mServiceOutput_hooks = kOLogged;
@@ -171,4 +171,11 @@ Please provide command line argument:
    // store the arguments to the command.
    for (int i=opx;i<argc;++i)
       mArgs.push_back(argv[i]);
+}
+
+const std::string & params::getArg(int n) const 
+{ 
+   if (n >= (int)mArgs.size())
+      fatal("Coding error - attempting to get arg that doesn't exist.");
+   return mArgs[n]; 
 }

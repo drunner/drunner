@@ -2,70 +2,93 @@
 
 #include "service.h"
 #include "logmsg.h"
-#include "sh_variables.h"
 #include "utils.h"
 #include "servicehook.h"
+#include "sh_servicevars.h"
+#include "drunnercompose.h"
 
 service::service(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename /*= ""*/) :
-   mName(servicename),
-   mImageName(imagename),
-   mSettings(settings),
+   servicepaths(settings,servicename),
+   mImageName( loadImageName(prms,settings,servicename,imagename) ),
    mParams(prms)
 {
-   if (utils::fileexists(getPathVariables()))
-   {
-      if (mImageName.length() == 0)
-      { // if imagename override not provided and variables.sh exists then load it from variables.sh
-         sh_variables shv(getPathVariables());
-         if (!shv.readOkay())
-            logmsg(kLERROR, "Couldn't read " + getPathVariables());
-         mImageName = shv.getImageName();
-      }
-      else
-         logmsg(kLDEBUG, "variables.sh exists, but forcing imagename to be " + imagename);
-   }
 }
 
-std::string service::getPath() const
+servicepaths::servicepaths(const sh_drunnercfg & settings, const std::string & servicename) :
+   mName(servicename),
+   mSettings(settings)
+{
+}
+
+
+std::string service::loadImageName(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename)
+{
+   std::string v = servicepaths(settings, servicename).getPath();
+   if (utils::fileexists(v))
+   {
+      if (imagename.length() == 0)
+      { // if imagename override not provided and variables.sh exists then load it from variables.sh
+         sh_servicevars shv(v);
+         if (!shv.readOkay())
+         {
+            ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v, prms);
+            ::logmsg(kLWARN, "Service old/broken. Recover with:", prms);
+            ::logmsg(kLWARN, "   drunner recover " + servicename + " IMAGENAME", prms);
+            ::logmsg(kLERROR, "Unable to determine the image name. Exiting.", prms);
+         }
+         imagename = shv.getImageName();
+      }
+      else
+         ::logmsg(kLDEBUG, "Forcing dService main image to be " + imagename,prms);
+   }
+
+   if (imagename.length() == 0)
+      ::logmsg(kLERROR, "Couldn't determine imagename.",prms);
+
+   return imagename;
+}
+
+
+std::string servicepaths::getPath() const
 {
    return mSettings.getPath_Services() + "/" + mName;
 }
 
-std::string service::getPathdRunner() const
+std::string servicepaths::getPathdRunner() const
 {
    return getPath() + "/" + "drunner";
 }
 
-std::string service::getPathTemp() const
+std::string servicepaths::getPathTemp() const
 {
    return getPath() + "/" + "temp";
 }
 
-std::string service::getPathServiceRunner() const
+std::string servicepaths::getPathServiceRunner() const
 {
    return getPathdRunner() + "/servicerunner";
 }
 
-std::string service::getPathVariables() const
-{
-   return getPathdRunner() + "/variables.sh";
-}
+//std::string servicepaths::getPathVariables() const
+//{
+//   return getPathdRunner() + "/variables.sh";
+//}
 
-std::string service::getPathServiceCfg() const
+std::string servicepaths::getPathServiceCfg() const
 {
    return getPathdRunner() + "/servicecfg.sh";
 }
 
-std::string service::getName() const
+std::string servicepaths::getPathDockerCompose() const
+{
+   return getPathdRunner() + "/docker-compose.yml";
+}
+
+
+std::string servicepaths::getName() const
 {
    return mName;
 }
-
-void service::setImageName(std::string imagename)
-{
-   mImageName = imagename;
-}
-
 
 void service::ensureDirectoriesExist() const
 {
@@ -80,34 +103,33 @@ bool service::isValid() const
    if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner()) || !utils::fileexists(getPathTemp()))
       return false;
 
-   sh_servicecfg svc(getPathServiceCfg());
-   if (!svc.readOkay())
+   drunnerCompose drc(*this, mParams);
+   if (!drc.readOkay())
    {
-      logmsg(kLDEBUG, "Couldn't read servicecfg.sh from service "+getName());
+      logmsg(kLDEBUG, "Couldn't read servicecfg.sh or docker-compose.yml from service "+getName());
       return false;
    }
-   sh_variables shv(getPathVariables());
+   sh_servicevars shv(getPath());
    if (!shv.readOkay())
    {
-      logmsg(kLDEBUG, "Couldn't read variables.sh from service " + getName());
+      logmsg(kLDEBUG, "Couldn't read servicevars.sh from service " + getName());
       return false;
    }
-
-   if (svc.getVersion() < 2)
-      logmsg(kLDEBUG, "dService "+getImageName()+" is old (version 1) and should be updated.");
 
    return true;
 }
 
 cResult service::servicecmd()
 {
-   std::vector<std::string> cargs( mParams.getArgs().begin(), mParams.getArgs().end() );
-   cargs[0] = "servicerunner";
+   if (mParams.numArgs() < 1)
+      fatal("Programming error - number of arguments should never be 0 in service::servicecmd");
+
+   std::vector<std::string> cargs( mParams.getArgs().begin() + 1, mParams.getArgs().end() );
 
    if (mParams.numArgs() < 2 || utils::stringisame(mName, "help"))
    {
       cargs.push_back("help");
-      utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true);
+      serviceRunnerCommand(cargs);
       return kRSuccess;
    }
 
@@ -121,11 +143,10 @@ cResult service::servicecmd()
       logmsg(kLERROR, "Should never get here. Enter command shouldn't return.");
    }
 
-   std::vector<std::string> hookargs(cargs.begin() + 1, cargs.end());
-   servicehook hook(this, "servicecmd", hookargs, mParams);
+   servicehook hook(this, "servicecmd", cargs, mParams);
    hook.starthook();
 
-   cResult rval( utils::dServiceCmd(getPathServiceRunner(), cargs, mParams,true) );
+   cResult rval( serviceRunnerCommand(cargs) );
 
    hook.endhook();
 
@@ -185,3 +206,42 @@ int service::status()
    return 0;
 }
 
+
+
+void validateImage(const params & prms, const sh_drunnercfg & settings, std::string imagename)
+{
+   if (!utils::fileexists(settings.getPath_Root())) logmsg(kLERROR, "ROOTPATH not set.",prms);
+
+   std::string op;
+   int rval = utils::bashcommand(
+      "docker run --rm -v \"" + settings.getPath_Support() +
+      ":/support\" \"" + imagename + "\" /support/validator-image 2>&1", op);
+
+   if (rval != 0)
+   {
+      if (utils::findStringIC(op, "Unable to find image"))
+         logmsg(kLERROR, "Couldn't find image " + imagename,prms);
+      else
+         logmsg(kLERROR, op,prms);
+   }
+   logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.",prms);
+}
+
+
+cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
+{
+   // set environment.
+   drunnerCompose drc(*this, mParams);
+   if (!drc.readOkay())
+      logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correclty.");
+   else
+      drc.setServiceRunnerEnv();
+ 
+   if (args.size() > 0 && utils::stringisame(args[0],"servicerunner"))
+      logmsg(kLERROR, "Programming error - someone gave serviceRunnerCommand the first arg: servicerunner :/");
+   auto newargs(args);
+   newargs.insert(newargs.begin(), std::string("servicerunner"));
+
+   cResult rval(utils::dServiceCmd(getPathServiceRunner(), newargs, mParams, true));
+   return rval;
+}

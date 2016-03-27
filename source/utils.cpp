@@ -162,14 +162,6 @@ namespace utils
       return rval;
    }
 
-   //int bashcommand(std::string command, const std::vector<std::string> & args, const params & p)
-   //{
-   //   bool printstdout = p.getDisplayServiceOutput();
-   //   bool printstderr = p.getDisplayServiceOutput();
-   //   return bashcommand(command, args, printstdout, printstderr);
-   //}
-
-
    std::string getabsolutepath(std::string path)
    {
       boost::filesystem::path rval;
@@ -455,6 +447,19 @@ namespace utils
       return (r == 0);
    }
 
+   void downloadexe(std::string url, std::string filepath, const params &p)
+   {
+      std::string op;
+
+      // only download if server has newer version.      
+      int rval = utils::bashcommand("curl " + url + " -z " + filepath + " -o " + filepath + " --silent --location 2>&1 && chmod 0755 " + filepath, op);
+      if (rval != 0)
+         logmsg(kLERROR, "Unable to download " + url, p);
+      if (!utils::fileexists(filepath))
+         logmsg(kLERROR, "Failed to download " + url + ", curl return value is success but expected file "+ filepath +" does not exist.", p);
+      logmsg(kLDEBUG, "Successfully downloaded " + filepath, p);
+   }
+
    std::string alphanumericfilter(std::string s, bool whitespace)
    {
       std::string validchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -534,7 +539,7 @@ namespace utils
       if (rval != 0)
          std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
       else
-         logmsg(kLDEBUG, "Deleted docker volume " + mDockerName, mP);
+         logmsg(kLDEBUG, "Deleted docker container " + mDockerName, mP);
    }
 
 

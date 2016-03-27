@@ -4,10 +4,10 @@
 
 #include "service.h"
 #include "utils.h"
-#include "sh_variables.h"
+#include "sh_backupvars.h"
 #include "compress.h"
 #include "servicehook.h"
-
+#include "logmsg.h"
 
 
 // Back up this service to backupfile.
@@ -24,8 +24,9 @@ void service::backup(const std::string & backupfile)
    utils::tempfolder tempparent(mSettings.getPath_Temp() + "/backup-"+getName(), mParams);
 
    // write out variables that we need to decompress everything.
-   sh_variables shv(getPathVariables()); // loads variables.sh from the service.
-   shv.writecopy(tempparent.getpath() + "/oldvariables.sh"); // output.
+   sh_backupvars shb(tempparent.getpath());
+   shb.createFromdrunnerCompose(drunnerCompose(*this, mParams));
+   shb.write();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    std::string tempf = tempparent.getpath() + "/drbackup";
@@ -42,7 +43,7 @@ void service::backup(const std::string & backupfile)
    // back up volume containers
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
-   const std::vector<std::string> & dockervols(shv.getDockerVols());
+   const std::vector<std::string> & dockervols(shb.getDockerVols());
    for (auto const & entry : dockervols)
    {
       if (utils::dockerVolExists(entry))
@@ -78,19 +79,15 @@ void service::backup(const std::string & backupfile)
 
 
 
-
-void service::restore(const std::string & backupfile)
+cResult service_restore(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, const std::string & backupfile)
 { // restore from backup.
    std::string bf = utils::getcanonicalpath(backupfile);
    if (bf.length()==0 || !utils::fileexists(bf))
-      logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
-   logmsg(kLDEBUG, "Restoring from " + bf);
+      logmsg(kLERROR, "Backup file " + backupfile + " does not exist.", prms);
+   logmsg(kLDEBUG, "Restoring from " + bf, prms);
 
-   if (utils::fileexists(getPath()))
-      logmsg(kLERROR, "Service " + getName() + " already exists. Uninstall it before restoring from backup.");
-
-   utils::tempfolder tempparent(mSettings.getPath_Temp() + "/restore-"+getName(), mParams);
-   utils::tempfolder archivefolder(mSettings.getPath_Temp() + "/archivefolder-" + getName(), mParams);
+   utils::tempfolder tempparent(settings.getPath_Temp() + "/restore-"+servicename, prms);
+   utils::tempfolder archivefolder(settings.getPath_Temp() + "/archivefolder-" + servicename, prms);
 
    // for docker volumes
    std::string tempf = tempparent.getpath() + "/drbackup";
@@ -99,54 +96,60 @@ void service::restore(const std::string & backupfile)
 
    // decompress main backup
    if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar.7z"))
-      logmsg(kLERROR, "Couldn't copy archive to temp folder.");
+      logmsg(kLERROR, "Couldn't copy archive to temp folder.", prms);
 
    std::string password = utils::getenv("PASS");
-   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z", mParams);
+   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z", prms);
 
    // read in old variables, just need imagename and olddockervols from them.
-   sh_variables oldvars(tempparent.getpath() + "/oldvariables.sh");
-   if (!oldvars.readOkay())
-      logmsg(kLERROR, "Backup corrupt - oldvariables.sh missing.");
+   sh_backupvars shb(tempparent.getpath());
+   if (!shb.readOkay())
+      logmsg(kLERROR, "Backup corrupt - backupvars.sh missing.", prms);
 
    if (!utils::fileexists(tempc))
-      logmsg(kLERROR, "Backup corrupt - missing " + tempc);
-   for (auto entry : oldvars.getDockerVols())
+      logmsg(kLERROR, "Backup corrupt - missing " + tempc, prms);
+   for (auto entry : shb.getDockerVols())
       if (!utils::fileexists(tempf + "/" + entry + ".tar.7z"))
-         logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
+         logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry, prms);
 
    // backup seems okay - lets go!
-   setImageName(oldvars.getImageName());
-   install();
+   service svc(prms, settings, servicename, shb.getImageName());
+   if (utils::fileexists(svc.getPath()))
+      logmsg(kLERROR, "Service " + servicename + " already exists. Uninstall it before restoring from backup.", prms);
+
+   svc.install();
 
    // load in the new variables.
-   sh_variables newvars(getPathVariables());
-   if (!newvars.readOkay())
-      logmsg(kLERROR, "Installation failed - variables.sh broken.");
+   drunnerCompose drc(svc, prms);
+   if (!drc.readOkay())
+      logmsg(kLERROR, "Installation failed - variables.sh broken.", prms);
 
    // check that nothing about the volumes has changed in the dService.
-   if (oldvars.getDockerVols().size() != newvars.getDockerVols().size())
+   tVecStr dockervols;
+   drc.getDockerVols(dockervols);
+   if (shb.getDockerVols().size() != dockervols.size())
    {
-      logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.");
-      uninstall();
-      logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
+      logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.", prms);
+      svc.uninstall();
+      logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.", prms);
    }
 
    // restore all the volumes.
-   for (unsigned int i = 0; i < newvars.getDockerVols().size(); ++i)
+   for (unsigned int i = 0; i < dockervols.size(); ++i)
    {
-      if (!utils::dockerVolExists(newvars.getDockerVols()[i]))
-         logmsg(kLERROR, "Installation should have created " + newvars.getDockerVols()[i] + " but didn't!");
-      compress::decompress_volume(password, newvars.getDockerVols()[i], 
-         tempf, oldvars.getDockerVols()[i] + ".tar.7z", mParams);
+      if (!utils::dockerVolExists(dockervols[i]))
+         logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!", prms);
+      compress::decompress_volume(password, dockervols[i],
+         tempf, shb.getDockerVols()[i] + ".tar.7z", prms);
    }
 
    // tell the dService to do its restore_end action.
    tVecStr args;
    args.push_back(tempc);
-   servicehook hook(this, "restore", args, mParams);
+   servicehook hook(&svc, "restore", args, prms);
    hook.endhook();
 
-   logmsg(kLINFO, "The backup " + bf + " has been restored to service " + getName() + ". Try it!");
+   logmsg(kLINFO, "The backup " + bf + " has been restored to service " + servicename + ". Try it!", prms);
+   return kRSuccess;
 }
 

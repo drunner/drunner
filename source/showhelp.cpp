@@ -1,4 +1,7 @@
 #include <iostream>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
 
 #include "showhelp.h"
 #include "utils.h"
@@ -27,7 +30,7 @@ OPTIONS
    -v    verbose
    -l    logged (dService output is logged)
    -s    silent
-   -o    capture dService output (drunner silent, dService output unmodified, logging disabled)
+   -o    capture dService output (drunner silent, raw dService output)
 
 COMMANDS
    ${EXENAME} clean
@@ -40,7 +43,7 @@ COMMANDS
 
    ${EXENAME} install    IMAGENAME [SERVICENAME]
    ${EXENAME} update     SERVICENAME
-   ${EXENAME} recover    SERVICENAME
+   ${EXENAME} recover    SERVICENAME [IMAGENAME]
    ${EXENAME} uninstall  SERVICENAME
    ${EXENAME} obliterate SERVICENAME
    ${EXENAME} enter      SERVICENAME [ARGS]
@@ -65,6 +68,8 @@ OPTIONS
    -s    silent
 )EOF"), p);
 
+   //setenv("Sniggle", "wiggle", 1);
+   //execl("/usr/bin/env", "env", 0);
    //std::cerr << cMsg << std::endl;
    logmsg(kLERROR, cMsg, p);
 }

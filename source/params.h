@@ -21,7 +21,8 @@ public:
 
    const std::vector<std::string> & getArgs() const { return mArgs; }
    int numArgs() const { return mArgs.size(); }
-
+   const std::string & getArg(int n) const;
+   
    // implicit conversion to allow easy logging.
    operator eLogLevel() const { return mLogLevel; }
 

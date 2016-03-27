@@ -61,8 +61,8 @@ void mainroutines::check_basics()
    if (!utils::commandexists("docker"))
       logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )", kLERROR);
 
-   if (!utils::commandexists("wget"))
-      logmsg(kLERROR,"Please install wget before using dRunner.", kLERROR);
+   if (!utils::commandexists("curl"))
+      logmsg(kLERROR,"Please install curl before using dRunner.", kLERROR);
 
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
@@ -123,11 +123,11 @@ int mainroutines::process(const params & p)
 
       case c_update:
       {
-         if (p.getArgs().size() == 0)
+         if (p.numArgs()<1)
             command_setup::update(p, settings); // defined in command_setup
          else
          { // first argument is service name.
-            service s(p, settings, p.getArgs()[0]);
+            service s(p, settings, p.getArg(0));
             s.update();
          }
          break;
@@ -135,11 +135,10 @@ int mainroutines::process(const params & p)
 
       case c_checkimage:
       {
-         if (p.getArgs().size()==0)
+         if (p.numArgs()<1)
             logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME",p);
-
-         service s(p, settings, p.getArgs()[0]);
-         s.validateImage();
+         
+         validateImage(p, settings, p.getArg(0));
          break;
       }
 
@@ -147,10 +146,10 @@ int mainroutines::process(const params & p)
       {
          if (p.numArgs()<1 || p.numArgs()>2)
             logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]",p);
-         std::string imagename = p.getArgs().at(0);
+         std::string imagename = p.getArg(0);
          std::string servicename;
-         if ( p.getArgs().size()==2)
-            servicename=p.getArgs()[1]; // if empty then install will set to default from imagename.
+         if ( p.numArgs()==2)
+            servicename=p.getArg(1); // if empty then install will set to default from imagename.
          else
          {
             servicename = imagename;
@@ -168,27 +167,26 @@ int mainroutines::process(const params & p)
 
       case c_restore:
       {
-         if (p.getArgs().size() < 2)
+         if (p.numArgs() < 2)
             logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME", p);
-         service svc(p, settings, p.getArgs()[1]);
-         svc.restore(p.getArgs()[0]);
-         break;
+
+         return service_restore(p, settings, p.getArg(1), p.getArg(0));
       }
 
       case c_backup:
       {
-         if (p.getArgs().size() < 2)
+         if (p.numArgs() < 2)
             logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE", p);
-         service svc(p, settings, p.getArgs()[0]);
-         svc.backup(p.getArgs()[1]);
+         service svc(p, settings, p.getArg(0));
+         svc.backup(p.getArg(1));
          break;
       }
 
       case c_enter:
       {
-         if (p.getArgs().size() < 1)
+         if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner enter SERVICENAME", p);
-         service svc(p, settings, p.getArgs()[0]);
+         service svc(p, settings, p.getArg(0));
          svc.enter();
          break;
       }
@@ -198,7 +196,7 @@ int mainroutines::process(const params & p)
          if (p.numArgs()<1)
             command_dev::build(p,settings);
          else
-            command_dev::build(p,settings,p.getArgs()[0]);
+            command_dev::build(p,settings,p.getArg(0));
          break;
       }
 
@@ -207,7 +205,7 @@ int mainroutines::process(const params & p)
          if (p.numArgs() < 1)
             logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
 
-         service svc(p, settings, p.getArgs()[0]);
+         service svc(p, settings, p.getArg(0));
          if (!svc.isValid())
             logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
 
@@ -216,30 +214,30 @@ int mainroutines::process(const params & p)
 
       case c_status:
       {
-         if (p.getArgs().size() < 1)
+         if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner status SERVICENAME", p);
-         service svc(p, settings, p.getArgs()[0]);
+         service svc(p, settings, p.getArg(0));
          return svc.status();
       }
 
       case c_recover:
       {
-         if (p.getArgs().size() < 1)
+         if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]", p);
-         std::string servicename = p.getArgs()[0];
+         std::string servicename = p.getArg(0);
          std::string imagename;
-         if (p.getArgs().size() < 2)
+         if (p.numArgs() < 2)
          { // see if we can read the imagename from the damaged service.
-            service svc1(p, settings, p.getArgs()[0]);
+            service svc1(p, settings, servicename);
             if (!utils::fileexists(svc1.getPath()))
                logmsg(kLERROR, "That service is not installed. Try installing, which will preserve any data volumes.",p);
 
             imagename = svc1.getImageName();
             if (imagename.length() == 0)
-               logmsg(kLERROR, "Service " + svc1.getName() + " is too broken to determine the imagename. Please use   drunner recover SERVICENAME IMAGENAME",p);
+               fatal("Programming error - imagename is empty.");
          }
          else
-            imagename = p.getArgs()[1];
+            imagename = p.getArg(1);
 
          logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename, p);
          service svc(p, settings, servicename, imagename);
@@ -248,17 +246,17 @@ int mainroutines::process(const params & p)
 
       case c_uninstall:
       {
-         if (p.getArgs().size() < 1)
+         if (p.numArgs()<1)
             logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME", p);
-         service svc(p, settings, p.getArgs()[0]);
+         service svc(p, settings, p.getArg(0));
          return (int)svc.uninstall();
       }
 
       case c_obliterate:
       {
-         if (p.getArgs().size() < 1)
+         if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME", p);
-         service svc(p, settings, p.getArgs()[0]);
+         service svc(p, settings, p.getArg(0));
          return (int)svc.obliterate();
       }
 

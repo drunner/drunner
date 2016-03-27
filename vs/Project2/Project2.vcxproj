@@ -102,6 +102,10 @@
     <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h" />
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
     <ClInclude Include="$(SolutionDir)\..\source\utils.h" />
+    <ClInclude Include="..\..\source\buildnum.h" />
+    <ClInclude Include="..\..\source\drunnercompose.h" />
+    <ClInclude Include="..\..\source\settings\sh_backupvars.h" />
+    <ClInclude Include="..\..\source\settings\sh_servicevars.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\command_dev.cpp" />
@@ -122,6 +126,8 @@
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp" />
     <ClCompile Include="$(SolutionDir)\..\source\utils.cpp" />
+    <ClCompile Include="..\..\source\buildnum.cpp" />
+    <ClCompile Include="..\..\source\drunnercompose.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
