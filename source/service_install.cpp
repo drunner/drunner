@@ -215,6 +215,10 @@ eResult service::obliterate()
          logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");
    }// [end] deleting docker volumes.
 
+   // delete the host volumes
+   logmsg(kLDEBUG, "Deleting the host volume.");
+   utils::deltree(getPathHostVolume(), mParams);
+
    // delete the service tree.
    logmsg(kLDEBUG, "Deleting the service files.");
    utils::deltree(getPath(), mParams);
