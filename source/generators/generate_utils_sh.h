@@ -60,7 +60,7 @@ function utils_import_DEPRECATED {
    [ -d "$1" ] || die "utils_import -- source path does not exist: $1"
    local SOURCEPATH=$(realpath "$1" | tr -d '\r\n')
 
-   # docker run --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" bash -c "rm -rf $2/*"
+      # docker run --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" bash -c "rm -rf $2/*"
    tar cf - -C "$SOURCEPATH" . | docker run -i --name="${SERVICENAME}-importfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar -xv -C "$2"
    RVAL=$?
    docker rm "${SERVICENAME}-importfn" >/dev/null
@@ -75,7 +75,7 @@ function utils_export_DEPRECATED {
    [ -d "$2" ] || die "utils_export -- destination path does not exist."
    local DESTPATH=$(realpath "$2" | tr -d '\r\n')
 
-   docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$DESTPATH"
+      docker run -i --name="${SERVICENAME}-exportfn" "${DOCKEROPTS[@]}" "${IMAGENAME}" tar cf - -C "$1" . | tar -xv -C "$DESTPATH"
    RVAL=$?
    docker rm "${SERVICENAME}-exportfn" >/dev/null
    [ $RVAL -eq 0 ] || die "utils_export failed to transfer the files."
@@ -109,12 +109,29 @@ function isHook {
    return 1
 }
 
-#-----------------------------------------------------------------------------------
-# We can be called from any directory, so set the current directory to where the
-# scripts are (including utils.h!).
+#------------------------------------------------------------------------------------
+# check whether a docker volume exists on the host.
+# if volumeexists "$VOLNAME" ; then
 
-UTILS_H_MYDIR=$( dirname "$(readlink -f "$0")" )
-cd "${UTILS_H_MYDIR}"
+function volumeexists {
+  docker volume ls | grep "$1" > /dev/null
+}
+
+#------------------------------------------------------------------------------------
+# Save an environment variable (configuration)
+# Requires ${SERVICENAME}-environment volume to be declared in docker-compose.yml
+
+function save_environment {
+   [ "$#" -eq 2 ] || die "save_environment -- requires two arguments (the environment variable name and the content)."
+
+   [ volumeexists "${SERVICENAME}-save_environment" ] || die "save-environment called but volume ${SERVICENAME}-save_environment hasn't been created."
+
+   local RVAL=0
+   docker run --name="${SERVICENAME}-save_environment" -v "${SERVICENAME}-environment:/env" drunner/install-rootutils  bash -c "echo -n $2 > /env/$1"
+   RVAL=$?
+   docker rm "${SERVICENAME}-save_environment" >/dev/null
+   [ $RVAL -eq 0 ] || die "${SERVICENAME} save_environment failed."
+}
 
 
 )EOF";

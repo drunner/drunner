@@ -73,11 +73,11 @@ std::string servicepaths::getPathServiceRunner() const
 //{
 //   return getPathdRunner() + "/variables.sh";
 //}
-
-std::string servicepaths::getPathServiceCfg() const
-{
-   return getPathdRunner() + "/servicecfg.sh";
-}
+//
+//std::string servicepaths::getPathServiceCfg() const
+//{
+//   return getPathdRunner() + "/servicecfg.sh";
+//}
 
 std::string servicepaths::getPathDockerCompose() const
 {
@@ -104,9 +104,9 @@ bool service::isValid() const
       return false;
 
    drunnerCompose drc(*this, mParams);
-   if (!drc.readOkay())
+   if (drc.readOkay()==kRError)
    {
-      logmsg(kLDEBUG, "Couldn't read servicecfg.sh or docker-compose.yml from service "+getName());
+      logmsg(kLDEBUG, "docker-compose.yml is broken for service "+getName());
       return false;
    }
    sh_servicevars shv(getPath());
@@ -232,8 +232,8 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
 {
    // set environment.
    drunnerCompose drc(*this, mParams);
-   if (!drc.readOkay())
-      logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correclty.");
+   if (drc.readOkay()==kRError)
+      logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correctly.");
    else
       drc.setServiceRunnerEnv();
  

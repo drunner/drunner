@@ -120,10 +120,9 @@ void service::recreate(bool updating)
 
       // write out variables.sh for the dService.
       drunnerCompose drc(*this, mParams);
-      if (!drc.readOkay())
-         fatal("Unexpected error - couldn't read docker-compose.yml or servicecfg.sh. Newer dService is broken?");
-      //drc.writeVariables();
-
+      if (drc.readOkay()==kRError)
+         fatal("Unexpected error - docker-compose.yml is broken.");
+      
       // write out servicevars.sh for ourselves.
       sh_servicevars svcvars(getPath());
       svcvars.create(getImageName());
