@@ -88,7 +88,7 @@ void service::createVolumes(const drunnerCompose * const drc)
          args.push_back("--name=\"" + dname + "\"");
          args.push_back("-v");
          args.push_back(entry.mDockerVolumeName + ":" + "/tempmount");
-         args.push_back("drunner/install-rootutils");
+         args.push_back("drunner/rootutils");
          args.push_back("chown");
          args.push_back(userid + ":root");
          args.push_back("/tempmount");

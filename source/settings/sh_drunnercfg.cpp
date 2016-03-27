@@ -13,7 +13,7 @@ sh_drunnercfg::sh_drunnercfg(const std::string & rootpath) :
 void sh_drunnercfg::setDefaults(const std::string & rootpath)
 {
    setString("ROOTPATH", rootpath);
-   setString("ROOTUTILIMAGE", "drunner/install-rootutils");
+   setString("ROOTUTILIMAGE", "drunner/rootutils");
    setString("DRUNNERINSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
    setString("DRUNNERINSTALLTIME", utils::getTime());
    setBool("PULLIMAGES", true);

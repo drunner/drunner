@@ -26,7 +26,7 @@ namespace compress
       args.push_back(src + ":/src");
       args.push_back("-v");
       args.push_back(dst + ":/dst");
-      args.push_back("drunner/install-rootutils");
+      args.push_back("drunner/rootutils");
       args.push_back("bash");
       args.push_back("-c");
       args.push_back(ctrcmd);

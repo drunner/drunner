@@ -127,7 +127,7 @@ function save_environment {
    [ volumeexists "${SERVICENAME}-save_environment" ] || die "save-environment called but volume ${SERVICENAME}-save_environment hasn't been created."
 
    local RVAL=0
-   docker run --name="${SERVICENAME}-save_environment" -v "${SERVICENAME}-environment:/env" drunner/install-rootutils  bash -c "echo -n $2 > /env/$1"
+   docker run --name="${SERVICENAME}-save_environment" -v "${SERVICENAME}-environment:/env" drunner/rootutils  bash -c "echo -n $2 > /env/$1"
    RVAL=$?
    docker rm "${SERVICENAME}-save_environment" >/dev/null
    [ $RVAL -eq 0 ] || die "${SERVICENAME} save_environment failed."
