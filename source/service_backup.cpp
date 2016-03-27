@@ -125,8 +125,8 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
 
    // load in the new variables.
    drunnerCompose drc(svc, prms);
-   if (!drc.readOkay())
-      logmsg(kLERROR, "Installation failed - variables.sh broken.", prms);
+   if (drc.readOkay()==kRError)
+      logmsg(kLERROR, "Installation failed - drunner-compose.yml broken.", prms);
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;

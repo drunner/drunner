@@ -207,7 +207,7 @@ eResult service::obliterate()
    logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
    {// [start] deleting docker volumes.
       drunnerCompose drc(*this, mParams);
-      if (drc.readOkay())
+      if (drc.readOkay()!=kRError)
       {
          for (const auto & vol : drc.getVolumes())
          {
@@ -222,11 +222,11 @@ eResult service::obliterate()
    }// [end] deleting docker volumes.
 
    // delete the host volumes
-   logmsg(kLDEBUG, "Deleting the host volume.");
+   logmsg(kLINFO, "Obliterating the hostVolumes (environment and servicerunner)");
    utils::deltree(getPathHostVolume(), mParams);
 
    // delete the service tree.
-   logmsg(kLDEBUG, "Deleting the service files.");
+   logmsg(kLINFO, "Obliterating all of the dService files");
    utils::deltree(getPath(), mParams);
 
    logmsg(kLINFO, "Obliterated " + getName());
