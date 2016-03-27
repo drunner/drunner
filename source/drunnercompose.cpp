@@ -52,24 +52,24 @@ void drunnerCompose::setenv_log(std::string key, std::string val) const
 
 void drunnerCompose::setServiceRunnerEnv() const
 {
+   //std::string envvol = mService.getName() + "-environment";
+   //for (const auto & entry : getVolumes() )
+   //   if (entry.mDockerVolumeName == envvol)
+   //   {
+   //      logmsg(kLDEBUG, "Reading stored environment from volume " + envvol,mParams);
 
-   for (const auto & entry : getServicesInfo())
-   {
-      std::vector<std::string> dockeropts;
+   //      std::string op;
+   //      utils::bashcommand("docker run --name=\"drunner-env-"+mService.getName()+"\" "+
+   //         "drunner/rootutils readstoredenv",op)
 
-      for (const auto & vol : entry.mVolumes)
-      {
-         dockeropts.push_back("-v");
-         dockeropts.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
-      }
+   //      break;
+   //   }
 
-      sb_vec v_dockeropts("DOCKEROPTS_"+entry.mDockerServiceName, dockeropts);
-      setvecenv(v_dockeropts);
-   }
 
    setenv_log("SERVICENAME", getService().getName().c_str());
    setenv_log("IMAGENAME", getService().getImageName().c_str());
    setenv_log("SERVICETEMPDIR", getService().getPathTemp().c_str());
+   setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().c_str());
    setenv_log("HOSTIP", utils::getHostIP().c_str());
 }
 

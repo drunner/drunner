@@ -55,6 +55,10 @@ void service::backup(const std::string & backupfile)
          logmsg(kLINFO, "Couldn't find docker volume " + entry + " ... skipping.");
    }
 
+   // back up host vol (local storage)
+   logmsg(kLDEBUG, "Backing up host volume.");
+   compress::compress_folder(password, getPathHostVolume(), tempf, "drunner_hostvol.tar.7z", mParams);
+
    // notify service we've finished our backup.
    hook.endhook();
 
@@ -142,6 +146,10 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
       compress::decompress_volume(password, dockervols[i],
          tempf, shb.getDockerVols()[i] + ".tar.7z", prms);
    }
+
+   // restore host vol (local storage)
+   logmsg(kLDEBUG, "Restoring host volume.",prms);
+   compress::decompress_folder(password, svc.getPathHostVolume(), tempf, "drunner_hostvol.tar.7z", prms);
 
    // tell the dService to do its restore_end action.
    tVecStr args;

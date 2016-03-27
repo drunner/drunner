@@ -51,7 +51,7 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
 
 std::string servicepaths::getPath() const
 {
-   return mSettings.getPath_Services() + "/" + mName;
+   return mSettings.getPath_dServices() + "/" + mName;
 }
 
 std::string servicepaths::getPathdRunner() const
@@ -64,20 +64,25 @@ std::string servicepaths::getPathTemp() const
    return getPath() + "/" + "temp";
 }
 
+std::string servicepaths::getPathHostVolume() const
+{
+   return mSettings.getPath_HostVolumes() + "/" + mName;
+}
+
+std::string servicepaths::getPathHostVolume_servicerunner() const
+{
+   return getPathHostVolume() + "/servicerunner";
+}
+
+std::string servicepaths::getPathHostVolume_environment() const
+{
+   return getPathHostVolume() + "/environment";
+}
+
 std::string servicepaths::getPathServiceRunner() const
 {
    return getPathdRunner() + "/servicerunner";
 }
-
-//std::string servicepaths::getPathVariables() const
-//{
-//   return getPathdRunner() + "/variables.sh";
-//}
-//
-//std::string servicepaths::getPathServiceCfg() const
-//{
-//   return getPathdRunner() + "/servicecfg.sh";
-//}
 
 std::string servicepaths::getPathDockerCompose() const
 {
@@ -96,6 +101,8 @@ void service::ensureDirectoriesExist() const
    utils::makedirectory(getPath(), mParams, S_755);
    utils::makedirectory(getPathdRunner(), mParams, S_777);
    utils::makedirectory(getPathTemp(), mParams, S_777);
+   utils::makedirectory(getPathHostVolume_environment(), mParams, S_700);
+   utils::makedirectory(getPathHostVolume_servicerunner(), mParams, S_777);
 }
 
 bool service::isValid() const
