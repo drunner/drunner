@@ -88,7 +88,7 @@ void service::createVolumes(const drunnerCompose * const drc)
          args.push_back("--name=\"" + dname + "\"");
          args.push_back("-v");
          args.push_back(entry.mDockerVolumeName + ":" + "/tempmount");
-         args.push_back("drunner/install-rootutils");
+         args.push_back("drunner/rootutils");
          args.push_back("chown");
          args.push_back(userid + ":root");
          args.push_back("/tempmount");
@@ -107,6 +107,10 @@ void service::recreate(bool updating)
       // nuke any existing dService files on host (but preserve volume containers!).
       if (utils::fileexists(getPath()))
          utils::deltree(getPath(), mParams);
+
+      // notice for hostVolumes.
+      if (utils::fileexists(getPathHostVolume()))
+         logmsg(kLINFO, "A drunner hostVolume already exists for " + getName() + ", reusing it.");
 
       // create the basic directories.
       ensureDirectoriesExist();
@@ -169,6 +173,8 @@ void service::install()
    tVecStr args;
    servicehook hook(this, "install", args, mParams);
    hook.endhook();
+
+   logmsg(kLINFO, "Installation complete - try running " + getName()+ " now!");
 }
 
 eResult service::uninstall()
@@ -201,7 +207,7 @@ eResult service::obliterate()
    logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
    {// [start] deleting docker volumes.
       drunnerCompose drc(*this, mParams);
-      if (drc.readOkay())
+      if (drc.readOkay()!=kRError)
       {
          for (const auto & vol : drc.getVolumes())
          {
@@ -215,8 +221,12 @@ eResult service::obliterate()
          logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");
    }// [end] deleting docker volumes.
 
+   // delete the host volumes
+   logmsg(kLINFO, "Obliterating the hostVolumes (environment and servicerunner)");
+   utils::deltree(getPathHostVolume(), mParams);
+
    // delete the service tree.
-   logmsg(kLDEBUG, "Deleting the service files.");
+   logmsg(kLINFO, "Obliterating all of the dService files");
    utils::deltree(getPath(), mParams);
 
    logmsg(kLINFO, "Obliterated " + getName());

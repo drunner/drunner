@@ -52,24 +52,20 @@ void drunnerCompose::setenv_log(std::string key, std::string val) const
 
 void drunnerCompose::setServiceRunnerEnv() const
 {
-
-   for (const auto & entry : getServicesInfo())
+   // load the custom env variables set by the dService.
+   const cServiceEnvironment & customEnv(getService().getEnvironmentConst());
+   for (int i = 0; i < customEnv.getNumVars(); ++i)
    {
-      std::vector<std::string> dockeropts;
-
-      for (const auto & vol : entry.mVolumes)
-      {
-         dockeropts.push_back("-v");
-         dockeropts.push_back(vol.mDockerVolumeName + ":" + vol.mMountPath);
-      }
-
-      sb_vec v_dockeropts("DOCKEROPTS_"+entry.mDockerServiceName, dockeropts);
-      setvecenv(v_dockeropts);
+      std::string key, value;
+      customEnv.getVar(i, key, value);
+      setenv_log(key.c_str(), value.c_str());
    }
 
+   // load some standard ones that we make available.
    setenv_log("SERVICENAME", getService().getName().c_str());
    setenv_log("IMAGENAME", getService().getImageName().c_str());
    setenv_log("SERVICETEMPDIR", getService().getPathTemp().c_str());
+   setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().c_str());
    setenv_log("HOSTIP", utils::getHostIP().c_str());
 }
 

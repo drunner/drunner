@@ -4,7 +4,7 @@
 
 TEST_CASE("read/write bool works","[settingsbash]") {
    //params p(kLDEBUG);
-   settingsbash sb;
+   settingsbash sb(true);
    
    SECTION("Test true functions")
    {
@@ -27,12 +27,12 @@ TEST_CASE("read/write bool works","[settingsbash]") {
    SECTION("Test bunch'o'Stuff")
    {
       sb.setString("ROOTPATH","/home/j");
-      sb.setString("ROOTUTILIMAGE","drunner/install-rootutils");
+      sb.setString("ROOTUTILIMAGE","drunner/rootutils");
       sb.setString("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
       sb.setString("DRUNNERINSTALLTIME",utils::getTime());
       sb.setBool("PULLIMAGES",true);
 
-      REQUIRE( sb.getString("ROOTUTILIMAGE")=="drunner/install-rootutils" );
+      REQUIRE( sb.getString("ROOTUTILIMAGE")=="drunner/rootutils" );
    }
 
 }

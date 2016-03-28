@@ -12,7 +12,7 @@ namespace command_general
 
    void showservices(const params & p, const sh_drunnercfg & settings)
    {
-      std::string parent = settings.getPath_Services();
+      std::string parent = settings.getPath_dServices();
       std::vector<std::string> services;
       if (!utils::getFolders(parent,services))
          logmsg(kLERROR,"Couldn't get subfolders of "+parent,p);

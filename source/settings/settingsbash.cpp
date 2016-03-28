@@ -125,7 +125,7 @@ bool settingsbash::readSettings(const std::string & settingspath)
    {
       bashline bl(line);
 	  if (bl.valid())
-	      setSetting( bl.getElement() , false );
+	      setSetting( bl.getElement() , mCreateOnRead );
    }
    configfile.close();
 
@@ -224,7 +224,7 @@ void settingsbash::setVec(const std::string & key, const std::vector<std::string
 //-------------------------------------------------------------------------------------------------
 
 settingsbash_reader::settingsbash_reader(std::string settingspath) :
-   mPath(settingspath), mReadOkay(false)
+   settingsbash(false), mPath(settingspath), mReadOkay(false)
 {
 }
 bool settingsbash_reader::read()

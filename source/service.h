@@ -10,6 +10,8 @@ class drunnerCompose;
 cResult service_restore(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, const std::string & backupfile);
 void validateImage(const params & prms, const sh_drunnercfg & settings, std::string imagename);
 
+
+
 class servicepaths
 {
 public:
@@ -18,15 +20,28 @@ public:
    std::string getPath() const;
    std::string getPathdRunner() const;
    std::string getPathTemp() const;
+   std::string getPathHostVolume() const;
+   std::string getPathHostVolume_servicerunner() const;
+   std::string getPathHostVolume_environment() const;
    std::string getPathServiceRunner() const;
-   //std::string getPathVariables() const;
-   //std::string getPathServiceCfg() const;
    std::string getPathDockerCompose() const;
    std::string getName() const;
 
 protected:
    const std::string mName;
    const sh_drunnercfg & mSettings;
+};
+
+class cServiceEnvironment : protected settingsbash
+{
+   public:
+      cServiceEnvironment(const servicepaths & paths);
+      void save_environment(std::string key, std::string value);
+      int getNumVars() const;
+      void getVar(const int position, std::string & key, std::string & value) const;
+
+protected:
+   std::string mPath;
 };
 
 
@@ -55,6 +70,8 @@ public:
    const params & getParams() const;
 
    cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
+   cServiceEnvironment & getEnvironment();
+   const cServiceEnvironment & getEnvironmentConst() const;
 
 private:
    void ensureDirectoriesExist() const;
@@ -67,6 +84,7 @@ private:
 
    const std::string mImageName;
    const params & mParams;
+   cServiceEnvironment mEnvironment;
 };
 
 

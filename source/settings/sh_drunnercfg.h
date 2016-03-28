@@ -14,9 +14,10 @@ public:
    bool write();
 
    std::string getPath_Root()         const { return getString("ROOTPATH"); }
-   std::string getPath_Services()     const { return getPath_Root() + "/services"; }
+   std::string getPath_dServices()    const { return getPath_Root() + "/dServices"; }
    std::string getPath_Support()      const { return getPath_Root() + "/support"; }
    std::string getPath_Temp()         const { return getPath_Root() + "/temp"; }
+   std::string getPath_HostVolumes()  const { return getPath_Root() + "/hostVolumes"; }
 
    std::string getRootUtilImage()     const { return getString("ROOTUTILIMAGE");       }
    std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL");   }
