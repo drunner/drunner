@@ -135,7 +135,8 @@ void service::recreate(bool updating)
 
       // make sure we have the latest of all exra containers.
       for (const auto & entry : drc.getServicesInfo())
-         command_setup::pullImage(mParams, mSettings, entry.mImageName);
+         if (entry.mImageName != getImageName()) // don't pull main image again.
+            command_setup::pullImage(mParams, mSettings, entry.mImageName);
 
       // create the utils.sh file for the dService.
       generate_utils_sh(getPathdRunner(), mParams);
