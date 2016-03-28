@@ -13,11 +13,9 @@ namespace command_setup
 
    void pullImage(const params & p, const sh_drunnercfg & s, const std::string & image)
    {
-      // -----------------------------------------------------------------------------
-      // pull the rootutils image to ensure we have the latest.
       if (s.getPullImages())
       {
-         logmsg(kLDEBUG, "Pulling Docker image " + image, p);
+         logmsg(kLINFO, "Pulling Docker image " + image + ".\n This may take some time...", p);
          eResult rslt = utils::pullimage(image);
          if (rslt == kRError)
             logmsg(kLERROR, "Couldn't pull " + image, p);

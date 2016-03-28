@@ -8,6 +8,14 @@ sh_drunnercfg::sh_drunnercfg(const std::string & rootpath) :
 {
    setDefaults(rootpath);
    read();
+
+   // migrate old settings.
+   if (readOkay()) 
+      if (utils::findStringIC(getRootUtilImage(), "install-rootutils"))
+      {
+         setString("ROOTUTILIMAGE", "drunner/rootutils");
+         write();
+      }
 }
 
 void sh_drunnercfg::setDefaults(const std::string & rootpath)
