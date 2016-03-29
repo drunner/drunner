@@ -7,11 +7,11 @@ In active development, generally working. Supports both version 1 and version 2 
 ## Overview
 
 dRunner is a stand-alone executable and a set of conventions to make it easy to make, install,
-configure and use compatible Docker containers ("dServices") on a Debian Jessie host via the 
+configure and use compatible Docker containers ("dServices") on a Debian Jessie host via the
 command line interface.
 
 dRunner eliminates the need to manually store and manage scripts to use the Docker containers,
-or type in long docker run commands. It also provides a configurable way (per host) to bring up 
+or type in long docker run commands. It also provides a configurable way (per host) to bring up
 services that consist of multiple Docker containers.
 
 ## Features
@@ -30,7 +30,6 @@ services that consist of multiple Docker containers.
 
 
 ## Install notes
-
 
 ### First time installation
 
@@ -137,7 +136,7 @@ The convention for exit codes is:
 | Exit Code | Description |
 |:---------:|:-----------:|
 | 0         | success     |
-| 1         | error       | 
+| 1         | error       |
 | 3         | no change   |
 | 127       | not implemented |
 
@@ -147,9 +146,9 @@ This is to aid Ansible use.
 See [Docker's Security Statement](https://docs.docker.com/engine/security/security) for information on security and docker.
 
 
-## The Anatomy of a dService
+## Creating your own dService
 
-To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/MAKECOMPATIBLE.md).
+To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/DSERVICE.md).
 
 
 
@@ -167,4 +166,3 @@ As devuser:
 git clone git@github.com:drunner/drunner.git
 make
 ```
-

@@ -151,9 +151,6 @@
     <ClCompile Include="$(SolutionDir)\..\source\showhelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,6 +170,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">
+      <Filter>UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp">
       <Filter>UnitTests</Filter>
     </ClCompile>
   </ItemGroup>
