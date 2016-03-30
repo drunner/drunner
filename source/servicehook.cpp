@@ -9,7 +9,13 @@
 servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams, const params & p) :
    mService(svc), mActionName(actionname), mHookParams(hookparams), mParams(p)
 {
-   setNeedsHook();
+   setHookCmds();
+}
+
+servicehook::servicehook(const service * const svc, std::string actionname, const params & p) :
+   mService(svc), mActionName(actionname), mParams(p)
+{
+   setHookCmds();
 }
 
 cResult servicehook::starthook()
@@ -58,7 +64,7 @@ cResult servicehook::runHook(std::string se)
 }
 
 
-void servicehook::setNeedsHook()
+void servicehook::setHookCmds()
 {      
    mServiceRunner = mService->getPathServiceRunner();
    mStartCmd = "";

@@ -163,8 +163,7 @@ cResult service::servicecmd()
 
 void service::update()
 { // update the service (recreate it)
-   tVecStr args;
-   servicehook hook(this, "update", args, mParams);
+   servicehook hook(this, "update", mParams);
    hook.starthook();
 
    recreate(true);
@@ -184,8 +183,7 @@ const std::string service::getImageName() const
 
 void service::enter()
 {
-   tVecStr args;
-   servicehook hook(this, "enter", args, mParams);
+   servicehook hook(this, "enter", mParams);
    hook.starthook();
 
    execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
@@ -193,8 +191,7 @@ void service::enter()
 
 int service::status()
 {
-   tVecStr args;
-   servicehook hook(this, "status", args, mParams);
+   servicehook hook(this, "status", mParams);
    hook.starthook();
 
    if (!utils::fileexists(getPath()))

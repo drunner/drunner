@@ -2,6 +2,7 @@
 
 #include "command_dev.h"
 #include "utils.h"
+#include "utils_docker.h"
 #include "logmsg.h"
 #include "exceptions.h"
 #include "settingsbash.h"
@@ -107,7 +108,7 @@ void service::createVolumes(const drunnerCompose * const drc)
 void service::recreate(bool updating)
 {
    if (updating)
-      command_setup::pullImage(mParams, mSettings, getImageName());
+      utils_docker::pullImage(mParams, mSettings, getImageName());
    
    try
    {
@@ -143,7 +144,7 @@ void service::recreate(bool updating)
       // make sure we have the latest of all exra containers.
       for (const auto & entry : drc.getServicesInfo())
          if (entry.mImageName != getImageName()) // don't pull main image again.
-            command_setup::pullImage(mParams, mSettings, entry.mImageName);
+            utils_docker::pullImage(mParams, mSettings, entry.mImageName);
 
       // create the utils.sh file for the dService.
       generate_utils_sh(getPathdRunner(), mParams);
@@ -171,15 +172,14 @@ void service::install()
 		logmsg(kLERROR, "Service already exists. Try:   drunner update " + getName());
 
 	// make sure we have the latest version of the service.
-	command_setup::pullImage(mParams, mSettings, getImageName());
+   utils_docker::pullImage(mParams, mSettings, getImageName());
 
 	logmsg(kLDEBUG, "Attempting to validate " + getImageName());
    validateImage(mParams,mSettings,getImageName());
 
    recreate(false);
 
-   tVecStr args;
-   servicehook hook(this, "install", args, mParams);
+   servicehook hook(this, "install", mParams);
    hook.endhook();
 
    logmsg(kLINFO, "Installation complete - try running " + getName()+ " now!");
@@ -190,8 +190,7 @@ eResult service::uninstall()
    if (!utils::fileexists(getPath()))
       logmsg(kLERROR, "Can't uninstall " + getName() + " - it does not exist.");
 
-   tVecStr args;
-   servicehook hook(this, "uninstall", args, mParams);
+   servicehook hook(this, "uninstall", mParams);
    hook.starthook();
 
    utils::deltree(getPath(), mParams);
@@ -208,8 +207,7 @@ eResult service::obliterate()
    if (!utils::fileexists(getPath()))
       logmsg(kLERROR, "Can't obliterate " + getName() + " - it does not exist.");
 
-   tVecStr args;
-   servicehook hook(this, "obliterate", args, mParams);
+   servicehook hook(this, "obliterate", mParams);
    hook.starthook();
 
    logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");

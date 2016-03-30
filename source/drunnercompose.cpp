@@ -19,6 +19,12 @@
 
 void InstallDockerCompose(const params & p)
 {
+   if (p.isDevelopmentMode())
+   {
+      logmsg(kLDEBUG, "In developer mode - not updating docker-compose.", p);
+      return;
+   }
+
    std::string url("https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64");
    std::string trgt(utils::get_usersbindir() + "/docker-compose");
 

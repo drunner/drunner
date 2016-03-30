@@ -113,6 +113,9 @@
     <ClInclude Include="..\..\source\settings\sh_backupvars.h">
       <Filter>settings</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\utils_docker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\command_dev.cpp">
@@ -174,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp">
       <Filter>UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\utils_docker.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

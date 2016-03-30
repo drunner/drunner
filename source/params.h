@@ -27,12 +27,14 @@ public:
    operator eLogLevel() const { return mLogLevel; }
 
    std::string getOption() const { return mOption; }
+   bool isDevelopmentMode() const { return mDevelopmentMode; }
 
 private:
    std::string mVersion;
    eCommand mCmd;
    std::vector<std::string> mArgs;
    eLogLevel mLogLevel;
+   bool mDevelopmentMode;
    
    edServiceOutput mServiceOutput_hooks;
    edServiceOutput mServiceOutput_servicecmd;

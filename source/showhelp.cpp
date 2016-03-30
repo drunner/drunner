@@ -26,11 +26,12 @@ SYNOPSIS
    ${EXENAME} [OPTION] [COMMAND] [ARGS]...
 
 OPTIONS
-   -n    normal (default)
-   -v    verbose
-   -l    logged (dService output is logged)
-   -s    silent
-   -o    capture dService output (drunner silent, raw dService output)
+   -n    output: normal (default)
+   -v    output: verbose
+   -l    output: logged (dService output is logged)
+   -s    output: silent
+   -o    output: capture dService output (drunner silent, raw dService output)
+   -d    development mode (don't explicitly pull images).
 
 COMMANDS
    ${EXENAME} clean

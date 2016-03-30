@@ -117,7 +117,9 @@ PASS=? drunner backup SERVICENAME BACKUPFILE   -- backup container, configuratio
 PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configuration and local data.
 ```
 
-## Output Flags
+## Flags
+
+dRunner provides several flags to control the output mode:
 
 | Flag    |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
@@ -127,7 +129,7 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 | -o      | capture output | errors only     | raw            | raw                 |
 | -s      | silent         | errors only     | suppressed     | suppressed          |
 
-
+In addition, you can specify -d for 'development mode', which currently just skips any explicit docker pulls.
 
 ## Exit Codes
 

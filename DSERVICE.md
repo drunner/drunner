@@ -21,6 +21,8 @@ passing the port to use via a configured environment variable. You can see how i
 
 Any Docker Volumes declared as external in the docker-compose.yml will be managed by dRunner, including creation, backup and restore. Use ${SERVICENAME} in the volume name to disambiguate between different services.
 
+The volume's ownership is set to the user of the corresponding service. That allows you to change the ownership and permissions as you wish in the install_end hook.
+
 Minecraft's [docker-compose.yml](https://github.com/drunner/minecraft/blob/master/drunner/docker-compose.yml) shows an example.
 
 ### Environment variables
@@ -35,6 +37,29 @@ dRunner provides some environment variables:
 In addition dRunner allows servicerunner to save environment variables (e.g. configuration) that are stored on the host and included in backups.
 
  [drunner/simplesecrets](https://github.com/drunner/simplesecrets) shows how to pass these saved environment variables through to the container using [docker-compose.yml](https://github.com/drunner/simplesecrets/blob/master/drunner/docker-compose.yml) and [servicerunner](https://github.com/drunner/simplesecrets/blob/master/drunner/servicerunner).
+
+## Hooks
+
+dRunner provides quite a few hooks for you to use in your servicerunner script. This can allow you to do things like pause your service before a backup is made. A summary of hooks:
+
+| Hook             |  Extra Environment Variables |  Notes |
+|:----------------:|:--------------:|:---------------:|
+| install_end      | normal         | info and above  |
+| backup_start     | verbose        | debug and above |
+| backup_end       | logged         | errors only     |
+| restore_start    | capture output | errors only     |
+| restore_end      | silent         | errors only     |
+| uninstall_start  | silent         | errors only     |
+| obliterate_start | silent         | errors only     |
+| servicecmd_start | silent         | errors only     |
+| servicecmd_end   | silent         | errors only     |
+| update_start     | silent         | errors only     |
+| update_end       | silent         | errors only     |
+| enter_start      | silent         | errors only     |
+| enter_end        | silent         | errors only     |
+| status_start     | silent         | errors only     |
+| status_end       | silent         | errors only     |
+
 
 ## Example Workflow without dProject
 

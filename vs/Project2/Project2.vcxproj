@@ -106,6 +106,7 @@
     <ClInclude Include="..\..\source\drunnercompose.h" />
     <ClInclude Include="..\..\source\settings\sh_backupvars.h" />
     <ClInclude Include="..\..\source\settings\sh_servicevars.h" />
+    <ClInclude Include="..\..\source\utils_docker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\command_dev.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="$(SolutionDir)\..\source\utils.cpp" />
     <ClCompile Include="..\..\source\buildnum.cpp" />
     <ClCompile Include="..\..\source\drunnercompose.cpp" />
+    <ClCompile Include="..\..\source\utils_docker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

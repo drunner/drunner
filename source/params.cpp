@@ -66,6 +66,8 @@ void params::setdefaults()
 
    mOption = "-n";
    mCmd = c_UNDEFINED;
+
+   mDevelopmentMode = false;
 }
 
 params::params(eLogLevel ll)
@@ -91,6 +93,7 @@ while (1)
             {"getoutput", 0, 0, 'o'},
             {"normal", 0, 0, 'n'},
             {"logged",0,0,'l'},
+            {"developer",0,0,'d'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
          };
@@ -98,7 +101,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsnol",
+      c = getopt_long (argc, argv, "vsnold",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -139,6 +142,14 @@ while (1)
             mServiceOutput_hooks = kOLogged;
             mServiceOutput_servicecmd = kOLogged;
             mOption = "-n";
+            break;
+
+         case 'd':
+            mDevelopmentMode = true;
+            mLogLevel = kLDEBUG;
+            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_servicecmd = kORaw;
+            mOption = "-d";
             break;
 
          default:
