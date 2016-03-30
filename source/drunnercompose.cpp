@@ -193,6 +193,7 @@ void drunnerCompose::load_docker_compose_yml()
                   if (entry.mLabel == volinfo.mLabel)
                      volinfo.mDockerVolumeName = entry.mDockerVolumeName;
                if (volinfo.mDockerVolumeName.length() == 0)
+                  logmsg(kLDEBUG, "Volume " + volinfo.mLabel + " is not managed by dRunner. Skipped.", mParams);
                else
                { // it's a dRunner volume.
                   logmsg(kLDEBUG, sinf.mDockerServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at " + volinfo.mMountPath, mParams);
