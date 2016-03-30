@@ -88,19 +88,20 @@ namespace command_setup
 
       logmsg(kLINFO, "Updating...", p);
 
+      tVecStr args;
+      args.push_back("drunner-install");
+      for (auto opt : p.getOptions())
+         args.push_back(opt);
+      args.push_back("setup");
+      args.push_back(s.getPath_Root());
+      
       std::ostringstream oss;
-      oss << trgt.c_str() << " " << p.getOption().c_str() << " "
-         << "setup" << " " << s.getPath_Root().c_str();
-      logmsg(kLDEBUG, oss.str(), p);
+      for (auto arg : args)
+         oss << arg << " ";
+      logmsg(kLDEBUG, utils::trim_copy(oss.str()), p);
 
-      execl(
-         trgt.c_str(),
-         "drunner-install",
-         p.getOption().c_str(),
-         "setup",
-         s.getPath_Root().c_str(),
-         (char *)0
-         );
+      utils::execv(trgt, args);
+
       logmsg(kLERROR, "Exec failed.", p);
       return 1;
    }

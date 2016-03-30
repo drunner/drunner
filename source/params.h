@@ -26,7 +26,7 @@ public:
    // implicit conversion to allow easy logging.
    operator eLogLevel() const { return mLogLevel; }
 
-   std::string getOption() const { return mOption; }
+   const std::vector<std::string> & getOptions() const { return mOptions; }
    bool isDevelopmentMode() const { return mDevelopmentMode; }
 
 private:
@@ -39,7 +39,7 @@ private:
    edServiceOutput mServiceOutput_hooks;
    edServiceOutput mServiceOutput_servicecmd;
 
-   std::string mOption;
+   std::vector<std::string> mOptions;
    eCommand parsecmd(std::string s) const;
    params();
    void setdefaults();

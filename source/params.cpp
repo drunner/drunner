@@ -64,7 +64,6 @@ void params::setdefaults()
    mServiceOutput_hooks = kOLogged;
    mServiceOutput_servicecmd = kORaw;
 
-   mOption = "-n";
    mCmd = c_UNDEFINED;
 
    mDevelopmentMode = false;
@@ -113,49 +112,49 @@ while (1)
             mLogLevel=kLERROR;
             mServiceOutput_hooks = kOSuppressed;
             mServiceOutput_servicecmd = kOSuppressed;
-            mOption = "-s";
+            mOptions.push_back("-s");
             break;
 
          case 'v':
             mLogLevel=kLDEBUG;
             mServiceOutput_hooks = kOLogged;
             mServiceOutput_servicecmd = kORaw;
-            mOption = "-v";
+            mOptions.push_back("-v");
             break;
 
          case 'o':
             mLogLevel=kLERROR;
             mServiceOutput_hooks = kORaw;
             mServiceOutput_servicecmd = kORaw;
-            mOption = "-o";
+            mOptions.push_back("-o");
             break;
 
          case 'n':
             mLogLevel=kLINFO;
             mServiceOutput_hooks = kOLogged;
             mServiceOutput_servicecmd = kORaw;
-            mOption = "-n";
+            mOptions.push_back("-n");
             break;
 
          case 'l':
             mLogLevel = kLINFO;
             mServiceOutput_hooks = kOLogged;
             mServiceOutput_servicecmd = kOLogged;
-            mOption = "-n";
+            mOptions.push_back("-l");
             break;
 
          case 'd':
             mDevelopmentMode = true;
-            mLogLevel = kLDEBUG;
-            mServiceOutput_hooks = kOLogged;
-            mServiceOutput_servicecmd = kORaw;
-            mOption = "-d";
+            mOptions.push_back("-d");
             break;
 
          default:
             showhelp(*this,"Unrecognised option."); //" -" + std::string(1,c));
       }
    }
+
+   if (mOptions.size() == 0)
+      mOptions.push_back("-n");
 
    // drunner with no command.
    int opx=optind;

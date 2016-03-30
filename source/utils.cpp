@@ -82,6 +82,15 @@ namespace utils
        return utils::trim(s, t);
    }
 
+   int execv(std::string command, tVecStr & args)
+   {
+      std::vector<char*> argv;
+      for (auto & arg : args)
+         argv.push_back( &arg.front() );
+      argv.push_back(NULL);
+      return ::execv(command.c_str(), argv.data());
+   }
+
    int bashcommand(std::string command, std::string & output)
    {
       redi::ipstream in(command);
