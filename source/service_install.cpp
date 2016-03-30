@@ -15,14 +15,14 @@
 //using namespace utils;
 
 
-std::string service::getUserID()
+std::string service::getUserID(std::string imagename) const
 {
-	std::string runcmd = "docker run --rm -i " + getImageName() + R"EOF( /bin/bash -c "id -u | tr -d '\r\n'")EOF";
+	std::string runcmd = "docker run --rm -i " + imagename + R"EOF( /bin/bash -c "id -u | tr -d '\r\n'")EOF";
 	std::string op;
 	if (0 != utils::bashcommand(runcmd, op))
-		logmsg(kLERROR, "Unable to determine the user id in container " + getImageName());
+		logmsg(kLERROR, "Unable to determine the user id in container " + imagename);
 
-	logmsg(kLDEBUG, "Container is running under userID " + op + ".");
+	logmsg(kLDEBUG, imagename+" is running under userID " + op + ".");
 	return op;
 }
 
@@ -63,22 +63,26 @@ void service::createVolumes(const drunnerCompose * const drc)
    if (drc == NULL)
       logmsg(kLERROR, "createVolumes passed NULL drunnerCompose.");
 
-	std::string userid = getUserID();
-	if (userid == "0")
-		logmsg(kLERROR, "Container is running as root user!"); // should never happen as we've validated the image already.
-
    std::string dname = "docker-volume-maker";
 
-   for (const auto & entry : drc->getVolumes())
+   for (const auto & svc : drc->getServicesInfo())
+   {
+      // each service may be running under a different userid.
+      std::string userid = getUserID(svc.mImageName);
+      if (userid == "0")
+         logmsg(kLERROR, svc.mImageName + " is running as root user! Verboten."); // should never happen as we've validated the image already.
+
+      for (const auto & entry : svc.mVolumes)
       {
          if (utils::dockerVolExists(entry.mDockerVolumeName))
-            logmsg(kLINFO, "A docker volume already exists for " + entry.mDockerVolumeName + ", reusing it.");
+            logmsg(kLINFO, "A docker volume already exists for " + entry.mDockerVolumeName + ", reusing it for " + svc.mImageName + ".");
          else
          {
             std::string op;
             int rval = utils::bashcommand("docker volume create --name=\"" + entry.mDockerVolumeName + "\"", op);
             if (rval != 0)
                logmsg(kLERROR, "Unable to create docker volume " + entry.mDockerVolumeName);
+            logmsg(kLDEBUG, "Created docker volume " + entry.mDockerVolumeName + " for " + svc.mImageName);
          }
 
          // set permissions on volume.
@@ -94,7 +98,10 @@ void service::createVolumes(const drunnerCompose * const drc)
          args.push_back("/tempmount");
 
          utils::dockerrun dr("/usr/bin/docker", args, dname, mParams);
+
+         logmsg(kLDEBUG, "Set permissions to allow user " + userid + " access to volume " + entry.mDockerVolumeName);
       }
+   }
 }
 
 void service::recreate(bool updating)

@@ -77,7 +77,7 @@ private:
    void ensureDirectoriesExist() const;
    void createVolumes(const drunnerCompose * const drc);
    void createLaunchScript();
-   std::string getUserID();
+   std::string getUserID(std::string imagename) const;
    void logmsg(eLogLevel level, std::string s) const;
 
    static std::string loadImageName(const params & prms, const sh_drunnercfg & settings, const std::string & servicename, std::string imagename);

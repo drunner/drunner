@@ -129,16 +129,15 @@ void drunnerCompose::load_docker_compose_yml()
    if (config["volumes"])
    {
       YAML::Node volumes = config["volumes"];
-      if (!volumes)
-         logmsg(kLERROR, "docker-compose.yml is missing the required volumes section.", mParams);
       if (volumes.Type() != YAML::NodeType::Map)
-         logmsg(kLERROR, "docker-compose.yml is malformed - volumes is not a map.\n (Do you have an empty services: section? If so, delete it!).", mParams);
+         logmsg(kLERROR, "docker-compose.yml is malformed - volumes is not a map.\n (Do you have an empty volumes: section? If so, delete it!).", mParams);
       for (auto it = volumes.begin(); it != volumes.end(); ++it)
       {
          cVolInfo volinfo;
          volinfo.mLabel = it->first.as<std::string>();
          YAML::Node external = it->second["external"];
-         if (!external) logmsg(kLDEBUG, "Volume " + volinfo.mLabel + " is not managed by dRunner.", mParams);
+         if (!external)
+            logmsg(kLDEBUG, "Volume " + volinfo.mLabel + " is not managed by dRunner.", mParams);
          else
          {
             if (!external["name"]) logmsg(kLERROR, "Volume " + volinfo.mLabel + " is missing a required name:", mParams);
@@ -194,10 +193,11 @@ void drunnerCompose::load_docker_compose_yml()
                   if (entry.mLabel == volinfo.mLabel)
                      volinfo.mDockerVolumeName = entry.mDockerVolumeName;
                if (volinfo.mDockerVolumeName.length() == 0)
-                  logmsg(kLERROR, "Volume " + volinfo.mLabel + " is not defined in the volumes: section! docker-compose.yml is broken.", mParams);
-
-               logmsg(kLDEBUG, sinf.mDockerServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at "+volinfo.mMountPath, mParams);
-               sinf.mVolumes.push_back(volinfo);
+               else
+               { // it's a dRunner volume.
+                  logmsg(kLDEBUG, sinf.mDockerServiceName + " - Volume " + volinfo.mDockerVolumeName + " is to be mounted at " + volinfo.mMountPath, mParams);
+                  sinf.mVolumes.push_back(volinfo);
+               }
             }
          mServicesInfo.push_back(sinf);
       }
