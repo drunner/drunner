@@ -19,11 +19,13 @@ passing the port to use via a configured environment variable. You can see how i
 
 ### Volumes
 
-dRunner can manage volumes for you, which means creating them, backing them up and restoring them automatically. To declare a dRunner managed volume you need to include it in the volumes: section of docker-compose.yml, declare it as external and give it a docker-compose label starting with drunner. The actual volume name can be anything, but by convention is generally of the form "drunner-${SERVICENAME}-config" etc. By including the dService name we disambiguate multiple installs of the same service.
+dRunner can manage volumes for you, which means creating them, backing them up and restoring them automatically. To declare a dRunner managed volume you need to include it in the volumes: section of docker-compose.yml, declare it as external and give it a docker-compose label starting with drunner. The actual volume name can be anything, but by convention is generally of the form "drunner-${SERVICENAME}-config" etc. By including the dService name with ${SERVICENAME} we disambiguate multiple installs of the same dService.
 
 The volume's ownership is set to the user of the corresponding service (if any). That allows you to change the ownership and permissions as you wish in the install_end hook.
 
 Minecraft's [docker-compose.yml](https://github.com/drunner/minecraft/blob/master/drunner/docker-compose.yml) shows an example.
+
+You can also include volumes not managed by dRunner in docker-compose.yml, whether they are host volumes, named volumes managed by docker-compose, or named volumes that are external and not managed by either docker-compose.yml or drunner for that dService (e.g. if you have a utility dService that mounts a volume from another dService, you don't want the utility or docker-compose to try and manage it).
 
 ### Environment variables
 
