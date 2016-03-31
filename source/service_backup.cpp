@@ -43,7 +43,7 @@ void service::backup(const std::string & backupfile)
    // back up volume containers
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
-   const std::vector<std::string> & dockervols(shb.getDockerVols());
+   const std::vector<std::string> & dockervols(shb.getDockerVolumeNames());
    for (auto const & entry : dockervols)
    {
       if (utils::dockerVolExists(entry))
@@ -112,7 +112,7 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
 
    if (!utils::fileexists(tempc))
       logmsg(kLERROR, "Backup corrupt - missing " + tempc, prms);
-   for (auto entry : shb.getDockerVols())
+   for (auto entry : shb.getDockerVolumeNames())
       if (!utils::fileexists(tempf + "/" + entry + ".tar.7z"))
          logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry, prms);
 
@@ -130,8 +130,8 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
-   drc.getDockerVols(dockervols);
-   if (shb.getDockerVols().size() != dockervols.size())
+   drc.getDockerVolumeNames(dockervols);
+   if (shb.getDockerVolumeNames().size() != dockervols.size())
    {
       logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.", prms);
       svc.uninstall();
@@ -144,7 +144,7 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
       if (!utils::dockerVolExists(dockervols[i]))
          logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!", prms);
       compress::decompress_volume(password, dockervols[i],
-         tempf, shb.getDockerVols()[i] + ".tar.7z", prms);
+         tempf, shb.getDockerVolumeNames()[i] + ".tar.7z", prms);
    }
 
    // restore host vol (local storage)

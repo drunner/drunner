@@ -44,10 +44,10 @@ public:
 
    // Volumes are as defined in the docker-compose.yml. These include all the volumes
    // defined in services, but may include extras.
-   const std::vector<cVolInfo> & getVolumes() const;
+   const void getVolumes(std::vector<cVolInfo> & vecvols) const;
 
    // get a vector of mDockerVolumeName's (for convenience) - straight from mVolumes.
-   void getDockerVols(tVecStr & dv) const;
+   void getDockerVolumeNames(tVecStr & dv) const;
 
    // just queries the stored service for conveninece.
    std::string getImageName() const;
@@ -60,7 +60,6 @@ private:
    void setenv_log(std::string key, std::string val) const;
 
    std::vector<cServiceInfo> mServicesInfo;
-   std::vector<cVolInfo> mVolumes;
 
    const service & mService;
    const params & mParams;

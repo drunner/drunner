@@ -32,7 +32,7 @@ public:
       return writeSettings(getPath());
    }
 
-   const std::vector<std::string> & getDockerVols()	const { return getVec("DOCKERVOLS"); }
+   const std::vector<std::string> & getDockerVolumeNames()	const { return getVec("DOCKERVOLS"); }
    const std::string & getImageName() const { return getString("IMAGENAME"); }
 
 protected:
@@ -48,7 +48,7 @@ private:
    bool populate(const drunnerCompose & drc)
    {
       tVecStr dockervols;
-      drc.getDockerVols(dockervols);
+      drc.getDockerVolumeNames(dockervols);
 
       // all docker volumes that dRunner has to manage.
       setVec("DOCKERVOLS", dockervols);
