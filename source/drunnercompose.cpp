@@ -85,15 +85,18 @@ const std::vector<cServiceInfo>& drunnerCompose::getServicesInfo() const
    return mServicesInfo;
 }
 
-const std::vector<cVolInfo>& drunnerCompose::getVolumes() const
+const void drunnerCompose::getVolumes(std::vector<cVolInfo> & vecvols) const
 {
-   return mVolumes;
+   for (auto entry : mServicesInfo)
+      for (auto vol : entry.mVolumes)
+         vecvols.push_back(vol);
 }
 
-void drunnerCompose::getDockerVols(tVecStr & dv) const
+void drunnerCompose::getDockerVolumeNames(tVecStr & dv) const
 {
-   for (const auto & entry : mVolumes)
-      dv.push_back(entry.mDockerVolumeName);
+   for (auto entry : mServicesInfo)
+      for (auto vol : entry.mVolumes)
+         dv.push_back(vol.mDockerVolumeName);
 }
 
 std::string drunnerCompose::getImageName() const
@@ -106,14 +109,6 @@ const service & drunnerCompose::getService() const
    return mService;
 }
 
-//std::string makevolname(
-//   std::string mainServiceName,
-//   std::string mountpath
-//   )
-//{
-//   return "drunner-" + mainServiceName + "-" + utils::alphanumericfilter(mountpath, false);
-//}
-
 void drunnerCompose::load_docker_compose_yml()
 {
    if (!utils::fileexists(mService.getPathDockerCompose()))
@@ -121,6 +116,8 @@ void drunnerCompose::load_docker_compose_yml()
       mReadOkay = kRNotImplemented;
       return;
    }
+
+   std::vector<cVolInfo> VolumesInfo;
 
    logmsg(kLDEBUG, "Parsing " + mService.getPathDockerCompose(), mParams);
 
@@ -142,7 +139,7 @@ void drunnerCompose::load_docker_compose_yml()
          cVolInfo volinfo;
          volinfo.mLabel = it->first.as<std::string>();
          YAML::Node external = it->second["external"];
-         if (!external)
+         if (!external || !utils::findStringIC(volinfo.mLabel,"drunner"))
             logmsg(kLDEBUG, "Volume " + volinfo.mLabel + " is not managed by dRunner.", mParams);
          else
          {
@@ -151,11 +148,11 @@ void drunnerCompose::load_docker_compose_yml()
             // need to var substitute ${SERVICENAME} in it.
             volinfo.mDockerVolumeName = utils::replacestring(volinfo.mDockerVolumeName, "${SERVICENAME}", mService.getName());
             logmsg(kLDEBUG, "dRunner managed volume: " + volinfo.mDockerVolumeName, mParams);
-            mVolumes.push_back(volinfo);
+            VolumesInfo.push_back(volinfo);
          }
       }
 
-      if (mVolumes.size() == 0)
+      if (VolumesInfo.size() == 0)
          logmsg(kLDEBUG, "There are no dRunner managed volumes.", mParams);
    }
    else
@@ -195,7 +192,7 @@ void drunnerCompose::load_docker_compose_yml()
                volinfo.mLabel = v.substr(0, pos);
                volinfo.mMountPath = v.substr(pos + 1);
                volinfo.mDockerVolumeName = "";
-               for (auto entry : mVolumes)
+               for (auto entry : VolumesInfo)
                   if (entry.mLabel == volinfo.mLabel)
                      volinfo.mDockerVolumeName = entry.mDockerVolumeName;
                if (volinfo.mDockerVolumeName.length() == 0)
@@ -211,6 +208,18 @@ void drunnerCompose::load_docker_compose_yml()
    }
    else
       logmsg(kLDEBUG, "No services are specified in the docker-compose.yml file.\n That means dRunner will just use "+mService.getImageName(), mParams);
+
+   for (auto vol : VolumesInfo)
+   {
+      bool matched = false;
+      for (auto svc : mServicesInfo)
+         for (auto svol : svc.mVolumes)
+            if (svol.mLabel == vol.mLabel)
+               matched = true;
+
+      if (!matched)
+         logmsg(kLERROR, "dRunner volume " + vol.mLabel + " does not appear in any service defition.\nThis is treated as an error (no known use case).", mParams);
+   }
 
    mReadOkay = kRSuccess;
 }
