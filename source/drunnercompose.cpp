@@ -17,22 +17,22 @@
 //
 
 
-void InstallDockerCompose(const params & p)
-{
-   if (p.isDevelopmentMode())
-   {
-      logmsg(kLDEBUG, "In developer mode - not updating docker-compose.", p);
-      return;
-   }
-
-   std::string url("https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64");
-   std::string trgt(utils::get_usersbindir() + "/docker-compose");
-
-   logmsg(kLDEBUG, "Downloading docker-compose...", p);
-   utils::downloadexe(url, trgt, p);
-
-   logmsg(kLDEBUG, "docker-compose installed.", p);
-}
+//void InstallDockerCompose(const params & p)
+//{
+//   if (p.isDevelopmentMode())
+//   {
+//      logmsg(kLDEBUG, "In developer mode - not updating docker-compose.", p);
+//      return;
+//   }
+//
+//   std::string url("https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64");
+//   std::string trgt(utils::get_usersbindir() + "/docker-compose");
+//
+//   logmsg(kLDEBUG, "Downloading docker-compose...", p);
+//   utils::downloadexe(url, trgt, p);
+//
+//   logmsg(kLDEBUG, "docker-compose installed.", p);
+//}
 
 drunnerCompose::drunnerCompose(const service & svc, const params & p) : 
    mService(svc), 

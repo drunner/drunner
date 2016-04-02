@@ -7,7 +7,7 @@
 #include "service.h"
 #include "utils.h"
 
-void InstallDockerCompose(const params & p);
+//void InstallDockerCompose(const params & p);
 
 class cVolInfo {
 public:

@@ -49,24 +49,27 @@ void mainroutines::check_basics()
 {
    uid_t euid=geteuid();
    if (euid == 0)
-      logmsg(kLERROR,"Please run as a standard user, not as root.",kLERROR);
+	   fatal("Please run as a standard user, not as root.");
 
    std::string user=utils::getUSER();
    if (!utils::isindockergroup(user))
-      logmsg(kLERROR,"Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E, kLERROR);
+	   fatal("Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
 
    if (!utils::canrundocker(user))
-      logmsg(kLERROR,user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E, kLERROR);
+	   fatal(user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
 
    if (!utils::commandexists("docker"))
-      logmsg(kLERROR,"Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )", kLERROR);
+	   fatal("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
 
    if (!utils::commandexists("curl"))
-      logmsg(kLERROR,"Please install curl before using dRunner.", kLERROR);
+	   fatal("Please install curl before using dRunner.");
+
+   if (!utils::commandexists("docker-compose"))
+	   fatal("Please install docker-compose before using dRunner.");
 
    std::string v;
    if (utils::bashcommand("docker --version",v)!=0)
-      logmsg(kLERROR,"Running \"docker --version\" failed! Is docker correctly installed on this machine?", kLERROR);
+	   fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

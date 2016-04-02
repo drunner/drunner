@@ -52,8 +52,8 @@ namespace command_setup
       // create symlink
       utils::makesymlink(rootpath + "/drunner", bindir + "/drunner", p);
 
-      // sort out docker-compose
-      InstallDockerCompose(p);
+      // sort out docker-compose - now expected to be present.
+      //InstallDockerCompose(p);
 
       // get latest root util image.
       //std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
