@@ -39,7 +39,8 @@ We assume here you have a standard user account called testuser which you'll use
 
 dRunner needs docker. You can install it as root with:
 ```
-wget -nv -O /tmp/install_docker.sh https://goo.gl/2cxobx ; bash /tmp/install_docker.sh
+wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
+bash install_docker.sh
 ```
 
 Then give the user you'll run dServices with (e.g. testuser) permissions to run docker with:
