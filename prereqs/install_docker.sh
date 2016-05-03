@@ -50,6 +50,6 @@ DCURL="https://github.com/docker/compose/releases/download/1.6.2/docker-compose-
 DEST=/usr/local/bin/docker-compose
 
 checkinstall curl
-curl ${DCURL} -z ${DEST} -o ${DEST} --silent --location && chmod 0755 ${DEST}
+curl ${DCURL} -o ${DEST} --silent --location && chmod 0755 ${DEST}
 
 exit ${RVAL}
