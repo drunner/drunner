@@ -40,7 +40,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 	@echo Bumping build number..
 	cd buildnum ; ./make_buildnum.sh
 
-uploadz: $(APP)
+upload: $(APP)
 	cd output ; s3upload drunner-install
 	cd prereqs ; s3upload install_docker.sh
 

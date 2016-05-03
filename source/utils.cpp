@@ -296,10 +296,11 @@ namespace utils
 
    bool imageisbranch(const std::string & imagename)
    {
-      std::size_t end=0;
-      if ((end=imagename.find(":",0)) == std::string::npos)
+      std::size_t pos = imagename.find_last_of("/:");
+      if (pos == std::string::npos || imagename[pos] != ':')
          return false;
-      std::string branchname=imagename.substr(end+1);
+
+      std::string branchname=imagename.substr(pos+1);
       if (stringisame(branchname,"master"))
          return false;
 
@@ -308,8 +309,6 @@ namespace utils
 
    eResult pullimage(const std::string & imagename)
    {
-      if (imageisbranch(imagename))
-         return kRNoChange;
       std::string op;
 
       int rval = bashcommand("docker pull "+imagename, op);

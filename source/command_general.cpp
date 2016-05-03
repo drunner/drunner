@@ -4,6 +4,7 @@
 #include "logmsg.h"
 #include "enums.h"
 #include "utils.h"
+#include "utils_docker.h"
 #include "command_setup.h"
 #include "exceptions.h"
 
@@ -29,9 +30,7 @@ namespace command_general
    void clean(const params & p, const sh_drunnercfg & settings)
    {
       std::string op;
-      logmsg(kLINFO,"Pulling latest spotify/docker-gc.",p);
-      if (utils::pullimage("spotify/docker-gc")==kRError)
-         logmsg(kLERROR,"Failed to pull spotify/docker-gc",p);
+      utils_docker::pullImage(p, settings, "spotify/docker-gc");
 
       logmsg(kLINFO,"Cleaning.",p);
       if (utils::bashcommand("docker run --rm -v /var/run/docker.sock:/var/run/docker.sock spotify/docker-gc",op) != 0)
@@ -39,13 +38,5 @@ namespace command_general
 
       logmsg(kLINFO,"Cleaning is complete.",p);
    }
-
-   void update(const params & p, const sh_drunnercfg & settings)
-   {
-
-      logmsg(kLERROR,"Soon!",p);
-   }
-
-
 
 }

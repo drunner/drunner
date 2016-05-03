@@ -217,6 +217,11 @@ void validateImage(const params & prms, const sh_drunnercfg & settings, std::str
 {
    if (!utils::fileexists(settings.getPath_Root())) logmsg(kLERROR, "ROOTPATH not set.",prms);
 
+   if (utils::imageisbranch(imagename))
+      logmsg(kLDEBUG, imagename + " looks like a development branch (won't be pulled).", prms);
+   else
+      logmsg(kLDEBUG, imagename + " should be a production image.", prms);
+
    std::string op;
    int rval = utils::bashcommand(
       "docker run --rm -v \"" + settings.getPath_Support() +
