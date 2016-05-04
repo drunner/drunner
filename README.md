@@ -1,4 +1,4 @@
-# dRunner
+# dRunner [![Build Status](https://travis-ci.org/drunner/drunner.svg?branch=master)](https://travis-ci.org/drunner/drunner)
 
 ## Status
 
