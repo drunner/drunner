@@ -159,7 +159,8 @@ To see how to make a dService [read the documentation](https://github.com/drunne
 
 As root:
 ```
-wget -nv -O /tmp/install_docker.sh https://goo.gl/2cxobx ; bash /tmp/install_docker.sh
+wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
+bash install_docker.sh
 apt-get install build-essential g++-multilib libboost-all-dev libyaml-cpp-dev
 adduser devuser docker
 ```
