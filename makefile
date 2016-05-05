@@ -1,9 +1,9 @@
 APP=output/drunner-install
 CC=gcc
 #CXX=g++
-CXX=bin/colorgcc.pl
+CXX=deps/colorgcc/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/settings -Isource/generators -Isource/tests
+INC=-Isource -Ibuildnum -Isource/settings -Isource/generators -Isource/tests -Ideps/catch
 
 BOOSTSTATIC=-static -pthread
 CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
@@ -54,5 +54,5 @@ permissions:
 	mkdir -p objs/settings objs/generators objs/tests output
 	find . -type d -exec chmod 0755 {} \;
 	find . -type f -exec chmod 0644 {} \;
-	chmod 0755 buildnum/make_buildnum.sh pullall bin/*
+	chmod 0755 buildnum/make_buildnum.sh pullall deps/colorgcc/colorgcc.pl
 	touch permissions
