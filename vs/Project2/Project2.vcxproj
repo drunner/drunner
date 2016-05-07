@@ -99,7 +99,6 @@
     <ClInclude Include="$(SolutionDir)\..\source\settings\sh_variables.h" />
     <ClInclude Include="$(SolutionDir)\..\source\showhelp.h" />
     <ClInclude Include="$(SolutionDir)\..\source\termcolor.h" />
-    <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h" />
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
     <ClInclude Include="$(SolutionDir)\..\source\utils.h" />
     <ClInclude Include="..\..\source\buildnum.h" />

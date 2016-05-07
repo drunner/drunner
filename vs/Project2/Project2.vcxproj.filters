@@ -101,9 +101,6 @@
     <ClInclude Include="..\..\source\buildnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\source\tests\catch.h">
-      <Filter>UnitTests</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
       <Filter>UnitTests</Filter>
     </ClInclude>
