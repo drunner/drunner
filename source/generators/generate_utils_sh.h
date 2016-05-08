@@ -125,6 +125,9 @@ function save_environment {
    [ "$#" -eq 2 ] || die "save_environment -- requires two arguments (the environment variable name and the content)."
 
    drunner __save-environment "$SERVICENAME" "$1" "$2" || die "${SERVICENAME} save_environment failed."
+
+   # set the environment variable to the new value now.
+   eval $1=\$2
 }
 
 
