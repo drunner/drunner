@@ -293,7 +293,6 @@ void cServiceEnvironment::getVar(const int position, std::string & key, std::str
 {
    if (position >= getNumVars())
       fatal("cServiceEnvironment::getVar - position out of range.");
-   auto const & el(mElements.at(position));
    const auto b = dynamic_cast<const sb_string *>(mElements.at(position).get());
    if (!b) 
       fatal("Couldn't interpret environment element as string.");
