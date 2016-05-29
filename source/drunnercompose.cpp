@@ -42,13 +42,13 @@ drunnerCompose::drunnerCompose(const service & svc, const params & p) :
    load_docker_compose_yml();
 }
 
-void drunnerCompose::setvecenv(const sb_vec & v) const
-{
-   bashline bl = v.getBashLine();
-   std::string key = bl.getkey();
-   std::string val = bl.getvalue();
-   setenv_log(key, val);
-}
+//void drunnerCompose::setvecenv(const sb_vec & v) const
+//{
+//   bashline bl = v.getBashLine();
+//   std::string key = bl.getkey();
+//   std::string val = bl.getvalue();
+//   setenv_log(key, val);
+//}
 
 void drunnerCompose::setenv_log(std::string key, std::string val) const
 {
@@ -60,10 +60,12 @@ void drunnerCompose::setServiceRunnerEnv() const
 {
    // load the custom env variables set by the dService.
    const cServiceEnvironment & customEnv(getService().getEnvironmentConst());
-   for (int i = 0; i < customEnv.getNumVars(); ++i)
+
+   for (unsigned int i = 0; i < customEnv.getNumVars(); ++i)
    {
       std::string key, value;
-      customEnv.getVar(i, key, value);
+      key = customEnv.index2key(i);
+      value = customEnv.get_value(key);
       setenv_log(key.c_str(), value.c_str());
    }
 

@@ -28,7 +28,7 @@ public:
       return writeSettings(getPath());
    }
 
-   const std::string & getImageName() const { return getString("IMAGENAME"); }
+   std::string getImageName() const { return getString("IMAGENAME"); }
 
 protected:
    void setDefaults()
