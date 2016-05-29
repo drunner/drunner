@@ -91,7 +91,7 @@ void bashline::setline(const std::string & bashline_str)
    }
 }
 
-void bashline::setkeyvalue(const std::string &k, std::string & v)
+void bashline::setkeyvalue(const std::string &k, const std::string & v)
 {
    key = k;
    value = v;
