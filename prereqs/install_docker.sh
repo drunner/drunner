@@ -46,7 +46,7 @@ systemctl enable docker > /dev/null 2>&1
 systemctl start docker > /dev/null 2>&1
 
 # also install docker-compose.
-DCURL="https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64"
+DCURL="https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64"
 DEST=/usr/local/bin/docker-compose
 
 checkinstall curl
