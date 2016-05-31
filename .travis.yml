@@ -21,8 +21,6 @@ before_install:
 script: 
    - make
    - make install
-   - wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
-   - sudo bash install_docker.sh
    - drunner unittest
    - drunner install drunner/dtest
    - dtest test
