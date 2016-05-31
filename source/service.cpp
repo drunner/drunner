@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <sstream>
 
 #include "service.h"
 #include "logmsg.h"
@@ -284,18 +285,18 @@ void cServiceEnvironment::save_environment(std::string key, std::string value)
       fatal("Failed to write environment file " + mPath);
 }
 
-int cServiceEnvironment::getNumVars() const
+unsigned int cServiceEnvironment::getNumVars() const
 {
    return mElements.size();
 }
 
-void cServiceEnvironment::getVar(const int position, std::string & key, std::string & value) const
+std::string cServiceEnvironment::index2key(unsigned int i) const
 {
-   if (position >= getNumVars())
-      fatal("cServiceEnvironment::getVar - position out of range.");
-   const auto b = dynamic_cast<const sb_string *>(mElements.at(position).get());
-   if (!b) 
-      fatal("Couldn't interpret environment element as string.");
-   key = b->getKey();
-   value = b->get();
+   if (i >= getNumVars()) fatal("Invalid index into cServiceEnvironment.");
+   return mElements[i].getkey();
+}
+
+std::string cServiceEnvironment::get_value(const std::string & key) const
+{ 
+   return getString(key); 
 }

@@ -56,7 +56,7 @@ public:
 
 private:
    void load_docker_compose_yml();
-   void setvecenv(const sb_vec & v) const;
+   //void setvecenv(const sb_vec & v) const;
    void setenv_log(std::string key, std::string val) const;
 
    std::vector<cServiceInfo> mServicesInfo;

@@ -32,8 +32,8 @@ public:
       return writeSettings(getPath());
    }
 
-   const std::vector<std::string> & getDockerVolumeNames()	const { return getVec("DOCKERVOLS"); }
-   const std::string & getImageName() const { return getString("IMAGENAME"); }
+   void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
+   std::string getImageName() const { return getString("IMAGENAME"); }
 
 protected:
    void setDefaults()

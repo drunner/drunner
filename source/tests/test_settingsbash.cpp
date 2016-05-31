@@ -2,27 +2,32 @@
 #include "settingsbash.h"
 #include "utils.h"
 
-TEST_CASE("read/write bool works","[settingsbash]") {
+TEST_CASE("read/write bool works", "[settingsbash]") {
    //params p(kLDEBUG);
    settingsbash sb(true);
-   
+
    SECTION("Test true functions")
    {
-      sb_bool e("bool",true);
-      REQUIRE(e.getBashLine().str()=="bool=yes");
+      //sb_bool e("bool",true);
+      //REQUIRE(e.getBashLine().str()=="bool=yes");
 
-      sb.setBool("bool",true);
+      sb.setBool("bool", true);
       REQUIRE(sb.getBool("bool"));
    }
 
    SECTION("Test false functions")
    {
-      sb_bool e("bool",false);
-      REQUIRE(e.getBashLine().str() == "bool=no");
+      //sb_bool e("bool",false);
+      //REQUIRE(e.getBashLine().str() == "bool=no");
 
-      sb.setBool("bool",false);
+      sb.setBool("bool", false);
       REQUIRE_FALSE(sb.getBool("bool"));
    }
+}
+
+TEST_CASE("basic settings work","[settingsbash]") 
+{
+   settingsbash sb(true);
 
    SECTION("Test bunch'o'Stuff")
    {

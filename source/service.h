@@ -36,9 +36,12 @@ class cServiceEnvironment : protected settingsbash
 {
    public:
       cServiceEnvironment(const servicepaths & paths);
+
       void save_environment(std::string key, std::string value);
-      int getNumVars() const;
-      void getVar(const int position, std::string & key, std::string & value) const;
+      std::string get_value(const std::string & key) const;
+
+      unsigned int getNumVars() const;
+      std::string index2key(unsigned int i) const;
 
 protected:
    std::string mPath;
