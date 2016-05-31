@@ -12,7 +12,6 @@ before_install:
    - sudo apt-get purge -qq lxc-docker
    - sudo apt-get install -qq apparmor
    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -qq docker-engine
-   - sudo service docker start
    - sudo docker run hello-world
    - sudo groupadd docker
    - sudo adduser $USER docker
