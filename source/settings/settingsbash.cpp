@@ -21,56 +21,6 @@ std::string dequote(const std::string & s, char c)
    if (ss[ss.length()-1]==c) ss.erase(ss.length()-1,std::string::npos);
    return ss;
 }
-//
-//bashline sbelement::getBashLine() const
-//{
-//   return bashline("error","error");
-//}
-//
-//
-//sb_vec::sb_vec(const std::string & key ) : sbelement(key) //, const std::vector<std::string> & v)
-//{
-//}
-//
-//sb_vec::sb_vec(const std::string & key , std::vector<std::string> v) : sbelement(key) //, const std::vector<std::string> & v)
-//{
-//   for (uint i=0;i<v.size();++i)
-//      mValue.push_back(v[i]);
-//}
-//
-//bashline sb_vec::getBashLine() const
-//{
-//   std::stringstream ss;
-//   ss << "(";
-//   for (uint i=0;i<mValue.size();++i)
-//   {
-//      if (i>0) ss << " ";
-//      ss << "\"" << mValue[i] << "\"";
-//   }
-//   ss << ")";
-//   return bashline(mKey, ss.str());
-//}
-//sb_vec::sb_vec(const bashline & b) : sbelement(b.getkey())
-//{
-//   std::string astr=b.getvalue();
-//   astr=dequote(dequote(astr,'('),')');
-//   std::stringstream ss(astr);
-//   while (ss.good())
-//      {
-//         ss >> astr;
-//         utils::trim(astr);
-//         std::string element=dequote(astr,'\"');
-//         if (element.length()>0)
-//            mValue.push_back(element);
-//      }
-//}
-//
-//sb_bool::sb_bool(const bashline & b) : sbelement(b.getkey()), mValue(istrue(b.getvalue()))
-//{
-//}
-//sb_bool::sb_bool(const std::string & key , bool b) : sbelement(key),mValue(b)
-//{
-//}
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -96,22 +46,6 @@ void bashline::setkeyvalue(const std::string &k, const std::string & v)
    key = k;
    value = v;
 }
-
-//
-//std::shared_ptr<sbelement> bashline::getElement()
-//{
-//   // sniff type.
-//   if (utils::stringisame(value,"yes") ||
-//      utils::stringisame(value,"no") ||
-//      utils::stringisame(value,"true") ||
-//      utils::stringisame(value,"false") )
-//      return std::make_shared<sb_bool>( sb_bool(*this) );
-//
-//   if (value.length()>0 && value[0]=='(')
-//      return std::make_shared<sb_vec>( sb_vec(*this) );
-//
-//   return std::make_shared<sb_string>( sb_string(*this) );
-//}
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -251,39 +185,6 @@ bashline settingsbash::getElement(const std::string & key) const
    fatal("Couldn't find key "+key);
    return bashline();
 }
-
-//
-//const std::vector<std::string> & settingsbash::getVec(const std::string &  key) const
-//{
-//   const auto b = dynamic_cast<const sb_vec *>(getElement(key).get());
-//   if (!b) fatal("Couldn't interpret "+key+" as string array.");
-//   return b->get();
-//}
-//bool settingsbash::getBool(const std::string &  key) const
-//{
-//   const auto b = dynamic_cast<const sb_bool *>(getElement(key).get());
-//   if (!b) fatal("Couldn't interpret "+key+" as string array.");
-//   return b->get();
-//}
-//const std::string & settingsbash::getString(const std::string &  key) const
-//{
-//   const auto b = dynamic_cast<const sb_string *>(getElement(key).get());
-//   if (!b) fatal("Couldn't interpret "+key+" as string.");
-//   return b->get();
-//}
-//
-//void settingsbash::setBool(const std::string & key, bool b)
-//{
-//	setSetting(std::make_shared<sb_bool>(sb_bool(key, b)), true);
-//}
-//void settingsbash::setString(const std::string & key, const std::string & s )
-//{
-//	setSetting(std::make_shared<sb_string>(sb_string(key, s)), true);
-//}
-//void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
-//{
-//	setSetting(std::make_shared<sb_vec>(sb_vec(key, v)), true);
-//}
 
 //-------------------------------------------------------------------------------------------------
 
