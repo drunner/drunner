@@ -12,10 +12,7 @@ before_install:
    - sudo apt-get purge -qq lxc-docker
    - sudo apt-get install -qq apparmor
    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -qq docker-engine
-   - sudo docker run hello-world
-   - sudo groupadd docker
-   - sudo adduser $USER docker
-   - newgrp docker && newgrp
+   - docker run hello-world
    - wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
    - sudo mv docker-compose* /usr/local/bin/docker-compose
 script: 
