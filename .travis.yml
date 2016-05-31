@@ -11,4 +11,6 @@ script:
    - make
    - make install
    - drunner unittest
+   - drunner install drunner/dtest
+   - dtest test
    
