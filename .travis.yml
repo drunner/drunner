@@ -1,7 +1,14 @@
 language: cpp
 sudo: required
+services:
+  - docker
 dist: trusty
 before_install:
    - sudo apt-get -qq update
    - sudo apt-get install -qq build-essential g++-multilib libboost-all-dev libyaml-cpp-dev
-script: make
+
+script: 
+   - make
+   - make install
+   - drunner unittest
+   
