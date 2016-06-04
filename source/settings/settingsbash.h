@@ -55,20 +55,4 @@ private:
    bool istrue(const std::string & s) const;
 };
 
-
-class settingsbash_reader : protected settingsbash
-{
-public:
-   settingsbash_reader(std::string settingspath);
-   const std::string & getPath() const;
-   bool readOkay() const;
-
-protected:
-   bool read();
-
-private:
-   const std::string mPath;
-   bool mReadOkay;
-};
-
 #endif

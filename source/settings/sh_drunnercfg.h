@@ -6,12 +6,11 @@
 #include "settingsbash.h"
 #include "params.h"
 
-class sh_drunnercfg : public settingsbash_reader
+class sh_drunnercfg : public settingsbash
 {
 public:
-   sh_drunnercfg(const std::string & rootpath); // sets defaults and reads the file if present.
-
-   bool write();
+   sh_drunnercfg(const std::string & rootpath); // sets defaults
+   bool readSettings(std::string settingspath);
 
    std::string getPath_Root()         const { return getString("ROOTPATH"); }
    std::string getPath_dServices()    const { return getPath_Root() + "/dServices"; }
@@ -24,8 +23,10 @@ public:
    std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME");  }
    bool getPullImages() const               { return getBool("PULLIMAGES"); }
 
-protected:
-   void setDefaults(const std::string & rootpath);
+   std::string getPath() { return getPath_Root() + "/drunnercfg.sh"; }
+
+   bool readSettings();
+   bool writeSettings();
 };
 
 #endif

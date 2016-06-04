@@ -9,43 +9,19 @@
 #include "settingsbash.h"
 #include "drunnercompose.h"
 
-class sh_backupvars : public settingsbash_reader
+class sh_backupvars : public settingsbash
 {
 public:
 
    // reading ctor
-   sh_backupvars(std::string parentpath) // sets defaults and reads the file if present.
-      : settingsbash_reader(parentpath+"/backupvars.sh")
+   sh_backupvars() // sets defaults
+      : settingsbash(false)
    {
       setDefaults();
-      read();
    }
 
    // creates from drunnerCompose.
    bool createFromdrunnerCompose(const drunnerCompose & drc)
-   {
-      return populate(drc);
-   }
-
-   bool write() const
-   {
-      return writeSettings(getPath());
-   }
-
-   void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
-   std::string getImageName() const { return getString("IMAGENAME"); }
-
-protected:
-   void setDefaults()
-   {
-      std::vector<std::string> nothing;
-      setString("IMAGENAME", "not set");
-      setVec("DOCKERVOLS", nothing);
-   }
-
-private:
-
-   bool populate(const drunnerCompose & drc)
    {
       tVecStr dockervols;
       drc.getDockerVolumeNames(dockervols);
@@ -59,7 +35,17 @@ private:
       return true;
    }
 
+   void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
+   std::string getImageName() const { return getString("IMAGENAME"); }
+   std::string getPath(std::string parentpath) { return parentpath + "/backupvars.sh"; }
 
+protected:
+   void setDefaults()
+   {
+      std::vector<std::string> nothing;
+      setString("IMAGENAME", "not set");
+      setVec("DOCKERVOLS", nothing);
+   }
 };
 
 #endif
