@@ -23,7 +23,7 @@ public:
    }
 
    std::string getImageName() const { return getString("IMAGENAME"); }
-   std::string getPath(std::string servicepath) { return servicepath + "/servicevars.sh"; }
+   std::string getPathFromParent(std::string servicepath) { return servicepath + "/servicevars.sh"; }
 
 }; // sh_servicevars
 

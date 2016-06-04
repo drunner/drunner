@@ -31,7 +31,7 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
       if (imagename.length() == 0)
       { // if imagename override not provided and variables.sh exists then load it from variables.sh
          sh_servicevars shv;
-         if (!shv.readSettings( shv.getPath(v) ))
+         if (!shv.readSettings( shv.getPathFromParent(v) ))
          {
             ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v, prms);
             ::logmsg(kLWARN, "Service old/broken. Recover with:", prms);

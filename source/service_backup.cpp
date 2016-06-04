@@ -26,7 +26,7 @@ void service::backup(const std::string & backupfile)
    // write out variables that we need to decompress everything.
    sh_backupvars shb;
    shb.createFromdrunnerCompose(drunnerCompose(*this, mParams));
-   shb.writeSettings(shb.getPath(tempparent.getpath()));
+   shb.writeSettings(shb.getPathFromParent(tempparent.getpath()));
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    std::string tempf = tempparent.getpath() + "/drbackup";
@@ -108,7 +108,7 @@ cResult service_restore(const params & prms, const sh_drunnercfg & settings, con
 
    // read in old variables, just need imagename and olddockervols from them.
    sh_backupvars shb;
-   if (!shb.readSettings(shb.getPath(tempparent.getpath())))
+   if (!shb.readSettings(shb.getPathFromParent(tempparent.getpath())))
       logmsg(kLERROR, "Backup corrupt - backupvars.sh missing.", prms);
 
    if (!utils::fileexists(tempc))

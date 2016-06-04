@@ -138,7 +138,7 @@ void service::recreate(bool updating)
       // write out servicevars.sh for ourselves.
       sh_servicevars svcvars;
       svcvars.create(getImageName());
-      if (!svcvars.writeSettings(svcvars.getPath(getPath())))
+      if (!svcvars.writeSettings(svcvars.getPathFromParent(getPath())))
          fatal("Unexpected error - couldn't write out servicevars.sh.");
 
       // make sure we have the latest of all exra containers.

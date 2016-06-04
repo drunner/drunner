@@ -37,7 +37,7 @@ public:
 
    void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
    std::string getImageName() const { return getString("IMAGENAME"); }
-   std::string getPath(std::string parentpath) { return parentpath + "/backupvars.sh"; }
+   std::string getPathFromParent(std::string parentpath) { return parentpath + "/backupvars.sh"; }
 
 protected:
    void setDefaults()

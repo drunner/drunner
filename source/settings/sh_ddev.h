@@ -32,7 +32,7 @@
          return isdService;
       }
 
-      std::string getPath(std::string parent) 
+      std::string getPathFromParent(std::string parent) 
       { 
          return parent + "/ddev.sh"; 
       }
