@@ -25,7 +25,7 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // Update settings on disk.
       if (!settings.writeSettings())
-            logmsg(kLERROR, "Couldn't write settings file!");
+         logmsg(kLERROR, "Couldn't write settings file!");
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
