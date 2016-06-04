@@ -136,9 +136,9 @@ void service::recreate(bool updating)
          fatal("Unexpected error - docker-compose.yml is broken.");
       
       // write out servicevars.sh for ourselves.
-      sh_servicevars svcvars(getPath());
+      sh_servicevars svcvars;
       svcvars.create(getImageName());
-      if (!svcvars.write())
+      if (!svcvars.writeSettings(svcvars.getPathFromParent(getPath())))
          fatal("Unexpected error - couldn't write out servicevars.sh.");
 
       // make sure we have the latest of all exra containers.

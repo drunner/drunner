@@ -27,8 +27,9 @@ using namespace utils;
       if (!fileexists(dfile)) logmsg(kLERROR,"No Dockerfile in "+pwd+", it's not a valid dService.",p);
 
       // read in service settings.
-      sh_ddev dd(p,pwd);
-      if (!dd.isdService) logmsg(kLERROR,"No dService found at "+pwd,p);
+      sh_ddev dd;
+      if (!dd.readSettings(dd.getPathFromParent(pwd)))
+         logmsg(kLERROR,"No dService found at "+pwd,p);
 
       std::string baseimagename=dd.buildname;
       std::string branchedimagename=dd.buildname;

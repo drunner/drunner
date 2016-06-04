@@ -188,23 +188,3 @@ bashline settingsbash::getElement(const std::string & key) const
 
 //-------------------------------------------------------------------------------------------------
 
-settingsbash_reader::settingsbash_reader(std::string settingspath) :
-   settingsbash(false), mPath(settingspath), mReadOkay(false)
-{
-}
-bool settingsbash_reader::read()
-{
-   mReadOkay = false;
-   if (mPath.length()>0)
-      mReadOkay = readSettings(mPath);
-   return mReadOkay;
-}
-const std::string & settingsbash_reader::getPath() const 
-{ 
-   return mPath; 
-}
-bool settingsbash_reader::readOkay() const
-{ 
-   return mReadOkay; 
-}
-
