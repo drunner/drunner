@@ -30,8 +30,8 @@ std::string service::loadImageName(const params & prms, const sh_drunnercfg & se
    {
       if (imagename.length() == 0)
       { // if imagename override not provided and variables.sh exists then load it from variables.sh
-         sh_servicevars shv(v);
-         if (!shv.readOkay())
+         sh_servicevars shv;
+         if (!shv.readSettings( shv.getPath(v) ))
          {
             ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v, prms);
             ::logmsg(kLWARN, "Service old/broken. Recover with:", prms);
@@ -118,8 +118,8 @@ bool service::isValid() const
       logmsg(kLDEBUG, "docker-compose.yml is broken for service "+getName());
       return false;
    }
-   sh_servicevars shv(getPath());
-   if (!shv.readOkay())
+   sh_servicevars shv;
+   if (!shv.readSettings(getPath()))
    {
       logmsg(kLDEBUG, "Couldn't read servicevars.sh from service " + getName());
       return false;
