@@ -119,6 +119,7 @@
     <ClCompile Include="$(SolutionDir)\..\source\command_setup.cpp" />
     <ClCompile Include="$(SolutionDir)\..\source\generators\generate.cpp" />
     <ClCompile Include="..\..\source\dservicelogger.cpp" />
+    <ClCompile Include="..\..\source\exceptions.cpp" />
     <ClCompile Include="..\..\source\globalcontext.cpp" />
     <ClCompile Include="..\..\source\globallogger.cpp" />
     <ClCompile Include="$(SolutionDir)\..\source\main.cpp" />
