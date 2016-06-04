@@ -87,7 +87,7 @@ void service::backup(const std::string & backupfile)
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
-   logmsg(kLINFO, "Time to collate everything:       " + tstep.getelpased());
+   logmsg(kLINFO, "Time to compress and encrypt:     " + tstep.getelpased());
    tstep.restart();
 
    // move compressed file to target dir.
