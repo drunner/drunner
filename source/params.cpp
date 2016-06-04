@@ -52,7 +52,7 @@ eCommand params::parsecmd(std::string s) const
 
    auto it=commandlist.find(s);
    if (it==commandlist.end())
-      showhelp(*this,"Unknown command \"" + s + "\".");
+      showhelp("Unknown command \"" + s + "\".");
    return it->second;
 }
 
@@ -67,12 +67,6 @@ void params::setdefaults()
    mCmd = c_UNDEFINED;
 
    mDevelopmentMode = false;
-}
-
-params::params(eLogLevel ll)
-{
-   setdefaults();
-   mLogLevel=ll;
 }
 
 // Parse command line parameters.
@@ -149,7 +143,7 @@ while (1)
             break;
 
          default:
-            showhelp(*this,"Unrecognised option."); //" -" + std::string(1,c));
+            showhelp("Unrecognised option."); //" -" + std::string(1,c));
       }
    }
 
@@ -160,13 +154,12 @@ while (1)
    if (utils::isInstalled())
    {
       if (opx>=argc) // drunner with no command.
-         showhelp( *this, "Please enter a command.");
+         showhelp("Please enter a command.");
       mCmd=parsecmd(argv[opx++]);
    } else {
       // NOT installed.
       if (opx>=argc)
-         showhelp( *this, R"EOF(Not yet installed.
-Please provide the ROOTPATH to install to.)EOF");
+         showhelp("Not yet installed.\nPlease provide the ROOTPATH to install to.");
       mCmd=c_setup;
    }
 

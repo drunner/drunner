@@ -15,7 +15,7 @@ namespace utils_docker
          return;
       }
 
-      if (!s.getPullImages())
+      if (!GlobalContext::getSettings()->getPullImages())
       {
          logmsg(kLDEBUG, "Pulling images disabled in global options.");
          return;

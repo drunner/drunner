@@ -17,7 +17,7 @@ sh_drunnercfg::sh_drunnercfg(const std::string & rootpath) :
    readSettings();
 }
 
-bool sh_drunnercfg::readSettings() const
+bool sh_drunnercfg::readSettings()
 {
    mReadOkay = settingsbash::readSettings(getPath_drunnercfg_sh());
    if (!mReadOkay)

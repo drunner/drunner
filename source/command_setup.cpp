@@ -20,7 +20,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      utils::makedirectory(settings.getPath_Root(), p, S_755);
+      utils::makedirectory(settings.getPath_Root(), S_755);
 
       // -----------------------------------------------------------------------------
       // Update settings on disk.
@@ -36,11 +36,11 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create bin directory
       std::string bindir = utils::get_usersbindir();
-      utils::makedirectory(bindir, p, S_700);
+      utils::makedirectory(bindir, S_700);
 
       // -----------------------------------------------------------------------------
       // create symlink
-      utils::makesymlink(settings.getPath_Root() + "/drunner", bindir + "/drunner", p);
+      utils::makesymlink(settings.getPath_Root() + "/drunner", bindir + "/drunner");
 
       // sort out docker-compose - now expected to be present.
       //InstallDockerCompose(p);
@@ -51,13 +51,13 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create services, support and temp directories
-      utils::makedirectory(settings.getPath_dServices(), p, S_755);
-      utils::makedirectory(settings.getPath_Support(), p, S_755);
-      utils::makedirectory(settings.getPath_Temp(), p, S_755);
-      utils::makedirectory(settings.getPath_HostVolumes(), p, S_755);
+      utils::makedirectory(settings.getPath_dServices(), S_755);
+      utils::makedirectory(settings.getPath_Support(), S_755);
+      utils::makedirectory(settings.getPath_Temp(), S_755);
+      utils::makedirectory(settings.getPath_HostVolumes(), S_755);
 
       // create the validator script that is run inside containers
-      generate_validator_image(settings.getPath_Support(), p);
+      generate_validator_image(settings.getPath_Support());
 
       // -----------------------------------------------------------------------------
       // Finished!
@@ -77,7 +77,7 @@ namespace command_setup
       logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root());
 
       std::string url(s.getdrunnerInstallURL()), trgt(s.getPath_Root() + "/drunner-install");
-      utils::downloadexe(url, trgt, p);
+      utils::downloadexe(url, trgt);
 
       logmsg(kLINFO, "Updating...");
 

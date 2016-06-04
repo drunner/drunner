@@ -80,5 +80,11 @@ void logmsg(eLogLevel level, std::string s)
    logverbatim(level,info+s2+"\n");
 }
 
+
+void fatal(std::string s)
+{
+   logmsg(kLERROR, s);
+}
+
 // ----------------------------------------------------------------------------------------------------
 

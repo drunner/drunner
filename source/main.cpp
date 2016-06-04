@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
       GlobalContext::init(argc, argv);
 
-      logmsg(kLDEBUG,"dRunner C++, version "+p.getVersion());
+      logmsg(kLDEBUG,"dRunner C++, version "+GlobalContext::getParams()->getVersion());
       bool canRunDocker=utils::canrundocker(getUSER());
       logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath());
 
@@ -78,23 +78,25 @@ void mainroutines::check_basics()
 
 int mainroutines::process()
 {
+   const params & p(*GlobalContext::getParams());
+
    // handle setup specially.
-   if (GlobalContext::getParams()->getCommand()==c_setup)
+   if (p.getCommand()==c_setup)
    {
-      int rval=command_setup::setup(p);
+      int rval=command_setup::setup();
       if (rval!=0) throw eExit("Setup failed.",rval);
       return 0;
    }
 
    // allow unit tests to be run directly from installer.
-   if (GlobalContext::getParams()->getCommand().getCommand()==c_unittest)
+   if (p.getCommand()==c_unittest)
    {
       // todo: pass args through to catch.
       // int result = Catch::Session().run( argc, argv );
       int result = UnitTest();
       if (result!=0)
-         logmsg(kLERROR,"Unit tests failed.",p);
-      logmsg(kLINFO,"All unit tests passed.",p);
+         logmsg(kLERROR,"Unit tests failed.");
+      logmsg(kLINFO,"All unit tests passed.");
       return 0;
    }
 
@@ -106,27 +108,27 @@ int mainroutines::process()
 
    // ----------------
    // command handling
-   switch (GlobalContext::getParams()->getCommand())
+   switch (p.getCommand())
    {
       case c_clean:
       {
-         command_general::clean(p,settings);
+         command_general::clean();
          break;
       }
 
       case c_list:
       {
-         command_general::showservices(p,settings);
+         command_general::showservices();
          break;
       }
 
       case c_update:
       {
          if (p.numArgs()<1)
-            command_setup::update(p, settings); // defined in command_setup
+            command_setup::update(); // defined in command_setup
          else
          { // first argument is service name.
-            service s(p, settings, p.getArg(0));
+            service s(p.getArg(0));
             s.update();
          }
          break;
@@ -135,16 +137,16 @@ int mainroutines::process()
       case c_checkimage:
       {
          if (p.numArgs()<1)
-            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME",p);
+            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
          
-         validateImage(p, settings, p.getArg(0));
+         validateImage(p.getArg(0));
          break;
       }
 
       case c_install:
       {
          if (p.numArgs()<1 || p.numArgs()>2)
-            logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]",p);
+            logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
          std::string imagename = p.getArg(0);
          std::string servicename;
          if ( p.numArgs()==2)
@@ -159,7 +161,7 @@ int mainroutines::process()
                servicename.erase(found);
          }
 
-         service svc(p, settings, servicename, imagename);
+         service svc(servicename, imagename);
          svc.install();
          break;
       }
@@ -167,16 +169,16 @@ int mainroutines::process()
       case c_restore:
       {
          if (p.numArgs() < 2)
-            logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME", p);
+            logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME");
 
-         return service_restore(p, settings, p.getArg(1), p.getArg(0));
+         return service_restore(p.getArg(1), p.getArg(0));
       }
 
       case c_backup:
       {
          if (p.numArgs() < 2)
-            logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE", p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE");
+         service svc(p.getArg(0));
          svc.backup(p.getArg(1));
          break;
       }
@@ -184,8 +186,8 @@ int mainroutines::process()
       case c_enter:
       {
          if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner enter SERVICENAME", p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: drunner enter SERVICENAME");
+         service svc(p.getArg(0));
          svc.enter();
          break;
       }
@@ -193,20 +195,20 @@ int mainroutines::process()
       case c_build:
       {
          if (p.numArgs()<1)
-            command_dev::build(p,settings);
+            command_dev::build();
          else
-            command_dev::build(p,settings,p.getArg(0));
+            command_dev::build(p.getArg(0));
          break;
       }
 
       case c_servicecmd:
       {
          if (p.numArgs() < 1)
-            logmsg(kLERROR, "servicecmd should not be invoked manually.", p);
+            logmsg(kLERROR, "servicecmd should not be invoked manually.");
 
-         service svc(p, settings, p.getArg(0));
+         service svc(p.getArg(0));
          if (!svc.isValid())
-            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
+            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.");
 
          return svc.servicecmd();
       }
@@ -214,22 +216,22 @@ int mainroutines::process()
       case c_status:
       {
          if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner status SERVICENAME", p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: drunner status SERVICENAME");
+         service svc(p.getArg(0));
          return svc.status();
       }
 
       case c_recover:
       {
          if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]", p);
+            logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]");
          std::string servicename = p.getArg(0);
          std::string imagename;
          if (p.numArgs() < 2)
          { // see if we can read the imagename from the damaged service.
-            service svc1(p, settings, servicename);
+            service svc1(servicename);
             if (!utils::fileexists(svc1.getPath()))
-               logmsg(kLERROR, "That service is not installed. Try installing, which will preserve any data volumes.",p);
+               logmsg(kLERROR, "That service is not installed. Try installing, which will preserve any data volumes.");
 
             imagename = svc1.getImageName();
             if (imagename.length() == 0)
@@ -238,37 +240,37 @@ int mainroutines::process()
          else
             imagename = p.getArg(1);
 
-         logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename, p);
-         service svc(p, settings, servicename, imagename);
+         logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename);
+         service svc(servicename, imagename);
          return (int)svc.recover();
       }
 
       case c_uninstall:
       {
          if (p.numArgs()<1)
-            logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME", p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME");
+         service svc(p.getArg(0));
          return (int)svc.uninstall();
       }
 
       case c_obliterate:
       {
          if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME", p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME");
+         service svc(p.getArg(0));
          return (int)svc.obliterate();
       }
 
       case c_saveenvironment:
       {
          if (p.numArgs() < 3)
-            logmsg(kLERROR, "Usage: drunner __save-environment SERVICENAME KEY VALUE",p);
-         service svc(p, settings, p.getArg(0));
+            logmsg(kLERROR, "Usage: drunner __save-environment SERVICENAME KEY VALUE");
+         service svc(p.getArg(0));
          if (!svc.isValid())
-            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.", p);
+            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.");
 
          svc.getEnvironment().save_environment(p.getArg(1), p.getArg(2));
-         logmsg(kLDEBUG, "Save environment variable " + p.getArg(1) + "=" + p.getArg(2),p);
+         logmsg(kLDEBUG, "Save environment variable " + p.getArg(1) + "=" + p.getArg(2));
          return kRSuccess;
       }
 
@@ -279,7 +281,7 @@ int mainroutines::process()
           /-------------------------------------------------------------\
           |   That command has not been implemented and I am sad. :,(   |
           \-------------------------------------------------------------/
-)EOF",p);
+)EOF");
             return 1;
       }
    }

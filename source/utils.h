@@ -5,8 +5,7 @@
 #include <string>
 #include <sys/stat.h>
 
-#include "params.h"
-#include "sh_drunnercfg.h"
+#include "enums.h"
 
 typedef std::vector<std::string> tVecStr;
 
@@ -20,10 +19,10 @@ namespace utils
    std::string getcanonicalpath(std::string path);
 
    eResult mkdirp(std::string path);
-   void makedirectory(const std::string & d, const params & p, mode_t mode);
-   void makesymlink(const std::string & file, const std::string & link, const params & p);
-   void deltree(const std::string & s,const params & p);
-   void delfile(const std::string & fullpath, const params & p);
+   void makedirectory(const std::string & d, mode_t mode);
+   void makesymlink(const std::string & file, const std::string & link);
+   void deltree(const std::string & s);
+   void delfile(const std::string & fullpath);
 
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
@@ -71,14 +70,14 @@ namespace utils
 
    bool copyfile(std::string src, std::string dest);
 
-   void downloadexe(std::string url, std::string filepath, const params &p);
+   void downloadexe(std::string url, std::string filepath);
 
    std::string alphanumericfilter(std::string s, bool whitespace);
    
    class tempfolder
    {
    public:
-      tempfolder(std::string d, const params & p);
+      tempfolder(std::string d);
       ~tempfolder();
       const std::string & getpath();
       
@@ -86,7 +85,6 @@ namespace utils
       void die(std::string msg);
       void tidy();
       std::string mPath;
-      const params & mP;
    };
 
    class dockerrun
@@ -99,7 +97,6 @@ namespace utils
       void tidy();
 
       std::string mDockerName;
-      const params & mP;
    };
 
 } // namespace

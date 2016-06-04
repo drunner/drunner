@@ -22,9 +22,9 @@ public:
    std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME");  }
    bool getPullImages() const               { return getBool("PULLIMAGES"); }
 
-   std::string getPath_drunnercfg_sh() { return getPath_Root() + "/drunnercfg.sh"; }
+   std::string getPath_drunnercfg_sh() const { return getPath_Root() + "/drunnercfg.sh"; }
 
-   bool readSettings() const;
+   bool readSettings();
    bool writeSettings() const;
 
    mutable bool mReadOkay;

@@ -6,7 +6,10 @@
 #include "globalcontext.h"
 
 void showhelp(std::string cMsg) {
-   logmsg(kLINFO,GlobalContext::getParams()->substitute(R"EOF(
+
+   const params & p(*GlobalContext::getParams());
+
+   logmsg(kLINFO,p.substitute(R"EOF(
 NAME
    ${EXENAME}
 
@@ -16,10 +19,13 @@ VERSION
 DESCRIPTION
    Provides a standard way to manage and run docker services.
    See http://drunner.io
-)EOF"), p);
+)EOF"));
+
+
 
    if (utils::isInstalled())
-      logmsg(kLINFO,p.substitute(R"EOF(
+   {
+      logmsg(kLINFO, p.substitute(R"EOF(
 SYNOPSIS
    ${EXENAME} [OPTION] [COMMAND] [ARGS]...
 
@@ -56,8 +62,10 @@ EXIT CODE
    1   - error
    3   - no changes made
 )EOF"));
+   }
    else
-      logmsg(kLINFO,p.substitute(R"EOF(
+   {
+      logmsg(kLINFO, p.substitute(R"EOF(
 SYNOPSIS
    Install drunner with services to be stored under ROOTPATH:
    ${EXENAME} [OPTION] ROOTPATH
@@ -66,6 +74,7 @@ OPTIONS
    -v    verbose
    -s    silent
 )EOF"));
+   }
 
    logmsg(kLERROR, cMsg);
 }

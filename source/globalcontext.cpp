@@ -2,6 +2,9 @@
 #include "globallogger.h"
 #include "utils.h"
 
+std::shared_ptr<const params> GlobalContext::s_params = 0;
+std::shared_ptr<const sh_drunnercfg> GlobalContext::s_settings = 0;
+
 void GlobalContext::init(int argc, char **argv)
 {
    // parse the command line parameters.

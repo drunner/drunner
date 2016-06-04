@@ -21,7 +21,6 @@ public:
    static void init(int argc, char **argv);
    GlobalContext();
 
-private:
    static std::shared_ptr<const params> s_params;
    static std::shared_ptr<const sh_drunnercfg> s_settings;
 };
