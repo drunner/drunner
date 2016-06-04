@@ -1,14 +1,10 @@
-#ifndef __LOGSTATEMENT_H
-#define __LOGSTATEMENT_H
+#ifndef __DSERVICELOGGER_H
+#define __DSERVICELOGGER_H
 
 #include "enums.h"
 #include "params.h"
 #include <string>
 
-void logmsg(eLogLevel level, std::string s, const params & p);
-void logverbatim(eLogLevel level, std::string s, const params & p);
-
-std::string getheader();
 
 enum eStage
 {
@@ -29,7 +25,7 @@ public:
 class dServiceLogger
 {
 public:
-   dServiceLogger(bool cerr, const params & p, bool isServiceCmd);
+   dServiceLogger(bool cerr, bool isServiceCmd);
    void log(const char * const buf, int n);
 
 private:
@@ -41,11 +37,9 @@ private:
    edServiceOutput mOutputMode;
 
    bool mCErr;
-   const params & mP;
    bool mInitialised;
    escapefilter mEscapeFilter;
 };
 
-void fatal(std::string s);
 
 #endif
