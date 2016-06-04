@@ -2,12 +2,12 @@
 
 ## Status
 
-In active development, generally working. Supports both version 1 and version 2 dServices.
+In light production use, no known major issues.
 
 ## Overview
 
 dRunner is a stand-alone executable and a set of conventions to make it easy to make, install,
-configure and use compatible Docker containers ("dServices") on a Debian Jessie host via the
+configure and use compatible Docker containers ("dServices") on a Debian or Ubuntu host via the
 command line interface.
 
 dRunner eliminates the need to manually store and manage scripts to use the Docker containers,
@@ -16,17 +16,17 @@ services that consist of multiple Docker containers.
 
 ## Features
 
-* dRunner compatible Docker Images are self contained - everything dRunner needs is inside
-* Simple discoverable commands for using compatible services (no manual needed)
-* Flexible configuration for each service, stored in Docker Volume containers that are managed for you
-* Services can consist of any number of containers
-* Backup an entire service to a single file, trivially restore on another machine
-* Destroying a service leaves the machine in a clean state, no cruft left
-* Everything in containers is run as a non-root user, drunner on host runs as non-root
-* Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers)
+* dRunner compatible Docker Images (dServices) are self contained - everything dRunner needs is inside.
+* Simple discoverable commands make it easy to use dServices (no manual needed).
+* Flexible configuration for each dService, stored in Docker Volume containers that are managed for you.
+* Backup an entire dService to a single encrypted file, trivially restore on another machine.
+* Destroying a service leaves the machine in a clean state, no cruft left.
+* Everything in containers is run as a non-root user, drunner on the host also runs as non-root.
+* Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
 * Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
-* Tools to build dServices and test them.
+* Supports Docker Compose files for describing a dService's containers and basic settings.
+* Some useful tools to build dServices and test them.
 
 
 ## Install notes
