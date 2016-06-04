@@ -3,7 +3,7 @@ CC=gcc
 #CXX=g++
 CXX=deps/colorgcc/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/settings -Isource/generators -Isource/tests -Ideps/catch
+INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch
 
 BOOSTSTATIC=-static -pthread
 CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
