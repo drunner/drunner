@@ -2,7 +2,7 @@
 #define __COMMAND_SETUP_H
 
 #include "params.h"
-#include "settings/sh_drunnercfg.h"
+#include "sh_drunnercfg.h"
 
 namespace command_setup
 {

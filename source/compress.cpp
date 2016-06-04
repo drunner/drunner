@@ -37,8 +37,11 @@ namespace compress
    // --------------------------------------
 
    bool _compress(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename, bool fast)
    {
+      std::string faststr;
+      if (fast) faststr = "_fast";
+
       if (!utils::fileexists(archivefolder))
          fatal("Can't archive to non-existant folder " + archivefolder);
 
@@ -46,7 +49,7 @@ namespace compress
          fatal("Can't compress to already existing " + archivename);
 
       _rundocker(volumename, archivefolder, password,
-         "/usr/local/bin/dr_compress " + archivename + " && chmod 0666 /dst/" + archivename );
+         "/usr/local/bin/dr_compress"+faststr+" " + archivename + " && chmod 0666 /dst/" + archivename );
 
       return true;
    }
@@ -54,13 +57,16 @@ namespace compress
    // --------------------------------------
 
    bool _decompress(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename, bool fast)
    {
+      std::string faststr;
+      if (fast) faststr = "_fast";
+
       if (!utils::fileexists(archivefolder) || !utils::fileexists(archivefolder + archivename))
          fatal("Can't decompress missing archive " + archivefolder + archivename);
 
       _rundocker(archivefolder, volumename, password,
-         "/usr/local/bin/dr_decompress "+archivename );
+         "/usr/local/bin/dr_decompress"+ faststr +" "+archivename );
 
       return true;
    }
@@ -69,48 +75,48 @@ namespace compress
 
 
    bool compress_volume(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename,bool fast)
    {
       if (!utils::dockerVolExists(volumename))
          fatal("Can't compress non-existant volume " + volumename);
 
-      return _compress(password, volumename, archivefolder+"/", archivename);
+      return _compress(password, volumename, archivefolder+"/", archivename,fast);
    }
 
    // --------------------------------------
 
    bool compress_folder(std::string password, std::string foldername,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename,bool fast)
    {
       if (!utils::fileexists(foldername))
          fatal("Can't archive non-existant folder " + foldername);
       std::string ap = utils::getcanonicalpath(foldername);
 
-      return _compress(password, ap + "/", archivefolder + "/", archivename);
+      return _compress(password, ap + "/", archivefolder + "/", archivename,fast);
    }
 
    // --------------------------------------
 
    bool decompress_volume(std::string password, std::string targetvolumename,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename, bool fast)
    {
       if (!utils::dockerVolExists(targetvolumename))
          fatal("Can't restore into volume " + targetvolumename + " because it doesn't exist.");
 
-      return _decompress(password, targetvolumename, archivefolder + "/", archivename);
+      return _decompress(password, targetvolumename, archivefolder + "/", archivename,fast);
    }
 
 
    // --------------------------------------
 
    bool decompress_folder(std::string password, std::string targetfoldername,
-      std::string archivefolder, std::string archivename)
+      std::string archivefolder, std::string archivename, bool fast)
    {
       if (!utils::fileexists(targetfoldername))
          fatal("Can't archive to non-existant folder " + targetfoldername);
       std::string ap = utils::getcanonicalpath(targetfoldername);
 
-      return _decompress(password, ap + "/", archivefolder + "/", archivename);
+      return _decompress(password, ap + "/", archivefolder + "/", archivename,fast);
    }
 
 
