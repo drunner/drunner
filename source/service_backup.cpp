@@ -83,7 +83,7 @@ void service::backup(const std::string & backupfile)
 
    // compress everything together
    boost::filesystem::path fullpath(bf);
-   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar",true);
+   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.enc",false);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
@@ -91,7 +91,7 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // move compressed file to target dir.
-   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar");
+   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar.enc");
    std::string dest = fullpath.string();
    if (!utils::fileexists(source))
       logmsg(kLERROR, "Expected archive not found at " + source);
@@ -125,11 +125,11 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    std::string tempc = tempparent.getpath() + "/containerbackup";
 
    // decompress main backup
-   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar"))
+   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar.enc"))
       logmsg(kLERROR, "Couldn't copy archive to temp folder.");
 
    std::string password = utils::getenv("PASS");
-   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar",true);
+   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.enc",false);
 
    // read in old variables, just need imagename and olddockervols from them.
    sh_backupvars shb;
