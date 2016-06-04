@@ -26,7 +26,8 @@ enum eLogLevel
    kLDEBUG=0,
    kLINFO=1,
    kLWARN=2,
-   kLERROR=3
+   kLERROR=3,
+   kLFATAL=4
 };
 
 enum edServiceOutput

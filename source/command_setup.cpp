@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "utils_docker.h"
 #include "sh_drunnercfg.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "generate_validator_image.h"
 #include "drunnercompose.h"
 
@@ -15,13 +15,13 @@ namespace command_setup
    int setup(const params & p)
    {
       if (p.getArgs().size() < 1)
-         logmsg(kLERROR, "Usage:\n   drunner setup ROOTPATH", p);
+         logmsg(kLERROR, "Usage:\n   drunner setup ROOTPATH");
 
       // -----------------------------------------------------------------------------
       // determine rootpath.
       std::string rootpath = utils::getabsolutepath(p.getArgs()[0]);
       if (rootpath.length() == 0)
-         logmsg(kLERROR, "Couldn't determine path for " + p.getArgs()[0], p);
+         logmsg(kLERROR, "Couldn't determine path for " + p.getArgs()[0]);
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
@@ -37,13 +37,13 @@ namespace command_setup
       bool readOkay = settings.readSettings(); // try reading existing settings
       if (!readOkay) 
          if (!settings.writeSettings()) // if we fail, then write default settings
-            logmsg(kLERROR, "Couldn't write settings file!", p);
+            logmsg(kLERROR, "Couldn't write settings file!");
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
       if (!utils::copyfile(utils::get_exefullpath(), rootpath + "/drunner"))
-         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + rootpath + ".", p);
+         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + rootpath + ".");
 
       // -----------------------------------------------------------------------------
       // create bin directory
@@ -52,7 +52,7 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create symlink
-      utils::makesymlink(rootpath + "/drunner", bindir + "/drunner", p);
+      utils::makesymlink(rootpath + "/drunner", bindir + "/drunner",p);
 
       // sort out docker-compose - now expected to be present.
       //InstallDockerCompose(p);
@@ -74,21 +74,21 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // Finished!
       if (readOkay)
-         logmsg(kLINFO, "Update of drunner to " + p.getVersion() + " completed succesfully.", p);
+         logmsg(kLINFO, "Update of drunner to " + p.getVersion() + " completed succesfully.");
       else
-         logmsg(kLINFO, "Setup of drunner " + p.getVersion() + " completed succesfully.", p);
+         logmsg(kLINFO, "Setup of drunner " + p.getVersion() + " completed succesfully.");
 
       return 0;
    }
 
    int update(const params & p, const sh_drunnercfg & s)
    {
-      logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root(), p);
+      logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root());
 
       std::string url(s.getdrunnerInstallURL()), trgt(s.getPath_Root() + "/drunner-install");
       utils::downloadexe(url, trgt, p);
 
-      logmsg(kLINFO, "Updating...", p);
+      logmsg(kLINFO, "Updating...");
 
       tVecStr args;
       args.push_back("drunner-install");
@@ -100,11 +100,11 @@ namespace command_setup
       std::ostringstream oss;
       for (auto arg : args)
          oss << arg << " ";
-      logmsg(kLDEBUG, utils::trim_copy(oss.str()), p);
+      logmsg(kLDEBUG, utils::trim_copy(oss.str()));
 
       utils::execv(trgt, args);
 
-      logmsg(kLERROR, "Exec failed.", p);
+      logmsg(kLERROR, "Exec failed.");
       return 1;
    }
 

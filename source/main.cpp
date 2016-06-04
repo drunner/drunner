@@ -6,7 +6,7 @@
 
 #include "exceptions.h"
 #include "utils.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "command_setup.h"
 #include "command_general.h"
 #include "command_dev.h"

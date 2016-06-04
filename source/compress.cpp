@@ -2,7 +2,7 @@
 
 #include "compress.h"
 #include "utils.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "params.h"
 
 namespace compress
@@ -18,7 +18,7 @@ namespace compress
       args.push_back("--name=\"dr_compress\"");
       if (passwd.length() > 0)
       {
-         logmsg(kLDEBUG, "Using password supplied.", p);
+         logmsg(kLDEBUG, "Using password supplied.");
          args.push_back("-e");
          args.push_back("PASS=\"" + passwd + "\"");
       }

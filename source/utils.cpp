@@ -24,7 +24,8 @@
 #include "pstream.h"
 #include "utils.h"
 #include "exceptions.h"
-#include "logmsg.h"
+#include "globallogger.h"
+#include "dservicelogger.h"
 
 namespace utils
 {
@@ -117,7 +118,7 @@ namespace utils
          std::string cmd;
          for (const auto & entry : args)
             cmd += "[" + entry + "] ";
-         logmsg(kLDEBUG, "dServiceCmd: " + cmd, p);
+         logmsg(kLDEBUG, "dServiceCmd: " + cmd);
       }
 
       dServiceLogger logcout(false, p, isServiceCmd);
@@ -166,7 +167,7 @@ namespace utils
 
       std::ostringstream oss;
       oss << args[0] << " returned " << rval;
-      logmsg(kLDEBUG, oss.str(), p);
+      logmsg(kLDEBUG, oss.str());
 
       return rval;
    }
