@@ -58,7 +58,7 @@ void service::backup(const std::string & backupfile)
    {
       if (utils::dockerVolExists(entry))
       {
-         compress::compress_volume(password, entry, tempf, entry + ".tar.7z");
+         compress::compress_volume(password, entry, tempf, entry + ".tar",true);
          logmsg(kLDEBUG, "Backed up docker volume " + entry);
       }
       else
@@ -70,7 +70,7 @@ void service::backup(const std::string & backupfile)
 
    // back up host vol (local storage)
    logmsg(kLDEBUG, "Backing up host volume.");
-   compress::compress_folder(password, getPathHostVolume(), tempf, "drunner_hostvol.tar.7z");
+   compress::compress_folder(password, getPathHostVolume(), tempf, "drunner_hostvol.tar",true);
 
    logmsg(kLINFO, "Time for host volume backup:      " + tstep.getelpased());
    tstep.restart();
@@ -83,7 +83,7 @@ void service::backup(const std::string & backupfile)
 
    // compress everything together
    boost::filesystem::path fullpath(bf);
-   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z");
+   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar",true);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
@@ -91,7 +91,7 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // move compressed file to target dir.
-   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar.7z");
+   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar");
    std::string dest = fullpath.string();
    if (!utils::fileexists(source))
       logmsg(kLERROR, "Expected archive not found at " + source);
@@ -125,11 +125,11 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    std::string tempc = tempparent.getpath() + "/containerbackup";
 
    // decompress main backup
-   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar.7z"))
+   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar"))
       logmsg(kLERROR, "Couldn't copy archive to temp folder.");
 
    std::string password = utils::getenv("PASS");
-   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.7z");
+   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar",true);
 
    // read in old variables, just need imagename and olddockervols from them.
    sh_backupvars shb;
@@ -141,7 +141,7 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    std::vector<std::string> shb_dockervolumenames;
    shb.getDockerVolumeNames(shb_dockervolumenames);
    for (auto entry : shb_dockervolumenames)
-      if (!utils::fileexists(tempf + "/" + entry + ".tar.7z"))
+      if (!utils::fileexists(tempf + "/" + entry + ".tar"))
          logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
 
    // backup seems okay - lets go!
@@ -172,12 +172,12 @@ cResult service_restore(const std::string & servicename, const std::string & bac
       if (!utils::dockerVolExists(dockervols[i]))
          logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!");
       compress::decompress_volume(password, dockervols[i],
-         tempf, shb_dockervolumenames[i] + ".tar.7z");
+         tempf, shb_dockervolumenames[i] + ".tar",true);
    }
 
    // restore host vol (local storage)
    logmsg(kLDEBUG, "Restoring host volume.");
-   compress::decompress_folder(password, svc.getPathHostVolume(), tempf, "drunner_hostvol.tar.7z");
+   compress::decompress_folder(password, svc.getPathHostVolume(), tempf, "drunner_hostvol.tar",true);
 
    // tell the dService to do its restore_end action.
    tVecStr args;
