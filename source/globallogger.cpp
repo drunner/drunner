@@ -54,7 +54,7 @@ void logverbatim(eLogLevel level, std::string s)
       case kLWARN:  std::cerr << termcolor::yellow <<  s << termcolor::reset; break;
       case kLERROR: 
          std::cerr << termcolor::red << s << termcolor::reset; 
-         throw eExit(s.c_str());
+         throw eExit();
          break;
       default:      std::cerr << termcolor::green <<  s << termcolor::reset; break;
    }

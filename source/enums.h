@@ -56,6 +56,7 @@ enum eCommand {
    c_unittest,
    c_servicecmd,
    c_saveenvironment,
+   c_help,
 };
 
 

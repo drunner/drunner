@@ -9,9 +9,9 @@
 
 #include "params.h"
 #include "utils.h"
-#include "showhelp.h"
 #include "globallogger.h"
 #include "buildnum.h"
+#include "exceptions.h"
 
 
 std::string params::substitute( const std::string & source ) const
@@ -49,10 +49,11 @@ eCommand params::parsecmd(std::string s) const
    commandlist["unittest"] = c_unittest;
    commandlist["servicecmd"] = c_servicecmd;
    commandlist["__save-environment"] = c_saveenvironment;
+   commandlist["help"] = c_help;
 
    auto it=commandlist.find(s);
    if (it==commandlist.end())
-      showhelp("Unknown command \"" + s + "\".");
+      throw eExit("Unknown command \"" + s + "\".");
    return it->second;
 }
 
@@ -143,7 +144,7 @@ while (1)
             break;
 
          default:
-            showhelp("Unrecognised option."); //" -" + std::string(1,c));
+            throw eExit("Unrecognised option."); //" -" + std::string(1,c));
       }
    }
 
@@ -153,13 +154,14 @@ while (1)
    int opx=optind;
    if (utils::isInstalled())
    {
-      if (opx>=argc) // drunner with no command.
-         showhelp("Please enter a command.");
-      mCmd=parsecmd(argv[opx++]);
+      if (opx >= argc) // drunner with no command.
+         mCmd = c_help;
+      else
+         mCmd=parsecmd(argv[opx++]);
    } else {
       // NOT installed.
       if (opx>=argc)
-         showhelp("Not yet installed.\nPlease provide the ROOTPATH to install to.");
+         throw eExit("Not yet installed.\nPlease provide the ROOTPATH to install to.");
       mCmd=c_setup;
    }
 

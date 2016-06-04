@@ -274,6 +274,11 @@ int mainroutines::process()
          return kRSuccess;
       }
 
+      case c_help:
+      {
+         showhelp();
+      }
+
       default:
          {
             logmsg(kLERROR,R"EOF(
