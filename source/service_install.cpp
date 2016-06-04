@@ -3,7 +3,7 @@
 #include "command_dev.h"
 #include "utils.h"
 #include "utils_docker.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "exceptions.h"
 #include "settingsbash.h"
 #include "command_setup.h"

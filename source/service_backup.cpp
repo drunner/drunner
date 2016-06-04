@@ -7,7 +7,7 @@
 #include "sh_backupvars.h"
 #include "compress.h"
 #include "servicehook.h"
-#include "logmsg.h"
+#include "globallogger.h"
 
 
 // Back up this service to backupfile.

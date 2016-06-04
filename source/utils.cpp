@@ -24,7 +24,9 @@
 #include "pstream.h"
 #include "utils.h"
 #include "exceptions.h"
-#include "logmsg.h"
+#include "dservicelogger.h"
+#include "globallogger.h"
+#include "globalcontext.h"
 
 namespace utils
 {
@@ -103,7 +105,7 @@ namespace utils
       return WEXITSTATUS(status);
    }
 
-   int dServiceCmd(std::string command, const std::vector<std::string> & args, const params & p, bool isServiceCmd)
+   int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
    { // non-blocking streaming
       { // sanity check parameters.
          if (args.size() < 1)
@@ -117,11 +119,11 @@ namespace utils
          std::string cmd;
          for (const auto & entry : args)
             cmd += "[" + entry + "] ";
-         logmsg(kLDEBUG, "dServiceCmd: " + cmd, p);
+         logmsg(kLDEBUG, "dServiceCmd: " + cmd);
       }
 
-      dServiceLogger logcout(false, p, isServiceCmd);
-      dServiceLogger logcerr(true, p, isServiceCmd);
+      dServiceLogger logcout(false, isServiceCmd);
+      dServiceLogger logcerr(true, isServiceCmd);
 
       const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
       redi::ipstream child(command, args, mode);
@@ -166,7 +168,7 @@ namespace utils
 
       std::ostringstream oss;
       oss << args[0] << " returned " << rval;
-      logmsg(kLDEBUG, oss.str(), p);
+      logmsg(kLDEBUG, oss.str());
 
       return rval;
    }
@@ -180,7 +182,7 @@ namespace utils
       }
       catch(...)
       {
-         return "";
+         return path;
       }
       return rval.string();
    }
@@ -519,7 +521,7 @@ namespace utils
 
 
 
-   dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername, const params & p)
+   dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
       : mDockerName(dockername), mP(p)
    {
       int rval = utils::dServiceCmd(cmd, args,p);
@@ -528,11 +530,11 @@ namespace utils
          std::ostringstream oss;
          for (auto entry : args)
             oss << entry << " ";
-         logmsg(kLDEBUG, oss.str(), mP);
+         logmsg(kLDEBUG, oss.str());
          tidy(); // throwing from ctor does not invoke dtor!
          std::ostringstream oss2;
          oss2 << "Docker command failed. Return code=" << rval;
-         logmsg(kLERROR, oss2.str(), mP);
+         logmsg(kLERROR, oss2.str());
       }
    }
    dockerrun::~dockerrun()
@@ -547,7 +549,7 @@ namespace utils
       if (rval != 0)
          std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
       else
-         logmsg(kLDEBUG, "Deleted docker container " + mDockerName, mP);
+         logmsg(kLDEBUG, "Deleted docker container " + mDockerName);
    }
 
 

@@ -10,29 +10,11 @@
 
 #include "drunnercompose.h"
 #include "utils.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "service.h"
 
 // ---------------------------------------------------------------------------------------------------
 //
-
-
-//void InstallDockerCompose(const params & p)
-//{
-//   if (p.isDevelopmentMode())
-//   {
-//      logmsg(kLDEBUG, "In developer mode - not updating docker-compose.", p);
-//      return;
-//   }
-//
-//   std::string url("https://github.com/docker/compose/releases/download/1.6.2/docker-compose-Linux-x86_64");
-//   std::string trgt(utils::get_usersbindir() + "/docker-compose");
-//
-//   logmsg(kLDEBUG, "Downloading docker-compose...", p);
-//   utils::downloadexe(url, trgt, p);
-//
-//   logmsg(kLDEBUG, "docker-compose installed.", p);
-//}
 
 drunnerCompose::drunnerCompose(const service & svc, const params & p) : 
    mService(svc), 
@@ -41,14 +23,6 @@ drunnerCompose::drunnerCompose(const service & svc, const params & p) :
 {
    load_docker_compose_yml();
 }
-
-//void drunnerCompose::setvecenv(const sb_vec & v) const
-//{
-//   bashline bl = v.getBashLine();
-//   std::string key = bl.getkey();
-//   std::string val = bl.getvalue();
-//   setenv_log(key, val);
-//}
 
 void drunnerCompose::setenv_log(std::string key, std::string val) const
 {

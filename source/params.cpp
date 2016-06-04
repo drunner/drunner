@@ -10,7 +10,7 @@
 #include "params.h"
 #include "utils.h"
 #include "showhelp.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "buildnum.h"
 
 
@@ -156,27 +156,18 @@ while (1)
    if (mOptions.size() == 0)
       mOptions.push_back("-n");
 
-   // drunner with no command.
    int opx=optind;
    if (utils::isInstalled())
    {
-      if (opx>=argc)
+      if (opx>=argc) // drunner with no command.
          showhelp( *this, "Please enter a command.");
       mCmd=parsecmd(argv[opx++]);
    } else {
       // NOT installed.
       if (opx>=argc)
          showhelp( *this, R"EOF(Not yet installed.
-Please provide command line argument:
- 1) the ROOTPATH to install to, or
- 2) unittest to run unittests
-)EOF");
-      if (utils::stringisame(argv[opx],"unittest"))
-      {
-         ++opx;
-         mCmd=c_unittest;
-      } else
-         mCmd=c_setup;
+Please provide the ROOTPATH to install to.)EOF");
+      mCmd=c_setup;
    }
 
    // store the arguments to the command.

@@ -1,5 +1,5 @@
 #include "generate.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "utils.h"
 
 void generate(

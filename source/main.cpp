@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <sstream>
 
+#include "globalcontext.h"
+#include "globallogger.h"
 #include "exceptions.h"
 #include "utils.h"
-#include "logmsg.h"
 #include "command_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
@@ -29,12 +30,13 @@ int main(int argc, char **argv)
    {
       mainroutines::check_basics();
 
-      params p(argc, argv);
-      logmsg(kLDEBUG,"dRunner C++, version "+p.getVersion(),p);
-      bool canRunDocker=utils::canrundocker(getUSER());
-      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath(), p);
+      GlobalContext::init(argc, argv);
 
-      return mainroutines::process(p);
+      logmsg(kLDEBUG,"dRunner C++, version "+p.getVersion());
+      bool canRunDocker=utils::canrundocker(getUSER());
+      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath());
+
+      return mainroutines::process();
    }
 
    catch (const eExit & e) {
@@ -74,10 +76,10 @@ void mainroutines::check_basics()
 
 // ----------------------------------------------------------------------------------------------------------------------
 
-int mainroutines::process(const params & p)
+int mainroutines::process()
 {
    // handle setup specially.
-   if (p.getCommand()==c_setup)
+   if (GlobalContext::getParams()->getCommand()==c_setup)
    {
       int rval=command_setup::setup(p);
       if (rval!=0) throw eExit("Setup failed.",rval);
@@ -85,7 +87,7 @@ int mainroutines::process(const params & p)
    }
 
    // allow unit tests to be run directly from installer.
-   if (p.getCommand()==c_unittest)
+   if (GlobalContext::getParams()->getCommand().getCommand()==c_unittest)
    {
       // todo: pass args through to catch.
       // int result = Catch::Session().run( argc, argv );
@@ -97,20 +99,14 @@ int mainroutines::process(const params & p)
    }
 
    if (!utils::isInstalled())
-      showhelp(p,"Please run "+utils::get_exename()+" setup ROOTPATH");
+      showhelp("Please run "+utils::get_exename()+" setup ROOTPATH");
 
-   // load settings. We require the basic install to be okay at this point!
-   std::string rootpath = utils::get_exepath();
-   sh_drunnercfg settings(rootpath);
-   if (!settings.readSettings())
-      throw eExit("Couldn't read settings file. Try running drunner setup.",1);
-
-   logmsg(kLDEBUG,"Settings read from "+settings.getPath_drunnercfg_sh(),p);
+   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnercfg_sh());
 
 
    // ----------------
    // command handling
-   switch (p.getCommand())
+   switch (GlobalContext::getParams()->getCommand())
    {
       case c_clean:
       {

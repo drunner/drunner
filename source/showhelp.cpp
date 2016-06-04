@@ -1,14 +1,12 @@
 #include <iostream>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
 
 #include "showhelp.h"
 #include "utils.h"
-#include "logmsg.h"
+#include "globallogger.h"
+#include "globalcontext.h"
 
-void showhelp(const params & p, std::string cMsg) {
-   logmsg(kLINFO,p.substitute(R"EOF(
+void showhelp(std::string cMsg) {
+   logmsg(kLINFO,GlobalContext::getParams()->substitute(R"EOF(
 NAME
    ${EXENAME}
 
@@ -57,7 +55,7 @@ EXIT CODE
    0   - success
    1   - error
    3   - no changes made
-)EOF"), p);
+)EOF"));
    else
       logmsg(kLINFO,p.substitute(R"EOF(
 SYNOPSIS
@@ -67,10 +65,7 @@ SYNOPSIS
 OPTIONS
    -v    verbose
    -s    silent
-)EOF"), p);
+)EOF"));
 
-   //setenv("Sniggle", "wiggle", 1);
-   //execl("/usr/bin/env", "env", 0);
-   //std::cerr << cMsg << std::endl;
-   logmsg(kLERROR, cMsg, p);
+   logmsg(kLERROR, cMsg);
 }

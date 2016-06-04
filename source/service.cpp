@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "service.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "utils.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"

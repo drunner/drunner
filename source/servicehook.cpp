@@ -1,7 +1,7 @@
 #include "enums.h"
 #include "service.h"
 #include "servicehook.h"
-#include "logmsg.h"
+#include "globallogger.h"
 #include "utils.h"
 #include "drunnercompose.h"
 #include "cresult.h"
