@@ -40,6 +40,7 @@ dRunner provides some environment variables:
 * SERVICETEMPDIR - a directory on the host that your servicerunner can write temporary files to.
 * SERVICEHOSTVOL - a directory on the host that your servicerunner can write persisting files to (included in backups).
 * HOSTIP - the IP address of the host.
+* DEVELOPERMODE - true if -d flag was bassed to dRunner (don't pull images).
 
 In addition dRunner allows servicerunner to save environment variables (e.g. configuration) that are stored on the host and included in backups.
 
