@@ -12,6 +12,7 @@
 #include "utils.h"
 #include "globallogger.h"
 #include "service.h"
+#include "globalcontext.h"
 
 // ---------------------------------------------------------------------------------------------------
 //
@@ -48,6 +49,7 @@ void drunnerCompose::setServiceRunnerEnv() const
    setenv_log("SERVICETEMPDIR", getService().getPathTemp().c_str());
    setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().c_str());
    setenv_log("HOSTIP", utils::getHostIP().c_str());
+   setenv_log("DEVELOPERMODE", GlobalContext::getParams()->isDevelopmentMode() ? "true" : "false");
 }
 
 cResult drunnerCompose::readOkay() const
