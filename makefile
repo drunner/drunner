@@ -42,7 +42,7 @@ buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
 
 upload: $(APP)
 	cd output ; s3upload drunner-install
-	cd prereqs ; s3upload install_docker.sh
+	cd prereqs ; s3upload install_docker.sh ; s3upload install_drunner_travis.sh
 
 uploaddev: $(APP)
 	cd output ; mkdir dev ; cp drunner-install dev ; s3upload dev/drunner-install
