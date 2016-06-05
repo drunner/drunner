@@ -21,5 +21,7 @@ script:
    - drunner unittest
    - drunner install drunner/dtest
    - dtest test
+   - dtest test drunner/minimalexample
    - dtest test drunner/helloworld
    - dtest test drunner/minecraft
+

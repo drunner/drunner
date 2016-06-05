@@ -13,6 +13,7 @@ sudo apt-get -o Dpkg::Options::="--force-confnew" install -qq docker-engine
 
 wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
 sudo mv docker-compose* /usr/local/bin/docker-compose
+sudo chmod a+x /usr/local/bin/docker-compose
 
 wget https://drunner.s3.amazonaws.com/drunner-install
 chmod a+x drunner-install
