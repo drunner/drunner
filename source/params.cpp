@@ -48,8 +48,14 @@ eCommand params::parsecmd(std::string s) const
    commandlist["build"] = c_build;
    commandlist["unittest"] = c_unittest;
    commandlist["servicecmd"] = c_servicecmd;
-   commandlist["__save-environment"] = c_saveenvironment;
    commandlist["help"] = c_help;
+
+   commandlist["__save-environment"]  = c_saveenvironment;
+   commandlist["__dbackup_include"]   = c_dbackup_include;
+   commandlist["__dbackup_exclude"]   = c_dbackup_exclude;
+   commandlist["__dbackup_run"]       = c_dbackup_run;
+   commandlist["__dbackup_configure"] = c_dbackup_configure;
+   commandlist["__dbackup_info"]      = c_dbackup_info;
 
    auto it=commandlist.find(s);
    if (it==commandlist.end())

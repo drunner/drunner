@@ -1,5 +1,5 @@
-#ifndef __CREATEUTILS_SH_H
-#define __CREATEUTILS_SH_H
+#ifndef __GENERATE_UTILS_SH_H
+#define __GENERATE_UTILS_SH_H
 
 #include "enums.h"
 #include "params.h"

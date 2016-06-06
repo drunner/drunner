@@ -1,5 +1,5 @@
-#ifndef __CREATESUPPORTFILES_H
-#define __CREATESUPPORTFILES_H
+#ifndef __GENERATE_VALIDATOR_IMAGE_H
+#define __GENERATE_VALIDATOR_IMAGE_H
 
 #include "enums.h"
 #include "params.h"
