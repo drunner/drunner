@@ -102,6 +102,12 @@
     <ClInclude Include="..\..\source\timez.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\generate_dbackup.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbackup.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">
@@ -177,6 +183,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\timez.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dbackup.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
