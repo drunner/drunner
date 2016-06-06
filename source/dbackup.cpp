@@ -24,20 +24,13 @@ namespace dbackup
       bool load()
       {
          if (!utils::fileexists(path()))
-         {
-            logmsg(kLWARN, path() + " does not exist.");
             return false;
-         }
 
          YAML::Node config = YAML::LoadFile(path());
          if (!config)
             logmsg(kLERROR, "Failed to load " + path());
-
          if (!config[s_BackupPath])
-         {
-            logmsg(kLWARN, path() + " exists but appears to be corrupt.");
-            return false;
-         }
+            logmsg(kLERROR, path() + " exists but appears to be corrupt.");
 
          mIsConfigured = true;
          mBackupPath = config[s_BackupPath].as<std::string>();
@@ -162,7 +155,7 @@ namespace dbackup
       backupConfig config;
       config.load();
 
-      // check path exists and make canonical.
+      // TODO: check path exists and make canonical.
 
       if (config.mBackupPath == path)
       {
