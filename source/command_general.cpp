@@ -14,10 +14,8 @@ namespace command_general
 
    void showservices()
    {
-      std::string parent = GlobalContext::getSettings()->getPath_dServices();
       std::vector<std::string> services;
-      if (!utils::getFolders(parent,services))
-         logmsg(kLERROR,"Couldn't get subfolders of "+parent);
+      utils::getAllServices(services);
       if (services.size()>0)
       {
          logmsg(kLINFO,"Installed dServices:");

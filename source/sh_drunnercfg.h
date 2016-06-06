@@ -17,12 +17,13 @@ public:
    std::string getPath_Temp()         const { return getPath_Root() + "/temp"; }
    std::string getPath_HostVolumes()  const { return getPath_Root() + "/hostVolumes"; }
 
-   std::string getRootUtilImage()     const { return getString("ROOTUTILIMAGE");       }
-   std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL");   }
-   std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME");  }
-   bool getPullImages() const               { return getBool("PULLIMAGES"); }
+   std::string getRootUtilImage()     const { return getString("ROOTUTILIMAGE"); }
+   std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL"); }
+   std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME"); }
+   bool getPullImages() const { return getBool("PULLIMAGES"); }
 
    std::string getPath_drunnercfg_sh() const { return getPath_Root() + "/drunnercfg.sh"; }
+   std::string getPath_drunnerbackups_cfg() const { return getPath_Root() + "/drunnerbackups.cfg"; }
 
    bool readSettings();
    bool writeSettings() const;

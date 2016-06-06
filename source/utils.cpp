@@ -481,6 +481,13 @@ namespace utils
       return s;
    }
 
+   void getAllServices(std::vector<std::string>& services)
+   {
+      std::string parent = GlobalContext::getSettings()->getPath_dServices();
+      if (!utils::getFolders(parent, services))
+         logmsg(kLERROR, "Couldn't get subfolders of " + parent);
+   }
+
 
    tempfolder::tempfolder(std::string d) : mPath(d)
    {   // http://stackoverflow.com/a/10232761

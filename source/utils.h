@@ -74,6 +74,8 @@ namespace utils
 
    std::string alphanumericfilter(std::string s, bool whitespace);
    
+   void getAllServices(std::vector<std::string> & services);
+
    class tempfolder
    {
    public:
