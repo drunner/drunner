@@ -156,7 +156,9 @@ namespace dbackup
       config.load();
 
       // TODO: check path exists and make canonical.
-      asdf
+      if (!utils::fileexists(path))
+         logmsg(kLERROR, "The path " + path + " does not exist.");
+      path = utils::getcanonicalpath(path);
 
       if (config.mBackupPath == path)
       {
