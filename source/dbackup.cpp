@@ -156,6 +156,7 @@ namespace dbackup
       config.load();
 
       // TODO: check path exists and make canonical.
+      asdf
 
       if (config.mBackupPath == path)
       {
