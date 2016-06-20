@@ -16,6 +16,7 @@
 #include "main.h"
 #include "unittests.h"
 #include "service.h"
+#include "dbackup.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -261,6 +262,12 @@ int mainroutines::process()
          return (int)svc.obliterate();
       }
 
+      case c_help:
+      {
+         showhelp();
+         return kRSuccess;
+      }
+
       case c_saveenvironment:
       {
          if (p.numArgs() < 3)
@@ -274,10 +281,33 @@ int mainroutines::process()
          return kRSuccess;
       }
 
-      case c_help:
+      case c_dbackup_configure:
       {
-         showhelp();
+         if (p.numArgs() < 1)
+            logmsg(kLERROR, "Usage: dbackup configure BACKUPPATH");
+         return (int)dbackup::configure(p.getArg(0));
       }
+
+      case c_dbackup_exclude:
+      {
+         if (p.numArgs() < 1)
+            logmsg(kLERROR, "Usage: dbackup exclude SERVICENAME");
+         return (int)dbackup::exclude(p.getArg(0));
+      }
+
+      case c_dbackup_include:
+      {
+         if (p.numArgs() < 1)
+            logmsg(kLERROR, "Usage: dbackup include SERVICENAME");
+         return (int)dbackup::include(p.getArg(0));
+      }
+
+      case c_dbackup_run:
+         return (int)dbackup::run();
+
+      case c_dbackup_info:
+         return (int)dbackup::info();
+
 
       default:
          {

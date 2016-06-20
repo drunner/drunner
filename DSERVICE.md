@@ -50,23 +50,23 @@ In addition dRunner allows servicerunner to save environment variables (e.g. con
 
 dRunner provides quite a few hooks for you to use in your servicerunner script. This can allow you to do things like pause your service before a backup is made. A summary of hooks:
 
-| Hook             |  Extra Environment Variables |  Notes |
-|:----------------:|:--------------:|:---------------:|
-| install_end      | normal         | info and above  |
-| backup_start     | verbose        | debug and above |
-| backup_end       | logged         | errors only     |
-| restore_start    | capture output | errors only     |
-| restore_end      | silent         | errors only     |
-| uninstall_start  | silent         | errors only     |
-| obliterate_start | silent         | errors only     |
-| servicecmd_start | silent         | errors only     |
-| servicecmd_end   | silent         | errors only     |
-| update_start     | silent         | errors only     |
-| update_end       | silent         | errors only     |
-| enter_start      | silent         | errors only     |
-| enter_end        | silent         | errors only     |
-| status_start     | silent         | errors only     |
-| status_end       | silent         | errors only     |
+| Hook             |  Description
+|:----------------:|:--------------:|
+| install_end      | |
+| backup_start     | |
+| backup_end       | |
+| restore_start    | |
+| restore_end      | |
+| uninstall_start  | |
+| obliterate_start | |
+| servicecmd_start | |
+| servicecmd_end   | |
+| update_start     | |
+| update_end       | |
+| enter_start      | |
+| enter_end        | |
+| status_start     | |
+| status_end       | |
 
 
 ## Example Workflow without dProject

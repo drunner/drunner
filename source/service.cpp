@@ -263,6 +263,8 @@ const cServiceEnvironment & service::getEnvironmentConst() const
    return mEnvironment;
 }
 
+//-----------------------------------------------------------------------------
+
 cServiceEnvironment::cServiceEnvironment(const servicepaths & paths) :
    settingsbash(true)
 {

@@ -82,11 +82,13 @@
     <ClInclude Include="..\..\source\command_setup.h" />
     <ClInclude Include="..\..\source\compress.h" />
     <ClInclude Include="..\..\source\cresult.h" />
+    <ClInclude Include="..\..\source\dbackup.h" />
     <ClInclude Include="..\..\source\drunnercompose.h" />
     <ClInclude Include="..\..\source\dservicelogger.h" />
     <ClInclude Include="..\..\source\enums.h" />
     <ClInclude Include="..\..\source\exceptions.h" />
     <ClInclude Include="..\..\source\generate.h" />
+    <ClInclude Include="..\..\source\generate_dbackup.h" />
     <ClInclude Include="..\..\source\generate_utils_sh.h" />
     <ClInclude Include="..\..\source\generate_validator_image.h" />
     <ClInclude Include="..\..\source\globalcontext.h" />
@@ -115,6 +117,7 @@
     <ClCompile Include="..\..\source\command_general.cpp" />
     <ClCompile Include="..\..\source\command_setup.cpp" />
     <ClCompile Include="..\..\source\compress.cpp" />
+    <ClCompile Include="..\..\source\dbackup.cpp" />
     <ClCompile Include="..\..\source\drunnercompose.cpp" />
     <ClCompile Include="..\..\source\dservicelogger.cpp" />
     <ClCompile Include="..\..\source\exceptions.cpp" />

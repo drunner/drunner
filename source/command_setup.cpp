@@ -9,6 +9,7 @@
 #include "globalcontext.h"
 #include "generate_validator_image.h"
 #include "drunnercompose.h"
+#include "generate_dbackup.h"
 
 namespace command_setup
 {
@@ -42,9 +43,11 @@ namespace command_setup
       // create symlink
       utils::makesymlink(settings.getPath_Root() + "/drunner", bindir + "/drunner");
 
-      // sort out docker-compose - now expected to be present.
-      //InstallDockerCompose(p);
+      // -----------------------------------------------------------------------------
+      // generate dbackup script
+      generate_dbackup();
 
+      // -----------------------------------------------------------------------------
       // get latest root util image.
       //std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
       utils_docker::pullImage(settings.getRootUtilImage());

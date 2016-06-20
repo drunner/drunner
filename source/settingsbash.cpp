@@ -35,9 +35,10 @@ void bashline::setline(const std::string & bashline_str)
       {
          key=utils::trim_copy(bashline_str.substr(0,end));
          value=utils::trim_copy(bashline_str.substr(end+1)); //If this is equal to the string length, substr returns an empty string.
-         value = dequote(utils::trim(value), '\"');
+         // The getters dequote. We should NOT do that here! 
+         // value = dequote(utils::trim(value), '\"');
          if (key.length()>0 && key[0]=='#')
-            key.clear();
+            key.clear(); // Invalidate (bashline is considered valid only if key length>0).
    }
 }
 
@@ -126,6 +127,7 @@ std::string settingsbash::getString(const std::string & key) const
 {
    // remove quotes and whitespace.
    std::string v = getElement(key).getvalue();
+   // TODO: should unescape " within v.
    utils::trim(v);
    return dequote(v, '\"');
 }
@@ -133,6 +135,7 @@ std::string settingsbash::getString(const std::string & key) const
 void settingsbash::setString(const std::string & key, const std::string & s)
 {
    bashline bl;
+   // TODO: should escape " within s.
    bl.setkeyvalue(key, "\"" + s + "\"");
    setSetting(bl, true);
 }
