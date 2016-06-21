@@ -13,6 +13,8 @@ public:
    int getmilliseconds();
    std::string getelpased();
 
+   static std::string getDateTimeStr();
+
 private:
    std::chrono::steady_clock::time_point mStart;
 };

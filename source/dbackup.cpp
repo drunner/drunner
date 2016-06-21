@@ -7,6 +7,8 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "yaml-cpp/yaml.h"
+#include "timez.h"
+#include "service.h"
 
 namespace dbackup
 {
@@ -147,7 +149,23 @@ namespace dbackup
          return kRError;
       }
 
-      return kRNotImplemented;
+      std::vector<std::string> services;
+      utils::getAllServices(services);
+
+      logmsg(kLINFO, "Backing up services.");
+      for (auto const & s : services)
+         if (config.isEnabled(s))
+         {
+            // backup service s.
+            std::string timestamp = timez::getDateTimeStr();
+            std::string filename = timestamp + "___" + s + ".dbk";
+            std::string path = config.mBackupPath + "/" + filename;
+
+            service svc(s);
+            svc.backup(path);
+         }
+
+      return kRSuccess;
    }
 
    eResult configure(std::string path)
