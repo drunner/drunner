@@ -324,7 +324,7 @@ namespace utils
 
 
 
-   bool getFolders(const std::string & parent, std::vector<std::string> & services)
+   bool getFolders(const std::string & parent, std::vector<std::string> & folders)
    {
       boost::filesystem::path dir_path(parent);
       if ( ! boost::filesystem::exists( dir_path ) ) return false;
@@ -333,7 +333,7 @@ namespace utils
       for ( ; itr != end_itr; ++itr )
       {
          if ( boost::filesystem::is_directory(itr->status()) )
-            services.push_back(itr->path().filename().string());
+            folders.push_back(itr->path().filename().string());
       }
       return true;
    }

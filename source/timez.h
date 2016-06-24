@@ -13,12 +13,15 @@ public:
    int getmilliseconds();
    std::string getelpased();
 
-   static std::string getDateTimeStr();
-
 private:
    std::chrono::steady_clock::time_point mStart;
 };
 
-
+namespace timeutils
+{
+   std::string getDateTimeStr();
+   std::string getArchiveName(std::string servicename);
+   std::chrono::system_clock::time_point archiveName2Time(std::string aname);
+};
 
 #endif

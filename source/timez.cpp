@@ -1,7 +1,9 @@
 #include "timez.h"
+#include "globallogger.h"
 
 #include <sstream>
 #include <ctime>
+#include <time.h>
 
 timez::timez()
 {
@@ -28,13 +30,38 @@ std::string timez::getelpased()
    return oss.str();
 }
 
-std::string timez::getDateTimeStr()
+
+namespace timeutils
 {
-   char s[100];
 
-   auto tnow = std::chrono::system_clock::now();
-   std::time_t now_time = std::chrono::system_clock::to_time_t(tnow);
+   std::string getDateTimeStr()
+   {
+      char s[100];
 
-   strftime(s, 99, "%Y_%m_%d__%H_%M_%S", std::localtime(&now_time));
-   return std::string(s);
+      auto tnow = std::chrono::system_clock::now();
+      std::time_t now_time = std::chrono::system_clock::to_time_t(tnow);
+
+      strftime(s, 99, "%Y_%m_%d__%H_%M_%S", std::localtime(&now_time));
+      return std::string(s);
+   }
+
+   std::string getArchiveName(std::string servicename)
+   {
+      return getDateTimeStr() + "___" + servicename + ".dbk";
+   }
+
+   std::chrono::system_clock::time_point archiveName2Time(std::string aname)
+   {
+      size_t pos = aname.find("___");
+      if (pos == std::string::npos)
+         logmsg(kLERROR, "Impure archive: " + aname);
+
+      aname.erase(pos);
+
+      std::tm tm = {};
+      strptime(aname.c_str(), "%Y_%m_%d__%H_%M_%S", &tm);
+      auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+      return tp;
+   }
+  
 }

@@ -157,13 +157,15 @@ namespace dbackup
          if (config.isEnabled(s))
          {
             // backup service s.
-            std::string timestamp = timez::getDateTimeStr();
-            std::string filename = timestamp + "___" + s + ".dbk";
-            std::string path = config.mBackupPath + "/" + filename;
+            std::string path = config.mBackupPath + "/" + timeutils::getArchiveName(s);
 
             service svc(s);
             svc.backup(path);
          }
+
+      logmsg(kLINFO, "Pruning old backups");
+      //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
+
 
       return kRSuccess;
    }
