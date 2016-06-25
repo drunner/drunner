@@ -44,32 +44,28 @@ eResult dbackup::runCommand() const
          fatal("Usage:  dbackup configure BACKUPPATH");
       return configure(args[0]);
 
+   case str2int("exclude") :
+      if (args.size() == 0)
+         fatal("Usage:  dbackup exclude SERVICENAME");
+      return exclude(args[0]);
+
+   case str2int("include"):
+      if (args.size() == 0)
+         fatal("Usage:  dbackup include SERVICENAME");
+      return include(args[0]);
+
+   case str2int("run"):
+      return run();
+
+   case str2int("info"):
+   case str2int("list"):
+      return info();
+
    default:
       fatal("Unrecognised command " + cmd);
       return kRError;
    }
 }
-
-//case c_dbackup_exclude:
-//{
-//   if (p.numArgs() < 1)
-//      logmsg(kLERROR, "Usage: dbackup exclude SERVICENAME");
-//   return (int)dbackup::exclude(p.getArg(0));
-//}
-
-//case c_dbackup_include:
-//{
-//   if (p.numArgs() < 1)
-//      logmsg(kLERROR, "Usage: dbackup include SERVICENAME");
-//   return (int)dbackup::include(p.getArg(0));
-//}
-
-//case c_dbackup_run:
-//   return (int)dbackup::run();
-
-//case c_dbackup_info:
-//   return (int)dbackup::info();
-
 
 // -----------------------------------------------------------------------------------------------------------
 
@@ -115,17 +111,22 @@ eResult dbackup::run() const
    std::vector<std::string> services;
    utils::getAllServices(services);
 
+   std::string datefolder = config.getBackupPath() + "/" + timeutils::getDateTimeStr();
+   utils::makedirectory(datefolder, S_700);
+
    logmsg(kLINFO, "Backing up services.");
    for (auto const & s : services)
       if (config.isEnabled(s))
       {
          // backup service s.
-         std::string path = config.getBackupPath() + "/" + timeutils::getArchiveName(s);
-
+         std::string path = datefolder + "/" + timeutils::getArchiveName(s);
+         
+         logmsg(kLINFO, "----------------- " + s + " --------------------");
          service svc(s);
          svc.backup(path);
       }
 
+   logmsg(kLINFO, "--------------------------------------------------");
    logmsg(kLINFO, "Pruning old backups");
    //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
 
@@ -201,7 +202,7 @@ COMMANDS
    dbackup configure BACKUPPATH
    dbackup include SERVICENAME
    dbackup exclude SERVICENAME
-   dbackup info
+   dbackup list
    dbackup run
 )EOF";
 
