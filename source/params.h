@@ -13,6 +13,7 @@ public:
 
    const std::string & getVersion() const { return mVersion; }
    eCommand getCommand() const { return mCmd; }
+   std::string getCommandStr() const { return mCmdStr; }
    eLogLevel getLogLevel() const { return mLogLevel; }
 
    edServiceOutput getServiceOutput_hooks() const { return mServiceOutput_hooks; }

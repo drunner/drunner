@@ -105,10 +105,13 @@
     <ClInclude Include="..\..\source\timez.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\generate_dbackup.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\..\source\plugins\plugins.h">
+      <Filter>Source\Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\dbackup.h">
+    <ClInclude Include="..\..\source\plugins\dbackup.h">
+      <Filter>Source\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\plugins\generate_dbackup.h">
       <Filter>Source\Plugins</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,7 +191,10 @@
     <ClCompile Include="..\..\source\timez.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\dbackup.cpp">
+    <ClCompile Include="..\..\source\plugins\plugins.cpp">
+      <Filter>Source\Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\plugins\dbackup.cpp">
       <Filter>Source\Plugins</Filter>
     </ClCompile>
   </ItemGroup>

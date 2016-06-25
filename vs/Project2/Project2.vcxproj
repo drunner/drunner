@@ -71,7 +71,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\generators;$(SolutionDir)..\source\settings;$(SolutionDir)..\source\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -82,19 +82,20 @@
     <ClInclude Include="..\..\source\command_setup.h" />
     <ClInclude Include="..\..\source\compress.h" />
     <ClInclude Include="..\..\source\cresult.h" />
-    <ClInclude Include="..\..\source\dbackup.h" />
     <ClInclude Include="..\..\source\drunnercompose.h" />
     <ClInclude Include="..\..\source\dservicelogger.h" />
     <ClInclude Include="..\..\source\enums.h" />
     <ClInclude Include="..\..\source\exceptions.h" />
     <ClInclude Include="..\..\source\generate.h" />
-    <ClInclude Include="..\..\source\generate_dbackup.h" />
     <ClInclude Include="..\..\source\generate_utils_sh.h" />
     <ClInclude Include="..\..\source\generate_validator_image.h" />
     <ClInclude Include="..\..\source\globalcontext.h" />
     <ClInclude Include="..\..\source\globallogger.h" />
     <ClInclude Include="..\..\source\main.h" />
     <ClInclude Include="..\..\source\params.h" />
+    <ClInclude Include="..\..\source\plugins\dbackup.h" />
+    <ClInclude Include="..\..\source\plugins\generate_dbackup.h" />
+    <ClInclude Include="..\..\source\plugins\plugins.h" />
     <ClInclude Include="..\..\source\pstream.h" />
     <ClInclude Include="..\..\source\service.h" />
     <ClInclude Include="..\..\source\servicehook.h" />
@@ -117,7 +118,6 @@
     <ClCompile Include="..\..\source\command_general.cpp" />
     <ClCompile Include="..\..\source\command_setup.cpp" />
     <ClCompile Include="..\..\source\compress.cpp" />
-    <ClCompile Include="..\..\source\dbackup.cpp" />
     <ClCompile Include="..\..\source\drunnercompose.cpp" />
     <ClCompile Include="..\..\source\dservicelogger.cpp" />
     <ClCompile Include="..\..\source\exceptions.cpp" />
@@ -126,6 +126,8 @@
     <ClCompile Include="..\..\source\globallogger.cpp" />
     <ClCompile Include="..\..\source\main.cpp" />
     <ClCompile Include="..\..\source\params.cpp" />
+    <ClCompile Include="..\..\source\plugins\dbackup.cpp" />
+    <ClCompile Include="..\..\source\plugins\plugins.cpp" />
     <ClCompile Include="..\..\source\service.cpp" />
     <ClCompile Include="..\..\source\servicehook.cpp" />
     <ClCompile Include="..\..\source\service_backup.cpp" />
