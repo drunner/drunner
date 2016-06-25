@@ -28,6 +28,7 @@ public:
 private:
    std::string mVersion;
    eCommand mCmd;
+   std::string mCmdStr;
    std::vector<std::string> mArgs;
    eLogLevel mLogLevel;
    bool mDevelopmentMode;
@@ -36,7 +37,7 @@ private:
    edServiceOutput mServiceOutput_servicecmd;
 
    std::vector<std::string> mOptions;
-   eCommand parsecmd(std::string s) const;
+   void parsecmd();
    params();
    void setdefaults();
 };

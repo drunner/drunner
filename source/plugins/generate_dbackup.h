@@ -55,7 +55,7 @@ shift
 validcmds=("configure" "include" "exclude" "run" "info")
 
 if elementIn "$CMD" "${validcmds[@]}" ; then
-   drunner "__dbackup_${CMD}" "$@"
+   drunner "__plugin__dbackup_${CMD}" "$@"
 else
    showusage "Unkown command ${CMD}"
 fi

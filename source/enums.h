@@ -57,11 +57,7 @@ enum eCommand {
    c_servicecmd,
    c_help,
    c_saveenvironment,
-   c_dbackup_include,
-   c_dbackup_exclude,
-   c_dbackup_run,
-   c_dbackup_configure,
-   c_dbackup_info,
+   c_plugin,
 };
 
 

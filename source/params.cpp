@@ -20,15 +20,11 @@ std::string params::substitute( const std::string & source ) const
    d=utils::replacestring(d,"${VERSION}",mVersion);
    d=utils::replacestring(d,"${EXENAME}",utils::get_exename());
    d=utils::replacestring(d,"${ROOTPATH}",utils::get_exepath());
-   //d=utils::replacestring(d,"${TIME}",__TIME__);
-   //d=utils::replacestring(d,"${DATE}",__DATE__);
    return d;
 }
 
-eCommand params::parsecmd(std::string s) const
+void params::parsecmd()
 {
-   std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-
    std::map<std::string, eCommand> commandlist;
 
    commandlist["setup"] = c_setup;
@@ -49,18 +45,20 @@ eCommand params::parsecmd(std::string s) const
    commandlist["unittest"] = c_unittest;
    commandlist["servicecmd"] = c_servicecmd;
    commandlist["help"] = c_help;
-
    commandlist["__save-environment"]  = c_saveenvironment;
-   commandlist["__dbackup_include"]   = c_dbackup_include;
-   commandlist["__dbackup_exclude"]   = c_dbackup_exclude;
-   commandlist["__dbackup_run"]       = c_dbackup_run;
-   commandlist["__dbackup_configure"] = c_dbackup_configure;
-   commandlist["__dbackup_info"]      = c_dbackup_info;
 
-   auto it=commandlist.find(s);
-   if (it==commandlist.end())
-      throw eExit("Unknown command \"" + s + "\".");
-   return it->second;
+   if (mCmdStr.compare(0, 10, "__plugin__") == 0)
+   {
+      mCmdStr.erase(0,10);
+      mCmd = c_plugin;
+   }
+   else
+   {
+      auto it = commandlist.find(mCmdStr);
+      if (it == commandlist.end())
+         throw eExit("Unknown command \"" + mCmdStr + "\".");
+      mCmd = it->second;
+   }
 }
 
 void params::setdefaults()
@@ -161,9 +159,16 @@ while (1)
    if (utils::isInstalled())
    {
       if (opx >= argc) // drunner with no command.
+      {
+         mCmdStr = "help";
          mCmd = c_help;
+      }
       else
-         mCmd=parsecmd(argv[opx++]);
+      {
+         mCmdStr = argv[opx++];
+         std::transform(mCmdStr.begin(), mCmdStr.end(), mCmdStr.begin(), ::tolower);
+         parsecmd();
+      }
    } else {
       // NOT installed.
       if (opx>=argc)

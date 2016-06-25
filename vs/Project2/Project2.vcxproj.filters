@@ -7,6 +7,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{2ff9370b-c012-4d33-adbc-eab750131b0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Plugins">
+      <UniqueIdentifier>{f0bfd8c2-d7aa-4f0f-8056-77ce18b40cfc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
@@ -106,7 +109,7 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\dbackup.h">
-      <Filter>Source</Filter>
+      <Filter>Source\Plugins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +189,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\dbackup.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Plugins</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
