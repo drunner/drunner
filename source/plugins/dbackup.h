@@ -9,13 +9,17 @@ class dbackup : public plugin
 {
 public:
    dbackup();
+   virtual std::string getName() const;
+   virtual eResult runCommand() const;
 
+private:
+   eResult include(std::string servicename) const;
+   eResult exclude(std::string servicename) const;
+   eResult run() const;
+   eResult info() const;
+   eResult configure(std::string path) const;
 
-   eResult include(std::string servicename);
-   eResult exclude(std::string servicename);
-   eResult run();
-   eResult info();
-   eResult configure(std::string path);
+   eResult showhelp() const;
 };
 
 

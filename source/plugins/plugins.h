@@ -11,10 +11,8 @@
 class plugin
 {
 public:
-   plugin();
-
    virtual std::string getName() const = 0;
-   virtual eResult runCommand() = 0;
+   virtual eResult runCommand() const = 0;
 };
 
 
@@ -27,8 +25,14 @@ public:
    eResult runcommand() const;
 
 private:
-   std::deque< std::shared_ptr <plugin> > mPlugins;
+   std::deque< std::unique_ptr<plugin> > mPlugins;
 };
+
+
+constexpr unsigned int str2int(const char* str, int h=0)
+{
+   return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
+}
 
 
 
