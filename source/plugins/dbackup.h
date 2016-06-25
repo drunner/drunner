@@ -3,15 +3,20 @@
 
 #include <string>
 #include "enums.h"
+#include "plugins.h"
 
-namespace dbackup
+class dbackup : public plugin
 {
+public:
+   dbackup();
+
+
    eResult include(std::string servicename);
    eResult exclude(std::string servicename);
    eResult run();
    eResult info();
    eResult configure(std::string path);
-}
+};
 
 
 //
