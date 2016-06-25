@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 #include "utils.h"
 #include "globallogger.h"
@@ -111,7 +112,7 @@ eResult dbackup::run() const
    std::vector<std::string> services;
    utils::getAllServices(services);
 
-   std::string datefolder = config.getBackupPath() + "/" + timeutils::getDateTimeStr();
+   std::string datefolder = config.getBackupPath() + "/daily/" + timeutils::getDateTimeStr();
    utils::makedirectory(datefolder, S_700);
 
    logmsg(kLINFO, "Backing up services.");
@@ -126,12 +127,7 @@ eResult dbackup::run() const
          svc.backup(path);
       }
 
-   logmsg(kLINFO, "--------------------------------------------------");
-   logmsg(kLINFO, "Pruning old backups");
-   //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
-
-
-   return kRSuccess;
+   return purgeOldBackups(config);
 }
 
 eResult dbackup::configure(std::string path) const
@@ -209,4 +205,30 @@ COMMANDS
    logmsg(kLINFO, help);
 
    return kRError;
+}
+
+void shifty(std::string src, std::string dst, int n)
+{
+   std::vector<std::string> folders;
+   utils::getFolders(src, folders);
+   std::sort(folders.begin(), folders.end());
+   if (folders.size() > n)
+   {
+
+   }
+}
+
+eResult dbackup::purgeOldBackups(backupConfig & config) const
+{
+   logmsg(kLINFO, "--------------------------------------------------");
+   logmsg(kLINFO, "Pruning old backups");
+   //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
+
+   std::string dailyfolder = config.getBackupPath() + "/daily";
+   std::string weeklyfolder = config.getBackupPath() + "/weekly";
+   std::string monthlyfolder = config.getBackupPath() + "/monthly";
+
+   shifty(dailyfolder, weeklyfolder, 7);
+   shifty(weeklyfolder, monthlyfolder, 4);
+   shifty(monthlyfolder, "", 6);
 }

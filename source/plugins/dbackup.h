@@ -4,6 +4,7 @@
 #include <string>
 #include "enums.h"
 #include "plugins.h"
+#include "backupConfig.h"
 
 class dbackup : public plugin
 {
@@ -18,6 +19,8 @@ private:
    eResult run() const;
    eResult info() const;
    eResult configure(std::string path) const;
+
+   eResult purgeOldBackups(backupConfig & config) const;
 
    eResult showhelp() const;
 };

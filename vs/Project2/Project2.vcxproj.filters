@@ -111,7 +111,10 @@
     <ClInclude Include="..\..\source\plugins\dbackup.h">
       <Filter>Source\Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\plugins\generate_dbackup.h">
+    <ClInclude Include="..\..\source\plugins\generate_plugin_script.h">
+      <Filter>Source\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\plugins\backupConfig.h">
       <Filter>Source\Plugins</Filter>
     </ClInclude>
   </ItemGroup>
@@ -195,6 +198,9 @@
       <Filter>Source\Plugins</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\plugins\dbackup.cpp">
+      <Filter>Source\Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\plugins\backupConfig.cpp">
       <Filter>Source\Plugins</Filter>
     </ClCompile>
   </ItemGroup>

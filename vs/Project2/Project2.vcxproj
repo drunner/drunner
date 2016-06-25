@@ -93,8 +93,9 @@
     <ClInclude Include="..\..\source\globallogger.h" />
     <ClInclude Include="..\..\source\main.h" />
     <ClInclude Include="..\..\source\params.h" />
+    <ClInclude Include="..\..\source\plugins\backupConfig.h" />
     <ClInclude Include="..\..\source\plugins\dbackup.h" />
-    <ClInclude Include="..\..\source\plugins\generate_dbackup.h" />
+    <ClInclude Include="..\..\source\plugins\generate_plugin_script.h" />
     <ClInclude Include="..\..\source\plugins\plugins.h" />
     <ClInclude Include="..\..\source\pstream.h" />
     <ClInclude Include="..\..\source\service.h" />
@@ -126,6 +127,7 @@
     <ClCompile Include="..\..\source\globallogger.cpp" />
     <ClCompile Include="..\..\source\main.cpp" />
     <ClCompile Include="..\..\source\params.cpp" />
+    <ClCompile Include="..\..\source\plugins\backupConfig.cpp" />
     <ClCompile Include="..\..\source\plugins\dbackup.cpp" />
     <ClCompile Include="..\..\source\plugins\plugins.cpp" />
     <ClCompile Include="..\..\source\service.cpp" />

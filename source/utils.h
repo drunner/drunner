@@ -23,7 +23,7 @@ namespace utils
    void makesymlink(const std::string & file, const std::string & link);
    void deltree(const std::string & s);
    void delfile(const std::string & fullpath);
-   bool getFolders(const std::string & parent, std::vector<std::string> & services);
+   bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
