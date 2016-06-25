@@ -9,6 +9,13 @@
 void generate_plugin_script (std::string pluginname)
 {
    std::string vdata = R"EOF(#!/bin/bash
+#
+# ----------------------------------------
+#
+# Plugin launcher for __PLUGINNAME__
+#
+# ----------------------------------------
+
 set -o nounset
 set -e
 
@@ -23,8 +30,6 @@ CMD="help"
 
 drunner "__plugin__${PLUGINNAME}" "${CMD}" "$@"
 
-exit 0
-}
 )EOF";
 
    vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
