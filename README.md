@@ -145,6 +145,13 @@ The convention for exit codes is:
 
 This is to aid Ansible use.
 
+## Backups
+
+dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try 
+```
+dbackup help
+```
+
 ## Security
 See [Docker's Security Statement](https://docs.docker.com/engine/security/security) for information on security and docker.
 
