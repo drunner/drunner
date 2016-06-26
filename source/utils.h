@@ -22,7 +22,9 @@ namespace utils
    void makedirectory(const std::string & d, mode_t mode);
    void makesymlink(const std::string & file, const std::string & link);
    void deltree(const std::string & s);
+   void movetree(const std::string & src, const std::string & dst);
    void delfile(const std::string & fullpath);
+   bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
@@ -31,9 +33,6 @@ namespace utils
 
    bool canrundocker(std::string username);
    bool isindockergroup(std::string username);
-
-   std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
-
    int execv(std::string command, tVecStr & args);
    int bashcommand(std::string command, std::string & output);
 //   int bashcommand(std::string command, const std::vector<std::string> & args, bool printstdout, bool printstderr);
@@ -42,9 +41,11 @@ namespace utils
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
    std::string doquote(std::string s);
-
+   bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
    // case insensitive comparison.
-   bool stringisame(const std::string & s1, const std::string &s2 );
+   bool stringisame(const std::string & s1, const std::string &s2);
+   std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
+   std::string alphanumericfilter(std::string s, bool whitespace);
 
    std::string get_exepath();
    std::string get_exefullpath();
@@ -54,11 +55,7 @@ namespace utils
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);
 
-   bool getFolders(const std::string & parent, std::vector<std::string> & services);
-
    bool isInstalled();
-
-   bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
 
    std::string getHostIP();
 
@@ -72,8 +69,6 @@ namespace utils
 
    void downloadexe(std::string url, std::string filepath);
 
-   std::string alphanumericfilter(std::string s, bool whitespace);
-   
    void getAllServices(std::vector<std::string> & services);
 
    class tempfolder

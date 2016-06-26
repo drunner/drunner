@@ -3,7 +3,7 @@ CC=gcc
 #CXX=g++
 CXX=deps/colorgcc/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch
+INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 
 BOOSTSTATIC=-static -pthread
 CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
@@ -51,7 +51,7 @@ install: $(APP)
 	$(APP) -v ~/temp
 
 permissions:
-	mkdir -p objs/settings objs/generators objs/tests output
+	mkdir -p objs/plugins objs/tests output
 	find . -type d -exec chmod 0755 {} \;
 	find . -type f -exec chmod 0644 {} \;
 	chmod 0755 buildnum/make_buildnum.sh pullall deps/colorgcc/colorgcc.pl

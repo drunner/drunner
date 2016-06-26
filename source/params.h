@@ -13,6 +13,7 @@ public:
 
    const std::string & getVersion() const { return mVersion; }
    eCommand getCommand() const { return mCmd; }
+   std::string getCommandStr() const { return mCmdStr; }
    eLogLevel getLogLevel() const { return mLogLevel; }
 
    edServiceOutput getServiceOutput_hooks() const { return mServiceOutput_hooks; }
@@ -28,6 +29,7 @@ public:
 private:
    std::string mVersion;
    eCommand mCmd;
+   std::string mCmdStr;
    std::vector<std::string> mArgs;
    eLogLevel mLogLevel;
    bool mDevelopmentMode;
@@ -36,7 +38,7 @@ private:
    edServiceOutput mServiceOutput_servicecmd;
 
    std::vector<std::string> mOptions;
-   eCommand parsecmd(std::string s) const;
+   void parsecmd();
    params();
    void setdefaults();
 };

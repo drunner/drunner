@@ -7,6 +7,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{2ff9370b-c012-4d33-adbc-eab750131b0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Plugins">
+      <UniqueIdentifier>{f0bfd8c2-d7aa-4f0f-8056-77ce18b40cfc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
@@ -102,11 +105,17 @@
     <ClInclude Include="..\..\source\timez.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\generate_dbackup.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\..\source\plugins\plugins.h">
+      <Filter>Source\Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\dbackup.h">
-      <Filter>Source</Filter>
+    <ClInclude Include="..\..\source\plugins\dbackup.h">
+      <Filter>Source\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\plugins\generate_plugin_script.h">
+      <Filter>Source\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\plugins\backupConfig.h">
+      <Filter>Source\Plugins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -185,8 +194,14 @@
     <ClCompile Include="..\..\source\timez.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\dbackup.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="..\..\source\plugins\plugins.cpp">
+      <Filter>Source\Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\plugins\dbackup.cpp">
+      <Filter>Source\Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\plugins\backupConfig.cpp">
+      <Filter>Source\Plugins</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

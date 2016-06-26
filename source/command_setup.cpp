@@ -9,7 +9,6 @@
 #include "globalcontext.h"
 #include "generate_validator_image.h"
 #include "drunnercompose.h"
-#include "generate_dbackup.h"
 
 namespace command_setup
 {
@@ -44,8 +43,8 @@ namespace command_setup
       utils::makesymlink(settings.getPath_Root() + "/drunner", bindir + "/drunner");
 
       // -----------------------------------------------------------------------------
-      // generate dbackup script
-      generate_dbackup();
+      // generate plugin scripts
+      GlobalContext::getPlugins()->generate_plugin_scripts();
 
       // -----------------------------------------------------------------------------
       // get latest root util image.
