@@ -140,6 +140,11 @@ eResult dbackup::configure(std::string path) const
       logmsg(kLERROR, "The path " + path + " does not exist.");
    path = utils::getcanonicalpath(path);
 
+   // create folders.
+   utils::makedirectory(path + "/daily", S_700);
+   utils::makedirectory(path + "/weekly", S_700);
+   utils::makedirectory(path + "/monthly", S_700);
+
    if (utils::stringisame(config.getBackupPath(), path))
    {
       logmsg(kLINFO, "Path unchanged.");
@@ -199,7 +204,7 @@ COMMANDS
    dbackup include SERVICENAME
    dbackup exclude SERVICENAME
    dbackup list
-   dbackup run
+   [PASS=?] dbackup run
 )EOF";
 
    logmsg(kLINFO, help);
@@ -207,28 +212,72 @@ COMMANDS
    return kRError;
 }
 
-void shifty(std::string src, std::string dst, int n)
+void shifty(std::string src, std::string dst, std::chrono::hours interval, unsigned int numtokeep)
 {
    std::vector<std::string> folders;
    utils::getFolders(src, folders);
    std::sort(folders.begin(), folders.end());
-   if (folders.size() > n)
-   {
+   if (folders.size() <= numtokeep)
+      return; // nothing to do.
 
+   // move/delete anything old
+   for (auto f : folders)
+   {
+      auto tf = timeutils::dateTimeStr2Time(f);
+      if ((std::chrono::system_clock::now() - tf) > interval)
+      { // old
+         if (dst.length() != 0)
+         { // shift
+            logmsg(kLINFO, "Moving backup " + f + " to "+dst);
+            utils::movetree(src + "/" + f, dst + "/" + f);
+         }
+         else
+         {
+            logmsg(kLINFO, "Deleting old backup " + src + "/" + f);
+            utils::deltree(src + "/" + f);
+         }
+      }
    }
+
+   // prune anything unneeded that puts us over storage limit.
+   for (unsigned int i = 0; i < folders.size(); ++i)
+   { // check trio folder[i]..[i+2]
+      std::chrono::system_clock::time_point f0, f2;
+
+      f0 = timeutils::dateTimeStr2Time(folders[i]);
+      f2 = timeutils::dateTimeStr2Time(folders[i+2]);
+
+      if (f2 < f0)
+         logmsg(kLERROR, "Backup folders after sorting are in incorrect order. :/");
+
+      if (f2 - f0 < interval)
+      { // f1 is redundant. Delete it!
+         logmsg(kLINFO, "Deleting unneeded backup " + src+"/"+folders[i + 1]);
+         utils::deltree(src + "/" + folders[i + 1]);
+         folders.erase(folders.begin() + i + 1);
+         if (folders.size() <= numtokeep)
+            return; // we've done enough
+         --i; // try again with folders[i]..[i+2]
+      }
+   }
+
 }
 
 eResult dbackup::purgeOldBackups(backupConfig & config) const
 {
    logmsg(kLINFO, "--------------------------------------------------");
-   logmsg(kLINFO, "Pruning old backups");
+   logmsg(kLINFO, "Managing older backups");
    //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
 
    std::string dailyfolder = config.getBackupPath() + "/daily";
    std::string weeklyfolder = config.getBackupPath() + "/weekly";
    std::string monthlyfolder = config.getBackupPath() + "/monthly";
 
-   shifty(dailyfolder, weeklyfolder, 7);
-   shifty(weeklyfolder, monthlyfolder, 4);
-   shifty(monthlyfolder, "", 6);
+   shifty(dailyfolder, weeklyfolder, std::chrono::hours(24),7);
+   shifty(weeklyfolder, monthlyfolder, std::chrono::hours(24*7),4);
+   shifty(monthlyfolder, "", std::chrono::hours(24*7*30),6);
+
+   logmsg(kLINFO, "Done");
+
+   return kRSuccess;
 }

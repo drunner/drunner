@@ -9,7 +9,6 @@
 #include "globalcontext.h"
 #include "generate_validator_image.h"
 #include "drunnercompose.h"
-#include "generate_dbackup.h"
 
 namespace command_setup
 {

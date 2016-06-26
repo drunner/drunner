@@ -22,6 +22,7 @@ namespace utils
    void makedirectory(const std::string & d, mode_t mode);
    void makesymlink(const std::string & file, const std::string & link);
    void deltree(const std::string & s);
+   void movetree(const std::string & src, const std::string & dst);
    void delfile(const std::string & fullpath);
    bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 

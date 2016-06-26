@@ -58,10 +58,19 @@ namespace timeutils
 
       aname.erase(pos);
 
+      return dateTimeStr2Time(aname);
+   }
+
+   std::chrono::system_clock::time_point dateTimeStr2Time(std::string dts)
+   {
       std::tm tm = {};
-      strptime(aname.c_str(), "%Y_%m_%d__%H_%M_%S", &tm);
+      char * rval = strptime(dts.c_str(), "%Y_%m_%d__%H_%M_%S", &tm);
+      if (rval == NULL)
+         logmsg(kLERROR, "Invalid time conversion - can't process " + dts);
+
       auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
       return tp;
    }
+
   
 }

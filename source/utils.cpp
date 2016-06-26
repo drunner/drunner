@@ -13,6 +13,7 @@
 #include <utility>
 #include <errno.h>
 #include <stdlib.h>
+#include <system_error>
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
@@ -396,6 +397,13 @@ namespace utils
       }
       else
          logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
+   }
+
+   void movetree(const std::string &src, const std::string &dst)
+   {
+      //std::error_code & ec;
+      if (0!= std::rename(src.c_str(), dst.c_str()))
+         logmsg(kLERROR, "Unable to move " + src + " to " + dst);
    }
 
    void delfile(const std::string & fullpath)

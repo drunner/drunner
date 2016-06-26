@@ -20,6 +20,8 @@ private:
 namespace timeutils
 {
    std::string getDateTimeStr();
+   std::chrono::system_clock::time_point dateTimeStr2Time(std::string dts);
+
    std::string getArchiveName(std::string servicename);
    std::chrono::system_clock::time_point archiveName2Time(std::string aname);
 };
