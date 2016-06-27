@@ -53,13 +53,6 @@ void service::createLaunchScript() const
 	logmsg(kLDEBUG, "Created launch script at " + target);
 }
 
-void service::deleteLaunchScript() const
-{
-   std::string target = utils::get_usersbindir() + "/" + getName();
-   utils::delfile(target);
-}
-
-
 void service::createVolumes(const drunnerCompose * const drc)
 {
    if (drc == NULL)
@@ -200,7 +193,7 @@ eResult service::uninstall()
 
    // delete launch script
    logmsg(kLINFO, "Deleting launch script");
-   deleteLaunchScript();
+   utils::delfile(getPathLaunchScript());
 
    if (utils::fileexists(getPath()))
       logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath());
@@ -214,7 +207,7 @@ eResult service::uninstall()
 eResult service::obliterate()
 {
    if (!utils::fileexists(getPath()))
-      logmsg(kLERROR, "Can't obliterate " + getName() + " - it does not exist.");
+      logmsg(kLERROR, "Coding error - obliterate should never be run if path doesn't exist.");
 
    servicehook hook(this, "obliterate");
    hook.starthook(); 
@@ -238,23 +231,61 @@ eResult service::obliterate()
          logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");
    }// [end] deleting docker volumes.
 
-   // delete the host volumes
-   logmsg(kLINFO, "Obliterating the hostVolumes (environment and servicerunner)");
-   utils::deltree(getPathHostVolume());
-
-   // delete the service tree.
-   logmsg(kLINFO, "Obliterating all of the dService files");
-   utils::deltree(getPath());
-
-   // delete launch script
-   logmsg(kLINFO, "Deleting launch script");
-   deleteLaunchScript();
-
    hook.endhook();
-
-   logmsg(kLINFO, "Obliterated " + getName());
    return kRSuccess;
 }
+
+
+eResult service_obliterate::obliterate()
+{
+   eResult rval = kRNoChange;
+
+   if (utils::fileexists(getPath()))
+   {
+      try
+      {
+         rval = kRError;
+         service svc(getName());
+         rval = svc.obliterate();
+      }
+      catch (const eExit & e)
+      {
+      }
+   }
+   else
+      logmsg(kLWARN, "There's no "+getName()+" directory, so can't obliterate its Docker volumes.");
+
+   if (utils::fileexists(getPath()))
+   { // delete the service tree.
+      logmsg(kLINFO, "Obliterating all of the dService files");
+      utils::deltree(getPath());
+      rval = kRSuccess;
+   }
+
+   // delete the host volumes
+   if (utils::fileexists(getPathHostVolume()))
+   {
+      logmsg(kLINFO, "Obliterating the hostVolumes (environment and servicerunner)");
+      utils::deltree(getPathHostVolume());
+      rval = kRSuccess;
+   }
+
+   // delete launch script
+   if (utils::fileexists(getPathLaunchScript()))
+   {
+      logmsg(kLINFO, "Obliterating launch script");
+      utils::delfile(getPathLaunchScript());
+      rval = kRSuccess;
+   }
+
+   if (rval == kRNoChange)
+      logmsg(kLWARN, "Couldn't find any trace of dService " + getName() + " - no changes made.");
+   else
+      logmsg(kLINFO, "Obliterated " + getName());
+   return rval;
+}
+
+
 
 eResult service::recover()
 {

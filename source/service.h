@@ -26,9 +26,16 @@ public:
    std::string getPathServiceRunner() const;
    std::string getPathDockerCompose() const;
    std::string getName() const;
-
+   std::string getPathLaunchScript() const;
 protected:
    const std::string mName;
+};
+
+class service_obliterate : public servicepaths
+{
+public:
+   service_obliterate(const std::string & servicename);
+   eResult obliterate();
 };
 
 class cServiceEnvironment : protected settingsbash
@@ -79,7 +86,6 @@ private:
    void ensureDirectoriesExist() const;
    void createVolumes(const drunnerCompose * const drc);
    void createLaunchScript() const;
-   void deleteLaunchScript() const;
    std::string getUserID(std::string imagename) const;
 
    static std::string loadImageName(const std::string & servicename, std::string imagename);

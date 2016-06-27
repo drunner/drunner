@@ -95,6 +95,11 @@ std::string servicepaths::getName() const
    return mName;
 }
 
+std::string servicepaths::getPathLaunchScript() const
+{
+   return utils::get_usersbindir() + "/" + getName();
+}
+
 void service::ensureDirectoriesExist() const
 {
    // create service's drunner and temp directories on host.
@@ -297,4 +302,8 @@ std::string cServiceEnvironment::index2key(unsigned int i) const
 std::string cServiceEnvironment::get_value(const std::string & key) const
 { 
    return getString(key); 
+}
+
+service_obliterate::service_obliterate(const std::string & servicename) : servicepaths(servicename)
+{
 }
