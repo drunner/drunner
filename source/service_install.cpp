@@ -28,7 +28,7 @@ std::string service::getUserID(std::string imagename) const
 	return op;
 }
 
-void service::createLaunchScript()
+void service::createLaunchScript() const
 {
 	std::string target = utils::get_usersbindir() + "/" + getName();
 
@@ -53,6 +53,11 @@ void service::createLaunchScript()
 	logmsg(kLDEBUG, "Created launch script at " + target);
 }
 
+void service::deleteLaunchScript() const
+{
+   std::string target = utils::get_usersbindir() + "/" + getName();
+   utils::delfile(target);
+}
 
 
 void service::createVolumes(const drunnerCompose * const drc)
@@ -189,12 +194,20 @@ eResult service::uninstall()
    servicehook hook(this, "uninstall");
    hook.starthook();
 
+   // delete the service tree.
+   logmsg(kLINFO, "Obliterating all of the dService files");
    utils::deltree(getPath());
+
+   // delete launch script
+   logmsg(kLINFO, "Deleting launch script");
+   deleteLaunchScript();
 
    if (utils::fileexists(getPath()))
       logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath());
 
    hook.endhook();
+
+   logmsg(kLINFO, "Uninstalled " + getName());
    return kRSuccess;
 }
 
@@ -204,7 +217,7 @@ eResult service::obliterate()
       logmsg(kLERROR, "Can't obliterate " + getName() + " - it does not exist.");
 
    servicehook hook(this, "obliterate");
-   hook.starthook();
+   hook.starthook(); 
 
    logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
    {// [start] deleting docker volumes.
@@ -232,6 +245,12 @@ eResult service::obliterate()
    // delete the service tree.
    logmsg(kLINFO, "Obliterating all of the dService files");
    utils::deltree(getPath());
+
+   // delete launch script
+   logmsg(kLINFO, "Deleting launch script");
+   deleteLaunchScript();
+
+   hook.endhook();
 
    logmsg(kLINFO, "Obliterated " + getName());
    return kRSuccess;

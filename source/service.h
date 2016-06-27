@@ -78,7 +78,8 @@ public:
 private:
    void ensureDirectoriesExist() const;
    void createVolumes(const drunnerCompose * const drc);
-   void createLaunchScript();
+   void createLaunchScript() const;
+   void deleteLaunchScript() const;
    std::string getUserID(std::string imagename) const;
 
    static std::string loadImageName(const std::string & servicename, std::string imagename);
