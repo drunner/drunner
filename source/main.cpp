@@ -258,8 +258,9 @@ int mainroutines::process()
       {
          if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME");
-         service svc(p.getArg(0));
-         return (int)svc.obliterate();
+
+         service_obliterate svco(p.getArg(0));
+         return (int)svco.obliterate();
       }
 
       case c_help:

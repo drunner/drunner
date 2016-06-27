@@ -10,15 +10,19 @@ void generate_plugin_script (std::string pluginname)
 {
    std::string vdata = R"EOF(#!/bin/bash
 #
-# ----------------------------------------
+# -----------------------------------------
 #
 # Plugin launcher for __PLUGINNAME__
 #
-# ----------------------------------------
+# This script must be in the same directory
+# as the drunner link ($HOME/bin)
+#
+# -----------------------------------------
 
 set -o nounset
 set -e
 
+MYDIR=$( dirname "$(readlink -f "$0")" )
 PLUGINNAME="__PLUGINNAME__"
 
 function die { echo "$1"; exit 1 ; }
@@ -28,7 +32,7 @@ function die { echo "$1"; exit 1 ; }
 CMD="help"
 [ "$#" -eq 0 ] || { CMD=$1 ; shift ; }
 
-drunner "__plugin__${PLUGINNAME}" "${CMD}" "$@"
+"${MYDIR}/drunner" "__plugin__${PLUGINNAME}" "${CMD}" "$@"
 
 )EOF";
 
