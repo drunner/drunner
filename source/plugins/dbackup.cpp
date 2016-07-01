@@ -175,10 +175,14 @@ eResult dbackup::info() const
    logmsg(kLINFO, "SERVICES TO BE BACKED UP:");
    for (auto const & s : services)
    {
+#ifdef _WIN32
+         logmsg(kLINFO, (config.isEnabled(s) ? "[Y] " : "[N] ") + s);
+#else
       if (config.isEnabled(s))
          logmsg(kLINFO, "\e[32m\u2714\e[0m " + s);
       else
          logmsg(kLINFO, "\e[31m\e[1m\u2718\e[0m " + s);
+#endif
    }
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Backups will be saved to:");

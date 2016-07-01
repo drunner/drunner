@@ -3,6 +3,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <errno.h>
 
 #ifdef _WIN32
 #   include <io.h>
@@ -52,8 +53,6 @@ static inline int my_chmod(const char * path, mode_t mode)
    return (result);
 }
 #else
-
-#include <errno.h>
 
 static inline int my_chmod(const char * path, mode_t mode)
 {

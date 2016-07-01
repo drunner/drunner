@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <sys/types.h>
-#include <unistd.h>
 #include <sstream>
 
 #include "globalcontext.h"
@@ -50,9 +49,12 @@ int main(int argc, char **argv)
 
 void mainroutines::check_basics()
 {
+
+#ifndef _WIN32
    uid_t euid=geteuid();
    if (euid == 0)
 	   fatal("Please run as a standard user, not as root.");
+#endif
 
    std::string user=utils::getUSER();
    if (!utils::isindockergroup(user))

@@ -12,7 +12,7 @@ eExit::eExit(const char * msg, int exitCode) : mExitCode(exitCode)
 
 eExit::eExit(std::string msg, int exitCode) : mExitCode(exitCode)
 {
-   std::cerr << termcolor::red << msg << termcolor::reset << std::endl;
+   std::cerr << termcolor::red << msg.c_str() << termcolor::reset << std::endl;
 }
 
 int eExit::exitCode() const throw() // we guarentee not to throw an exception.

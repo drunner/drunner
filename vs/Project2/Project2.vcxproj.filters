@@ -123,6 +123,9 @@
     <ClInclude Include="..\..\source\chmod.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\win\getopt.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">

@@ -71,12 +71,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -117,6 +117,7 @@
     <ClInclude Include="..\..\source\timez.h" />
     <ClInclude Include="..\..\source\utils.h" />
     <ClInclude Include="..\..\source\utils_docker.h" />
+    <ClInclude Include="..\..\source\win\getopt.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp" />

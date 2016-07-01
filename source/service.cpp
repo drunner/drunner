@@ -1,5 +1,8 @@
-#include <unistd.h>
 #include <sstream>
+
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 #include "service.h"
 #include "globallogger.h"
@@ -236,7 +239,11 @@ void validateImage(std::string imagename)
       else
          logmsg(kLERROR, op);
    }
-   logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.");
+   logmsg(kLINFO, 
+#ifndef _WIN32
+      "\u2714  " + 
+#endif      
+      imagename + " is dRunner compatible.");
 }
 
 

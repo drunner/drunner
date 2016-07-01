@@ -2,7 +2,7 @@
 #include <ctime>
 #include <sstream>
 #include <fstream>
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 
 #include "enums.h"
 #include "params.h"
@@ -75,7 +75,8 @@ void logmsg(eLogLevel level, std::string s)
 
    std::string info = getheader(level);
    std::string s2=utils::replacestring(s,"\n","\n"+info);
-   boost::erase_all(s2, "\r");
+   //boost::erase_all(s2, "\r");
+   s2.erase(std::remove(s2.begin(), s2.end(), '\r'), s2.end());
 
    logverbatim(level,info+s2+"\n");
 }
