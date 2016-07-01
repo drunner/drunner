@@ -117,6 +117,12 @@
     <ClInclude Include="..\..\source\plugins\backupConfig.h">
       <Filter>Source\Plugins</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\deps\catch\catch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\chmod.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">

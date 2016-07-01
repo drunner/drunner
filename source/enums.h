@@ -3,13 +3,15 @@
 
 #include <sys/stat.h>
 
+#include "chmod.h"
+
 
 // some statics.
 
 static const mode_t S_ALLREAD = S_IRUSR | S_IRGRP | S_IROTH;
-static const mode_t S_755 = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-static const mode_t S_777 = S_IRWXU | S_IRWXG | S_IRWXO;
-static const mode_t S_700  = S_IRWXU;
+static const mode_t S_700 = S_IRUSR | S_IWUSR | S_IXUSR;
+static const mode_t S_755 = S_700 | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+static const mode_t S_777 = S_755 | S_IWGRP | S_IWOTH;
 // enumerators used often.
 
 enum eResult

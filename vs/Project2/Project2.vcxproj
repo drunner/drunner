@@ -71,12 +71,19 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
+    <ClInclude Include="..\..\deps\catch\catch.h" />
     <ClInclude Include="..\..\source\buildnum.h" />
+    <ClInclude Include="..\..\source\chmod.h" />
     <ClInclude Include="..\..\source\command_dev.h" />
     <ClInclude Include="..\..\source\command_general.h" />
     <ClInclude Include="..\..\source\command_setup.h" />

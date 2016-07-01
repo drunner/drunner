@@ -1,4 +1,4 @@
-#include <catch.h>
+#include "catch.h"
 #include "settingsbash.h"
 #include "utils.h"
 

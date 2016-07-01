@@ -1,6 +1,7 @@
 #include "generate.h"
 #include "globallogger.h"
 #include "utils.h"
+#include "chmod.h"
 
 void generate(
    const std::string & fullpath,
@@ -20,7 +21,7 @@ void generate(
    ofs << content;
    ofs.close();
 
-   if (chmod(fullpath.c_str(), mode)!=0)
+   if (my_chmod(fullpath.c_str(), mode)!=0)
 //   if (utils::bashcommand("chmod a+r "+fullpath,op) != 0)
       logmsg(kLERROR, "Unable to change permissions on "+fullpath);
    logmsg(kLDEBUG,"Created "+fullpath);

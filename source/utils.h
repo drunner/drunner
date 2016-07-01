@@ -12,8 +12,13 @@ typedef std::vector<std::string> tVecStr;
 // Shell utilities
 namespace utils
 {
+#ifdef _WIN32
+   const std::string kCODE_S = "";
+   const std::string kCODE_E = "";
+#else
    const std::string kCODE_S="\e[32m";
    const std::string kCODE_E="\e[0m";
+#endif
 
    std::string getabsolutepath(std::string path);
    std::string getcanonicalpath(std::string path);

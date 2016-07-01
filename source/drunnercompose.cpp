@@ -4,7 +4,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include "yaml-cpp/yaml.h"
 
@@ -26,7 +29,13 @@ drunnerCompose::drunnerCompose(const service & svc) :
 
 void drunnerCompose::setenv_log(std::string key, std::string val) const
 {
+#ifdef _WIN32
+   _putenv_s(key.c_str(), val.c_str());
+#else
    setenv(key.c_str(), val.c_str(), 1);
+#endif
+
+
    logmsg(kLDEBUG, "environment: "+key + "=" + val);
 }
 

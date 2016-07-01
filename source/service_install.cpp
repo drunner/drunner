@@ -13,6 +13,7 @@
 #include "servicehook.h"
 #include "sh_servicevars.h"
 #include "drunnercompose.h"
+#include "chmod.h"
 
 //using namespace utils;
 
@@ -47,7 +48,7 @@ void service::createLaunchScript() const
 	ofs.close();
 
 	// fix permissions
-	if (chmod(target.c_str(), S_700) != 0)
+	if (my_chmod(target.c_str(), S_700) != 0)
 		logmsg(kLERROR, "Unable to change permissions on " + target);
 
 	logmsg(kLDEBUG, "Created launch script at " + target);

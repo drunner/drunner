@@ -5,10 +5,8 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include <memory>
 #include <utility>
 #include <errno.h>
@@ -20,7 +18,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
-#include <unistd.h>
 
 #include "pstream.h"
 #include "utils.h"
@@ -29,6 +26,7 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
+#include "chmod.h"
 
 namespace utils
 {
@@ -369,7 +367,7 @@ namespace utils
       if (rslt==kRNoChange)
          logmsg(kLDEBUG,d+" exists. Unchanged.");
 
-      if (chmod(d.c_str(), mode)!=0)
+      if (my_chmod(d.c_str(), mode)!=0)
          logmsg(kLERROR, "Unable to change permissions on "+d);
    }
 
@@ -507,7 +505,7 @@ namespace utils
       if (rslt == kRNoChange)
          die(d+ " already exists. Can't use as temp folder. Aborting.");
 
-      if (chmod(d.c_str(), S_777) != 0)
+      if (my_chmod(d.c_str(), S_777) != 0)
          die("Unable to change permissions on " + d);
    }
 
