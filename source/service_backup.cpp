@@ -1,7 +1,5 @@
 #include <cstdlib>
 
-#include <boost/filesystem.hpp>
-
 #include "service.h"
 #include "utils.h"
 #include "sh_backupvars.h"
@@ -82,7 +80,6 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // compress everything together
-   boost::filesystem::path fullpath(bf);
    bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.enc",false);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
@@ -92,17 +89,15 @@ void service::backup(const std::string & backupfile)
 
    // move compressed file to target dir.
    std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar.enc");
-   std::string dest = fullpath.string();
    if (!utils::fileexists(source))
       logmsg(kLERROR, "Expected archive not found at " + source);
-   if (0 != rename(source.c_str(), dest.c_str()))
-      //exit(0);
-      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + dest);
+   if (0 != rename(source.c_str(), bf.c_str()))
+      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
 
    logmsg(kLINFO, "Time to move archive:             " + tstep.getelpased());
    tstep.restart();
 
-   logmsg(kLINFO, "Archive of service " + getName() + " created at " + dest);
+   logmsg(kLINFO, "Archive of service " + getName() + " created at " + bf);
    logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
 }
 

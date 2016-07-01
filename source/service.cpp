@@ -239,11 +239,12 @@ void validateImage(std::string imagename)
       else
          logmsg(kLERROR, op);
    }
-   logmsg(kLINFO, 
-#ifndef _WIN32
-      "\u2714  " + 
+
+#ifdef _WIN32
+   logmsg(kLINFO, "[Y] " + imagename + " is dRunner compatible.");
+#else
+   logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.");
 #endif      
-      imagename + " is dRunner compatible.");
 }
 
 

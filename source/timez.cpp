@@ -1,9 +1,14 @@
-#include "timez.h"
-#include "globallogger.h"
-
 #include <sstream>
 #include <ctime>
 #include <time.h>
+
+#include "timez.h"
+#include "globallogger.h"
+
+#ifdef _WIN32
+#include "strptime.h"
+#endif
+
 
 timez::timez()
 {

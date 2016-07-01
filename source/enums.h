@@ -3,8 +3,9 @@
 
 #include <sys/stat.h>
 
+#ifdef _WIN32
 #include "chmod.h"
-
+#endif
 
 // some statics.
 

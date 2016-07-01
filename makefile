@@ -51,7 +51,7 @@ install: $(APP)
 	$(APP) -v ~/temp
 
 permissions:
-	mkdir -p objs/plugins objs/tests output
+	mkdir -p objs/plugins objs/tests objs/win output
 	find . -type d -exec chmod 0755 {} \;
 	find . -type f -exec chmod 0644 {} \;
 	chmod 0755 buildnum/make_buildnum.sh pullall deps/colorgcc/colorgcc.pl

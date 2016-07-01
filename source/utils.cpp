@@ -26,7 +26,10 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
+
+#ifdef _WIN32
 #include "chmod.h"
+#endif
 
 namespace utils
 {
@@ -367,7 +370,7 @@ namespace utils
       if (rslt==kRNoChange)
          logmsg(kLDEBUG,d+" exists. Unchanged.");
 
-      if (my_chmod(d.c_str(), mode)!=0)
+      if (chmod(d.c_str(), mode)!=0)
          logmsg(kLERROR, "Unable to change permissions on "+d);
    }
 
@@ -505,7 +508,7 @@ namespace utils
       if (rslt == kRNoChange)
          die(d+ " already exists. Can't use as temp folder. Aborting.");
 
-      if (my_chmod(d.c_str(), S_777) != 0)
+      if (chmod(d.c_str(), S_777) != 0)
          die("Unable to change permissions on " + d);
    }
 
@@ -527,10 +530,8 @@ namespace utils
    void tempfolder::tidy()
    {
       std::string op;
-      if (bashcommand("rm -rf " + mPath + " 2>&1", op) != 0)
-         std::cerr << "ERROR: failed to remove " + mPath << std::endl; // don't throw on dtor.
-      else
-         logmsg(kLDEBUG, "Recursively deleted " + mPath);
+      utils::deltree(mPath);
+      logmsg(kLDEBUG, "Recursively deleted " + mPath);
    }
 
 

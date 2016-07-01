@@ -1,12 +1,12 @@
 #ifndef __CHMOD_H
 #define __CHMOD_H
 
+#ifdef _WIN32
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
-
-#ifdef _WIN32
-#   include <io.h>
+#include <io.h>
 
 typedef int mode_t;
 
@@ -41,30 +41,12 @@ static const mode_t S_IXOTH = 0x00010000;           ///< does nothing
 #   endif
 static const mode_t MS_MODE_MASK = 0x0000ffff;           ///< low word
 
-static inline int my_chmod(const char * path, mode_t mode)
+static inline int chmod(const char * path, mode_t mode)
 {
    int result = _chmod(path, (mode & MS_MODE_MASK));
-
-   if (result != 0)
-   {
-      result = errno;
-   }
-
-   return (result);
+   return result;
 }
-#else
 
-static inline int my_chmod(const char * path, mode_t mode)
-{
-   int result = chmod(path, mode);
-
-   if (result != 0)
-   {
-      result = errno;
-   }
-
-   return (result);
-}
 #endif
 
 #endif

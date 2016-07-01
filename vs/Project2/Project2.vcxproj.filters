@@ -10,6 +10,9 @@
     <Filter Include="Source\Plugins">
       <UniqueIdentifier>{f0bfd8c2-d7aa-4f0f-8056-77ce18b40cfc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\win">
+      <UniqueIdentifier>{46cc1b8a-1c85-4225-af3b-ecc6f8e87987}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h">
@@ -120,11 +123,14 @@
     <ClInclude Include="..\..\deps\catch\catch.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\chmod.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\win\getopt.h">
-      <Filter>Source</Filter>
+      <Filter>Source\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\win\chmod.h">
+      <Filter>Source\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\win\strptime.h">
+      <Filter>Source\win</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\plugins\backupConfig.cpp">
       <Filter>Source\Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\win\strptime.cpp">
+      <Filter>Source\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

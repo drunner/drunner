@@ -83,7 +83,6 @@
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
     <ClInclude Include="..\..\deps\catch\catch.h" />
     <ClInclude Include="..\..\source\buildnum.h" />
-    <ClInclude Include="..\..\source\chmod.h" />
     <ClInclude Include="..\..\source\command_dev.h" />
     <ClInclude Include="..\..\source\command_general.h" />
     <ClInclude Include="..\..\source\command_setup.h" />
@@ -117,7 +116,9 @@
     <ClInclude Include="..\..\source\timez.h" />
     <ClInclude Include="..\..\source\utils.h" />
     <ClInclude Include="..\..\source\utils_docker.h" />
+    <ClInclude Include="..\..\source\win\chmod.h" />
     <ClInclude Include="..\..\source\win\getopt.h" />
+    <ClInclude Include="..\..\source\win\strptime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="..\..\source\timez.cpp" />
     <ClCompile Include="..\..\source\utils.cpp" />
     <ClCompile Include="..\..\source\utils_docker.cpp" />
+    <ClCompile Include="..\..\source\win\strptime.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
