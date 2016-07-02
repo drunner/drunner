@@ -2,13 +2,13 @@
 
 POCOVER="poco-1.7.3"
 
-sudo mkdir /poco && chmod a+rwx /poco
-cd /poco
-wget http://pocoproject.org/releases/${POCOVER}/${POCOVER}.tar.gz
-gunzip ${POCOVER}.tar.gz
-tar xf ${POCOVER}.tar
-cd ${POCOVER}
-./configure
-make -j4
+sudo mkdir /poco
+sudo cd /poco
+sudo wget http://pocoproject.org/releases/${POCOVER}/${POCOVER}.tar.gz
+sudo gunzip ${POCOVER}.tar.gz
+sudo tar xf ${POCOVER}.tar
+sudo cd ${POCOVER}
+sudo ./configure
+sudo make -j4
 sudo make install
 
