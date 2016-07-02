@@ -15,8 +15,9 @@ before_install:
    - docker run hello-world
    - wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
    - sudo mv docker-compose* /usr/local/bin/docker-compose
-   - sudo mkdir /poco && cd /poco && wget http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3.tar.gz && gunzip poco* && tar xvf poco*
-   - sudo cd /poco/poco-1.7.3 && ./configure && make -j4 && make install
+   - mkdir poco && wget --output-document=poco/poco.tar.gz http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3.tar.gz
+   - cd poco && gunzip poco.tar.gz && tar xvf poco.tar
+   - cd poco/poco-1.7.3 && ./configure && make -j4 && sudo make install
 script: 
    - make
    - make install
