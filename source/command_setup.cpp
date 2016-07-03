@@ -9,6 +9,8 @@
 #include "generate_validator_image.h"
 #include "drunnercompose.h"
 
+#include <Poco/Process.h>
+
 namespace command_setup
 {
 
@@ -94,10 +96,9 @@ namespace command_setup
          oss << arg << " ";
       logmsg(kLDEBUG, utils::trim_copy(oss.str()));
 
-      utils::execv(trgt, args);
-
-      logmsg(kLERROR, "Exec failed.");
-      return 1;
+      Poco::ProcessHandle ph = Poco::Process::launch(trgt, args);
+      int result = ph.wait();
+      return result;
    }
 
 }

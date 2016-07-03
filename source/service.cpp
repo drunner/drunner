@@ -187,10 +187,14 @@ const std::string service::getImageName() const
 
 void service::enter()
 {
+#ifdef _WIN32
+   logmsg(kLERROR, "Enter is not implemented on Windows.");
+#else
    servicehook hook(this, "enter");
    hook.starthook();
 
    execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
+#endif
 }
 
 int service::status()
@@ -228,9 +232,8 @@ void validateImage(std::string imagename)
       logmsg(kLDEBUG, imagename + " should be a production image.");
 
    std::string op;
-   int rval = utils::bashcommand(
-      "docker run --rm -v \"" + GlobalContext::getSettings()->getPath_Support() +
-      ":/support\" \"" + imagename + "\" /support/validator-image 2>&1", op);
+   std::vector<std::string> args = { "run","--rm","-v",GlobalContext::getSettings()->getPath_Support() + ":/support", imagename , "/support/validator-image" };
+   int rval = utils::runcommand("docker", args, op);
 
    if (rval != 0)
    {

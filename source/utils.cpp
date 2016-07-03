@@ -13,13 +13,18 @@
 #include <stdlib.h>
 #include <system_error>
 
-#include <boost/filesystem.hpp>
-#include <boost/locale.hpp>
-#include <boost/algorithm/string.hpp>
+#include <Poco/String.h>
+#include <Poco/Process.h>
+#include <Poco/PipeStream.h>
+#include <Poco/StreamCopier.h>
+
+//#include <boost/filesystem.hpp>
+//#include <boost/locale.hpp>
+//#include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
 
-#include "pstream.h"
+//#include "pstream.h"
 #include "utils.h"
 #include "exceptions.h"
 #include "dservicelogger.h"
@@ -42,7 +47,8 @@ namespace utils
 
    bool stringisame(const std::string & s1, const std::string &s2 )
    {
-      return boost::iequals(s1,s2);
+      return (0 == Poco::icompare(s1, s2)); // http://pocoproject.org/slides/040-StringsAndFormatting.pdf
+      //return boost::iequals(s1,s2);
    }
 
    // trim from left
@@ -87,25 +93,22 @@ namespace utils
        return utils::trim(s, t);
    }
 
-   int execv(std::string command, tVecStr & args)
+   int runcommand(std::string command, std::vector<std::string> args)
    {
-      std::vector<char*> argv;
-      for (auto & arg : args)
-         argv.push_back( &arg.front() );
-      argv.push_back(NULL);
-      return ::execv(command.c_str(), argv.data());
+      std::string out, err;
+      runcommand(command, args, out, err);
    }
-
-   int bashcommand(std::string command, std::string & output)
+   int runcommand(std::string command, std::vector<std::string> args, std::string &out)
    {
-      redi::ipstream in(command);
-      std::string str;
-      while (in >> str)
-         output+=trim_copy(str)+" ";
-      in.close();
-      utils::trim(output);
-      int status = in.rdbuf()->status();
-      return WEXITSTATUS(status);
+      Poco::Pipe outpipe, errpipe;
+      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &errpipe);
+      Poco::PipeInputStream istrout(outpipe), istrerr(errpipe);
+
+      Poco::StreamCopier::copyToString(istrout, out);
+      Poco::StreamCopier::copyToString(istrerr, out); // append
+
+      int result = ph.wait();
+      return result;
    }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)

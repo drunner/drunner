@@ -13,7 +13,8 @@ using namespace utils;
 
    bool isrepo(const std::string & d,std::string & branch)
    {
-      int r=bashcommand("git rev-parse --abbrev-ref HEAD "+d+" 2>/dev/null",branch);
+      std::vector<std::string> args = { "rev-parse", "--abbrev-ref","HEAD",d };
+      int r = runcommand("git", args, branch);
       // drop everything after branch name
       branch.erase( branch.find_first_of("\r\n ") );
       logmsg(kLDEBUG,"Branch:           "+branch);
@@ -45,10 +46,10 @@ using namespace utils;
          }
 
       // build it
-      std::string op;
-      int r=bashcommand("docker build -t "+branchedimagename+" "+pwd,op);
-      if (r!=0) logmsg(kLERROR,"docker build faild.\n"+op);
-
+      std::vector<std::string> args = { "build", "-t",branchedimagename,pwd };
+      std::string oout;
+      int r = runcommand("docker", args, oout);
+      if (r!=0) logmsg(kLERROR,"docker build faild.\n"+ oout);
    }
 
 

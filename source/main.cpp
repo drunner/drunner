@@ -72,8 +72,8 @@ void mainroutines::check_basics()
    if (!utils::commandexists("docker-compose"))
 	   fatal("Please install docker-compose before using dRunner.");
 
-   std::string v;
-   if (utils::bashcommand("docker --version",v)!=0)
+   std::vector<std::string> args = { "--version" };
+   if (utils::runcommand("docker",args)!=0)
 	   fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 

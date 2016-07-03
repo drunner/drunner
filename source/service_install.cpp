@@ -23,9 +23,9 @@
 
 std::string service::getUserID(std::string imagename) const
 {
-	std::string runcmd = "docker run --rm -i " + imagename + R"EOF( /bin/bash -c "id -u | tr -d '\r\n'")EOF";
+   std::vector<std::string> args = { "run","--rm","-i",imagename, "/bin/bash","-c",R"EOF("id -u | tr -d '\r\n'")EOF" };
 	std::string op;
-	if (0 != utils::bashcommand(runcmd, op))
+	if (0 != utils::runcommand("docker",args, op))
 		logmsg(kLERROR, "Unable to determine the user id in container " + imagename);
 
 	logmsg(kLDEBUG, imagename+" is running under userID " + op + ".");
@@ -77,8 +77,8 @@ void service::createVolumes(const drunnerCompose * const drc)
             logmsg(kLINFO, "A docker volume already exists for " + entry.mDockerVolumeName + ", reusing it for " + svc.mImageName + ".");
          else
          {
-            std::string op;
-            int rval = utils::bashcommand("docker volume create --name=\"" + entry.mDockerVolumeName + "\"", op);
+            std::vector<std::string> args = { "volume","create","--name=\"" + entry.mDockerVolumeName + "\"" };
+            int rval = utils::runcommand("docker", args);
             if (rval != 0)
                logmsg(kLERROR, "Unable to create docker volume " + entry.mDockerVolumeName);
             logmsg(kLDEBUG, "Created docker volume " + entry.mDockerVolumeName + " for " + svc.mImageName);
@@ -122,10 +122,11 @@ void service::recreate(bool updating)
       ensureDirectoriesExist();
 
       // copy files to service directory on host.
-      std::string op;
-      int r = utils::bashcommand("docker run --rm -i -v " +
-         getPathdRunner() + ":/tempcopy " + getImageName() + " /bin/bash -c \"cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*\"", op);
-      if (r != 0)
+      std::vector<std::string> args = { "run","--rm","-i","-v",
+         getPathdRunner() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
+         R"EOF("cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*")EOF"
+      };
+      if (0!=utils::runcommand("docker", args))
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.");
 
       // write out variables.sh for the dService.
