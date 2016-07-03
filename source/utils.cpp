@@ -19,13 +19,12 @@
 #include <Poco/StreamCopier.h>
 #include <Poco/Path.h>
 
-//#include <boost/filesystem.hpp>
-//#include <boost/locale.hpp>
-//#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/locale.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
 
-//#include "pstream.h"
 #include "utils.h"
 #include "exceptions.h"
 #include "dservicelogger.h"
@@ -124,12 +123,12 @@ namespace utils
          cmd += "[" + entry + "] ";
       logmsg(kLDEBUG, "dServiceCmd: " + cmd);
 
-      Poco::Pipe outpipe, errpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &errpipe);
-      Poco::PipeInputStream istrout(outpipe), istrerr(errpipe);
+      Poco::Pipe outpipe;
+      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe);
+      Poco::PipeInputStream istrout(outpipe);
 
       // stream the output to the logger.
-      dServiceLog(istrout, istrerr, isServiceCmd);
+      dServiceLog(istrout, isServiceCmd);
 
       int rval = ph.wait();
       std::ostringstream oss;
