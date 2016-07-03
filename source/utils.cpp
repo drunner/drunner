@@ -109,6 +109,18 @@ namespace utils
       return ph.wait();
    }
 
+   int bashcommand(std::string bashline, std::string & op)
+   {
+      std::vector<std::string> args = { "-c", "\"" + bashline + "\"" };
+      return runcommand("/bin/bash", args, op);
+   }
+
+   int bashcommand(std::string bashline)
+   {
+      std::string op;
+      return bashcommand(bashline, op);
+   }
+
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
    { // streaming as the command runs.
 
@@ -198,32 +210,33 @@ namespace utils
 
    bool isindockergroup(std::string username)
    {
-      std::string op;
-      int rval = bashcommand("groups $USER | grep docker",op);
-      return (rval==0);
+#ifdef _WIN32
+      return true;
+#else
+      return (0 == bashcommand("groups $USER | grep docker"));
+#endif
    }
 
    bool canrundocker(std::string username)
    {
-      std::string op;
-      int rval = bashcommand("groups | grep docker",op);
-      return (rval==0);
+#ifdef _WIN32
+      return true;
+#else
+      return (0 == bashcommand("groups | grep docker"));
+#endif
    }
 
    std::string getUSER()
    {
       std::string op;
-      int rval = bashcommand("echo $USER",op);
-      if (rval!=0)
+      if (0 != bashcommand("echo $USER", op))
          logmsg(kLERROR,"Couldn't get current user.");
       return op;
    }
 
    bool commandexists(std::string command)
    {
-      std::string op;
-      int rval = bashcommand("command -v "+command,op);
-      return (rval==0);
+      return (0 == bashcommand("command -v " + command));
    }
 
    std::string get_exefullpath()

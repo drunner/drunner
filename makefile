@@ -8,7 +8,7 @@ INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 BOOSTSTATIC=-static -pthread
 CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(BOOSTSTATIC) $(BUILD_NUMBER_LDFLAGS) $(INC)
 LDFLAGS=-static
-LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp
+LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp -lPocoFoundation -lPocoUtil
 
 OBJECTS_DIR=objs
 SRCS=$(shell find source -maxdepth 2 -name "*.cpp")
