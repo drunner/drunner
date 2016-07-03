@@ -4,7 +4,7 @@
 # /source is mounted from host.
 
 cd /source
-make
+make $@
 
 if [ -v FORCEUSER ] ; then
    chown -R ${FORCEUSER} /source
