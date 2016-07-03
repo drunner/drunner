@@ -111,7 +111,7 @@ namespace utils
    }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
-   { // non-blocking streaming
+   { // streaming as the command runs.
 
       // sanity check parameters.
       Poco::Path bfp(command);
@@ -124,14 +124,12 @@ namespace utils
          cmd += "[" + entry + "] ";
       logmsg(kLDEBUG, "dServiceCmd: " + cmd);
 
-      dServiceLogger logcout(false, isServiceCmd);
-      dServiceLogger logcerr(true, isServiceCmd);
-
       Poco::Pipe outpipe, errpipe;
       Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &errpipe);
       Poco::PipeInputStream istrout(outpipe), istrerr(errpipe);
 
-      // stream the outpuit to the logger.
+      // stream the output to the logger.
+      dServiceLog(istrout, istrerr, isServiceCmd);
 
       int rval = ph.wait();
       std::ostringstream oss;
@@ -139,62 +137,6 @@ namespace utils
       logmsg(kLDEBUG, oss.str());
       return rval;
    }
-//
-//      //-------------------------------
-//
-//      std::string out, err;
-//      Poco::StreamCopier::copyToString(istrout, out);
-//      Poco::StreamCopier::copyToString(istrerr, err);
-//      logcerr.log(err.c_str())
-//
-//
-//      const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
-//      redi::ipstream child(command, args, mode);
-//      if (!child.is_open())
-//         fatal("Couldn't run " + command);
-//
-//      char buf[1024];
-//      std::streamsize n;
-//      bool finished[2] = { false, false };
-//      while (!finished[0] || !finished[1])
-//      {
-//         if (!finished[0])
-//         {
-//            while ((n = child.err().readsome(buf, sizeof(buf))) > 0)
-//               logcerr.log(buf, n);
-////                  std::cerr.write(buf, n).flush();
-//            if (child.eof())
-//            {
-//               finished[0] = true;
-//               if (!finished[1])
-//                  child.clear();
-//            }
-//         }
-//
-//         if (!finished[1])
-//         {
-//            while ((n = child.out().readsome(buf, sizeof(buf))) > 0)
-//               logcout.log(buf, n);
-////                  std::cout.write(buf, n).flush();
-//            if (child.eof())
-//            {
-//               finished[1] = true;
-//               if (!finished[0])
-//                  child.clear();
-//            }
-//         }
-//      }
-//
-//      child.rdbuf()->close();
-//      int status = child.rdbuf()->status();
-//      int rval= WEXITSTATUS(status); // return child status.
-//
-//      std::ostringstream oss;
-//      oss << args[0] << " returned " << rval;
-//      logmsg(kLDEBUG, oss.str());
-//
-//      return rval;
-//   }
 
    std::string getabsolutepath(std::string path)
    {

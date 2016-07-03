@@ -5,41 +5,49 @@
 #include "params.h"
 #include <string>
 
+#include <Poco/PipeStream.h>
 
-enum eStage
-{
-   kSearching,
-   kGotEscape,
-   kTriggered
-};
 
-class escapefilter
-{
-public:
-   escapefilter();
-   void strip(std::string & buffer);
-   eStage mStage;
-   size_t mPos;
-};
+static void dServiceLog(
+   Poco::PipeInputStream & istrm_cout,
+   Poco::PipeInputStream & istrm_cerr,
+   bool isServiceCmd
+);
 
-class dServiceLogger
-{
-public:
-   dServiceLogger(bool cerr, bool isServiceCmd);
-   void log(const char * const buf, int n);
 
-private:
-   void init();
-   void finish();
-   void processbuffer(std::string buffer);
-   void nonrawoutput(std::string s);
+//enum eStage
+//{
+//   kSearching,
+//   kGotEscape,
+//   kTriggered
+//};
+//
+//class escapefilter
+//{
+//public:
+//   escapefilter();
+//   void strip(std::string & buffer);
+//   eStage mStage;
+//   size_t mPos;
+//};
+//
+//class dServiceLogger
+//{
+//public:
+//   dServiceLogger(bool cerr, bool isServiceCmd);
+//   void log(const char * const buf, int n);
+//
+//private:
+//   void processbuffer(std::string buffer);
+//   void logverbatim(std::string s);
+//
+//   edServiceOutput mOutputMode;
+//
+//   bool mCErr;
+//   bool mInitialised;
+//   escapefilter mEscapeFilter;
+//};
 
-   edServiceOutput mOutputMode;
-
-   bool mCErr;
-   bool mInitialised;
-   escapefilter mEscapeFilter;
-};
 
 
 #endif
