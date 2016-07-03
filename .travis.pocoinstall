@@ -8,7 +8,7 @@ wget http://pocoproject.org/releases/${POCOVER}/${POCOVER}.tar.gz
 gunzip ${POCOVER}.tar.gz
 tar xf ${POCOVER}.tar
 cd ${POCOVER}
-./configure
+./configure --static
 make -j4
 make install
 
