@@ -12,4 +12,6 @@ RUN apt-get update && \
 
 VOLUME ["/source"]
 
-CMD ["/bin/bash","-c","cd /source ; make -j4"]
+WORKDIR /source
+CMD make -j4
+
