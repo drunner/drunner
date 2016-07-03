@@ -10,9 +10,6 @@ RUN apt-get update && \
       apt-transport-https ca-certificates wget && \
       rm -rf /var/lib/apt/lists/*
 
-COPY ["./scripts","/scripts"]
-RUN chmod a+x /scripts/*
-
 VOLUME ["/source"]
 
 CMD ["/bin/bash" "-c" "cd /source ; make -j4"]
