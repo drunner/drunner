@@ -15,4 +15,4 @@ RUN chmod a+x /scripts/*
 
 VOLUME ["/source"]
 
-CMD ["/scripts/build"]
+CMD ["/bin/bash" "-c" "cd /source ; make -j4"]

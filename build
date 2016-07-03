@@ -1,3 +1,2 @@
 
-docker run --rm -v ${PWD}:/source drunner/builddrunner /scripts/build -j4
-
+docker run --rm -v ${PWD}:/source drunner/builddrunner
