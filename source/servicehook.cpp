@@ -50,8 +50,7 @@ cResult servicehook::runHook(std::string se)
    for (const auto & entry : mHookParams)
       args.push_back(entry);
 
-   cResult rval(mService->serviceRunnerCommand(args));
-   //cResult rval = utils::dServiceCmd(mServiceRunner, args, mParams);
+   cResult rval(mService->serviceRunnerCommand(args)); 
    if (rval.isNOIMPL())
       rval=kRNoChange; // not implemented is perfectly fine for hooks.
 

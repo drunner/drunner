@@ -103,7 +103,6 @@
     <ClInclude Include="..\..\source\plugins\dbackup.h" />
     <ClInclude Include="..\..\source\plugins\generate_plugin_script.h" />
     <ClInclude Include="..\..\source\plugins\plugins.h" />
-    <ClInclude Include="..\..\source\pstream.h" />
     <ClInclude Include="..\..\source\service.h" />
     <ClInclude Include="..\..\source\servicehook.h" />
     <ClInclude Include="..\..\source\settingsbash.h" />

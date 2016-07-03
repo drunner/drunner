@@ -12,7 +12,6 @@ namespace compress
       std::string cmd("docker");
       std::vector<std::string> args;
 
-      args.push_back(cmd);
       args.push_back("run");
       args.push_back("-i");
       args.push_back("--name=\"dr_compress\"");

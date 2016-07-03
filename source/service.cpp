@@ -262,10 +262,8 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
  
    if (args.size() > 0 && utils::stringisame(args[0],"servicerunner"))
       logmsg(kLERROR, "Programming error - someone gave serviceRunnerCommand the first arg: servicerunner :/");
-   auto newargs(args);
-   newargs.insert(newargs.begin(), std::string("servicerunner"));
 
-   cResult rval(utils::dServiceCmd(getPathServiceRunner(), newargs, true));
+   cResult rval(utils::dServiceCmd(getPathServiceRunner(), args, true));
    return rval;
 }
 

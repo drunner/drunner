@@ -86,7 +86,6 @@ void service::createVolumes(const drunnerCompose * const drc)
 
          // set permissions on volume.
          tVecStr args;
-         args.push_back("docker");
          args.push_back("run");
          args.push_back("--name=\"" + dname + "\"");
          args.push_back("-v");
@@ -228,7 +227,8 @@ eResult service::obliterate()
          {
             logmsg(kLINFO, "Obliterating docker volume " + vol);
             std::string op;
-            if (0 != utils::bashcommand("docker volume rm " + vol, op))
+            std::vector<std::string> args = { "rm",vol };
+            if (0 != utils::runcommand("docker",args,op))
                logmsg(kLWARN, "Failed to remove " + vol + " -- " + op);
          }
       }

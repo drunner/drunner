@@ -17,6 +17,7 @@
 #include <Poco/Process.h>
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
+#include <Poco/Path.h>
 
 //#include <boost/filesystem.hpp>
 //#include <boost/locale.hpp>
@@ -95,89 +96,105 @@ namespace utils
 
    int runcommand(std::string command, std::vector<std::string> args)
    {
-      std::string out, err;
-      runcommand(command, args, out, err);
+      std::string out;
+      return runcommand(command, args, out);
    }
+
    int runcommand(std::string command, std::vector<std::string> args, std::string &out)
    {
-      Poco::Pipe outpipe, errpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &errpipe);
-      Poco::PipeInputStream istrout(outpipe), istrerr(errpipe);
-
+      Poco::Pipe outpipe;
+      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
+      Poco::PipeInputStream istrout(outpipe);
       Poco::StreamCopier::copyToString(istrout, out);
-      Poco::StreamCopier::copyToString(istrerr, out); // append
 
-      int result = ph.wait();
-      return result;
+      return ph.wait();
    }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
    { // non-blocking streaming
-      { // sanity check parameters.
-         if (args.size() < 1)
-            fatal("dServiceCmd: arguments must include the actual command being run.");
-         boost::filesystem::path bfp(command);
-         if (bfp.filename().string() != args[0])
-            fatal("dServiceCmd: command doesn't match args - " + bfp.filename().string() + " versus " + args[0]);
-      }
 
-      { // log the command, getting the args right is non-trivial in some cases so this is useful.
-         std::string cmd;
-         for (const auto & entry : args)
-            cmd += "[" + entry + "] ";
-         logmsg(kLDEBUG, "dServiceCmd: " + cmd);
-      }
+      // sanity check parameters.
+      Poco::Path bfp(command);
+      if (bfp.getFileName().compare(args[0]) == 0)
+         fatal("dServiceCmd: First argument is also the name of the command to run. Likely coding error.");
+
+      // log the command, getting the args right is non-trivial in some cases so this is useful.
+      std::string cmd;
+      for (const auto & entry : args)
+         cmd += "[" + entry + "] ";
+      logmsg(kLDEBUG, "dServiceCmd: " + cmd);
 
       dServiceLogger logcout(false, isServiceCmd);
       dServiceLogger logcerr(true, isServiceCmd);
 
-      const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
-      redi::ipstream child(command, args, mode);
-      if (!child.is_open())
-         fatal("Couldn't run " + command);
+      Poco::Pipe outpipe, errpipe;
+      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &errpipe);
+      Poco::PipeInputStream istrout(outpipe), istrerr(errpipe);
 
-      char buf[1024];
-      std::streamsize n;
-      bool finished[2] = { false, false };
-      while (!finished[0] || !finished[1])
-      {
-         if (!finished[0])
-         {
-            while ((n = child.err().readsome(buf, sizeof(buf))) > 0)
-               logcerr.log(buf, n);
-//                  std::cerr.write(buf, n).flush();
-            if (child.eof())
-            {
-               finished[0] = true;
-               if (!finished[1])
-                  child.clear();
-            }
-         }
+      // stream the outpuit to the logger.
 
-         if (!finished[1])
-         {
-            while ((n = child.out().readsome(buf, sizeof(buf))) > 0)
-               logcout.log(buf, n);
-//                  std::cout.write(buf, n).flush();
-            if (child.eof())
-            {
-               finished[1] = true;
-               if (!finished[0])
-                  child.clear();
-            }
-         }
-      }
-
-      child.rdbuf()->close();
-      int status = child.rdbuf()->status();
-      int rval= WEXITSTATUS(status); // return child status.
-
+      int rval = ph.wait();
       std::ostringstream oss;
-      oss << args[0] << " returned " << rval;
+      oss << bfp.getFileName() << " returned " << rval;
       logmsg(kLDEBUG, oss.str());
-
       return rval;
    }
+//
+//      //-------------------------------
+//
+//      std::string out, err;
+//      Poco::StreamCopier::copyToString(istrout, out);
+//      Poco::StreamCopier::copyToString(istrerr, err);
+//      logcerr.log(err.c_str())
+//
+//
+//      const redi::pstreams::pmode mode = redi::pstreams::pstdout | redi::pstreams::pstderr;
+//      redi::ipstream child(command, args, mode);
+//      if (!child.is_open())
+//         fatal("Couldn't run " + command);
+//
+//      char buf[1024];
+//      std::streamsize n;
+//      bool finished[2] = { false, false };
+//      while (!finished[0] || !finished[1])
+//      {
+//         if (!finished[0])
+//         {
+//            while ((n = child.err().readsome(buf, sizeof(buf))) > 0)
+//               logcerr.log(buf, n);
+////                  std::cerr.write(buf, n).flush();
+//            if (child.eof())
+//            {
+//               finished[0] = true;
+//               if (!finished[1])
+//                  child.clear();
+//            }
+//         }
+//
+//         if (!finished[1])
+//         {
+//            while ((n = child.out().readsome(buf, sizeof(buf))) > 0)
+//               logcout.log(buf, n);
+////                  std::cout.write(buf, n).flush();
+//            if (child.eof())
+//            {
+//               finished[1] = true;
+//               if (!finished[0])
+//                  child.clear();
+//            }
+//         }
+//      }
+//
+//      child.rdbuf()->close();
+//      int status = child.rdbuf()->status();
+//      int rval= WEXITSTATUS(status); // return child status.
+//
+//      std::ostringstream oss;
+//      oss << args[0] << " returned " << rval;
+//      logmsg(kLDEBUG, oss.str());
+//
+//      return rval;
+//   }
 
    std::string getabsolutepath(std::string path)
    {
