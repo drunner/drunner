@@ -7,7 +7,7 @@ INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 
 CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(INC)
 LDFLAGS=
-LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp -lPocoFoundation -lPocoUtil
+LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp -lPocoUtil -lPocoFoundation
 
 OBJECTS_DIR=objs
 SRCS=$(shell find source -maxdepth 2 -name "*.cpp")

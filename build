@@ -1,2 +1,14 @@
+#!/bin/bash
 
-docker run --rm -v ${PWD}:/source drunner/builddrunner
+SRC="${PWD}/source"
+[ $# -eq 0 ] || SRC="$1"
+
+echo "Mapping ${SRC} to /source"
+docker run --rm -v ${SRC}:/source drunner/builddrunner:xplatform
+
+OUTPUT=source/output/drunner-install
+
+[ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
+
+cp ${OUTPUT} .
+

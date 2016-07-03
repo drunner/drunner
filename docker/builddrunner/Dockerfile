@@ -12,4 +12,4 @@ RUN apt-get update && \
 
 VOLUME ["/source"]
 
-CMD ["/bin/bash" "-c" "cd /source ; make -j4"]
+CMD ["/bin/bash","-c","cd /source ; make -j4"]
