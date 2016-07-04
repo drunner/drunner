@@ -1,7 +1,18 @@
 #!/bin/bash
 
-SRC=$(echo "${PWD}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
+MYDIR=$( dirname "$(readlink -f "$0")" )
+
+SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
 SRC="${SRC}/source"
+
+echo "Checking permissions"
+(
+cd ${MYDIR}/source
+mkdir -p objs/plugins objs/tests objs/win output
+find . -type d -exec chmod 0777 {} \;
+find . -type f -exec chmod 0666 {} \;
+chmod 0777 buildnum/make_buildnum.sh deps/colorgcc/colorgcc.pl
+)
 
 echo "Mapping ${SRC} to /source"
 docker run --rm -v ${SRC}:/source drunner/builddrunner:xplatform
@@ -10,5 +21,5 @@ OUTPUT=source/output/drunner-install
 
 [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
+chmod a+x ${OUTPUT}
 cp ${OUTPUT} .
-

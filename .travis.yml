@@ -17,7 +17,6 @@ before_install:
    - sudo mv docker-compose* /usr/local/bin/docker-compose
 script:
    - bash build
-   - chmod a+x ./drunner-install
    - ./drunner-install -v ~/temp
    - drunner unittest
    - drunner install drunner/dtest

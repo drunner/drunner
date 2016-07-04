@@ -16,7 +16,7 @@ OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
 
-$(APP): permissions buildnum/build_number.h $(OBJS)
+$(APP): buildnum/build_number.h $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
 .depend: buildnum/build_number.h $(SRCS) $(HDRS)
@@ -48,10 +48,3 @@ uploaddev: $(APP)
 
 install: $(APP)
 	$(APP) -v ~/temp
-
-permissions:
-	mkdir -p objs/plugins objs/tests objs/win output
-	find . -type d -exec chmod 0755 {} \;
-	find . -type f -exec chmod 0644 {} \;
-	chmod 0755 buildnum/make_buildnum.sh pullall deps/colorgcc/colorgcc.pl
-	touch permissions
