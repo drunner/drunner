@@ -15,7 +15,7 @@ This uses a docker container to build drunner. Works fine compiling for Linux fr
 * Checkout drunner from github.
 * Download poco into dev/poco-1.7.3 ([from here](http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3.tar.gz "1.7.3"))
 * start a VS command shell
-* ```
+```
 buildwin.cmd 140 build static_md both Win32 nosamples notests
 ```
 * Download yampl-cpp into dev/yaml-cpp
