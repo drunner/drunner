@@ -46,7 +46,7 @@ namespace timeutils
 #ifdef _WIN32
       localtime_s(&t,&now_time);
 #else
-      std::localtime_s(&now_time, &t);
+      localtime_r(&now_time, &t);
 #endif
    }
 
