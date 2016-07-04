@@ -21,10 +21,6 @@
 #include <Poco/File.h>
 #include <Poco/Util/SystemConfiguration.h>
 
-//#include <boost/filesystem.hpp>
-//#include <boost/locale.hpp>
-//#include <boost/algorithm/string.hpp>
-
 #include <sys/stat.h>
 
 #include "utils.h"
@@ -33,11 +29,7 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
-
-#ifdef _WIN32
 #include "chmod.h"
-#include "Winbase.h"
-#endif
 
 namespace utils
 {

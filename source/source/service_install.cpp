@@ -1,5 +1,7 @@
 #include <sys/stat.h>
 
+#include <Poco/String.h>
+
 #include "command_dev.h"
 #include "utils.h"
 #include "utils_docker.h"
@@ -17,11 +19,12 @@
 
 std::string service::getUserID(std::string imagename) const
 {
-   std::vector<std::string> args = { "run","--rm","-i",imagename, "/bin/bash","-c",R"EOF("id -u | tr -d '\r\n'")EOF" };
-	std::string op;
+   std::vector<std::string> args = { "run","--rm","-i",imagename, "/bin/bash","-c","id -u" };
+   std::string op;
 	if (0 != utils::runcommand("docker",args, op))
 		logmsg(kLERROR, "Unable to determine the user id in container " + imagename);
 
+   Poco::trimInPlace(op);
 	logmsg(kLDEBUG, imagename+" is running under userID " + op + ".");
 	return op;
 }
