@@ -71,12 +71,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

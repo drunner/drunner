@@ -18,6 +18,7 @@
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
 #include <Poco/Path.h>
+#include <Poco/Util/SystemConfiguration.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
@@ -34,6 +35,7 @@
 
 #ifdef _WIN32
 #include "chmod.h"
+#include "Windows.h"
 #endif
 
 namespace utils
@@ -109,16 +111,19 @@ namespace utils
       return ph.wait();
    }
 
-   int bashcommand(std::string bashline, std::string & op)
+   int bashcommand(std::string bashline, std::string & op, bool trim)
    {
-      std::vector<std::string> args = { "-c", "\"" + bashline + "\"" };
-      return runcommand("/bin/bash", args, op);
+      std::vector<std::string> args = { "-c", bashline };
+      int rval = runcommand("/bin/bash", args, op);
+      if (trim)
+         Poco::trimInPlace(op);
+      return rval;
    }
 
    int bashcommand(std::string bashline)
    {
       std::string op;
-      return bashcommand(bashline, op);
+      return bashcommand(bashline, op, false);
    }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
@@ -228,10 +233,18 @@ namespace utils
 
    std::string getUSER()
    {
+#ifdef _WIN32
+      char user_name[501];
+      DWORD user_name_size = sizeof(user_name);
+      if (!GetUserName(user_name, &user_name_size))
+         fatal("Couldn't get current user.");
+      return user_name;
+#else
       std::string op;
       if (0 != bashcommand("echo $USER", op))
-         logmsg(kLERROR,"Couldn't get current user.");
+         logmsg(kLERROR, "Couldn't get current user. (" + op + ")");
       return op;
+#endif
    }
 
    bool commandexists(std::string command)

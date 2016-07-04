@@ -15,11 +15,10 @@ chmod 0777 buildnum/make_buildnum.sh deps/colorgcc/colorgcc.pl
 )
 
 echo "Mapping ${SRC} to /source"
-docker run --rm -v ${SRC}:/source drunner/builddrunner:xplatform
+docker run --rm -v ${SRC}:/source drunner/builddrunner
 
 OUTPUT=source/output/drunner-install
 
 [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
-chmod a+x ${OUTPUT}
 cp ${OUTPUT} .

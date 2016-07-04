@@ -40,7 +40,7 @@ namespace utils
    bool isindockergroup(std::string username);
    int runcommand(std::string command, std::vector<std::string> args);
    int runcommand(std::string command, std::vector<std::string> args, std::string &out);
-   int bashcommand(std::string bashline, std::string &op);
+   int bashcommand(std::string bashline, std::string &op, bool trim=true);
    int bashcommand(std::string bashline);
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd=false);
 
