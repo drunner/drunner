@@ -5,7 +5,7 @@ CXX=deps/colorgcc/colorgcc.pl
 RM=rm -f
 INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 
-CPPFLAGS=-Wall -Wno-unknown-pragmas -std=c++11 $(INC)
+CPPFLAGS=-Wall -g -Wno-unknown-pragmas -std=c++11 $(INC)
 LDFLAGS=
 LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp -lPocoUtil -lPocoFoundation
 

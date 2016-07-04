@@ -12,6 +12,23 @@
 #include "utils.h"
 #include "termcolor.h"
 
+eLogLevel getMinLevel()
+{
+   static bool hasWarned = false;
+
+   if (!GlobalContext::hasParams())
+   {
+      if (!hasWarned)
+      {
+         hasWarned = true;
+         logmsg(kLWARN, "Logging not yet initialised, but being asked to log.");
+      }
+      return kLINFO;
+   }
+   return GlobalContext::getParams()->getLogLevel();
+}
+
+
 std::string timestamp()
 {
         //Notice the use of a stringstream, yet another useful stream medium!
@@ -43,7 +60,7 @@ std::string levelname(eLogLevel level)
 
 void logverbatim(eLogLevel level, std::string s)
 {
-   if (level < GlobalContext::getParams()->getLogLevel())
+   if (level < getMinLevel())
       return;
 
    // we use stdout for normal messages, stderr for warn and error.
@@ -70,7 +87,7 @@ std::string getheader(eLogLevel level)
 
 void logmsg(eLogLevel level, std::string s)
 {   
-   if (level < GlobalContext::getParams()->getLogLevel())
+   if (level < getMinLevel())
       return;
 
    std::string info = getheader(level);
