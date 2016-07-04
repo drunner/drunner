@@ -39,7 +39,7 @@ We assume here you have a standard user account called testuser which you'll use
 
 dRunner needs docker. You can install it as root with:
 ```
-wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
+wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
 bash install_docker.sh
 ```
 
@@ -52,7 +52,7 @@ adduser testuser docker
 
 Logged in as the non-root user, download the installer and run it:
 ```
-wget https://drunner.s3.amazonaws.com/drunner-install
+wget http://drunner.s3.amazonaws.com/drunner-install
 chmod a+x drunner-install
 ./drunner-install -v ~/drunner
 ```
