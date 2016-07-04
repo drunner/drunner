@@ -123,10 +123,10 @@ void service::recreate(bool updating)
       // copy files to service directory on host.
       std::vector<std::string> args = { "run","--rm","-i","-v",
          getPathdRunner() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
-         R"EOF("cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*")EOF"
-      };
-      if (0!=utils::runcommand("docker", args))
-         logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.");
+         "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
+      std::string op;
+      if (0 != utils::runcommand("docker", args, op))
+         logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out variables.sh for the dService.
       drunnerCompose drc(*this);
