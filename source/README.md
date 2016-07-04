@@ -147,7 +147,7 @@ This is to aid Ansible use.
 
 ## Backups
 
-dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try 
+dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try
 ```
 dbackup help
 ```
@@ -164,16 +164,4 @@ To see how to make a dService [read the documentation](https://github.com/drunne
 
 ## Developing dRunner itself
 
-As root:
-```
-wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
-bash install_docker.sh
-apt-get install build-essential g++-multilib libboost-all-dev libyaml-cpp-dev
-adduser devuser docker
-```
-
-As devuser:
-```
-git clone git@github.com:drunner/drunner.git
-make
-```
+[Read the documentation](https://github.com/drunner/drunner/blob/master/DRUNNERDEV.md).
