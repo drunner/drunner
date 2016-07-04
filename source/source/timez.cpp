@@ -38,15 +38,33 @@ std::string timez::getelpased()
 
 namespace timeutils
 {
+   void getnow(tm & t)
+   {
+      auto tnow = std::chrono::system_clock::now();
+      std::time_t now_time = std::chrono::system_clock::to_time_t(tnow);
+
+#ifdef _WIN32
+      localtime_s(&t,&now_time);
+#else
+      std::localtime_s(&now_time, &t);
+#endif
+   }
 
    std::string getDateTimeStr()
    {
       char s[100];
+      struct tm t;
+      getnow(t);
+      strftime(s, 99, "%Y_%m_%d__%H_%M_%S", &t);
+      return std::string(s);
+   }
 
-      auto tnow = std::chrono::system_clock::now();
-      std::time_t now_time = std::chrono::system_clock::to_time_t(tnow);
-
-      strftime(s, 99, "%Y_%m_%d__%H_%M_%S", std::localtime(&now_time));
+   std::string getLogTimeStamp()
+   {
+      char s[100];
+      struct tm t;
+      getnow(t);
+      strftime(s, 99, "%Y/%m/%d %H_%M", &t);
       return std::string(s);
    }
 

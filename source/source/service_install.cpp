@@ -21,10 +21,9 @@ std::string service::getUserID(std::string imagename) const
 {
    std::vector<std::string> args = { "run","--rm","-i",imagename, "/bin/bash","-c","id -u" };
    std::string op;
-	if (0 != utils::runcommand("docker",args, op))
+	if (0 != utils::runcommand("docker",args, op, true))
 		logmsg(kLERROR, "Unable to determine the user id in container " + imagename);
 
-   Poco::trimInPlace(op);
 	logmsg(kLDEBUG, imagename+" is running under userID " + op + ".");
 	return op;
 }
@@ -122,7 +121,7 @@ void service::recreate(bool updating)
          getPathdRunner() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
          "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
       std::string op;
-      if (0 != utils::runcommand("docker", args, op))
+      if (0 != utils::runcommand("docker", args, op, false))
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out variables.sh for the dService.
@@ -225,8 +224,11 @@ eResult service::obliterate()
             logmsg(kLINFO, "Obliterating docker volume " + vol);
             std::string op;
             std::vector<std::string> args = { "rm",vol };
-            if (0 != utils::runcommand("docker",args,op))
-               logmsg(kLWARN, "Failed to remove " + vol + " -- " + op);
+            if (0 != utils::runcommand("docker", args, op, false))
+            {
+               logmsg(kLWARN, "Failed to remove " + vol + ":");
+               logmsg(kLWARN, op);
+            }
          }
       }
       else

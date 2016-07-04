@@ -233,7 +233,7 @@ void validateImage(std::string imagename)
 
    std::string op;
    std::vector<std::string> args = { "run","--rm","-v",GlobalContext::getSettings()->getPath_Support() + ":/support", imagename , "/support/validator-image" };
-   int rval = utils::runcommand("docker", args, op);
+   int rval = utils::runcommand("docker", args, op, false);
 
    if (rval != 0)
    {

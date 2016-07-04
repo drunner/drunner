@@ -11,6 +11,7 @@
 #include "exceptions.h"
 #include "utils.h"
 #include "termcolor.h"
+#include "timez.h"
 
 eLogLevel getMinLevel()
 {
@@ -26,24 +27,6 @@ eLogLevel getMinLevel()
       return kLINFO;
    }
    return GlobalContext::getParams()->getLogLevel();
-}
-
-
-std::string timestamp()
-{
-        //Notice the use of a stringstream, yet another useful stream medium!
-        std::ostringstream stream;
-        time_t rawtime;
-        tm * timeinfo;
-
-        time(&rawtime);
-        timeinfo = localtime( &rawtime );
-
-        stream << (timeinfo->tm_year)+1900<<"/"<<timeinfo->tm_mon
-        <<"/"<<timeinfo->tm_mday<<" "<<timeinfo->tm_hour
-        <<":"<<timeinfo->tm_min;
-        // The str() function of output stringstreams return a std::string.
-        return stream.str();
 }
 
 std::string levelname(eLogLevel level)
@@ -80,7 +63,7 @@ void logverbatim(eLogLevel level, std::string s)
 std::string getheader(eLogLevel level)
 {
    std::ostringstream ost;
-   ost << "|" << levelname(level) << "|" << timestamp() << "| ";
+   ost << "|" << levelname(level) << "|" << timeutils::getLogTimeStamp() << "| ";
    return ost.str();
 }
 

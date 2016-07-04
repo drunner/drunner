@@ -91,26 +91,26 @@ namespace utils
    int runcommand(std::string command, std::vector<std::string> args)
    {
       std::string out;
-      return runcommand(command, args, out);
+      return runcommand(command, args, out, false);
    }
 
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out)
+   int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim)
    {
       Poco::Pipe outpipe;
       Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
       Poco::PipeInputStream istrout(outpipe);
       Poco::StreamCopier::copyToString(istrout, out);
 
-      return ph.wait();
+      int rval = ph.wait();
+      if (trim)
+         Poco::trimInPlace(out);
+      return rval;
    }
 
    int bashcommand(std::string bashline, std::string & op, bool trim)
    {
       std::vector<std::string> args = { "-c", bashline };
-      int rval = runcommand("/bin/bash", args, op);
-      if (trim)
-         Poco::trimInPlace(op);
-      return rval;
+      return runcommand("/bin/bash", args, op, trim);
    }
 
    int bashcommand(std::string bashline)
@@ -233,7 +233,7 @@ namespace utils
    std::string get_usersbindir()
    {
       std::string op;
-      int rval = bashcommand("echo $HOME",op);
+      int rval = bashcommand("echo $HOME",op,true);
       if (rval!=0)
          logmsg(kLERROR,"Couldn't get current user's home directory.");
       return op+"/bin";
@@ -256,7 +256,7 @@ namespace utils
    {
       std::string op;
 
-      int rval = bashcommand("docker pull "+imagename, op);
+      int rval = bashcommand("docker pull "+imagename, op,false);
 
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;
@@ -316,7 +316,7 @@ namespace utils
 			logmsg(kLERROR, "Couldn't remove stale symlink at " + link);
 	std::string cmd = "ln -s " + file + " " + link;
 	std::string op;
-	if (utils::bashcommand(cmd, op) != 0)
+	if (utils::bashcommand(cmd, op, false) != 0)
 		logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
    }
 
@@ -325,7 +325,7 @@ namespace utils
       std::string op;
       if (fileexists(s))
       {
-         if (bashcommand("rm -rf "+s+" 2>&1", op) != 0)
+         if (bashcommand("rm -rf "+s, op, false) != 0)
             logmsg(kLERROR, "Unable to remove existing directory at "+s+" - "+op);
          logmsg(kLDEBUG,"Recursively deleted "+s);
       }
@@ -345,7 +345,7 @@ namespace utils
       if (utils::fileexists(fullpath))
          {
          std::string op;
-         if (bashcommand("rm -f "+fullpath+" 2>&1", op) != 0)
+         if (bashcommand("rm -f "+fullpath, op, false) != 0)
             logmsg(kLERROR, "Unable to remove "+fullpath + " - "+op);
          logmsg(kLDEBUG,"Deleted "+fullpath);
          }
@@ -354,7 +354,7 @@ namespace utils
    std::string getHostIP()
    {
       std::string hostIP;
-      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'", hostIP) != 0)
+      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'", hostIP, true) != 0)
          return "";
       return hostIP;
    }
@@ -374,8 +374,7 @@ namespace utils
    bool dockerVolExists(const std::string & vol)
    { // this could be better - will match substrings rather than whole volume name. :/ 
       // We name with big unique names so unlikely to be a problem for us.
-      std::string op;
-      int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"", op);
+      int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"");
       return (rval == 0); 
    }
 
@@ -393,18 +392,14 @@ namespace utils
       // boost bug makes copy_file grumpy with c++11x.
       // also can't copy to another filesystem.
       // so we just use bash.
-
-      std::string op;
-      int r = bashcommand("cp -a " + src + " " + dest,op);
+      int r = bashcommand("cp -a " + src + " " + dest);
       return (r == 0);
    }
 
    void downloadexe(std::string url, std::string filepath)
    {
-      std::string op;
-
       // only download if server has newer version.      
-      int rval = utils::bashcommand("curl " + url + " -z " + filepath + " -o " + filepath + " --silent --location 2>&1 && chmod 0755 " + filepath, op);
+      int rval = utils::bashcommand("curl " + url + " -z " + filepath + " -o " + filepath + " --silent --location 2>&1 && chmod 0755 " + filepath);
       if (rval != 0)
          logmsg(kLERROR, "Unable to download " + url);
       if (!utils::fileexists(filepath))
@@ -491,8 +486,7 @@ namespace utils
 
    void dockerrun::tidy()
    {
-      std::string op;
-      int rval = utils::bashcommand("docker rm " + mDockerName, op);
+      int rval = utils::bashcommand("docker rm " + mDockerName);
       if (rval != 0)
          std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
       else

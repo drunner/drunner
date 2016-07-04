@@ -34,8 +34,8 @@ namespace utils
    bool commandexists(std::string command);
 
    int runcommand(std::string command, std::vector<std::string> args);
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out);
-   int bashcommand(std::string bashline, std::string &op, bool trim=true);
+   int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim);
+   int bashcommand(std::string bashline, std::string &op, bool trim);
    int bashcommand(std::string bashline);
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd=false);
 

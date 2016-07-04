@@ -20,6 +20,7 @@ private:
 namespace timeutils
 {
    std::string getDateTimeStr();
+   std::string getLogTimeStamp();
    std::chrono::system_clock::time_point dateTimeStr2Time(std::string dts);
 
    std::string getArchiveName(std::string servicename);
