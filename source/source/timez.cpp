@@ -1,14 +1,14 @@
 #include <sstream>
 #include <ctime>
 #include <time.h>
+#include <Poco/DateTime.h>
+#include <Poco/LocalDateTime.h>
+#include <Poco/DateTimeFormatter.h>
+#include <Poco/DateTimeParser.h>
+#include <Poco/Exception.h>
 
 #include "timez.h"
 #include "globallogger.h"
-
-#ifdef _WIN32
-#include "strptime.h"
-#endif
-
 
 timez::timez()
 {
@@ -38,34 +38,18 @@ std::string timez::getelpased()
 
 namespace timeutils
 {
-   void getnow(tm & t)
-   {
-      auto tnow = std::chrono::system_clock::now();
-      std::time_t now_time = std::chrono::system_clock::to_time_t(tnow);
-
-#ifdef _WIN32
-      localtime_s(&t,&now_time);
-#else
-      localtime_r(&now_time, &t);
-#endif
-   }
+   static const std::string jformat = "%Y_%m_%d__%H_%M_%S";
 
    std::string getDateTimeStr()
    {
-      char s[100];
-      struct tm t;
-      getnow(t);
-      strftime(s, 99, "%Y_%m_%d__%H_%M_%S", &t);
-      return std::string(s);
+      Poco::LocalDateTime now;
+      return Poco::DateTimeFormatter::format(now, jformat);
    }
 
    std::string getLogTimeStamp()
    {
-      char s[100];
-      struct tm t;
-      getnow(t);
-      strftime(s, 99, "%Y/%m/%d %H_%M", &t);
-      return std::string(s);
+      Poco::LocalDateTime now;
+      return Poco::DateTimeFormatter::format(now, "%Y/%m/%d %H_%M");
    }
 
    std::string getArchiveName(std::string servicename)
@@ -73,7 +57,7 @@ namespace timeutils
       return getDateTimeStr() + "___" + servicename + ".dbk";
    }
 
-   std::chrono::system_clock::time_point archiveName2Time(std::string aname)
+   Poco::DateTime  archiveName2Time(std::string aname)
    {
       size_t pos = aname.find("___");
       if (pos == std::string::npos)
@@ -84,15 +68,19 @@ namespace timeutils
       return dateTimeStr2Time(aname);
    }
 
-   std::chrono::system_clock::time_point dateTimeStr2Time(std::string dts)
+   Poco::DateTime dateTimeStr2Time(std::string dts)
    {
-      std::tm tm = {};
-      char * rval = strptime(dts.c_str(), "%Y_%m_%d__%H_%M_%S", &tm);
-      if (rval == NULL)
+      Poco::DateTime time;
+      int timeZoneDifferential;
+      try
+      {
+         Poco::DateTimeParser::parse(jformat, dts, time, timeZoneDifferential);
+      }
+      catch (const Poco::SyntaxException & )
+      {
          logmsg(kLERROR, "Invalid time conversion - can't process " + dts);
-
-      auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-      return tp;
+      }
+      return time;
    }
 
   

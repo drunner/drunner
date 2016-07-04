@@ -216,7 +216,7 @@ COMMANDS
    return kRError;
 }
 
-void shifty(std::string src, std::string dst, std::chrono::hours interval, unsigned int numtokeep)
+void shifty(std::string src, std::string dst, int interval, unsigned int numtokeep)
 {
    std::vector<std::string> folders;
    utils::getFolders(src, folders);
@@ -228,7 +228,9 @@ void shifty(std::string src, std::string dst, std::chrono::hours interval, unsig
    for (auto f : folders)
    {
       auto tf = timeutils::dateTimeStr2Time(f);
-      if ((std::chrono::system_clock::now() - tf) > interval)
+      Poco::DateTime now;
+
+      if ((now-tf).totalHours() > interval)
       { // old
          if (dst.length() != 0)
          { // shift
@@ -246,7 +248,7 @@ void shifty(std::string src, std::string dst, std::chrono::hours interval, unsig
    // prune anything unneeded that puts us over storage limit.
    for (unsigned int i = 0; i < folders.size(); ++i)
    { // check trio folder[i]..[i+2]
-      std::chrono::system_clock::time_point f0, f2;
+      Poco::DateTime f0, f2;
 
       f0 = timeutils::dateTimeStr2Time(folders[i]);
       f2 = timeutils::dateTimeStr2Time(folders[i+2]);
@@ -254,7 +256,7 @@ void shifty(std::string src, std::string dst, std::chrono::hours interval, unsig
       if (f2 < f0)
          logmsg(kLERROR, "Backup folders after sorting are in incorrect order. :/");
 
-      if (f2 - f0 < interval)
+      if ((f2 - f0).totalHours() < interval)
       { // f1 is redundant. Delete it!
          logmsg(kLINFO, "Deleting unneeded backup " + src+"/"+folders[i + 1]);
          utils::deltree(src + "/" + folders[i + 1]);
@@ -277,9 +279,9 @@ eResult dbackup::purgeOldBackups(backupConfig & config) const
    std::string weeklyfolder = config.getBackupPath() + "/weekly";
    std::string monthlyfolder = config.getBackupPath() + "/monthly";
 
-   shifty(dailyfolder, weeklyfolder, std::chrono::hours(24),7);
-   shifty(weeklyfolder, monthlyfolder, std::chrono::hours(24*7),4);
-   shifty(monthlyfolder, "", std::chrono::hours(24*7*30),6);
+   shifty(dailyfolder, weeklyfolder, 24, 7);
+   shifty(weeklyfolder, monthlyfolder, 24*7, 4);
+   shifty(monthlyfolder, "", 24*7*30, 6);
 
    logmsg(kLINFO, "Done");
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <chrono>
+#include <Poco/DateTime.h>
 
 class timez
 {
@@ -21,10 +22,10 @@ namespace timeutils
 {
    std::string getDateTimeStr();
    std::string getLogTimeStamp();
-   std::chrono::system_clock::time_point dateTimeStr2Time(std::string dts);
+   Poco::DateTime dateTimeStr2Time(std::string dts);
 
    std::string getArchiveName(std::string servicename);
-   std::chrono::system_clock::time_point archiveName2Time(std::string aname);
+   Poco::DateTime archiveName2Time(std::string aname);
 };
 
 #endif
