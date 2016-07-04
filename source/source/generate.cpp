@@ -1,10 +1,7 @@
 #include "generate.h"
 #include "globallogger.h"
 #include "utils.h"
-
-#ifdef _WIN32
 #include "chmod.h"
-#endif
 
 void generate(
    const std::string & fullpath,
@@ -24,7 +21,7 @@ void generate(
    ofs << content;
    ofs.close();
 
-   if (chmod(fullpath.c_str(), mode)!=0)
+   if (xchmod(fullpath.c_str(), mode)!=0)
       logmsg(kLERROR, "Unable to change permissions on "+fullpath);
    logmsg(kLDEBUG,"Created "+fullpath);
 }

@@ -23,7 +23,7 @@ void timez::restart()
 int timez::getmilliseconds()
 {
    auto end = std::chrono::steady_clock::now();
-   int t=std::chrono::duration_cast<std::chrono::microseconds>(end - mStart).count();
+   int t=(int)std::chrono::duration_cast<std::chrono::microseconds>(end - mStart).count();
    return t;
 }
 

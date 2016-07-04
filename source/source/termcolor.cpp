@@ -45,7 +45,7 @@ namespace termcolor
 #if defined(OS_MACOS) || defined(OS_LINUX)
          return ::isatty(fileno(std_stream));
 #else
-         return ::_isatty(_fileno(std_stream));
+         return (0!=::_isatty(_fileno(std_stream)));
 #endif
       }
 

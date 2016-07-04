@@ -13,13 +13,7 @@
 #include "servicehook.h"
 #include "sh_servicevars.h"
 #include "drunnercompose.h"
-
-#ifdef _WIN32
 #include "chmod.h"
-#endif
-
-//using namespace utils;
-
 
 std::string service::getUserID(std::string imagename) const
 {
@@ -51,7 +45,7 @@ void service::createLaunchScript() const
 	ofs.close();
 
 	// fix permissions
-	if (chmod(target.c_str(), S_700) != 0)
+	if (xchmod(target.c_str(), S_700) != 0)
 		logmsg(kLERROR, "Unable to change permissions on " + target);
 
 	logmsg(kLDEBUG, "Created launch script at " + target);
@@ -253,7 +247,7 @@ eResult service_obliterate::obliterate()
          service svc(getName());
          rval = svc.obliterate();
       }
-      catch (const eExit & e)
+      catch (const eExit &)
       {
       }
    }

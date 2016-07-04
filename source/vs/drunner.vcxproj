@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4E5F9D10-5B8B-414C-8556-837398FA6D2C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\tests;$(SolutionDir)..\source\win;$(SolutionDir)..\source\plugins;$(SolutionDir)..\buildnum;$(SolutionDir)..\deps\catch;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\poco-1.7.3\lib;$(SolutionDir)..\..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\tests;$(SolutionDir)..\source\win;$(SolutionDir)..\source\plugins;$(SolutionDir)..\buildnum;$(SolutionDir)..\deps\catch;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\poco-1.7.3\lib;$(SolutionDir)..\..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\buildnum.cpp" />
+    <ClCompile Include="..\source\checkbasics.cpp" />
+    <ClCompile Include="..\source\command_dev.cpp" />
+    <ClCompile Include="..\source\command_general.cpp" />
+    <ClCompile Include="..\source\command_setup.cpp" />
+    <ClCompile Include="..\source\compress.cpp" />
+    <ClCompile Include="..\source\drunnercompose.cpp" />
+    <ClCompile Include="..\source\dservicelogger.cpp" />
+    <ClCompile Include="..\source\exceptions.cpp" />
+    <ClCompile Include="..\source\generate.cpp" />
+    <ClCompile Include="..\source\globalcontext.cpp" />
+    <ClCompile Include="..\source\globallogger.cpp" />
+    <ClCompile Include="..\source\main.cpp" />
+    <ClCompile Include="..\source\params.cpp" />
+    <ClCompile Include="..\source\plugins\backupConfig.cpp" />
+    <ClCompile Include="..\source\plugins\dbackup.cpp" />
+    <ClCompile Include="..\source\plugins\plugins.cpp" />
+    <ClCompile Include="..\source\service.cpp" />
+    <ClCompile Include="..\source\servicehook.cpp" />
+    <ClCompile Include="..\source\service_backup.cpp" />
+    <ClCompile Include="..\source\service_install.cpp" />
+    <ClCompile Include="..\source\settingsbash.cpp" />
+    <ClCompile Include="..\source\showhelp.cpp" />
+    <ClCompile Include="..\source\sh_drunnercfg.cpp" />
+    <ClCompile Include="..\source\termcolor.cpp" />
+    <ClCompile Include="..\source\tests\test_settingsbash.cpp" />
+    <ClCompile Include="..\source\tests\unittests.cpp" />
+    <ClCompile Include="..\source\timez.cpp" />
+    <ClCompile Include="..\source\utils.cpp" />
+    <ClCompile Include="..\source\utils_docker.cpp" />
+    <ClCompile Include="..\source\win\strptime.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\buildnum.h" />
+    <ClInclude Include="..\source\checkbasics.h" />
+    <ClInclude Include="..\source\command_dev.h" />
+    <ClInclude Include="..\source\command_general.h" />
+    <ClInclude Include="..\source\command_setup.h" />
+    <ClInclude Include="..\source\compress.h" />
+    <ClInclude Include="..\source\cresult.h" />
+    <ClInclude Include="..\source\drunnercompose.h" />
+    <ClInclude Include="..\source\dservicelogger.h" />
+    <ClInclude Include="..\source\enums.h" />
+    <ClInclude Include="..\source\exceptions.h" />
+    <ClInclude Include="..\source\generate.h" />
+    <ClInclude Include="..\source\generate_utils_sh.h" />
+    <ClInclude Include="..\source\generate_validator_image.h" />
+    <ClInclude Include="..\source\globalcontext.h" />
+    <ClInclude Include="..\source\globallogger.h" />
+    <ClInclude Include="..\source\main.h" />
+    <ClInclude Include="..\source\params.h" />
+    <ClInclude Include="..\source\plugins\backupConfig.h" />
+    <ClInclude Include="..\source\plugins\dbackup.h" />
+    <ClInclude Include="..\source\plugins\generate_plugin_script.h" />
+    <ClInclude Include="..\source\plugins\plugins.h" />
+    <ClInclude Include="..\source\pstream.h" />
+    <ClInclude Include="..\source\service.h" />
+    <ClInclude Include="..\source\servicehook.h" />
+    <ClInclude Include="..\source\settingsbash.h" />
+    <ClInclude Include="..\source\showhelp.h" />
+    <ClInclude Include="..\source\sh_backupvars.h" />
+    <ClInclude Include="..\source\sh_ddev.h" />
+    <ClInclude Include="..\source\sh_drunnercfg.h" />
+    <ClInclude Include="..\source\sh_servicevars.h" />
+    <ClInclude Include="..\source\termcolor.h" />
+    <ClInclude Include="..\source\tests\unittests.h" />
+    <ClInclude Include="..\source\timez.h" />
+    <ClInclude Include="..\source\utils.h" />
+    <ClInclude Include="..\source\utils_docker.h" />
+    <ClInclude Include="..\source\win\chmod.h" />
+    <ClInclude Include="..\source\win\getopt.h" />
+    <ClInclude Include="..\source\win\strptime.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

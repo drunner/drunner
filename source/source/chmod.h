@@ -41,12 +41,20 @@ static const mode_t S_IXOTH = 0x00010000;           ///< does nothing
 #   endif
 static const mode_t MS_MODE_MASK = 0x0000ffff;           ///< low word
 
-static inline int chmod(const char * path, mode_t mode)
+static inline int xchmod(const char * path, mode_t mode)
 {
    int result = _chmod(path, (mode & MS_MODE_MASK));
    return result;
 }
 
+#else
+
+static inline int xchmod(const char * path, mode_t mode)
+{
+   return chmod(path, mode);
+}
+
 #endif
+
 
 #endif
