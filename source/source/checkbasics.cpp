@@ -34,7 +34,7 @@ void check_basics()
 std::string getUSER()
 {
    std::string op;
-   if (0 != utils::bashcommand("echo $USER", op))
+   if (0 != utils::bashcommand("echo $USER", op, true))
       logmsg(kLERROR, "Couldn't get current user. (" + op + ")");
    return op;
 }
