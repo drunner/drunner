@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "checkbasics.h"
-
+#include "globallogger.h"
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -28,6 +28,9 @@ void check_basics()
 #else
 // Linux
 
+#include <unistd.h>
+
+
 std::string getUSER()
 {
    std::string op;
@@ -43,12 +46,12 @@ void check_basics()
    if (euid == 0)
       fatal("Please run as a standard user, not as root.");
 
-   std::string user = utils::getUSER();
-   if (0 != bashcommand("groups $USER | grep docker"))
-      fatal("Please add the current user to the docker group. As root: " + kCODE_S + "adduser " + user + " docker" + kCODE_E);
+   std::string user = getUSER();
+   if (0 != utils::bashcommand("groups $USER | grep docker"))
+      fatal("Please add the current user to the docker group. As root: " + utils::kCODE_S + "adduser " + user + " docker" + utils::kCODE_E);
 
-   if (0 != bashcommand("groups | grep docker"))
-      fatal(user + " hasn't picked up group docker yet. Log out then in again, or run " + kCODE_S + "exec su -l " + user + kCODE_E);
+   if (0 != utils::bashcommand("groups | grep docker"))
+      fatal(user + " hasn't picked up group docker yet. Log out then in again, or run " + utils::kCODE_S + "exec su -l " + user + utils::kCODE_E);
 
    if (!utils::commandexists("docker"))
       fatal("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
@@ -62,9 +65,6 @@ void check_basics()
    std::vector<std::string> args = { "--version" };
    if (utils::runcommand("docker", args) != 0)
       fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
-
-   bool canRunDocker = utils::canrundocker(getUSER());
-   logmsg(kLDEBUG, "Username: " + getUSER() + ",  Docker OK: " + (canRunDocker ? "YES" : "NO") + ", " + utils::get_exename() + " path: " + utils::get_exepath());
 }
 
 
