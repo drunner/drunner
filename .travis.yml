@@ -3,7 +3,7 @@ sudo: required
 dist: trusty
 before_install:
    - sudo apt-get -qq update
-   - sudo apt-get install -qq build-essential g++-multilib libboost-all-dev libyaml-cpp-dev libpoco-dev
+   - sudo apt-get install -qq libboost-all-dev libyaml-cpp-dev libpoco-dev
    - sudo apt-get install -qq apt-transport-https ca-certificates
    - sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
    - echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee -a /etc/apt/sources.list.d/docker.list
@@ -16,8 +16,8 @@ before_install:
    - wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
    - sudo mv docker-compose* /usr/local/bin/docker-compose
 script:
-   - make
-   - make install
+   - ./build
+   - ./drunner-install -v ~/temp
    - drunner unittest
    - drunner install drunner/dtest
    - dtest test
