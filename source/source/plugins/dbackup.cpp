@@ -138,7 +138,7 @@ eResult dbackup::configure(std::string path) const
    // TODO: check path exists and make canonical.
    if (!utils::fileexists(path))
       logmsg(kLERROR, "The path " + path + " does not exist.");
-   path = utils::getcanonicalpath(path);
+   path = utils::getabsolutepath(path);
 
    // create folders.
    utils::makedirectory(path + "/daily", S_700);

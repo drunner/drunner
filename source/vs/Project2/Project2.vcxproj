@@ -71,18 +71,19 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source;$(SolutionDir)..\source\plugins;$(SolutionDir)..\source\tests;$(SolutionDir)..\deps\catch;$(SolutionDir)..\buildnum;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source\win;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\source\tests\unittests.h" />
     <ClInclude Include="..\..\deps\catch\catch.h" />
     <ClInclude Include="..\..\source\buildnum.h" />
+    <ClInclude Include="..\..\source\checkbasics.h" />
     <ClInclude Include="..\..\source\command_dev.h" />
     <ClInclude Include="..\..\source\command_general.h" />
     <ClInclude Include="..\..\source\command_setup.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="$(SolutionDir)\..\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp" />
     <ClCompile Include="..\..\source\buildnum.cpp" />
+    <ClCompile Include="..\..\source\checkbasics.cpp" />
     <ClCompile Include="..\..\source\command_dev.cpp" />
     <ClCompile Include="..\..\source\command_general.cpp" />
     <ClCompile Include="..\..\source\command_setup.cpp" />
@@ -145,6 +147,7 @@
     <ClCompile Include="..\..\source\settingsbash.cpp" />
     <ClCompile Include="..\..\source\showhelp.cpp" />
     <ClCompile Include="..\..\source\sh_drunnercfg.cpp" />
+    <ClCompile Include="..\..\source\termcolor.cpp" />
     <ClCompile Include="..\..\source\timez.cpp" />
     <ClCompile Include="..\..\source\utils.cpp" />
     <ClCompile Include="..\..\source\utils_docker.cpp" />

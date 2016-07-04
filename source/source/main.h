@@ -4,7 +4,6 @@
 namespace mainroutines
 {
 
-   void check_basics();
    int process();
 
 } // namespace

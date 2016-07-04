@@ -16,6 +16,7 @@
 #include "unittests.h"
 #include "service.h"
 #include "plugins.h"
+#include "checkbasics.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -28,13 +29,11 @@ int main(int argc, char **argv)
 {
    try
    {
-      mainroutines::check_basics();
+      check_basics();
 
       GlobalContext::init(argc, argv);
 
       logmsg(kLDEBUG,"dRunner C++, version "+GlobalContext::getParams()->getVersion());
-      bool canRunDocker=utils::canrundocker(getUSER());
-      logmsg(kLDEBUG,"Username: "+getUSER()+",  Docker OK: "+(canRunDocker ? "YES" : "NO")+", "+utils::get_exename()+" path: "+utils::get_exepath());
 
       return mainroutines::process();
    }
@@ -42,39 +41,6 @@ int main(int argc, char **argv)
    catch (const eExit & e) {
       return e.exitCode();
    }
-}
-
-// ----------------------------------------------------------------------------------------------------------------------
-
-
-void mainroutines::check_basics()
-{
-
-#ifndef _WIN32
-   uid_t euid=geteuid();
-   if (euid == 0)
-	   fatal("Please run as a standard user, not as root.");
-#endif
-
-   std::string user=utils::getUSER();
-   if (!utils::isindockergroup(user))
-	   fatal("Please add the current user to the docker group. As root: "+kCODE_S+"adduser "+user+" docker"+kCODE_E);
-
-   if (!utils::canrundocker(user))
-	   fatal(user+" hasn't picked up group docker yet. Log out then in again, or run "+kCODE_S+"exec su -l "+user+kCODE_E);
-
-   if (!utils::commandexists("docker"))
-	   fatal("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
-
-   if (!utils::commandexists("curl"))
-	   fatal("Please install curl before using dRunner.");
-
-   if (!utils::commandexists("docker-compose"))
-	   fatal("Please install docker-compose before using dRunner.");
-
-   std::vector<std::string> args = { "--version" };
-   if (utils::runcommand("docker",args)!=0)
-	   fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

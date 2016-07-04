@@ -88,7 +88,7 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // move compressed file to target dir.
-   std::string source = utils::getcanonicalpath(archivefolder.getpath() + "/backup.tar.enc");
+   std::string source = utils::getabsolutepath(archivefolder.getpath() + "/backup.tar.enc");
    if (!utils::fileexists(source))
       logmsg(kLERROR, "Expected archive not found at " + source);
    if (0 != rename(source.c_str(), bf.c_str()))
@@ -106,7 +106,7 @@ void service::backup(const std::string & backupfile)
 
 cResult service_restore(const std::string & servicename, const std::string & backupfile)
 { // restore from backup.
-   std::string bf = utils::getcanonicalpath(backupfile);
+   std::string bf = utils::getabsolutepath(backupfile);
    if (bf.length()==0 || !utils::fileexists(bf))
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
    logmsg(kLDEBUG, "Restoring from " + bf);

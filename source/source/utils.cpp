@@ -18,11 +18,12 @@
 #include <Poco/PipeStream.h>
 #include <Poco/StreamCopier.h>
 #include <Poco/Path.h>
+#include <Poco/File.h>
 #include <Poco/Util/SystemConfiguration.h>
 
-#include <boost/filesystem.hpp>
-#include <boost/locale.hpp>
-#include <boost/algorithm/string.hpp>
+//#include <boost/filesystem.hpp>
+//#include <boost/locale.hpp>
+//#include <boost/algorithm/string.hpp>
 
 #include <sys/stat.h>
 
@@ -35,7 +36,7 @@
 
 #ifdef _WIN32
 #include "chmod.h"
-#include "Windows.h"
+#include "Winbase.h"
 #endif
 
 namespace utils
@@ -156,46 +157,21 @@ namespace utils
 
    std::string getabsolutepath(std::string path)
    {
-      boost::filesystem::path rval;
-      try
-      {
-         rval = boost::filesystem::absolute(path);
-      }
-      catch(...)
-      {
-         return path;
-      }
-      return rval.string();
+      Poco::Path p(path);
+      if (!p.isAbsolute())
+         p.makeAbsolute();
+      return p.toString(Poco::Path::PATH_NATIVE);
    }
-
-   std::string getcanonicalpath(std::string path)
-   {
-      boost::filesystem::path rval;
-      try
-      {
-         rval = boost::filesystem::canonical(path);
-      }
-      catch(...)
-      {
-         return "";
-      }
-      return rval.string();
-   }
-
 
    eResult mkdirp(std::string path)
    {
-      if (fileexists(path))
+      Poco::File f(path);
+
+      if (f.exists())
          return kRNoChange;
-      try
-      {
-         boost::filesystem::create_directories(path);
-      }
-      catch (...)
-      {
-         return kRError;
-      }
-      return kRSuccess;
+
+      f.createDirectories();
+      return (f.exists() ? kRSuccess : kRError);
    }
 
 
@@ -213,47 +189,27 @@ namespace utils
       return subject;
    }
 
-   bool isindockergroup(std::string username)
-   {
-#ifdef _WIN32
-      return true;
-#else
-      return (0 == bashcommand("groups $USER | grep docker"));
-#endif
-   }
-
-   bool canrundocker(std::string username)
-   {
-#ifdef _WIN32
-      return true;
-#else
-      return (0 == bashcommand("groups | grep docker"));
-#endif
-   }
-
-   std::string getUSER()
-   {
-#ifdef _WIN32
-      char user_name[501];
-      DWORD user_name_size = sizeof(user_name);
-      if (!GetUserName(user_name, &user_name_size))
-         fatal("Couldn't get current user.");
-      return user_name;
-#else
-      std::string op;
-      if (0 != bashcommand("echo $USER", op))
-         logmsg(kLERROR, "Couldn't get current user. (" + op + ")");
-      return op;
-#endif
-   }
 
    bool commandexists(std::string command)
    {
       return (0 == bashcommand("command -v " + command));
    }
-
+   
+   // get the full path the the current executable.
    std::string get_exefullpath()
    {
+#ifdef _WIN32
+      std::vector<char> pathBuf;
+      DWORD copied = 0;
+      do {
+         pathBuf.resize(pathBuf.size() + MAX_PATH);
+         copied = GetModuleFileNameA(0, &pathBuf.at(0), pathBuf.size());
+      } while (copied >= pathBuf.size());
+      pathBuf.resize(copied);
+
+      std::string path(pathBuf.begin(), pathBuf.end());
+      return path;
+#else
       char buff[PATH_MAX];
       ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
       if (len != -1)
@@ -263,18 +219,23 @@ namespace utils
       }
       logmsg(kLERROR,"Couldn't get path to drunner executable!");
       return "";
+#endif
    }
 
    std::string get_exename()
    {
-      boost::filesystem::path p( get_exefullpath() );
-      return p.filename().string();
+      Poco::Path p(get_exefullpath());
+      return p.getFileName();
    }
 
    std::string get_exepath()
    {
-      boost::filesystem::path p( get_exefullpath() );
-      return p.parent_path().string();
+      Poco::Path p(get_exefullpath());
+      if (!p.isFile())
+         fatal("get_exepath is not a file. :/");
+      p.makeParent();
+      p.makeAbsolute();
+      return p.toString();
    }
 
    std::string get_usersbindir()
@@ -311,41 +272,34 @@ namespace utils
       return (rval==0) ? kRSuccess : kRError;
    }
 
-
-
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)
    {
-      boost::filesystem::path dir_path(parent);
-      if ( ! boost::filesystem::exists( dir_path ) ) return false;
+      Poco::File f(parent);
+      if (!f.exists())
+         return false;
 
-      boost::filesystem::directory_iterator itr(dir_path),end_itr; // default construction yields past-the-end
-      for ( ; itr != end_itr; ++itr )
-      {
-         if ( boost::filesystem::is_directory(itr->status()) )
-            folders.push_back(itr->path().filename().string());
-      }
+      f.list(folders);
       return true;
    }
 
    // quick crude check to see if we're installed.
    bool isInstalled()
    {
-      std::string rootpath = get_exepath();
-      return (boost::filesystem::exists(rootpath + "/" + "drunnercfg.sh"));
+      Poco::File f(get_exepath() + "/drunnercfg.sh");
+      return f.exists();
    }
-
 
    /// Try to find in the Haystack the Needle - ignore case
    bool findStringIC(const std::string & strHaystack, const std::string & strNeedle)
    {
-     auto it = std::search(
-       strHaystack.begin(), strHaystack.end(),
-       strNeedle.begin(),   strNeedle.end(),
-       [](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
-     );
-     return (it != strHaystack.end() );
+      using namespace std;
+      auto it = search(
+         strHaystack.begin(), strHaystack.end(),
+         strNeedle.begin(),   strNeedle.end(),
+         [](char ch1, char ch2) { return toupper(ch1) == toupper(ch2); }
+      );
+      return (it != strHaystack.end() );
    }
-
 
    void makedirectory(const std::string & d, mode_t mode)
    {
@@ -421,9 +375,8 @@ namespace utils
 
    std::string getPWD()
    {
-      char p[300];
-      getcwd(p,300);
-      return std::string(p);
+      std::string cwd(Poco::Path::current());
+      return cwd;
    }
 
    bool dockerVolExists(const std::string & vol)

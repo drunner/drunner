@@ -129,6 +129,9 @@
     <ClInclude Include="..\..\source\win\strptime.h">
       <Filter>Source\win</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\checkbasics.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\source\tests\unittests.cpp">
@@ -217,6 +220,12 @@
     </ClCompile>
     <ClCompile Include="..\..\source\win\strptime.cpp">
       <Filter>Source\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\checkbasics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\termcolor.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

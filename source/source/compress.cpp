@@ -89,7 +89,7 @@ namespace compress
    {
       if (!utils::fileexists(foldername))
          fatal("Can't archive non-existant folder " + foldername);
-      std::string ap = utils::getcanonicalpath(foldername);
+      std::string ap = utils::getabsolutepath(foldername);
 
       return _compress(password, ap + "/", archivefolder + "/", archivename,fast);
    }
@@ -113,7 +113,7 @@ namespace compress
    {
       if (!utils::fileexists(targetfoldername))
          fatal("Can't archive to non-existant folder " + targetfoldername);
-      std::string ap = utils::getcanonicalpath(targetfoldername);
+      std::string ap = utils::getabsolutepath(targetfoldername);
 
       return _decompress(password, ap + "/", archivefolder + "/", archivename,fast);
    }

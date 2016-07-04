@@ -21,7 +21,6 @@ namespace utils
 #endif
 
    std::string getabsolutepath(std::string path);
-   std::string getcanonicalpath(std::string path);
 
    eResult mkdirp(std::string path);
    void makedirectory(const std::string & d, mode_t mode);
@@ -34,10 +33,6 @@ namespace utils
    bool fileexists (const std::string& name);
    bool commandexists(std::string command);
 
-   std::string getUSER();
-
-   bool canrundocker(std::string username);
-   bool isindockergroup(std::string username);
    int runcommand(std::string command, std::vector<std::string> args);
    int runcommand(std::string command, std::vector<std::string> args, std::string &out);
    int bashcommand(std::string bashline, std::string &op, bool trim=true);
