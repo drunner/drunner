@@ -6,9 +6,11 @@ RM=rm -f
 INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 
 #CPPFLAGS=-Wall -g -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
-CPPFLAGS=-Wall -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
+CPPFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
+ -Wall -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
+
 LDFLAGS=-static -pthread
-LDLIBS=-lboost_filesystem -lboost_system -lyaml-cpp -lPocoFoundation -lPocoUtil
+LDLIBS=-lyaml-cpp -lPocoFoundation -lPocoUtil
 
 OBJECTS_DIR=objs
 SRCS=$(shell find source -maxdepth 2 -name "*.cpp")
@@ -17,10 +19,10 @@ OBJS=$(patsubst source/%,$(OBJECTS_DIR)/%,$(SRCS:.cpp=.o))
 
 all: $(APP)
 
-$(APP): buildnum/build_number.h $(OBJS)
+$(APP): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(APP) $(OBJS) $(LDLIBS)
 
-.depend: buildnum/build_number.h $(SRCS) $(HDRS)
+.depend: $(SRCS) $(HDRS)
 	rm -f ./.depend
 	$(CXX) $(CPPFLAGS) -MM $^ | sed 's#^\(.*:\)#$(OBJECTS_DIR)/\1#' >>./.depend;
 
@@ -34,11 +36,6 @@ clean:
 
 dist-clean: clean
 	$(RM) *~ .depend
-
-buildnum/build_number.h: $(SRCS) $(HDRS) buildnum/major_version
-	@echo
-	@echo Bumping build number..
-	cd buildnum ; ./make_buildnum.sh
 
 upload: $(APP)
 	cd output ; s3upload drunner-install

@@ -1,6 +1,13 @@
 #!/bin/bash
 
 MYDIR=$( dirname "$(readlink -f "$0")" )
+PERMISSIONSFILE="${MYDIR}/.permissions"
+
+VERSIONSTR="0.7 r"
+VERSIONDATE="2016-07-05"
+VSHORT="NOT SET"
+VCOMBO="NOT SET"
+[ -v VTAG ] || VTAG="Dev"
 
 function showhelp {
 cat <<EOF >&2
@@ -10,13 +17,13 @@ NAME
 
 SYNOPSIS
    build
-      Build drunner using docker container for compilation and linking
+      Build drunner using docker container for compilation and linking.
 
-   clean
-      Remove intermediate files
+   build clean
+      Remove intermediate files then build.
 
-   install
-      Install for testing (to ~/test)
+   build install
+      Build then install for testing (to ~/test).
 
 DESCRIPTION
    dRunner's test harness. Built from ${IMAGENAME}.
@@ -25,23 +32,37 @@ EOF
 }
 
 function runbuild {
-   echo "Checking permissions"
-   (
-   cd ${MYDIR}/source
-   mkdir -p objs/plugins objs/tests objs/win output
-   find . -type d -exec chmod 0777 {} \;
-   find . -type f -exec chmod 0666 {} \;
-   chmod 0777 buildnum/make_buildnum.sh deps/colorgcc/colorgcc.pl
-   )
+   if [ ! -f "$PERMISSIONSFILE" ] ; then
+      echo "Checking permissions"
+      (
+      cd ${MYDIR}/source
+      mkdir -p objs/plugins objs/tests objs/win output
+      find . -type d -exec chmod 0777 {} \;
+      find . -type f -exec chmod 0666 {} \;
+      chmod 0777 deps/colorgcc/colorgcc.pl
+      )
+      touch "$PERMISSIONSFILE"
+   fi
 
+   SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
+   DAYS=$(( 1+${SECONDS}/(60*60*24) ))
+   DATE=`date`
+   VSHORT="${VERSIONSTR}${DAYS}"
+   VCOMBO="${VSHORT} - ${DATE} [${VTAG}]"
+
+   echo "Building ${VCOMBO}"
    echo "Mapping ${SRC} to /source"
-   docker run --rm -v ${SRC}:/source drunner/builddrunner
+   docker run --rm \
+      -e "VCOMBO=${VCOMBO}" \
+      -e "VSHORT=${VSHORT}" \
+      -v "${SRC}:/source" drunner/builddrunner
 
    OUTPUT=source/output/drunner-install
 
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
    cp ${OUTPUT} ${MYDIR}
+
 }
 
 function main {
@@ -58,12 +79,14 @@ function main {
 
       clean)
          docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
-         rm -f ${MYDIR}/drunner-install
+         rm -f "${MYDIR}/drunner-install"
+         rm -f "$PERMISSIONSFILE"
+         runbuild
          ;;
 
       install)
          runbuild
-         ${MYDIR}/drunner-install -v ~/temp
+         "${MYDIR}/drunner-install" -v ~/temp
          ;;
 
       *)

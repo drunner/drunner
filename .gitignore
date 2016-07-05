@@ -30,9 +30,7 @@
 .depend
 drunnerc
 drunner-install
-build_number.h
-version.number
-permissions
+.permissions
 
 # Visual Studio
 *.suo
