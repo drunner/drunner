@@ -2,23 +2,74 @@
 
 MYDIR=$( dirname "$(readlink -f "$0")" )
 
-SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
-SRC="${SRC}/source"
+function showhelp {
+cat <<EOF >&2
 
-echo "Checking permissions"
-(
-cd ${MYDIR}/source
-mkdir -p objs/plugins objs/tests objs/win output
-find . -type d -exec chmod 0777 {} \;
-find . -type f -exec chmod 0666 {} \;
-chmod 0777 buildnum/make_buildnum.sh deps/colorgcc/colorgcc.pl
-)
+NAME
+   build
 
-echo "Mapping ${SRC} to /source"
-docker run --rm -v ${SRC}:/source drunner/builddrunner
+SYNOPSIS
+   build
+      Build drunner using docker container for compilation and linking
 
-OUTPUT=source/output/drunner-install
+   clean
+      Remove intermediate files
 
-[ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
+   install
+      Install for testing (to ~/test)
 
-cp ${OUTPUT} .
+DESCRIPTION
+   dRunner's test harness. Built from ${IMAGENAME}.
+
+EOF
+}
+
+function runbuild {
+   echo "Checking permissions"
+   (
+   cd ${MYDIR}/source
+   mkdir -p objs/plugins objs/tests objs/win output
+   find . -type d -exec chmod 0777 {} \;
+   find . -type f -exec chmod 0666 {} \;
+   chmod 0777 buildnum/make_buildnum.sh deps/colorgcc/colorgcc.pl
+   )
+
+   echo "Mapping ${SRC} to /source"
+   docker run --rm -v ${SRC}:/source drunner/builddrunner
+
+   OUTPUT=source/output/drunner-install
+
+   [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
+
+   cp ${OUTPUT} ${MYDIR}
+}
+
+function main {
+   SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
+   SRC="${SRC}/source"
+
+   COMMAND="build"
+   [ $# -eq 0 ] || COMMAND="$1"
+
+   case "$COMMAND" in
+      build)
+         runbuild
+         ;;
+
+      clean)
+         docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
+         rm -f ${MYDIR}/drunner-install
+         ;;
+
+      install)
+         runbuild
+         ${MYDIR}/drunner-install -v ~/temp
+         ;;
+
+      *)
+         showhelp
+         ;;
+   esac
+}
+
+main "$@"
