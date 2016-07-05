@@ -1,6 +1,7 @@
 #include <sys/stat.h>
 
 #include <Poco/String.h>
+#include <Poco/File.h>
 
 #include "command_dev.h"
 #include "utils.h"
@@ -30,27 +31,28 @@ std::string service::getUserID(std::string imagename) const
 
 void service::createLaunchScript() const
 {
-	std::string target = utils::get_usersbindir() + "/" + getName();
+	Poco::Path target = utils::get_usersbindir().setFileName(getName());
 
 	// remove stale script if present
-	if (utils::fileexists(target))
-		if (remove(target.c_str()) != 0)
-			logmsg(kLERROR, "Couldn't remove stale launch script at " + target);
-
+   if (utils::fileexists(target))
+   {
+      Poco::File tf(target);
+      tf.remove();
+   }
 	// write out new one.
 	std::ofstream ofs;
-	ofs.open(target);
+	ofs.open(target.toString());
 	if (!ofs.is_open())
-		logmsg(kLERROR, "Couldn't write launch script at " + target);
+		logmsg(kLERROR, "Couldn't write launch script at " + target.toString());
 	ofs << "#!/bin/bash" << std::endl;
 	ofs << "drunner servicecmd " << getName() << " \"$@\"" << std::endl;
 	ofs.close();
 
 	// fix permissions
-	if (xchmod(target.c_str(), S_700) != 0)
-		logmsg(kLERROR, "Unable to change permissions on " + target);
+	if (xchmod(target.toString().c_str(), S_700) != 0)
+		logmsg(kLERROR, "Unable to change permissions on " + target.toString());
 
-	logmsg(kLDEBUG, "Created launch script at " + target);
+	logmsg(kLDEBUG, "Created launch script at " + target.toString());
 }
 
 void service::createVolumes(const drunnerCompose * const drc)
@@ -107,7 +109,10 @@ void service::recreate(bool updating)
    {
       // nuke any existing dService files on host (but preserve volume containers!).
       if (utils::fileexists(getPath()))
-         utils::deltree(getPath());
+      {
+         Poco::File spath(getPath());
+         spath.remove(true); // recursively delete.
+      }
 
       // notice for hostVolumes.
       if (utils::fileexists(getPathHostVolume()))
@@ -118,7 +123,7 @@ void service::recreate(bool updating)
 
       // copy files to service directory on host.
       std::vector<std::string> args = { "run","--rm","-i","-v",
-         getPathdRunner() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
+         getPathdRunner().toString() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
          "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
       std::string op;
       if (0 != utils::runcommand("docker", args, op, false))
@@ -161,7 +166,7 @@ void service::recreate(bool updating)
 
 void service::install()
 {
-   logmsg(kLDEBUG, "Installing " + getName() + " at " + getPath() + ", using image " + getImageName());
+   logmsg(kLDEBUG, "Installing " + getName() + " at " + getPath().toString() + ", using image " + getImageName());
 	if (utils::fileexists(getPath()))
 		logmsg(kLERROR, "Service already exists. Try:   drunner update " + getName());
 
@@ -196,7 +201,7 @@ eResult service::uninstall()
    utils::delfile(getPathLaunchScript());
 
    if (utils::fileexists(getPath()))
-      logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath());
+      logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath().toString());
 
    hook.endhook();
 

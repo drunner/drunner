@@ -39,13 +39,16 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create bin directory
-      std::string bindir = utils::get_usersbindir();
+      Poco::Path bindir = utils::get_usersbindir();
       utils::makedirectory(bindir, S_700);
 
       // -----------------------------------------------------------------------------
       // create symlink
-      utils::makesymlink(settings.getPath_Root() + "/drunner", bindir + "/drunner");
-
+      Poco::Path symsource = settings.getPath_Root().setFileName("drunner");
+      Poco::Path symlink = bindir;
+      symlink.setFileName("drunner");
+      utils::makesymlink(symsource, symlink);
+      
       // -----------------------------------------------------------------------------
       // generate plugin scripts
       GlobalContext::getPlugins()->generate_plugin_scripts();
@@ -80,9 +83,12 @@ namespace command_setup
       const params & p(*GlobalContext::getParams().get());
       const sh_drunnercfg & s(*GlobalContext::getSettings().get());
 
-      logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root());
+      logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root().toString());
 
-      std::string url(s.getdrunnerInstallURL()), trgt(s.getPath_Root() + "/drunner-install");
+      std::string url(s.getdrunnerInstallURL());
+      Poco::Path trgt(s.getPath_Root());
+      trgt.setFileName("drunner-install");
+
       utils::downloadexe(url, trgt);
 
       logmsg(kLINFO, "Updating...");
@@ -92,14 +98,14 @@ namespace command_setup
       for (auto opt : p.getOptions())
          args.push_back(opt);
       args.push_back("setup");
-      args.push_back(s.getPath_Root());
+      args.push_back(s.getPath_Root().toString());
       
       std::ostringstream oss;
       for (auto arg : args)
          oss << arg << " ";
       logmsg(kLDEBUG, utils::trim_copy(oss.str()));
 
-      Poco::ProcessHandle ph = Poco::Process::launch(trgt, args);
+      Poco::ProcessHandle ph = Poco::Process::launch(trgt.toString(), args);
       int result = ph.wait();
       return result;
    }

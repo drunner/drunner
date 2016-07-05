@@ -55,8 +55,8 @@ void drunnerCompose::setServiceRunnerEnv() const
    // load some standard ones that we make available.
    setenv_log("SERVICENAME", getService().getName().c_str());
    setenv_log("IMAGENAME", getService().getImageName().c_str());
-   setenv_log("SERVICETEMPDIR", getService().getPathTemp().c_str());
-   setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().c_str());
+   setenv_log("SERVICETEMPDIR", getService().getPathTemp().toString().c_str());
+   setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().toString().c_str());
    setenv_log("HOSTIP", utils::getHostIP().c_str());
    setenv_log("DEVELOPERMODE", GlobalContext::getParams()->isDevelopmentMode() ? "true" : "false");
 }
@@ -105,9 +105,9 @@ void drunnerCompose::load_docker_compose_yml()
 
    std::vector<cVolInfo> VolumesInfo;
 
-   logmsg(kLDEBUG, "Parsing " + mService.getPathDockerCompose());
+   logmsg(kLDEBUG, "Parsing " + mService.getPathDockerCompose().toString());
 
-   YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose());
+   YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose().toString());
    if (!config)
       logmsg(kLERROR, "Failed to load the docker-compose.yml file. Parse error?");
 

@@ -4,11 +4,13 @@
 #include <sstream>
 #include <fstream>
 
+#include <Poco/Path.h>
+
 #include "enums.h"
 #include "params.h"
 
 void generate(
-   const std::string & fullpath,
+   Poco::Path fullpath,
    const mode_t mode,
    const std::string & content
 );

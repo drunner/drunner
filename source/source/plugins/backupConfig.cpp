@@ -21,11 +21,11 @@ bool backupConfig::load()
    if (!utils::fileexists(configfilepath()))
       return false;
 
-   YAML::Node config = YAML::LoadFile(configfilepath());
+   YAML::Node config = YAML::LoadFile(configfilepath().toString());
    if (!config)
-      logmsg(kLERROR, "Failed to load " + configfilepath());
+      logmsg(kLERROR, "Failed to load " + configfilepath().toString());
    if (!config[s_BackupPath])
-      logmsg(kLERROR, configfilepath() + " exists but appears to be corrupt.");
+      logmsg(kLERROR, configfilepath().toString() + " exists but appears to be corrupt.");
 
    mIsConfigured = true;
    mBackupPath = config[s_BackupPath].as<std::string>();
@@ -48,10 +48,10 @@ bool backupConfig::save()
    for (auto s : mDisabledServices)
       config[s_DisabledServices].push_back(s);
 
-   std::ofstream fout(configfilepath());
+   std::ofstream fout(configfilepath().toString());
    if (!fout.is_open())
    {
-      logmsg(kLWARN, "Couldn't write " + configfilepath());
+      logmsg(kLWARN, "Couldn't write " + configfilepath().toString());
       return false;
    }
    fout << config;
@@ -59,7 +59,7 @@ bool backupConfig::save()
    return true;
 }
 
-std::string backupConfig::configfilepath()
+Poco::Path backupConfig::configfilepath()
 {
    return GlobalContext::getSettings()->getPath_drunnerbackups_cfg();
 }

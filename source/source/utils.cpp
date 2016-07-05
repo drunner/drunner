@@ -318,30 +318,30 @@ namespace utils
          logmsg(kLERROR, "Unable to change permissions on "+d.toString());
    }
 
-   void makesymlink(const std::string & file, const std::string & link)
+   void makesymlink(Poco::Path file, Poco::Path link)
    {
 	if (!utils::fileexists(file))
-		logmsg(kLERROR, "Can't link to " + file + " because it doesn't exist");
-	if (utils::fileexists(link))
-		if (remove(link.c_str()) != 0)
-			logmsg(kLERROR, "Couldn't remove stale symlink at " + link);
-	std::string cmd = "ln -s " + file + " " + link;
+		logmsg(kLERROR, "Can't link to " + file.toString() + " because it doesn't exist");
+   if (utils::fileexists(link))
+      utils::delfile(link);
+	std::string cmd = "ln -s " + file.toString() + " " + link.toString();
 	std::string op;
 	if (utils::bashcommand(cmd, op, false) != 0)
 		logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
    }
 
-   void deltree(const std::string & s)
+   void deltree(Poco::Path s)
    {
-      std::string op;
-      if (fileexists(s))
+      Poco::File f(s);
+      if (f.exists())
       {
-         if (bashcommand("rm -rf "+s, op, false) != 0)
-            logmsg(kLERROR, "Unable to remove existing directory at "+s+" - "+op);
-         logmsg(kLDEBUG,"Recursively deleted "+s);
+         f.remove(true);
+         logmsg(kLDEBUG, "Recursively deleted " + s.toString());
       }
       else
-         logmsg(kLDEBUG,"Directory "+s+" does not exist (no need to delete).");
+         logmsg(kLDEBUG, "Directory " + s.toString() + " does not exist (no need to delete).");
+
+//      logmsg(kLERROR, "Unable to remove existing directory at "+s+" - "+op);
    }
 
    void movetree(const std::string &src, const std::string &dst)
@@ -351,15 +351,14 @@ namespace utils
          logmsg(kLERROR, "Unable to move " + src + " to " + dst);
    }
 
-   void delfile(const std::string & fullpath)
+   void delfile(Poco::Path fullpath)
    {
-      if (utils::fileexists(fullpath))
-         {
-         std::string op;
-         if (bashcommand("rm -f "+fullpath, op, false) != 0)
-            logmsg(kLERROR, "Unable to remove "+fullpath + " - "+op);
-         logmsg(kLDEBUG,"Deleted "+fullpath);
-         }
+      Poco::File f(fullpath);
+      if (f.exists())
+      {
+         f.remove();
+         logmsg(kLDEBUG, "Deleted " + fullpath.toString());
+      }
    }
 
    std::string getHostIP()
@@ -407,15 +406,15 @@ namespace utils
       return (r == 0);
    }
 
-   void downloadexe(std::string url, std::string filepath)
+   void downloadexe(std::string url, Poco::Path filepath)
    {
       // only download if server has newer version.      
-      int rval = utils::bashcommand("curl " + url + " -z " + filepath + " -o " + filepath + " --silent --location 2>&1 && chmod 0755 " + filepath);
+      int rval = utils::bashcommand("curl " + url + " -z " + filepath.toString() + " -o " + filepath.toString() + " --silent --location 2>&1 && chmod 0755 " + filepath.toString());
       if (rval != 0)
          logmsg(kLERROR, "Unable to download " + url);
       if (!utils::fileexists(filepath))
-         logmsg(kLERROR, "Failed to download " + url + ", curl return value is success but expected file "+ filepath +" does not exist.");
-      logmsg(kLDEBUG, "Successfully downloaded " + filepath);
+         logmsg(kLERROR, "Failed to download " + url + ", curl return value is success but expected file "+ filepath.toString() +" does not exist.");
+      logmsg(kLDEBUG, "Successfully downloaded " + filepath.toString());
    }
 
    std::string alphanumericfilter(std::string s, bool whitespace)

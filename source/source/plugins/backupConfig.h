@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <Poco/Path.h>
+
 #include "enums.h"
 
 class backupConfig
@@ -11,7 +13,7 @@ public:
    backupConfig();
    bool load();
    bool save();
-   std::string configfilepath();
+   Poco::Path configfilepath();
    bool isEnabled(std::string servicename);
    eResult enable(std::string servicename);
    eResult disable(std::string servicename);

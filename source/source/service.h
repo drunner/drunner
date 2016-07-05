@@ -52,7 +52,7 @@ class cServiceEnvironment : protected settingsbash
       std::string index2key(unsigned int i) const;
 
 protected:
-   std::string mPath;
+   Poco::Path mPath;
 };
 
 

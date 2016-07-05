@@ -94,7 +94,7 @@ Poco::Path servicepaths::getPathDockerCompose() const
 
 Poco::Path servicepaths::getPathLaunchScript() const
 {
-   return utils::get_usersbindir() + "/" + getName();
+   return utils::get_usersbindir().setFileName(getName());
 }
 
 
@@ -193,7 +193,7 @@ void service::enter()
    servicehook hook(this, "enter");
    hook.starthook();
 
-   execl(getPathServiceRunner().c_str(), "servicerunner", "enter", NULL);
+   execl(getPathServiceRunner().toString().c_str(), "servicerunner", "enter", NULL);
 #endif
 }
 
@@ -232,7 +232,14 @@ void validateImage(std::string imagename)
       logmsg(kLDEBUG, imagename + " should be a production image.");
 
    std::string op;
-   std::vector<std::string> args = { "run","--rm","-v",GlobalContext::getSettings()->getPath_Support() + ":/support", imagename , "/support/validator-image" };
+   std::vector<std::string> args = { 
+      "run",
+      "--rm",
+      "-v",
+      GlobalContext::getSettings()->getPath_Support().toString() + ":/support", 
+      imagename , 
+      "/support/validator-image" 
+   };
    int rval = utils::runcommand("docker", args, op, false);
 
    if (rval != 0)
@@ -263,7 +270,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
    if (args.size() > 0 && utils::stringisame(args[0],"servicerunner"))
       logmsg(kLERROR, "Programming error - someone gave serviceRunnerCommand the first arg: servicerunner :/");
 
-   cResult rval(utils::dServiceCmd(getPathServiceRunner(), args, true));
+   cResult rval(utils::dServiceCmd(getPathServiceRunner().toString(), args, true));
    return rval;
 }
 
@@ -282,7 +289,7 @@ const cServiceEnvironment & service::getEnvironmentConst() const
 cServiceEnvironment::cServiceEnvironment(const servicepaths & paths) :
    settingsbash(true)
 {
-   mPath = paths.getPathHostVolume_environment() + "/servicerunner_env.sh";
+   mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
    if (utils::fileexists(mPath))
    {
       if (!readSettings(mPath))
@@ -294,7 +301,7 @@ void cServiceEnvironment::save_environment(std::string key, std::string value)
 {
    setString(key, value);
    if (!writeSettings(mPath))
-      fatal("Failed to write environment file " + mPath);
+      fatal("Failed to write environment file " + mPath.toString());
 }
 
 unsigned int cServiceEnvironment::getNumVars() const

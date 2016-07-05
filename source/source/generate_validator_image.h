@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "generate.h"
 
-void generate_validator_image(const std::string & supportpath)
+void generate_validator_image(Poco::Path supportpath)
 {
 // should really just validate with C++. :/
 
@@ -29,7 +29,8 @@ exit 0
 }
 )EOF";
 
-   generate(supportpath+"/validator-image",S_755,vdata);
+   supportpath.setFileName("validator-image");
+   generate(supportpath,S_755,vdata);
 }
 
 

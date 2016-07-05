@@ -37,7 +37,7 @@ CMD="help"
 )EOF";
 
    vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
-   std::string target = utils::get_usersbindir() + "/"+pluginname;
+   Poco::Path target = utils::get_usersbindir().setFileName(pluginname);
    generate(target, S_755, vdata);
 }
 

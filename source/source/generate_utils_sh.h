@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "generate.h"
 
-void generate_utils_sh(const std::string & supportpath)
+void generate_utils_sh(Poco::Path supportpath)
 {
    std::string vdata = R"EOF(#!/bin/bash
 # --- some useful utility functions
@@ -133,7 +133,7 @@ function save_environment {
 
 )EOF";
 
-   generate(supportpath+"/utils.sh",S_ALLREAD,vdata);
+   generate(supportpath.setFileName("utils.sh"),S_ALLREAD,vdata);
 }
 
 #endif

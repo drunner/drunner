@@ -26,10 +26,12 @@ namespace utils
 
    eResult mkdirp(std::string path);
    void makedirectory(Poco::Path d, mode_t mode);
-   void makesymlink(const std::string & file, const std::string & link);
-   void deltree(const std::string & s);
+   void makesymlink(Poco::Path file, Poco::Path link);
+
+   void deltree(Poco::Path s);
+   void delfile(Poco::Path fullpath);
+
    void movetree(const std::string & src, const std::string & dst);
-   void delfile(const std::string & fullpath);
    bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 
    bool fileexists(const Poco::Path& name);
@@ -70,7 +72,7 @@ namespace utils
 
    bool copyfile(std::string src, std::string dest);
 
-   void downloadexe(std::string url, std::string filepath);
+   void downloadexe(std::string url, Poco::Path filepath);
 
    void getAllServices(std::vector<std::string> & services);
 
