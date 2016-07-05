@@ -12,7 +12,7 @@ class sh_drunnercfg : protected settingsbash
 public:
    sh_drunnercfg(const Poco::Path & rootpath); // sets defaults, loads if able.
 
-   Poco::Path getPath_Root()         const { return Poco::Path(getString("ROOTPATH")); }
+   Poco::Path getPath_Root()         const;
    Poco::Path getPath_dServices()    const { return getPath_Root().pushDirectory("dServices"); }
    Poco::Path getPath_Support()      const { return getPath_Root().pushDirectory("support"); }
    Poco::Path getPath_Temp()         const { return getPath_Root().pushDirectory("temp"); }

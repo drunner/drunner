@@ -37,7 +37,12 @@ public:
 
    void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
    std::string getImageName() const { return getString("IMAGENAME"); }
-   Poco::Path getPathFromParent(Poco::Path parentpath) { return parentpath.pushDirectory("/backupvars.sh"); }
+
+   Poco::Path getPathFromParent(Poco::Path parentpath) 
+   {
+      poco_assert(parentpath.isDirectory());
+      return parentpath.pushDirectory("/backupvars.sh"); 
+   }
 
 protected:
    void setDefaults()

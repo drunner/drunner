@@ -7,6 +7,7 @@ VERSIONSTR="0.7 r"
 VERSIONDATE="2016-07-05"
 VSHORT="NOT SET"
 VCOMBO="NOT SET"
+DEBUG=""
 [ -v VTAG ] || VTAG="Dev"
 
 function showhelp {
@@ -44,6 +45,9 @@ function runbuild {
       touch "$PERMISSIONSFILE"
    fi
 
+   BUILDOBJ="${MYDIR}/source/objs/buildnum.o"
+   rm -f "${BUILDOBJ}"
+
    SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
    DAYS=$(( 1+${SECONDS}/(60*60*24) ))
    DATE=`date`
@@ -55,6 +59,7 @@ function runbuild {
    docker run --rm \
       -e "VCOMBO=${VCOMBO}" \
       -e "VSHORT=${VSHORT}" \
+      -e "DEBUG=${DEBUG}"   \
       -v "${SRC}:/source" drunner/builddrunner
 
    OUTPUT=source/output/drunner-install
@@ -62,8 +67,14 @@ function runbuild {
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
    cp ${OUTPUT} ${MYDIR}
-
 }
+
+function makeclean {
+   docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
+   rm -f "${MYDIR}/drunner-install"
+   rm -f "$PERMISSIONSFILE"
+}
+
 
 function main {
    SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
@@ -77,10 +88,14 @@ function main {
          runbuild
          ;;
 
+      debug)
+         DEBUG="-g"
+         makeclean
+         runbuild
+         ;;
+
       clean)
-         docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
-         rm -f "${MYDIR}/drunner-install"
-         rm -f "$PERMISSIONSFILE"
+         makeclean
          runbuild
          ;;
 

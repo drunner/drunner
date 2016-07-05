@@ -138,8 +138,7 @@ namespace utils
 
       // sanity check parameters.
       Poco::Path bfp(command);
-      if (bfp.getFileName().compare(args[0]) == 0)
-         fatal("dServiceCmd: First argument is also the name of the command to run. Likely coding error.");
+      poco_assert(bfp.getFileName().compare(args[0]) != 0);
 
       // log the command, getting the args right is non-trivial in some cases so this is useful.
       std::string cmd;
@@ -247,6 +246,7 @@ namespace utils
    Poco::Path get_usersbindir()
    {
       Poco::Path h(Poco::Path::home());
+      poco_assert(h.isDirectory());
       h.pushDirectory("bin");
       return h;
    }
@@ -460,6 +460,7 @@ namespace utils
 
    Poco::Path tempfolder::getpath() 
    { 
+      poco_assert(mPath.isDirectory());
       return mPath; 
    }
 

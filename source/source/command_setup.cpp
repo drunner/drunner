@@ -23,10 +23,14 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      utils::makedirectory(settings.getPath_Root(), S_755);
+      if (utils::fileexists(settings.getPath_Root()))
+         logmsg(kLDEBUG,"Root path already exists: " + settings.getPath_Root().toString());
+      else
+         utils::makedirectory(settings.getPath_Root(), S_755);
 
       // -----------------------------------------------------------------------------
       // Update settings on disk.
+      logmsg(kLDEBUG, "Writing drunner master settings to "+settings.getPath_drunnercfg_sh().toString());
       if (!settings.writeSettings())
          logmsg(kLERROR, "Couldn't write settings file!");
 
@@ -34,7 +38,7 @@ namespace command_setup
       // move this executable to the directory.
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
       Poco::File f(utils::get_exefullpath());
-      f.copyTo(settings.getPath_Root().pushDirectory("drunner").toString());
+      f.copyTo(settings.getPath_Root().setFileName("drunner").toString());
 //         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + settings.getPath_Root() + ".");
 
       // -----------------------------------------------------------------------------

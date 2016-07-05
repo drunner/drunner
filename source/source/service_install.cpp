@@ -211,8 +211,7 @@ eResult service::uninstall()
 
 eResult service::obliterate()
 {
-   if (!utils::fileexists(getPath()))
-      logmsg(kLERROR, "Coding error - obliterate should never be run if path doesn't exist.");
+   poco_assert(utils::fileexists(getPath()));
 
    servicehook hook(this, "obliterate");
    hook.starthook(); 

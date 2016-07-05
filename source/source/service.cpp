@@ -54,7 +54,9 @@ std::string service::loadImageName(const std::string & servicename, std::string 
 
 Poco::Path servicepaths::getPath() const
 {
-   return GlobalContext::getSettings()->getPath_dServices().pushDirectory(mName);
+   Poco::Path p=GlobalContext::getSettings()->getPath_dServices().pushDirectory(mName);
+   poco_assert(p.isDirectory());
+   return p;
 }
 
 Poco::Path servicepaths::getPathdRunner() const
@@ -137,9 +139,7 @@ bool service::isValid() const
 cResult service::servicecmd()
 {
    const params & p(*GlobalContext::getParams());
-
-   if (p.numArgs() < 1)
-      fatal("Programming error - number of arguments should never be 0 in service::servicecmd");
+   poco_assert(p.numArgs() > 0); // should never have 0 args to servicecmd!
 
    std::vector<std::string> cargs( p.getArgs().begin() + 1, p.getArgs().end() );
 
@@ -267,8 +267,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
    else
       drc.setServiceRunnerEnv();
  
-   if (args.size() > 0 && utils::stringisame(args[0],"servicerunner"))
-      logmsg(kLERROR, "Programming error - someone gave serviceRunnerCommand the first arg: servicerunner :/");
+   poco_assert(args.size() == 0 || !utils::stringisame(args[0], "servicerunner")); // first arg shouldn't be 'servicerunner'.
 
    cResult rval(utils::dServiceCmd(getPathServiceRunner().toString(), args, true));
    return rval;

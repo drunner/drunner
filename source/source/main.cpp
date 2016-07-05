@@ -39,6 +39,11 @@ int main(int argc, char **argv)
    }
 
    catch (const eExit & e) {
+#ifdef _WIN32 && _DEBUG
+      std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
+      std::string s;
+      std::getline(std::cin, s);
+#endif
       return e.exitCode();
    }
 }
@@ -203,8 +208,7 @@ int mainroutines::process()
                logmsg(kLERROR, "That service is not installed. Try installing, which will preserve any data volumes.");
 
             imagename = svc1.getImageName();
-            if (imagename.length() == 0)
-               fatal("Programming error - imagename is empty.");
+            poco_assert(imagename.length() > 0);
          }
          else
             imagename = p.getArg(1);

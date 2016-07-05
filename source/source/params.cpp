@@ -182,7 +182,6 @@ while (1)
 
 const std::string & params::getArg(int n) const 
 { 
-   if (n >= (int)mArgs.size())
-      fatal("Coding error - attempting to get arg that doesn't exist.");
+   poco_assert(n < (int)mArgs.size());
    return mArgs[n]; 
 }

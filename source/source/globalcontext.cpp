@@ -26,6 +26,7 @@ void GlobalContext::init(int argc, char **argv)
          if (s_params->getArgs().size() < 1)
             fatal("Usage:\n   drunner setup ROOTPATH");
          rootpath = utils::getabsolutepath(s_params->getArgs()[0]);
+         logmsg(kLDEBUG, "Setting rootpath to " + rootpath);
       }
       else // otherwise the install path is the location of this executable
          rootpath = utils::get_exepath();

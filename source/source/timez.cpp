@@ -49,7 +49,7 @@ namespace timeutils
    std::string getLogTimeStamp()
    {
       Poco::LocalDateTime now;
-      return Poco::DateTimeFormatter::format(now, "%Y/%m/%d %H_%M");
+      return Poco::DateTimeFormatter::format(now, "%Y-%m-%d %H:%M");
    }
 
    std::string getArchiveName(std::string servicename)

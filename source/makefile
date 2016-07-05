@@ -7,6 +7,7 @@ INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
 
 #CPPFLAGS=-Wall -g -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
 CPPFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
+ $(DEBUG) \
  -Wall -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
 
 LDFLAGS=-static -pthread

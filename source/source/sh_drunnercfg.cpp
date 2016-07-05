@@ -37,3 +37,10 @@ bool sh_drunnercfg::writeSettings() const
 {
    return settingsbash::writeSettings(getPath_drunnercfg_sh());
 }
+
+Poco::Path sh_drunnercfg::getPath_Root() const { 
+   Poco::Path rootpath(getString("ROOTPATH"));
+   rootpath.makeDirectory();
+   poco_assert(rootpath.isDirectory());
+   return rootpath;
+}
