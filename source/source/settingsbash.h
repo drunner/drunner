@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <Poco/Path.h>
 
 #include "params.h"
 
@@ -32,8 +33,8 @@ class settingsbash
 public:
    settingsbash(bool createonread) : mCreateOnRead(createonread) {}
    
-   bool readSettings(const std::string & settingspath);
-   bool writeSettings(const std::string & settingspath) const;
+   bool readSettings(const Poco::Path & settingspath);
+   bool writeSettings(const Poco::Path & settingspath) const;
 
    bool getBool(const std::string & key) const;
    std::string getString(const std::string & key) const;

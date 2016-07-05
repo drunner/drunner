@@ -72,7 +72,7 @@ int mainroutines::process()
    if (!utils::isInstalled())
       showhelp("Please run "+utils::get_exename()+" setup ROOTPATH");
 
-   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnercfg_sh());
+   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnercfg_sh().toString());
 
 
    // ----------------

@@ -1,5 +1,7 @@
 #include <cstdlib>
 
+#include <Poco/File.h>
+
 #include "service.h"
 #include "utils.h"
 #include "sh_backupvars.h"
@@ -14,15 +16,18 @@ void service::backup(const std::string & backupfile)
 {
    timez ttotal, tstep;
 
-   std::string op, bf = utils::getabsolutepath(backupfile);
+   std::string op;
+   
+   Poco::Path bf(backupfile);
+   bf.makeAbsolute();
    if (utils::fileexists(bf))
-      logmsg(kLERROR, "Backup file " + bf + " already exists. Aborting.");
+      logmsg(kLERROR, "Backup file " + bf.toString() + " already exists. Aborting.");
 
    if (!isValid())
       logmsg(kLERROR, "Validation of " + getName() + " failed. Try drunner recover " + getName());
 
-   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp() + "/archivefolder-" + getName());
-   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp() + "/backup-"+getName());
+   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp().pushDirectory("archivefolder-" + getName()));
+   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp().pushDirectory("backup-"+getName()));
 
    // write out variables that we need to decompress everything.
    sh_backupvars shb;
@@ -30,8 +35,8 @@ void service::backup(const std::string & backupfile)
    shb.writeSettings(shb.getPathFromParent(tempparent.getpath()));
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
-   std::string tempf = tempparent.getpath() + "/drbackup";
-   std::string tempc = tempparent.getpath() + "/containerbackup";
+   const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
+   const Poco::Path tempc = tempparent.getpath().pushDirectory("containerbackup");
    utils::makedirectory(tempf, S_777); // random UID in container needs access.
    utils::makedirectory(tempc, S_777);
 
@@ -40,7 +45,7 @@ void service::backup(const std::string & backupfile)
 
    // notify service we're starting our backup.
    tVecStr args;
-   args.push_back(tempc);
+   args.push_back(tempc.toString());
    servicehook hook(this, "backup", args);
    hook.starthook();
 
@@ -56,7 +61,9 @@ void service::backup(const std::string & backupfile)
    {
       if (utils::dockerVolExists(entry))
       {
-         compress::compress_volume(password, entry, tempf, entry + ".tar",true);
+         Poco::Path volarchive(tempf);
+         volarchive.setFileName(entry + ".tar");
+         compress::compress_volume(password, entry, volarchive);
          logmsg(kLDEBUG, "Backed up docker volume " + entry);
       }
       else
@@ -68,8 +75,10 @@ void service::backup(const std::string & backupfile)
 
    // back up host vol (local storage)
    logmsg(kLDEBUG, "Backing up host volume.");
-   compress::compress_folder(password, getPathHostVolume(), tempf, "drunner_hostvol.tar",true);
-
+   Poco::Path hostvolp(tempf);
+   hostvolp.setFileName("drunner_hostvol.tar");
+   compress::compress_folder(password, getPathHostVolume(), hostvolp);
+   
    logmsg(kLINFO, "Time for host volume backup:      " + tstep.getelpased());
    tstep.restart();
 
@@ -80,7 +89,9 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // compress everything together
-   bool ok=compress::compress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.enc",false);
+   Poco::Path bigarchive(archivefolder.getpath());
+   bigarchive.setFileName("backup.tar.enc");
+   bool ok=compress::compress_folder(password, tempparent.getpath().toString(), bigarchive);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
@@ -88,16 +99,17 @@ void service::backup(const std::string & backupfile)
    tstep.restart();
 
    // move compressed file to target dir.
-   std::string source = utils::getabsolutepath(archivefolder.getpath() + "/backup.tar.enc");
-   if (!utils::fileexists(source))
-      logmsg(kLERROR, "Expected archive not found at " + source);
-   if (0 != rename(source.c_str(), bf.c_str()))
-      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
+   Poco::File bigafile(bigarchive);
+   if (!bigafile.exists())
+      logmsg(kLERROR, "Expected archive not found at " + bigarchive.toString());
+
+   bigafile.renameTo(bf.toString());
+//      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
 
    logmsg(kLINFO, "Time to move archive:             " + tstep.getelpased());
    tstep.restart();
 
-   logmsg(kLINFO, "Archive of service " + getName() + " created at " + bf);
+   logmsg(kLINFO, "Archive of service " + getName() + " created at " + bf.toString());
    logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
 }
 
@@ -106,25 +118,29 @@ void service::backup(const std::string & backupfile)
 
 cResult service_restore(const std::string & servicename, const std::string & backupfile)
 { // restore from backup.
-   std::string bf = utils::getabsolutepath(backupfile);
-   if (bf.length()==0 || !utils::fileexists(bf))
+   Poco::Path bf(backupfile);
+   bf.makeAbsolute();
+   if (!utils::fileexists(bf))
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
-   logmsg(kLDEBUG, "Restoring from " + bf);
+   logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp() + "/restore-"+servicename);
-   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp() + "/archivefolder-" + servicename);
+   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp().pushDirectory("restore-"+servicename));
+   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp().pushDirectory("archivefolder-" + servicename));
 
    // for docker volumes
-   std::string tempf = tempparent.getpath() + "/drbackup";
+   const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
    // for container custom backups (e.g. mysqldump)
-   std::string tempc = tempparent.getpath() + "/containerbackup";
+   const Poco::Path tempc = tempparent.getpath().pushDirectory("containerbackup");
 
    // decompress main backup
-   if (!utils::copyfile(bf, archivefolder.getpath() + "/backup.tar.enc"))
-      logmsg(kLERROR, "Couldn't copy archive to temp folder.");
+   Poco::File bff(bf);
+   Poco::Path bigarchive(archivefolder.getpath());
+   bigarchive.setFileName("backup.tar.enc");
+   bff.copyTo(bigarchive.toString());
+//      logmsg(kLERROR, "Couldn't copy archive to temp folder.");
 
    std::string password = utils::getenv("PASS");
-   compress::decompress_folder(password, tempparent.getpath(), archivefolder.getpath(), "backup.tar.enc",false);
+   compress::decompress_folder(password, tempparent.getpath(), bigarchive);
 
    // read in old variables, just need imagename and olddockervols from them.
    sh_backupvars shb;
@@ -132,12 +148,17 @@ cResult service_restore(const std::string & servicename, const std::string & bac
       logmsg(kLERROR, "Backup corrupt - backupvars.sh missing.");
 
    if (!utils::fileexists(tempc))
-      logmsg(kLERROR, "Backup corrupt - missing " + tempc);
+      logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
    std::vector<std::string> shb_dockervolumenames;
    shb.getDockerVolumeNames(shb_dockervolumenames);
+
    for (auto entry : shb_dockervolumenames)
-      if (!utils::fileexists(tempf + "/" + entry + ".tar"))
+   {
+      Poco::Path entrypath = tempf;
+      entrypath.setFileName(entry + ".tar");
+      if (!utils::fileexists(entrypath))
          logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
+   }
 
    // backup seems okay - lets go!
    service svc(servicename, shb.getImageName());
@@ -166,21 +187,25 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    {
       if (!utils::dockerVolExists(dockervols[i]))
          logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!");
-      compress::decompress_volume(password, dockervols[i],
-         tempf, shb_dockervolumenames[i] + ".tar",true);
+      
+      Poco::Path volarchive(tempf);
+      volarchive.setFileName(shb_dockervolumenames[i] + ".tar");
+      compress::decompress_volume(password, dockervols[i], volarchive);
    }
 
    // restore host vol (local storage)
    logmsg(kLDEBUG, "Restoring host volume.");
-   compress::decompress_folder(password, svc.getPathHostVolume(), tempf, "drunner_hostvol.tar",true);
+   Poco::Path hostvolp(tempf);
+   hostvolp.setFileName("drunner_hostvol.tar");
+   compress::decompress_folder(password, svc.getPathHostVolume(), hostvolp);
 
    // tell the dService to do its restore_end action.
    tVecStr args;
-   args.push_back(tempc);
+   args.push_back(tempc.toString());
    servicehook hook(&svc, "restore", args);
    hook.endhook();
 
-   logmsg(kLINFO, "The backup " + bf + " has been restored to service " + servicename + ". Try it!");
+   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
    return kRSuccess;
 }
 

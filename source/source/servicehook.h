@@ -2,6 +2,7 @@
 #define __SERVICE_HOOK_H
 
 #include <string>
+#include <Poco/Path.h>
 
 #include "enums.h"
 #include "params.h"
@@ -25,7 +26,7 @@ private:
    std::string mActionName;
    std::vector<std::string> mHookParams;
 
-   std::string mServiceRunner;
+   Poco::Path mServiceRunner;
 
    std::string mStartCmd;
    std::string mEndCmd;

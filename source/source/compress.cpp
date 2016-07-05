@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <Poco/Path.h>
+#include <Poco/File.h>
+
 #include "compress.h"
 #include "utils.h"
 #include "globallogger.h"
@@ -35,11 +38,10 @@ namespace compress
 
    // --------------------------------------
 
-   bool _compress(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename, bool fast)
+   bool _compress(std::string password, std::string volumename, Poco::Path archive)
    {
-      std::string faststr;
-      if (fast) faststr = "_fast";
+      std::string archivefolder = archive.parent().toString();
+      std::string archivename = archive.getFileName();
 
       if (!utils::fileexists(archivefolder))
          fatal("Can't archive to non-existant folder " + archivefolder);
@@ -48,24 +50,23 @@ namespace compress
          fatal("Can't compress to already existing " + archivename);
 
       _rundocker(volumename, archivefolder, password,
-         "/usr/local/bin/dr_compress"+faststr+" " + archivename + " && chmod 0666 /dst/" + archivename );
+         "/usr/local/bin/dr_compress_fast " + archivename + " && chmod 0666 /dst/" + archivename );
 
       return true;
    }
 
    // --------------------------------------
 
-   bool _decompress(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename, bool fast)
+   bool _decompress(std::string password, std::string volumename, Poco::Path archive)
    {
-      std::string faststr;
-      if (fast) faststr = "_fast";
+      std::string archivefolder = archive.parent().toString();
+      std::string archivename = archive.getFileName();
 
       if (!utils::fileexists(archivefolder) || !utils::fileexists(archivefolder + archivename))
          fatal("Can't decompress missing archive " + archivefolder + archivename);
 
       _rundocker(archivefolder, volumename, password,
-         "/usr/local/bin/dr_decompress"+ faststr +" "+archivename );
+         "/usr/local/bin/dr_decompress_fast "+archivename );
 
       return true;
    }
@@ -73,49 +74,45 @@ namespace compress
    // --------------------------------------
 
 
-   bool compress_volume(std::string password, std::string volumename,
-      std::string archivefolder, std::string archivename,bool fast)
+   bool compress_volume(std::string password, std::string volumename, Poco::Path archive)
    {
       if (!utils::dockerVolExists(volumename))
          fatal("Can't compress non-existant volume " + volumename);
 
-      return _compress(password, volumename, archivefolder+"/", archivename,fast);
+      return _compress(password, volumename, archive);
    }
 
    // --------------------------------------
 
-   bool compress_folder(std::string password, std::string foldername,
-      std::string archivefolder, std::string archivename,bool fast)
+   bool compress_folder(std::string password, Poco::Path foldername, Poco::Path archive)
    {
-      if (!utils::fileexists(foldername))
-         fatal("Can't archive non-existant folder " + foldername);
-      std::string ap = utils::getabsolutepath(foldername);
-
-      return _compress(password, ap + "/", archivefolder + "/", archivename,fast);
+      Poco::File f(foldername);
+      if (!f.exists())
+         fatal("Can't archive non-existant folder " + foldername.toString());
+      
+      return _compress(password, foldername.absolute().toString(), archive);
    }
 
    // --------------------------------------
 
-   bool decompress_volume(std::string password, std::string targetvolumename,
-      std::string archivefolder, std::string archivename, bool fast)
+   bool decompress_volume(std::string password, std::string targetvolumename, Poco::Path archive)
    {
       if (!utils::dockerVolExists(targetvolumename))
          fatal("Can't restore into volume " + targetvolumename + " because it doesn't exist.");
 
-      return _decompress(password, targetvolumename, archivefolder + "/", archivename,fast);
+      return _decompress(password, targetvolumename, archive);
    }
 
 
    // --------------------------------------
 
-   bool decompress_folder(std::string password, std::string targetfoldername,
-      std::string archivefolder, std::string archivename, bool fast)
+   bool decompress_folder(std::string password, Poco::Path targetfoldername, Poco::Path archive)
    {
-      if (!utils::fileexists(targetfoldername))
-         fatal("Can't archive to non-existant folder " + targetfoldername);
-      std::string ap = utils::getabsolutepath(targetfoldername);
+      Poco::File tf(targetfoldername);
+      if (!tf.exists())
+         fatal("Can't archive to non-existant folder " + targetfoldername.toString());
 
-      return _decompress(password, ap + "/", archivefolder + "/", archivename,fast);
+      return _decompress(password, targetfoldername.absolute().toString(), archive);
    }
 
 

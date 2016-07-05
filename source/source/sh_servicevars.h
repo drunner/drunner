@@ -2,6 +2,7 @@
 #define __SH_SERVICEVARS_H
 
 #include <string>
+#include <Poco/Path.h>
 
 #include "settingsbash.h"
 
@@ -23,7 +24,7 @@ public:
    }
 
    std::string getImageName() const { return getString("IMAGENAME"); }
-   std::string getPathFromParent(std::string servicepath) { return servicepath + "/servicevars.sh"; }
+   Poco::Path getPathFromParent(Poco::Path servicepath) { return servicepath.setFileName("servicevars.sh"); }
 
 }; // sh_servicevars
 

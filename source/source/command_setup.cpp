@@ -10,6 +10,8 @@
 #include "drunnercompose.h"
 
 #include <Poco/Process.h>
+#include <Poco/Path.h>
+#include <Poco/File.h>
 
 namespace command_setup
 {
@@ -31,8 +33,9 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
-      if (!utils::copyfile(utils::get_exefullpath(), settings.getPath_Root() + "/drunner"))
-         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + settings.getPath_Root() + ".");
+      Poco::File f(utils::get_exefullpath());
+      f.copyTo(settings.getPath_Root().pushDirectory("drunner").toString());
+//         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + settings.getPath_Root() + ".");
 
       // -----------------------------------------------------------------------------
       // create bin directory

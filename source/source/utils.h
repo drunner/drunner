@@ -5,6 +5,8 @@
 #include <string>
 #include <sys/stat.h>
 
+#include <Poco/Path.h>
+
 #include "enums.h"
 
 typedef std::vector<std::string> tVecStr;
@@ -23,14 +25,14 @@ namespace utils
    std::string getabsolutepath(std::string path);
 
    eResult mkdirp(std::string path);
-   void makedirectory(const std::string & d, mode_t mode);
+   void makedirectory(Poco::Path d, mode_t mode);
    void makesymlink(const std::string & file, const std::string & link);
    void deltree(const std::string & s);
    void movetree(const std::string & src, const std::string & dst);
    void delfile(const std::string & fullpath);
    bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 
-   bool fileexists (const std::string& name);
+   bool fileexists(const Poco::Path& name);
    bool commandexists(std::string command);
 
    int runcommand(std::string command, std::vector<std::string> args);
@@ -51,7 +53,7 @@ namespace utils
    std::string get_exepath();
    std::string get_exefullpath();
    std::string get_exename();
-   std::string get_usersbindir();   // dies if fails.
+   Poco::Path get_usersbindir();   // dies if fails.
 
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);
@@ -75,14 +77,14 @@ namespace utils
    class tempfolder
    {
    public:
-      tempfolder(std::string d);
+      tempfolder(Poco::Path d);
       ~tempfolder();
-      const std::string & getpath();
+      Poco::Path getpath();
       
    private:
       void die(std::string msg);
       void tidy();
-      std::string mPath;
+      Poco::Path mPath;
    };
 
    class dockerrun

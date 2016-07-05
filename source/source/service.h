@@ -17,16 +17,18 @@ class servicepaths
 public:
    servicepaths(const std::string & servicename);
 
-   std::string getPath() const;
-   std::string getPathdRunner() const;
-   std::string getPathTemp() const;
-   std::string getPathHostVolume() const;
-   std::string getPathHostVolume_servicerunner() const;
-   std::string getPathHostVolume_environment() const;
-   std::string getPathServiceRunner() const;
-   std::string getPathDockerCompose() const;
+   Poco::Path getPath() const;
+   Poco::Path getPathdRunner() const;
+   Poco::Path getPathTemp() const;
+   Poco::Path getPathHostVolume() const;
+   Poco::Path getPathHostVolume_servicerunner() const;
+   Poco::Path getPathHostVolume_environment() const;
+   Poco::Path getPathServiceRunner() const;
+   Poco::Path getPathDockerCompose() const;
+   Poco::Path getPathLaunchScript() const;
+
    std::string getName() const;
-   std::string getPathLaunchScript() const;
+
 protected:
    const std::string mName;
 };

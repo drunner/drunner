@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <sstream>
 
+#include <Poco/File.h>
+
 #include "settingsbash.h"
 #include "utils.h"
 #include "globallogger.h"
@@ -50,16 +52,13 @@ void bashline::setkeyvalue(const std::string &k, const std::string & v)
 
 // ----------------------------------------------------------------------------------------------------------------------
 
-bool settingsbash::readSettings(const std::string & settingspath)
+bool settingsbash::readSettings(const Poco::Path & settingspath)
 {
-   if (settingspath.length() == 0)
-      fatal("settingsbash::readSettings - empty string passed as path to read from.");
-
-   if (! utils::fileexists(settingspath))
+   if (!Poco::File(settingspath).exists())
       return false;
 
    std::string line,left,right;
-   std::ifstream configfile(settingspath.c_str() );
+   std::ifstream configfile(settingspath.toString().c_str() );
    while (std::getline(configfile, line))
    {
       bashline bl;
@@ -86,21 +85,19 @@ void settingsbash::setSetting(bashline bl, bool createOK)
 }
 
 
-bool settingsbash::writeSettings(const std::string & settingspath) const
+bool settingsbash::writeSettings(const Poco::Path & settingspath) const
 {
-   if (settingspath.length() == 0)
-      fatal("settingsbash::writeSettings - empty string passed as path to write to.");
+   if (settingspath.toString().find(".sh")==std::string::npos)
+      fatal("All bash style settings files should have .sh file extension. Offender: "+ settingspath.toString());
 
-   if (settingspath.find(".sh")==std::string::npos)
-      fatal("All bash style settings files should have .sh file extension. Offender: "+ settingspath);
+   Poco::File settingsfile(settingspath);
+   if (settingsfile.exists())
+      settingsfile.remove();
 
-   if (utils::fileexists(settingspath))
-      std::remove(settingspath.c_str());
-
-   std::ofstream ofile(settingspath.c_str() );
+   std::ofstream ofile(settingspath.toString().c_str() );
    if (!ofile.is_open()) return false; // can't open the file.
 
-   ofile << "# "+ settingspath << std::endl;
+   ofile << "# "+ settingspath.toString() << std::endl;
    ofile << "# dRunner bash configuration file." << std::endl;
 
   // iterate through map. C++11 style.

@@ -2,6 +2,7 @@
 #define __sh_drunnercfg_H
 
 #include <map>
+#include <Poco/Path.h>
 
 #include "settingsbash.h"
 #include "params.h"
@@ -9,21 +10,21 @@
 class sh_drunnercfg : protected settingsbash
 {
 public:
-   sh_drunnercfg(const std::string & rootpath); // sets defaults, loads if able.
+   sh_drunnercfg(const Poco::Path & rootpath); // sets defaults, loads if able.
 
-   std::string getPath_Root()         const { return getString("ROOTPATH"); }
-   std::string getPath_dServices()    const { return getPath_Root() + "/dServices"; }
-   std::string getPath_Support()      const { return getPath_Root() + "/support"; }
-   std::string getPath_Temp()         const { return getPath_Root() + "/temp"; }
-   std::string getPath_HostVolumes()  const { return getPath_Root() + "/hostVolumes"; }
+   Poco::Path getPath_Root()         const { return Poco::Path(getString("ROOTPATH")); }
+   Poco::Path getPath_dServices()    const { return getPath_Root().pushDirectory("dServices"); }
+   Poco::Path getPath_Support()      const { return getPath_Root().pushDirectory("support"); }
+   Poco::Path getPath_Temp()         const { return getPath_Root().pushDirectory("temp"); }
+   Poco::Path getPath_HostVolumes()  const { return getPath_Root().pushDirectory("hostVolumes"); }
 
    std::string getRootUtilImage()     const { return getString("ROOTUTILIMAGE"); }
    std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL"); }
    std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME"); }
    bool getPullImages() const { return getBool("PULLIMAGES"); }
 
-   std::string getPath_drunnercfg_sh() const { return getPath_Root() + "/drunnercfg.sh"; }
-   std::string getPath_drunnerbackups_cfg() const { return getPath_Root() + "/drunnerbackups.cfg"; }
+   Poco::Path getPath_drunnercfg_sh() const { return getPath_Root().setFileName("drunnercfg.sh"); }
+   Poco::Path getPath_drunnerbackups_cfg() const { return getPath_Root().setFileName("drunnerbackups.cfg"); }
 
    bool readSettings();
    bool writeSettings() const;

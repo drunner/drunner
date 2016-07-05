@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <Poco/File.h>
 
 #include "utils.h"
 #include "globallogger.h"
@@ -218,8 +219,12 @@ COMMANDS
 
 void shifty(std::string src, std::string dst, int interval, unsigned int numtokeep)
 {
+   Poco::File f(src);
+   if (!f.exists())
+      fatal("shift: source doesn't exist - "+src);
+
    std::vector<std::string> folders;
-   utils::getFolders(src, folders);
+   f.list(folders);
    std::sort(folders.begin(), folders.end());
    if (folders.size() <= numtokeep)
       return; // nothing to do.

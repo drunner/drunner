@@ -26,7 +26,7 @@ servicepaths::servicepaths(const std::string & servicename) :
 
 std::string service::loadImageName(const std::string & servicename, std::string imagename)
 {
-   std::string v = servicepaths(servicename).getPath();
+   Poco::Path v = servicepaths(servicename).getPath();
    if (utils::fileexists(v))
    {
       if (imagename.length() == 0)
@@ -34,7 +34,7 @@ std::string service::loadImageName(const std::string & servicename, std::string 
          sh_servicevars shv;
          if (!shv.readSettings( shv.getPathFromParent(v) ))
          {
-            ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v);
+            ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v.toString());
             ::logmsg(kLWARN, "Service old/broken. Recover with:");
             ::logmsg(kLWARN, "   drunner recover " + servicename + " IMAGENAME");
             ::logmsg(kLERROR, "Unable to determine the image name. Exiting.");
@@ -52,55 +52,55 @@ std::string service::loadImageName(const std::string & servicename, std::string 
 }
 
 
-std::string servicepaths::getPath() const
+Poco::Path servicepaths::getPath() const
 {
-   return GlobalContext::getSettings()->getPath_dServices() + "/" + mName;
+   return GlobalContext::getSettings()->getPath_dServices().pushDirectory(mName);
 }
 
-std::string servicepaths::getPathdRunner() const
+Poco::Path servicepaths::getPathdRunner() const
 {
-   return getPath() + "/" + "drunner";
+   return getPath().pushDirectory("drunner");
 }
 
-std::string servicepaths::getPathTemp() const
+Poco::Path servicepaths::getPathTemp() const
 {
-   return getPath() + "/" + "temp";
+   return getPath().pushDirectory("temp");
 }
 
-std::string servicepaths::getPathHostVolume() const
+Poco::Path servicepaths::getPathHostVolume() const
 {
-   return GlobalContext::getSettings()->getPath_HostVolumes() + "/" + mName;
+   return GlobalContext::getSettings()->getPath_HostVolumes().pushDirectory(mName);
 }
 
-std::string servicepaths::getPathHostVolume_servicerunner() const
+Poco::Path servicepaths::getPathHostVolume_servicerunner() const
 {
-   return getPathHostVolume() + "/servicerunner";
+   return getPathHostVolume().pushDirectory("servicerunner");
 }
 
-std::string servicepaths::getPathHostVolume_environment() const
+Poco::Path servicepaths::getPathHostVolume_environment() const
 {
-   return getPathHostVolume() + "/environment";
+   return getPathHostVolume().pushDirectory("environment");
 }
 
-std::string servicepaths::getPathServiceRunner() const
+Poco::Path servicepaths::getPathServiceRunner() const
 {
-   return getPathdRunner() + "/servicerunner";
+   return getPathdRunner().pushDirectory("servicerunner");
 }
 
-std::string servicepaths::getPathDockerCompose() const
+Poco::Path servicepaths::getPathDockerCompose() const
 {
-   return getPathdRunner() + "/docker-compose.yml";
+   return getPathdRunner().setFileName("docker-compose.yml");
+}
+
+Poco::Path servicepaths::getPathLaunchScript() const
+{
+   return utils::get_usersbindir() + "/" + getName();
 }
 
 
 std::string servicepaths::getName() const
 {
    return mName;
-}
-
-std::string servicepaths::getPathLaunchScript() const
-{
-   return utils::get_usersbindir() + "/" + getName();
 }
 
 void service::ensureDirectoriesExist() const

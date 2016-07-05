@@ -34,10 +34,10 @@
 namespace utils
 {
 
-   bool fileexists (const std::string& name)
+   bool fileexists(const Poco::Path& name)
    {
       struct stat buffer;
-      return (stat (name.c_str(), &buffer) == 0);
+      return (stat (name.toString().c_str(), &buffer) == 0);
    }
 
    bool stringisame(const std::string & s1, const std::string &s2 )
@@ -96,12 +96,26 @@ namespace utils
 
    int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim)
    {
-      Poco::Pipe outpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
-      Poco::PipeInputStream istrout(outpipe);
-      Poco::StreamCopier::copyToString(istrout, out);
+      int rval;
 
-      int rval = ph.wait();
+      try
+      {
+         Poco::Pipe outpipe;
+         Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
+         Poco::PipeInputStream istrout(outpipe);
+         Poco::StreamCopier::copyToString(istrout, out);
+
+         rval = ph.wait();
+      }
+      catch (Poco::SystemException & se)
+      {
+         std::ostringstream oss;
+         oss << "Runcomand: " << command;
+         for (auto x : args) oss << " " << x;
+         oss << std::endl << se.displayText();
+         fatal(oss.str());
+      }
+
       if (trim)
          Poco::trimInPlace(out);
       return rval;
@@ -230,13 +244,11 @@ namespace utils
       return p.toString();
    }
 
-   std::string get_usersbindir()
+   Poco::Path get_usersbindir()
    {
-      std::string op;
-      int rval = bashcommand("echo $HOME",op,true);
-      if (rval!=0)
-         logmsg(kLERROR,"Couldn't get current user's home directory.");
-      return op+"/bin";
+      Poco::Path h(Poco::Path::home());
+      h.pushDirectory("bin");
+      return h;
    }
 
    bool imageisbranch(const std::string & imagename)
@@ -293,18 +305,17 @@ namespace utils
       return (it != strHaystack.end() );
    }
 
-   void makedirectory(const std::string & d, mode_t mode)
+   void makedirectory(Poco::Path d, mode_t mode)
    {
-      eResult rslt = utils::mkdirp(d);
-      if (rslt==kRError)
-         logmsg(kLERROR,"Couldn't create "+d);
-      if (rslt==kRSuccess)
-         logmsg(kLDEBUG,"Created "+d);
-      if (rslt==kRNoChange)
-         logmsg(kLDEBUG,d+" exists. Unchanged.");
+      Poco::File f(d);
+      if (!f.exists())
+      {
+         f.createDirectory();
+         logmsg(kLDEBUG, "Created " + d.toString());
+      }
 
-      if (chmod(d.c_str(), mode)!=0)
-         logmsg(kLERROR, "Unable to change permissions on "+d);
+      if (xchmod(d.toString().c_str(), mode)!=0)
+         logmsg(kLERROR, "Unable to change permissions on "+d.toString());
    }
 
    void makesymlink(const std::string & file, const std::string & link)
@@ -419,24 +430,28 @@ namespace utils
 
    void getAllServices(std::vector<std::string>& services)
    {
-      std::string parent = GlobalContext::getSettings()->getPath_dServices();
-      if (!utils::getFolders(parent, services))
-         logmsg(kLERROR, "Couldn't get subfolders of " + parent);
+      Poco::File f(GlobalContext::getSettings()->getPath_dServices());
+      if (!f.exists())
+         logmsg(kLERROR, "Services folder does not exist.");
+
+      f.list(services);
    }
 
 
-   tempfolder::tempfolder(std::string d) : mPath(d)
+   tempfolder::tempfolder(Poco::Path d) : mPath(d)
    {   // http://stackoverflow.com/a/10232761
-      eResult rslt = utils::mkdirp(d);
-      if (rslt == kRError)
-         die("Couldn't create " + d);
-      if (rslt == kRSuccess)
-         logmsg(kLDEBUG, "Created " + d);
-      if (rslt == kRNoChange)
-         die(d+ " already exists. Can't use as temp folder. Aborting.");
+      Poco::File f(d);
 
-      if (chmod(d.c_str(), S_777) != 0)
-         die("Unable to change permissions on " + d);
+      if (!f.exists())
+      {
+         f.createDirectories();
+         logmsg(kLDEBUG, "Created " + d.toString());
+      }
+      else
+         die(d.toString() + " already exists. Can't use as temp folder. Aborting.");
+
+      if (xchmod(d.toString().c_str(), S_777) != 0)
+         die("Unable to change permissions on " + d.toString());
    }
 
    tempfolder::~tempfolder() 
@@ -444,7 +459,7 @@ namespace utils
       tidy();
    }
 
-   const std::string & tempfolder::getpath() 
+   Poco::Path tempfolder::getpath() 
    { 
       return mPath; 
    }
@@ -454,11 +469,13 @@ namespace utils
       tidy();
       logmsg(kLERROR, msg); // throws. dtor won't be called since die is only called from ctor.
    }
+
    void tempfolder::tidy()
    {
-      std::string op;
-      utils::deltree(mPath);
-      logmsg(kLDEBUG, "Recursively deleted " + mPath);
+      Poco::File f(mPath);
+      if (f.exists())
+         f.remove(true);
+      logmsg(kLDEBUG, "Recursively deleted " + mPath.toString());
    }
 
 
