@@ -3,6 +3,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <Poco/StreamCopier.h>
+
 #include "dservicelogger.h"
 #include "globallogger.h"
 #include "globalcontext.h"
@@ -39,7 +41,7 @@ void dServiceLog(Poco::PipeInputStream & istrm_cout, bool isServiceCmd)
 
    if (mOutputMode == kORaw)
    {
-      std::cerr << istrm_cout.rdbuf();
+      Poco::StreamCopier::copyStreamUnbuffered(istrm_cout, std::cout);
    }
    else
    {

@@ -333,7 +333,9 @@ namespace utils
             logmsg(kLERROR, "Unable to change permissions on " + path.toString());
 
          return;
-      case kRError:
+      case kRNoChange:
+         return;
+      default:
          fatal("Unable to create " + path.toString());
       }
    }
