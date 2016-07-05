@@ -89,14 +89,13 @@ function main {
          ;;
 
       debug)
-         DEBUG="-g"
-         makeclean
+         DEBUG="-g -D _DEBUG -D POCO_ENABLE_DEBUGGER"
          runbuild
+         "${MYDIR}/drunner-install" -v ~/temp
          ;;
 
       clean)
          makeclean
-         runbuild
          ;;
 
       install)

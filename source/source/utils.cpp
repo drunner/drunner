@@ -138,6 +138,8 @@ namespace utils
 
       // sanity check parameters.
       Poco::Path bfp(command);
+      poco_assert(utils::fileexists(bfp));
+      poco_assert(bfp.isFile());
       poco_assert(bfp.getFileName().compare(args[0]) != 0);
 
       // log the command, getting the args right is non-trivial in some cases so this is useful.
@@ -166,17 +168,6 @@ namespace utils
       if (!p.isAbsolute())
          p.makeAbsolute();
       return p.toString(Poco::Path::PATH_NATIVE);
-   }
-
-   eResult mkdirp(std::string path)
-   {
-      Poco::File f(path);
-
-      if (f.exists())
-         return kRNoChange;
-
-      f.createDirectories();
-      return (f.exists() ? kRSuccess : kRError);
    }
 
 
@@ -310,12 +301,41 @@ namespace utils
       Poco::File f(d);
       if (!f.exists())
       {
+         if (!utils::fileexists(d.parent()))
+            fatal("Parent directoy doesn't exist: " + d.parent().toString());
          f.createDirectory();
          logmsg(kLDEBUG, "Created " + d.toString());
       }
 
       if (xchmod(d.toString().c_str(), mode)!=0)
          logmsg(kLERROR, "Unable to change permissions on "+d.toString());
+   }
+
+   eResult _makedirectories(Poco::Path path)
+   {
+      Poco::File f(path);
+
+      if (f.exists())
+         return kRNoChange;
+
+      f.createDirectories();
+      return (f.exists() ? kRSuccess : kRError);
+   }
+   void makedirectories(Poco::Path path, mode_t mode)
+   {
+      eResult r = _makedirectories(path);
+      switch (r)
+      {
+      case kRSuccess:
+         logmsg(kLDEBUG, "Created " + path.toString());
+
+         if (xchmod(path.toString().c_str(), mode) != 0)
+            logmsg(kLERROR, "Unable to change permissions on " + path.toString());
+
+         return;
+      case kRError:
+         fatal("Unable to create " + path.toString());
+      }
    }
 
    void makesymlink(Poco::Path file, Poco::Path link)
@@ -328,6 +348,8 @@ namespace utils
 	std::string op;
 	if (utils::bashcommand(cmd, op, false) != 0)
 		logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
+   else
+      logmsg(kLDEBUG, "Created symlink at " + link.toString());
    }
 
    void deltree(Poco::Path s)

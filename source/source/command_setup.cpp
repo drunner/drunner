@@ -37,9 +37,10 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
+      std::string drunnerexe = settings.getPath_Root().setFileName("drunner").toString();
+      logmsg(kLDEBUG, "Copying the drunner executable to " + drunnerexe);
       Poco::File f(utils::get_exefullpath());
-      f.copyTo(settings.getPath_Root().setFileName("drunner").toString());
-//         logmsg(kLERROR, "Couldn't copy drunner executable from " + utils::get_exefullpath() + " to " + settings.getPath_Root() + ".");
+      f.copyTo(drunnerexe);
 
       // -----------------------------------------------------------------------------
       // create bin directory

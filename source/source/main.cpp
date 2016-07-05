@@ -39,7 +39,7 @@ int main(int argc, char **argv)
    }
 
    catch (const eExit & e) {
-#ifdef _WIN32 && _DEBUG
+#if defined(_WIN32) && defined(_DEBUG)
       std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
       std::string s;
       std::getline(std::cin, s);

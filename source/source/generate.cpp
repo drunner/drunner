@@ -15,7 +15,7 @@ void generate(
    // whether any changes have been made.
    Poco::File f(fullpath);
    if (f.exists())
-      f.remove();
+      utils::delfile(fullpath.toString());
 
    std::string op;
    std::ofstream ofs;

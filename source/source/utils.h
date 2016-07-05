@@ -24,7 +24,8 @@ namespace utils
 
    std::string getabsolutepath(std::string path);
 
-   eResult mkdirp(std::string path);
+   eResult _makedirectories(Poco::Path path);
+   void makedirectories(Poco::Path path,mode_t mode);
    void makedirectory(Poco::Path d, mode_t mode);
    void makesymlink(Poco::Path file, Poco::Path link);
 

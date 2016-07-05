@@ -40,6 +40,7 @@ cResult servicehook::runHook(std::string se)
 {
    if (!utils::fileexists(mServiceRunner))
    {
+      logmsg(kLDEBUG, "Failed to find servicerunner at " + mServiceRunner.toString());
       logmsg(kLWARN, "Couldn't run hook " + se + " because dService's servicerunner is not installed.");
       return kRError;
    }
