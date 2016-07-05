@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\source\buildnum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\checkbasics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\command_dev.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\command_general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\command_setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\compress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\drunnercompose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\dservicelogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\exceptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\generate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\globalcontext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\globallogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\params.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\service_backup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\service_install.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\servicehook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\settingsbash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\sh_drunnercfg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\showhelp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\termcolor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\timez.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\utils_docker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\tests\test_settingsbash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\tests\unittests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\backupConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\dbackup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\plugins.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\source\buildnum.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\checkbasics.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\chmod.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\command_dev.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\command_general.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\command_setup.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\compress.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\cresult.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\drunnercompose.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\dservicelogger.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\enums.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\exceptions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\generate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\generate_utils_sh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\generate_validator_image.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\globalcontext.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\globallogger.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\main.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\params.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\servicehook.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\settingsbash.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sh_backupvars.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sh_ddev.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sh_drunnercfg.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sh_servicevars.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\showhelp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\termcolor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\timez.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\utils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\utils_docker.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\win\getopt.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\tests\unittests.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\backupConfig.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\dbackup.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\generate_plugin_script.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\plugins.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

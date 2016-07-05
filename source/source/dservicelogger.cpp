@@ -37,28 +37,27 @@ void dServiceLog(Poco::PipeInputStream & istrm_cout, bool isServiceCmd)
    if (mOutputMode == kOSuppressed)
       return; // nothing to output :-)
 
-   escapefilter ef;
-   char buf[2] = { 'x',0 };
-   bool initialised = false;
-
-   while (true)
+   if (mOutputMode == kORaw)
    {
-      int i = istrm_cout.get();
-      if (i == -1)
-         return;
-      char c = (char)i;
+      std::cerr << istrm_cout.rdbuf();
+   }
+   else
+   {
+      escapefilter ef;
+      char buf[2] = { 'x',0 };
+      bool initialised = false;
 
-      if (ef.valid(c))
-      { // output c.
-         if (mOutputMode == kORaw)
-         {
-            std::cout << c;
-            std::cout.flush();
-         }
-         else
-         { // need to log it.
+      while (true)
+      {
+         int i = istrm_cout.get();
+         if (i == -1)
+            return;
+         char c = (char)i;
+
+         if (ef.valid(c))
+         { // output c.
             if (!initialised)
-               logverbatim(kLINFO,getheader(kLINFO));
+               logverbatim(kLINFO, getheader(kLINFO));
             initialised = true;
             buf[0] = c;
             logverbatim(kLINFO, buf);

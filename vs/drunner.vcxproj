@@ -18,6 +18,77 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\source\buildnum.cpp" />
+    <ClCompile Include="..\source\source\checkbasics.cpp" />
+    <ClCompile Include="..\source\source\command_dev.cpp" />
+    <ClCompile Include="..\source\source\command_general.cpp" />
+    <ClCompile Include="..\source\source\command_setup.cpp" />
+    <ClCompile Include="..\source\source\compress.cpp" />
+    <ClCompile Include="..\source\source\drunnercompose.cpp" />
+    <ClCompile Include="..\source\source\dservicelogger.cpp" />
+    <ClCompile Include="..\source\source\exceptions.cpp" />
+    <ClCompile Include="..\source\source\generate.cpp" />
+    <ClCompile Include="..\source\source\globalcontext.cpp" />
+    <ClCompile Include="..\source\source\globallogger.cpp" />
+    <ClCompile Include="..\source\source\main.cpp" />
+    <ClCompile Include="..\source\source\params.cpp" />
+    <ClCompile Include="..\source\source\plugins\backupConfig.cpp" />
+    <ClCompile Include="..\source\source\plugins\dbackup.cpp" />
+    <ClCompile Include="..\source\source\plugins\plugins.cpp" />
+    <ClCompile Include="..\source\source\service.cpp" />
+    <ClCompile Include="..\source\source\servicehook.cpp" />
+    <ClCompile Include="..\source\source\service_backup.cpp" />
+    <ClCompile Include="..\source\source\service_install.cpp" />
+    <ClCompile Include="..\source\source\settingsbash.cpp" />
+    <ClCompile Include="..\source\source\showhelp.cpp" />
+    <ClCompile Include="..\source\source\sh_drunnercfg.cpp" />
+    <ClCompile Include="..\source\source\termcolor.cpp" />
+    <ClCompile Include="..\source\source\tests\test_settingsbash.cpp" />
+    <ClCompile Include="..\source\source\tests\unittests.cpp" />
+    <ClCompile Include="..\source\source\timez.cpp" />
+    <ClCompile Include="..\source\source\utils.cpp" />
+    <ClCompile Include="..\source\source\utils_docker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\source\buildnum.h" />
+    <ClInclude Include="..\source\source\checkbasics.h" />
+    <ClInclude Include="..\source\source\chmod.h" />
+    <ClInclude Include="..\source\source\command_dev.h" />
+    <ClInclude Include="..\source\source\command_general.h" />
+    <ClInclude Include="..\source\source\command_setup.h" />
+    <ClInclude Include="..\source\source\compress.h" />
+    <ClInclude Include="..\source\source\cresult.h" />
+    <ClInclude Include="..\source\source\drunnercompose.h" />
+    <ClInclude Include="..\source\source\dservicelogger.h" />
+    <ClInclude Include="..\source\source\enums.h" />
+    <ClInclude Include="..\source\source\exceptions.h" />
+    <ClInclude Include="..\source\source\generate.h" />
+    <ClInclude Include="..\source\source\generate_utils_sh.h" />
+    <ClInclude Include="..\source\source\generate_validator_image.h" />
+    <ClInclude Include="..\source\source\globalcontext.h" />
+    <ClInclude Include="..\source\source\globallogger.h" />
+    <ClInclude Include="..\source\source\main.h" />
+    <ClInclude Include="..\source\source\params.h" />
+    <ClInclude Include="..\source\source\plugins\backupConfig.h" />
+    <ClInclude Include="..\source\source\plugins\dbackup.h" />
+    <ClInclude Include="..\source\source\plugins\generate_plugin_script.h" />
+    <ClInclude Include="..\source\source\plugins\plugins.h" />
+    <ClInclude Include="..\source\source\service.h" />
+    <ClInclude Include="..\source\source\servicehook.h" />
+    <ClInclude Include="..\source\source\settingsbash.h" />
+    <ClInclude Include="..\source\source\showhelp.h" />
+    <ClInclude Include="..\source\source\sh_backupvars.h" />
+    <ClInclude Include="..\source\source\sh_ddev.h" />
+    <ClInclude Include="..\source\source\sh_drunnercfg.h" />
+    <ClInclude Include="..\source\source\sh_servicevars.h" />
+    <ClInclude Include="..\source\source\termcolor.h" />
+    <ClInclude Include="..\source\source\tests\unittests.h" />
+    <ClInclude Include="..\source\source\timez.h" />
+    <ClInclude Include="..\source\source\utils.h" />
+    <ClInclude Include="..\source\source\utils_docker.h" />
+    <ClInclude Include="..\source\source\win\getopt.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4E5F9D10-5B8B-414C-8556-837398FA6D2C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -74,14 +145,14 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\tests;$(SolutionDir)..\source\win;$(SolutionDir)..\source\plugins;$(SolutionDir)..\buildnum;$(SolutionDir)..\deps\catch;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps\catch;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\poco-1.7.3\lib;$(SolutionDir)..\..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\poco-1.7.3\lib;$(SolutionDir)..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libyaml-cppmdd.lib;PocoFoundationmdd.lib;PocoUtilmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -91,7 +162,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\tests;$(SolutionDir)..\source\win;$(SolutionDir)..\source\plugins;$(SolutionDir)..\buildnum;$(SolutionDir)..\deps\catch;$(SolutionDir)..\..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\..\yaml-cpp\include;$(SolutionDir)..\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps\catch;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -100,82 +171,10 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\poco-1.7.3\lib;$(SolutionDir)..\..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\poco-1.7.3\lib;$(SolutionDir)..\..\yaml-cpp\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\buildnum.cpp" />
-    <ClCompile Include="..\source\checkbasics.cpp" />
-    <ClCompile Include="..\source\command_dev.cpp" />
-    <ClCompile Include="..\source\command_general.cpp" />
-    <ClCompile Include="..\source\command_setup.cpp" />
-    <ClCompile Include="..\source\compress.cpp" />
-    <ClCompile Include="..\source\drunnercompose.cpp" />
-    <ClCompile Include="..\source\dservicelogger.cpp" />
-    <ClCompile Include="..\source\exceptions.cpp" />
-    <ClCompile Include="..\source\generate.cpp" />
-    <ClCompile Include="..\source\globalcontext.cpp" />
-    <ClCompile Include="..\source\globallogger.cpp" />
-    <ClCompile Include="..\source\main.cpp" />
-    <ClCompile Include="..\source\params.cpp" />
-    <ClCompile Include="..\source\plugins\backupConfig.cpp" />
-    <ClCompile Include="..\source\plugins\dbackup.cpp" />
-    <ClCompile Include="..\source\plugins\plugins.cpp" />
-    <ClCompile Include="..\source\service.cpp" />
-    <ClCompile Include="..\source\servicehook.cpp" />
-    <ClCompile Include="..\source\service_backup.cpp" />
-    <ClCompile Include="..\source\service_install.cpp" />
-    <ClCompile Include="..\source\settingsbash.cpp" />
-    <ClCompile Include="..\source\showhelp.cpp" />
-    <ClCompile Include="..\source\sh_drunnercfg.cpp" />
-    <ClCompile Include="..\source\termcolor.cpp" />
-    <ClCompile Include="..\source\tests\test_settingsbash.cpp" />
-    <ClCompile Include="..\source\tests\unittests.cpp" />
-    <ClCompile Include="..\source\timez.cpp" />
-    <ClCompile Include="..\source\utils.cpp" />
-    <ClCompile Include="..\source\utils_docker.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\buildnum.h" />
-    <ClInclude Include="..\source\checkbasics.h" />
-    <ClInclude Include="..\source\command_dev.h" />
-    <ClInclude Include="..\source\command_general.h" />
-    <ClInclude Include="..\source\command_setup.h" />
-    <ClInclude Include="..\source\compress.h" />
-    <ClInclude Include="..\source\cresult.h" />
-    <ClInclude Include="..\source\drunnercompose.h" />
-    <ClInclude Include="..\source\dservicelogger.h" />
-    <ClInclude Include="..\source\enums.h" />
-    <ClInclude Include="..\source\exceptions.h" />
-    <ClInclude Include="..\source\generate.h" />
-    <ClInclude Include="..\source\generate_utils_sh.h" />
-    <ClInclude Include="..\source\generate_validator_image.h" />
-    <ClInclude Include="..\source\globalcontext.h" />
-    <ClInclude Include="..\source\globallogger.h" />
-    <ClInclude Include="..\source\main.h" />
-    <ClInclude Include="..\source\params.h" />
-    <ClInclude Include="..\source\plugins\backupConfig.h" />
-    <ClInclude Include="..\source\plugins\dbackup.h" />
-    <ClInclude Include="..\source\plugins\generate_plugin_script.h" />
-    <ClInclude Include="..\source\plugins\plugins.h" />
-    <ClInclude Include="..\source\pstream.h" />
-    <ClInclude Include="..\source\service.h" />
-    <ClInclude Include="..\source\servicehook.h" />
-    <ClInclude Include="..\source\settingsbash.h" />
-    <ClInclude Include="..\source\showhelp.h" />
-    <ClInclude Include="..\source\sh_backupvars.h" />
-    <ClInclude Include="..\source\sh_ddev.h" />
-    <ClInclude Include="..\source\sh_drunnercfg.h" />
-    <ClInclude Include="..\source\sh_servicevars.h" />
-    <ClInclude Include="..\source\termcolor.h" />
-    <ClInclude Include="..\source\tests\unittests.h" />
-    <ClInclude Include="..\source\timez.h" />
-    <ClInclude Include="..\source\utils.h" />
-    <ClInclude Include="..\source\utils_docker.h" />
-    <ClInclude Include="..\source\win\chmod.h" />
-    <ClInclude Include="..\source\win\getopt.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

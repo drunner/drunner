@@ -143,9 +143,9 @@ namespace utils
       poco_assert(bfp.getFileName().compare(args[0]) != 0);
 
       // log the command, getting the args right is non-trivial in some cases so this is useful.
-      std::string cmd;
+      std::string cmd = command;
       for (const auto & entry : args)
-         cmd += "[" + entry + "] ";
+         cmd += " [" + entry + "]";
       logmsg(kLDEBUG, "dServiceCmd: " + cmd);
 
       Poco::Pipe outpipe;
@@ -505,7 +505,7 @@ namespace utils
    dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
       : mDockerName(dockername)
    {
-      int rval = utils::dServiceCmd(cmd, args);
+      int rval = utils::dServiceCmd(cmd, args, false);
       if (rval != 0)
       {
          std::ostringstream oss;
