@@ -36,9 +36,7 @@ You can also include volumes not managed by dRunner in docker-compose.yml, wheth
 
 dRunner provides some environment variables:
 * SERVICNAME - the local name of the installed dService as specified by the user in the drunner install command.
-* IMAGENAME - the main Docker Image used for the dService.
-* SERVICETEMPDIR - a directory on the host that your servicerunner can write temporary files to.
-* SERVICEHOSTVOL - a directory on the host that your servicerunner can write persisting files to (included in backups).
+* IMAGENAME - the main Docker image used for the dService.
 * HOSTIP - the IP address of the host.
 * DEVELOPERMODE - true if -d flag was bassed to dRunner (don't pull images).
 
