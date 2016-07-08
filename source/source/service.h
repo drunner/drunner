@@ -19,9 +19,9 @@ public:
 
    Poco::Path getPath() const;
    Poco::Path getPathdRunner() const;
-   Poco::Path getPathTemp() const;
+   //Poco::Path getPathTemp() const;
    Poco::Path getPathHostVolume() const;
-   Poco::Path getPathHostVolume_servicerunner() const;
+   //Poco::Path getPathHostVolume_servicerunner() const;
    Poco::Path getPathHostVolume_environment() const;
    Poco::Path getPathServiceRunner() const;
    Poco::Path getPathDockerCompose() const;

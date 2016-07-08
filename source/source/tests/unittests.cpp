@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_RUNNER
-#include <catch.h>
+#include "catch/catch.h"
 
 int UnitTest()
 {

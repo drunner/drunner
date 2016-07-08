@@ -32,7 +32,7 @@ public:
    // reads in docker-compose.yml - if present.
    drunnerCompose(const service & svc);
 
-   // Set the variables in the environemnt for servicerunner.
+   // Set the variables in the environment for servicerunner.
    void setServiceRunnerEnv() const;
 
    // was the docker-compose.yml file read without errors.

@@ -64,20 +64,20 @@ Poco::Path servicepaths::getPathdRunner() const
    return getPath().pushDirectory("drunner");
 }
 
-Poco::Path servicepaths::getPathTemp() const
-{
-   return getPath().pushDirectory("temp");
-}
+//Poco::Path servicepaths::getPathTemp() const
+//{
+//   return getPath().pushDirectory("temp");
+//}
 
 Poco::Path servicepaths::getPathHostVolume() const
 {
    return GlobalContext::getSettings()->getPath_HostVolumes().pushDirectory(mName);
 }
 
-Poco::Path servicepaths::getPathHostVolume_servicerunner() const
-{
-   return getPathHostVolume().pushDirectory("servicerunner");
-}
+//Poco::Path servicepaths::getPathHostVolume_servicerunner() const
+//{
+//   return getPathHostVolume().pushDirectory("servicerunner");
+//}
 
 Poco::Path servicepaths::getPathHostVolume_environment() const
 {
@@ -110,14 +110,14 @@ void service::ensureDirectoriesExist() const
    // create service's drunner and temp directories on host.
    utils::makedirectory(getPath(), S_755);
    utils::makedirectory(getPathdRunner(), S_777);
-   utils::makedirectory(getPathTemp(), S_777);
+   //utils::makedirectory(getPathTemp(), S_777);
    utils::makedirectories(getPathHostVolume_environment(), S_700);
-   utils::makedirectory(getPathHostVolume_servicerunner(), S_777);
+   //utils::makedirectory(getPathHostVolume_servicerunner(), S_777);
 }
 
 bool service::isValid() const
 {
-   if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner()) || !utils::fileexists(getPathTemp()))
+   if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner())) // || !utils::fileexists(getPathTemp()))
       return false;
 
    drunnerCompose drc(*this);
