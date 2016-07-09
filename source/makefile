@@ -1,4 +1,4 @@
-APP=output/drunner-install
+APP=output/drunner
 CC=gcc
 #CXX=g++
 CXX=deps/colorgcc/colorgcc.pl

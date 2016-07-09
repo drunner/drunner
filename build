@@ -60,9 +60,9 @@ function runbuild {
       -e "VCOMBO=${VCOMBO}" \
       -e "VSHORT=${VSHORT}" \
       -e "DEBUG=${DEBUG}"   \
-      -v "${SRC}:/source" drunner/builddrunner
+      -v "${SRC}:/source" drunner/drunner_build
 
-   OUTPUT=source/output/drunner-install
+   OUTPUT=source/output/drunner
 
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
@@ -71,7 +71,7 @@ function runbuild {
 
 function makeclean {
    docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
-   rm -f "${MYDIR}/drunner-install"
+   rm -f "${MYDIR}/drunner"
    rm -f "$PERMISSIONSFILE"
 }
 
