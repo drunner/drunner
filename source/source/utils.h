@@ -53,15 +53,16 @@ namespace utils
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
    std::string alphanumericfilter(std::string s, bool whitespace);
 
-   std::string get_exepath();
-   std::string get_exefullpath();
-   std::string get_exename();
+   //std::string get_exepath();
+   //std::string get_exefullpath();
+   //std::string get_exename();
+
    Poco::Path get_usersbindir();   // dies if fails.
 
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);
 
-   bool isInstalled();
+   //bool isInstalled();
 
    std::string getHostIP();
 

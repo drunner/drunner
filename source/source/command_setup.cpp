@@ -3,7 +3,7 @@
 #include "command_setup.h"
 #include "utils.h"
 #include "utils_docker.h"
-#include "sh_drunnercfg.h"
+#include "drunnerSettings.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "generate_validator_image.h"
@@ -19,11 +19,11 @@ namespace command_setup
    int setup()
    {
       const params & p(*GlobalContext::getParams().get());
-      const sh_drunnercfg & settings(*GlobalContext::getSettings().get());
+      const drunnerSettings & settings(*GlobalContext::getSettings().get());
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      if (utils::fileexists(settings.getPath_Root()))
+      if (!utils::fileexists(settings.getPath_Root()))
          logmsg(kLDEBUG,"Root path already exists: " + settings.getPath_Root().toString());
       else
          utils::makedirectory(settings.getPath_Root(), S_755);
@@ -39,7 +39,7 @@ namespace command_setup
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
       std::string drunnerexe = settings.getPath_Root().setFileName("drunner").toString();
       logmsg(kLDEBUG, "Copying the drunner executable to " + drunnerexe);
-      Poco::File f(utils::get_exefullpath());
+      Poco::File f(drunnerSettings::getPath_Exe());
       f.copyTo(drunnerexe);
 
       // -----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ namespace command_setup
    int update()
    {
       const params & p(*GlobalContext::getParams().get());
-      const sh_drunnercfg & s(*GlobalContext::getSettings().get());
+      const drunnerSettings & s(*GlobalContext::getSettings().get());
 
       logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root().toString());
 

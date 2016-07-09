@@ -10,7 +10,7 @@
 #include "command_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
-#include "sh_drunnercfg.h"
+#include "drunnerSettings.h"
 #include "showhelp.h"
 #include "main.h"
 #include "unittests.h"
@@ -54,14 +54,6 @@ int mainroutines::process()
 {
    const params & p(*GlobalContext::getParams());
 
-   // handle setup specially.
-   if (p.getCommand()==c_setup)
-   {
-      int rval=command_setup::setup();
-      if (rval!=0) throw eExit("Setup failed.",rval);
-      return 0;
-   }
-
    // allow unit tests to be run directly from installer.
    if (p.getCommand()==c_unittest)
    {
@@ -74,8 +66,10 @@ int mainroutines::process()
       return 0;
    }
 
-   if (!utils::isInstalled())
-      showhelp("Please run "+utils::get_exename()+" setup ROOTPATH");
+   if (!GlobalContext::hasSettings())
+      fatal("Settings global object not created.");
+   if (!GlobalContext::getSettings()->mReadOkay)
+      fatal("Failed to read drunner settings from " + GlobalContext::getSettings()->getPath_drunnercfg_sh().toString());
 
    logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnercfg_sh().toString());
 

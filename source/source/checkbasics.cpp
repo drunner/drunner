@@ -19,6 +19,9 @@
 
 void check_basics()
 {
+   std::vector<std::string> args = { "--version" };
+   if (utils::runcommand("docker", args) != 0)
+      fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
 

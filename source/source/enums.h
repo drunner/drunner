@@ -42,7 +42,6 @@ enum edServiceOutput
 
 enum eCommand {
    c_UNDEFINED,
-   c_setup,
    c_clean,
    c_list,
    c_update,

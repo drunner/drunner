@@ -3,7 +3,7 @@ CC=gcc
 #CXX=g++
 CXX=deps/colorgcc/colorgcc.pl
 RM=rm -f
-INC=-Isource -Ibuildnum -Isource/tests -Ideps/catch -Isource/plugins
+INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins
 
 #CPPFLAGS=-Wall -g -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
 CPPFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \

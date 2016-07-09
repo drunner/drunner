@@ -3,7 +3,7 @@
 
 #include <string>
 #include "params.h"
-#include "sh_drunnercfg.h"
+#include "drunnerSettings.h"
 
 namespace utils_docker
 {

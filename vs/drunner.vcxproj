@@ -42,7 +42,7 @@
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
-    <ClCompile Include="..\source\source\sh_drunnercfg.cpp" />
+    <ClCompile Include="..\source\source\drunnerSettings.cpp" />
     <ClCompile Include="..\source\source\termcolor.cpp" />
     <ClCompile Include="..\source\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="..\source\source\tests\unittests.cpp" />
@@ -80,7 +80,7 @@
     <ClInclude Include="..\source\source\showhelp.h" />
     <ClInclude Include="..\source\source\sh_backupvars.h" />
     <ClInclude Include="..\source\source\sh_ddev.h" />
-    <ClInclude Include="..\source\source\sh_drunnercfg.h" />
+    <ClInclude Include="..\source\source\drunnerSettings.h" />
     <ClInclude Include="..\source\source\sh_servicevars.h" />
     <ClInclude Include="..\source\source\termcolor.h" />
     <ClInclude Include="..\source\source\tests\unittests.h" />

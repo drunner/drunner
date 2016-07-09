@@ -11,14 +11,15 @@
 #include "globallogger.h"
 #include "buildnum.h"
 #include "exceptions.h"
+#include "drunnerSettings.h"
 
 
 std::string params::substitute( const std::string & source ) const
 {
    std::string d(source);
    d=utils::replacestring(d,"${VERSION}",mVersion);
-   d=utils::replacestring(d,"${EXENAME}",utils::get_exename());
-   d=utils::replacestring(d,"${ROOTPATH}",utils::get_exepath());
+   d=utils::replacestring(d,"${EXENAME}","drunner");
+   d=utils::replacestring(d,"${ROOTPATH}",drunnerSettings::getPath_Exe().toString());
    return d;
 }
 
@@ -26,7 +27,6 @@ void params::parsecmd()
 {
    std::map<std::string, eCommand> commandlist;
 
-   commandlist["setup"] = c_setup;
    commandlist["clean"] = c_clean;
    commandlist["list"] = c_list;
    commandlist["update"] = c_update;
@@ -155,24 +155,16 @@ while (1)
       mOptions.push_back("-n");
 
    int opx=optind;
-   if (utils::isInstalled())
+   if (opx >= argc) // drunner with no command.
    {
-      if (opx >= argc) // drunner with no command.
-      {
-         mCmdStr = "help";
-         mCmd = c_help;
-      }
-      else
-      {
-         mCmdStr = argv[opx++];
-         std::transform(mCmdStr.begin(), mCmdStr.end(), mCmdStr.begin(), ::tolower);
-         parsecmd();
-      }
-   } else {
-      // NOT installed.
-      if (opx>=argc)
-         throw eExit("Not yet installed.\nPlease provide the ROOTPATH to install to.");
-      mCmd=c_setup;
+      mCmdStr = "help";
+      mCmd = c_help;
+   }
+   else
+   {
+      mCmdStr = argv[opx++];
+      std::transform(mCmdStr.begin(), mCmdStr.end(), mCmdStr.begin(), ::tolower);
+      parsecmd();
    }
 
    // store the arguments to the command.

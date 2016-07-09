@@ -2,7 +2,7 @@
 #define __SERVICECLASS_H
 
 #include "params.h"
-#include "sh_drunnercfg.h"
+#include "drunnerSettings.h"
 #include "cresult.h"
 
 class drunnerCompose;

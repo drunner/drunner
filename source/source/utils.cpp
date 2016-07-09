@@ -190,49 +190,6 @@ namespace utils
    {
       return (0 == bashcommand("command -v " + command));
    }
-   
-   // get the full path the the current executable.
-   std::string get_exefullpath()
-   {
-#ifdef _WIN32
-      std::vector<char> pathBuf;
-      DWORD copied = 0;
-      do {
-         pathBuf.resize(pathBuf.size() + MAX_PATH);
-         copied = GetModuleFileNameA(0, &pathBuf.at(0), pathBuf.size());
-      } while (copied >= pathBuf.size());
-      pathBuf.resize(copied);
-
-      std::string path(pathBuf.begin(), pathBuf.end());
-      return path;
-#else
-      char buff[PATH_MAX];
-      ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-      if (len != -1)
-      {
-         buff[len] = '\0';
-         return std::string(buff);
-      }
-      logmsg(kLERROR,"Couldn't get path to drunner executable!");
-      return "";
-#endif
-   }
-
-   std::string get_exename()
-   {
-      Poco::Path p(get_exefullpath());
-      return p.getFileName();
-   }
-
-   std::string get_exepath()
-   {
-      Poco::Path p(get_exefullpath());
-      if (!p.isFile())
-         fatal("get_exepath is not a file. :/");
-      p.makeParent();
-      p.makeAbsolute();
-      return p.toString();
-   }
 
    Poco::Path get_usersbindir()
    {
@@ -275,13 +232,6 @@ namespace utils
 
       f.list(folders);
       return true;
-   }
-
-   // quick crude check to see if we're installed.
-   bool isInstalled()
-   {
-      Poco::File f(get_exepath() + "/drunnercfg.sh");
-      return f.exists();
    }
 
    /// Try to find in the Haystack the Needle - ignore case

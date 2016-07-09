@@ -1,5 +1,5 @@
 #include "params.h"
-#include "sh_drunnercfg.h"
+#include "drunnerSettings.h"
 
 #ifndef __COMMAND_GENERAL_H
 #define __COMMAND_GENERAL_H

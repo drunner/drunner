@@ -1,5 +1,5 @@
-#ifndef __sh_drunnercfg_H
-#define __sh_drunnercfg_H
+#ifndef __drunnerSettings_H
+#define __drunnerSettings_H
 
 #include <map>
 #include <Poco/Path.h>
@@ -7,12 +7,14 @@
 #include "settingsbash.h"
 #include "params.h"
 
-class sh_drunnercfg : protected settingsbash
+class drunnerSettings : protected settingsbash
 {
 public:
-   sh_drunnercfg(const Poco::Path & rootpath); // sets defaults, loads if able.
+   drunnerSettings(); // sets defaults, loads if able.
 
-   Poco::Path getPath_Root()         const;
+   static Poco::Path getPath_Root(); // the path of the drunner root (for all config). %APPDATA%/drunner [win] or $HOME/.drunner [lin]
+   static Poco::Path getPath_Exe();  // the path of the drunner execuatble. can be anywhere
+
    Poco::Path getPath_dServices()    const { return getPath_Root().pushDirectory("dServices"); }
    Poco::Path getPath_Support()      const { return getPath_Root().pushDirectory("support"); }
    Poco::Path getPath_Temp()         const { return getPath_Root().pushDirectory("temp"); }
