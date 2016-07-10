@@ -57,7 +57,7 @@ namespace utils
    //std::string get_exefullpath();
    //std::string get_exename();
 
-   Poco::Path get_usersbindir();   // dies if fails.
+   //Poco::Path get_usersbindir();   // dies if fails.
 
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);

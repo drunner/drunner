@@ -3,10 +3,11 @@
 
 #include "params.h"
 #include "drunnerSettings.h"
+#include "cresult.h"
 
-namespace command_setup
+namespace drunner_setup
 {
-   int setup();
+   cResult check_setup(bool forceUpdate);
    int update();
 
 }

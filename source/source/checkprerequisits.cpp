@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "checkbasics.h"
+#include "checkprerequisits.h"
 #include "globallogger.h"
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@
 //   return user_name;
 //}
 
-void check_basics()
+void check_prerequisits()
 {
    std::vector<std::string> args = { "--version" };
    if (utils::runcommand("docker", args) != 0)
@@ -42,7 +42,7 @@ std::string getUSER()
    return op;
 }
 
-void check_basics()
+void check_prerequisits()
 {
 
    uid_t euid = geteuid();

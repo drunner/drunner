@@ -15,18 +15,19 @@ public:
    static Poco::Path getPath_Root(); // the path of the drunner root (for all config). %APPDATA%/drunner [win] or $HOME/.drunner [lin]
    static Poco::Path getPath_Exe();  // the path of the drunner execuatble. can be anywhere
 
-   Poco::Path getPath_dServices()    const { return getPath_Root().pushDirectory("dServices"); }
-   Poco::Path getPath_Support()      const { return getPath_Root().pushDirectory("support"); }
-   Poco::Path getPath_Temp()         const { return getPath_Root().pushDirectory("temp"); }
-   Poco::Path getPath_HostVolumes()  const { return getPath_Root().pushDirectory("hostVolumes"); }
+   static Poco::Path getPath_Bin()          { return getPath_Root().pushDirectory("bin"); } // bin subfolder 
+   static Poco::Path getPath_dServices()    { return getPath_Root().pushDirectory("dServices"); }
+   static Poco::Path getPath_Support()      { return getPath_Root().pushDirectory("support"); }
+   static Poco::Path getPath_Temp()         { return getPath_Root().pushDirectory("temp"); }
+   static Poco::Path getPath_HostVolumes()  { return getPath_Root().pushDirectory("hostVolumes"); }
 
-   std::string getRootUtilImage()     const { return getString("ROOTUTILIMAGE"); }
+   std::string getdrunnerUtilsImage()     const { return getString("DRUNNERUTILSIMAGE"); }
    std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL"); }
    std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME"); }
-   bool getPullImages() const { return getBool("PULLIMAGES"); }
+   bool getPullImages() const               { return getBool("PULLIMAGES"); }
 
-   Poco::Path getPath_drunnercfg_sh() const { return getPath_Root().setFileName("drunnercfg.sh"); }
-   Poco::Path getPath_drunnerbackups_cfg() const { return getPath_Root().setFileName("drunnerbackups.cfg"); }
+   static Poco::Path getPath_drunnerSettings_sh() { return getPath_Root().setFileName("drunnerSettings.sh"); }
+   static Poco::Path getPath_drunnerbackups_cfg() { return getPath_Root().setFileName("drunnerBackups.cfg"); }
 
    bool readSettings();
    bool writeSettings() const;

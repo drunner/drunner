@@ -20,10 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp" />
-    <ClCompile Include="..\source\source\checkbasics.cpp" />
+    <ClCompile Include="..\source\source\checkprerequisits.cpp" />
     <ClCompile Include="..\source\source\command_dev.cpp" />
     <ClCompile Include="..\source\source\command_general.cpp" />
-    <ClCompile Include="..\source\source\command_setup.cpp" />
+    <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\drunnercompose.cpp" />
     <ClCompile Include="..\source\source\dservicelogger.cpp" />
@@ -52,11 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h" />
-    <ClInclude Include="..\source\source\checkbasics.h" />
+    <ClInclude Include="..\source\source\checkprerequisits.h" />
     <ClInclude Include="..\source\source\chmod.h" />
     <ClInclude Include="..\source\source\command_dev.h" />
     <ClInclude Include="..\source\source\command_general.h" />
-    <ClInclude Include="..\source\source\command_setup.h" />
+    <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\drunnercompose.h" />

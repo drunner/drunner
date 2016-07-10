@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "command_setup.h"
+#include "drunner_setup.h"
 #include "utils.h"
 #include "utils_docker.h"
 #include "drunnerSettings.h"
@@ -13,10 +13,10 @@
 #include <Poco/Path.h>
 #include <Poco/File.h>
 
-namespace command_setup
+namespace drunner_setup
 {
 
-   int setup()
+   cResult check_setup(bool forceUpdate)
    {
       const params & p(*GlobalContext::getParams().get());
       const drunnerSettings & settings(*GlobalContext::getSettings().get());
@@ -24,35 +24,38 @@ namespace command_setup
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
       if (!utils::fileexists(settings.getPath_Root()))
-         logmsg(kLDEBUG,"Root path already exists: " + settings.getPath_Root().toString());
+      {
+         logmsg(kLDEBUG, "Root path already exists: " + settings.getPath_Root().toString());
+         if (!forceUpdate)
+            return kRSuccess;
+      }
       else
          utils::makedirectory(settings.getPath_Root(), S_755);
 
       // -----------------------------------------------------------------------------
       // Update settings on disk.
-      logmsg(kLDEBUG, "Writing drunner master settings to "+settings.getPath_drunnercfg_sh().toString());
+      logmsg(kLDEBUG, "Writing drunner master settings to "+settings.getPath_drunnerSettings_sh().toString());
       if (!settings.writeSettings())
          logmsg(kLERROR, "Couldn't write settings file!");
 
       // -----------------------------------------------------------------------------
       // move this executable to the directory.
       //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
-      std::string drunnerexe = settings.getPath_Root().setFileName("drunner").toString();
-      logmsg(kLDEBUG, "Copying the drunner executable to " + drunnerexe);
-      Poco::File f(drunnerSettings::getPath_Exe());
-      f.copyTo(drunnerexe);
+      //std::string drunnerexe = settings.getPath_Root().setFileName("drunner").toString();
+      //logmsg(kLDEBUG, "Copying the drunner executable to " + drunnerexe);
+      //Poco::File f(drunnerSettings::getPath_Exe());
+      //f.copyTo(drunnerexe);
 
       // -----------------------------------------------------------------------------
       // create bin directory
-      Poco::Path bindir = utils::get_usersbindir();
-      utils::makedirectory(bindir, S_700);
+      utils::makedirectory(settings.getPath_Bin(), S_700);
 
       // -----------------------------------------------------------------------------
       // create symlink
-      Poco::Path symsource = settings.getPath_Root().setFileName("drunner");
-      Poco::Path symlink = bindir;
-      symlink.setFileName("drunner");
-      utils::makesymlink(symsource, symlink);
+      //Poco::Path symsource = settings.getPath_Root().setFileName("drunner");
+      //Poco::Path symlink = bindir;
+      //symlink.setFileName("drunner");
+      //utils::makesymlink(symsource, symlink);
       
       // -----------------------------------------------------------------------------
       // generate plugin scripts
@@ -60,8 +63,8 @@ namespace command_setup
 
       // -----------------------------------------------------------------------------
       // get latest root util image.
-      //std::cerr << "ROOTUITILIMAGE = " << settings.getRootUtilImage() << std::endl;
-      utils_docker::pullImage(settings.getRootUtilImage());
+      //std::cerr << "ROOTUITILIMAGE = " << settings.getdrunnerUtilsImage() << std::endl;
+      utils_docker::pullImage(settings.getdrunnerUtilsImage());
 
       // -----------------------------------------------------------------------------
       // create services, support and temp directories

@@ -96,7 +96,7 @@ Poco::Path servicepaths::getPathDockerCompose() const
 
 Poco::Path servicepaths::getPathLaunchScript() const
 {
-   return utils::get_usersbindir().setFileName(getName());
+   return drunnerSettings::getPath_Bin().setFileName(getName());
 }
 
 

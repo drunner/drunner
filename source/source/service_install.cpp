@@ -10,7 +10,7 @@
 #include "globalcontext.h"
 #include "exceptions.h"
 #include "settingsbash.h"
-#include "command_setup.h"
+#include "drunner_setup.h"
 #include "generate_utils_sh.h"
 #include "service.h"
 #include "servicehook.h"
@@ -31,8 +31,8 @@ std::string service::getUserID(std::string imagename) const
 
 void service::createLaunchScript() const
 {
-	Poco::Path target = utils::get_usersbindir().setFileName(getName());
-
+   Poco::Path target = getPathLaunchScript();
+   
 	// remove stale script if present
    if (utils::fileexists(target))
    {

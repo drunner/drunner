@@ -2,7 +2,7 @@
 #define __CHECKBASICS_H
 
 
-void check_basics();
+void check_prerequisits();
 
 
 #endif

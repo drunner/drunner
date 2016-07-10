@@ -6,7 +6,7 @@
 #include "enums.h"
 #include "utils.h"
 #include "utils_docker.h"
-#include "command_setup.h"
+#include "drunner_setup.h"
 #include "exceptions.h"
 
 namespace command_general

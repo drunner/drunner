@@ -7,7 +7,7 @@
 #include "globallogger.h"
 #include "exceptions.h"
 #include "utils.h"
-#include "command_setup.h"
+#include "drunner_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
 #include "drunnerSettings.h"
@@ -16,7 +16,7 @@
 #include "unittests.h"
 #include "service.h"
 #include "plugins.h"
-#include "checkbasics.h"
+#include "checkprerequisits.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -24,26 +24,32 @@ using namespace utils;
 
 // ----------------------------------------------------------------------------------------------------------------------
 
+void waitforreturn()
+{
+#if defined(_WIN32) && defined(_DEBUG)
+   std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
+   std::string s;
+   std::getline(std::cin, s);
+#endif
+}
 
 int main(int argc, char **argv)
 {
    try
    {
-      check_basics();
+      check_prerequisits();
 
       GlobalContext::init(argc, argv);
 
       logmsg(kLDEBUG,"dRunner C++, version "+GlobalContext::getParams()->getVersion());
 
-      return mainroutines::process();
+      int rval = mainroutines::process();
+      waitforreturn();
+      return rval;
    }
 
    catch (const eExit & e) {
-#if defined(_WIN32) && defined(_DEBUG)
-      std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
-      std::string s;
-      std::getline(std::cin, s);
-#endif
+      waitforreturn();
       return e.exitCode();
    }
 }
@@ -68,10 +74,8 @@ int mainroutines::process()
 
    if (!GlobalContext::hasSettings())
       fatal("Settings global object not created.");
-   if (!GlobalContext::getSettings()->mReadOkay)
-      fatal("Failed to read drunner settings from " + GlobalContext::getSettings()->getPath_drunnercfg_sh().toString());
 
-   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnercfg_sh().toString());
+   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnerSettings_sh().toString());
 
 
    // ----------------
@@ -93,7 +97,7 @@ int mainroutines::process()
       case c_update:
       {
          if (p.numArgs()<1)
-            command_setup::update(); // defined in command_setup
+            drunner_setup::update(); // defined in command_setup
          else
          { // first argument is service name.
             service s(p.getArg(0));
