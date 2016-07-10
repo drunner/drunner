@@ -17,7 +17,7 @@
 drunnerSettings::drunnerSettings() :
    settingsbash(false)
 {
-   setString("ROOTUTILIMAGE", "drunner/drunner_utils");
+   setString("DRUNNERUTILSIMAGE", "drunner/drunner_utils");
    setString("DRUNNERINSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
    setString("DRUNNERINSTALLTIME", utils::getTime());
    setBool("PULLIMAGES", true);
@@ -28,14 +28,14 @@ drunnerSettings::drunnerSettings() :
 
 bool drunnerSettings::readSettings()
 {
-   mReadOkay = settingsbash::readSettings(getPath_drunnercfg_sh());
+   mReadOkay = settingsbash::readSettings(getPath_drunnerSettings_sh());
    if (!mReadOkay)
       return false;
 
    // migrate old settings.
-   if (utils::findStringIC(getRootUtilImage(), "drunner/rootutils"))
+   if (utils::findStringIC(getdrunnerUtilsImage(), "drunner/rootutils"))
    {
-      setString("ROOTUTILIMAGE", "drunner/drunner_utils");
+      setString("DRUNNERUTILSIMAGE", "drunner/drunner_utils");
       if (!writeSettings())
          fatal("Couldn't migrate old dRunner settings."); // couldn't migrate settings.
    }
@@ -44,7 +44,7 @@ bool drunnerSettings::readSettings()
 
 bool drunnerSettings::writeSettings() const
 {
-   return settingsbash::writeSettings(getPath_drunnercfg_sh());
+   return settingsbash::writeSettings(getPath_drunnerSettings_sh());
 }
 
 Poco::Path drunnerSettings::getPath_Root() {
@@ -66,44 +66,46 @@ Poco::Path drunnerSettings::getPath_Root() {
    poco_assert(drunnerdir.isDirectory());
    drunnerdir.pushDirectory(".drunner");
 #endif
-   logmsg(kLDEBUG, "drunner directory is " + drunnerdir.toString());
-   fatal(drunnerdir.toString());
+   //logmsg(kLDEBUG, "drunner directory is " + drunnerdir.toString());
 
-   Poco::Path rootpath;
-
-   return rootpath;
+   return drunnerdir;
 }
 
-// get the full path the the current executable.
-std::string get_exefullpath()
+namespace _drunnerSettings
 {
-#ifdef _WIN32
-   std::vector<char> pathBuf;
-   DWORD copied = 0;
-   do {
-      pathBuf.resize(pathBuf.size() + MAX_PATH);
-      copied = GetModuleFileNameA(0, &pathBuf.at(0), pathBuf.size());
-   } while (copied >= pathBuf.size());
-   pathBuf.resize(copied);
 
-   std::string path(pathBuf.begin(), pathBuf.end());
-   return path;
-#else
-   char buff[PATH_MAX];
-   ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
-   if (len != -1)
+   // get the full path the the current executable.
+   std::string get_exefullpath()
    {
-      buff[len] = '\0';
-      return std::string(buff);
-   }
-   logmsg(kLERROR, "Couldn't get path to drunner executable!");
-   return "";
+#ifdef _WIN32
+      std::vector<char> pathBuf;
+      DWORD copied = 0;
+      do {
+         pathBuf.resize(pathBuf.size() + MAX_PATH);
+         copied = GetModuleFileNameA(0, &pathBuf.at(0), pathBuf.size());
+      } while (copied >= pathBuf.size());
+      pathBuf.resize(copied);
+
+      std::string path(pathBuf.begin(), pathBuf.end());
+      return path;
+#else
+      char buff[PATH_MAX];
+      ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+      if (len != -1)
+      {
+         buff[len] = '\0';
+         return std::string(buff);
+      }
+      logmsg(kLERROR, "Couldn't get path to drunner executable!");
+      return "";
 #endif
-}
+   }
+
+};
 
 Poco::Path drunnerSettings::getPath_Exe()
 {
-   Poco::Path p(get_exefullpath());
+   Poco::Path p(_drunnerSettings::get_exefullpath());
    poco_assert(p.isFile());
    poco_assert(utils::fileexists(p));
 
