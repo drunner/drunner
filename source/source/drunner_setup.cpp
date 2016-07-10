@@ -19,43 +19,17 @@ namespace drunner_setup
    cResult check_setup(bool forceUpdate)
    {
       const params & p(*GlobalContext::getParams().get());
-      const drunnerSettings & settings(*GlobalContext::getSettings().get());
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      if (!utils::fileexists(settings.getPath_Root()))
-      {
-         logmsg(kLDEBUG, "Root path already exists: " + settings.getPath_Root().toString());
-         if (!forceUpdate)
-            return kRSuccess;
-      }
-      else
-         utils::makedirectory(settings.getPath_Root(), S_755);
-
-      // -----------------------------------------------------------------------------
-      // Update settings on disk.
-      logmsg(kLDEBUG, "Writing drunner master settings to "+settings.getPath_drunnerSettings_sh().toString());
-      if (!settings.writeSettings())
-         logmsg(kLERROR, "Couldn't write settings file!");
-
-      // -----------------------------------------------------------------------------
-      // move this executable to the directory.
-      //int result = rename( utils::get_exefullpath().c_str(), (rootpath+"/drunner").c_str());
-      //std::string drunnerexe = settings.getPath_Root().setFileName("drunner").toString();
-      //logmsg(kLDEBUG, "Copying the drunner executable to " + drunnerexe);
-      //Poco::File f(drunnerSettings::getPath_Exe());
-      //f.copyTo(drunnerexe);
+      if (!utils::fileexists(drunnerSettings::getPath_Root()))
+         utils::makedirectory(drunnerSettings::getPath_Root(), S_755);
+      else if (!forceUpdate)
+         return kRNoChange; // nothing needed.
 
       // -----------------------------------------------------------------------------
       // create bin directory
-      utils::makedirectory(settings.getPath_Bin(), S_700);
-
-      // -----------------------------------------------------------------------------
-      // create symlink
-      //Poco::Path symsource = settings.getPath_Root().setFileName("drunner");
-      //Poco::Path symlink = bindir;
-      //symlink.setFileName("drunner");
-      //utils::makesymlink(symsource, symlink);
+      utils::makedirectory(drunnerSettings::getPath_Bin(), S_700);
       
       // -----------------------------------------------------------------------------
       // generate plugin scripts
@@ -63,27 +37,29 @@ namespace drunner_setup
 
       // -----------------------------------------------------------------------------
       // get latest root util image.
-      //std::cerr << "ROOTUITILIMAGE = " << settings.getdrunnerUtilsImage() << std::endl;
-      utils_docker::pullImage(settings.getdrunnerUtilsImage());
+      utils_docker::pullImage(drunnerSettings::getdrunnerUtilsImage());
 
       // -----------------------------------------------------------------------------
       // create services, support and temp directories
-      utils::makedirectory(settings.getPath_dServices(), S_755);
-      utils::makedirectory(settings.getPath_Support(), S_755);
-      utils::makedirectory(settings.getPath_Temp(), S_755);
-      utils::makedirectory(settings.getPath_HostVolumes(), S_755);
+      utils::makedirectory(drunnerSettings::getPath_dServices(), S_755);
+      utils::makedirectory(drunnerSettings::getPath_Support(), S_755);
+      utils::makedirectory(drunnerSettings::getPath_Temp(), S_755);
+      utils::makedirectory(drunnerSettings::getPath_HostVolumes(), S_755);
 
       // create the validator script that is run inside containers
-      generate_validator_image(settings.getPath_Support());
+      generate_validator_image(drunnerSettings::getPath_Support());
+
+      // write settings.
+      GlobalContext::getSettings()->writeSettings();
 
       // -----------------------------------------------------------------------------
       // Finished!
-      if (settings.mReadOkay)
+      if (forceUpdate)
          logmsg(kLINFO, "Update of drunner to " + p.getVersion() + " completed succesfully.");
       else
-         logmsg(kLINFO, "Setup of drunner " + p.getVersion() + " completed succesfully.");
+         logmsg(kLINFO, "Initial setup of drunner " + p.getVersion() + " completed succesfully.");
 
-      return 0;
+      return kRSuccess;
    }
 
    int update()

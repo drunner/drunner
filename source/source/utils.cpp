@@ -216,7 +216,8 @@ namespace utils
    {
       std::string op;
 
-      int rval = bashcommand("docker pull "+imagename, op,false);
+      std::vector<std::string> args = { "pull",imagename };
+      int rval = runcommand("docker", args);
 
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;

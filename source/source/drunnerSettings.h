@@ -21,7 +21,8 @@ public:
    static Poco::Path getPath_Temp()         { return getPath_Root().pushDirectory("temp"); }
    static Poco::Path getPath_HostVolumes()  { return getPath_Root().pushDirectory("hostVolumes"); }
 
-   std::string getdrunnerUtilsImage()     const { return getString("DRUNNERUTILSIMAGE"); }
+   static std::string getdrunnerUtilsImage() { return  "drunner/drunner_utils"; }
+
    std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL"); }
    std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME"); }
    bool getPullImages() const               { return getBool("PULLIMAGES"); }

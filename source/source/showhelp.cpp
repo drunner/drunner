@@ -62,6 +62,4 @@ EXIT CODE
 
    if (cMsg.length() > 0)
       logmsg(kLERROR, cMsg);
-   else
-      exit(1);
 }

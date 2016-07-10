@@ -1,6 +1,7 @@
 #include "drunnerSettings.h"
 #include "utils.h"
 #include "globallogger.h"
+#include "drunner_setup.h"
 
 #include <Poco/Path.h>
 #include <Poco/UnicodeConverter.h>
@@ -17,12 +18,11 @@
 drunnerSettings::drunnerSettings() :
    settingsbash(false)
 {
-   setString("DRUNNERUTILSIMAGE", "drunner/drunner_utils");
    setString("DRUNNERINSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
    setString("DRUNNERINSTALLTIME", utils::getTime());
    setBool("PULLIMAGES", true);
 
-   mReadOkay = false;
+   mReadOkay = false;   
    readSettings();
 }
 
@@ -30,7 +30,10 @@ bool drunnerSettings::readSettings()
 {
    mReadOkay = settingsbash::readSettings(getPath_drunnerSettings_sh());
    if (!mReadOkay)
+   {
+      logmsg(kLDEBUG, "Couldn't find settings at " + getPath_drunnerSettings_sh().toString());
       return false;
+   }
 
    // migrate old settings.
    if (utils::findStringIC(getdrunnerUtilsImage(), "drunner/rootutils"))
@@ -39,6 +42,8 @@ bool drunnerSettings::readSettings()
       if (!writeSettings())
          fatal("Couldn't migrate old dRunner settings."); // couldn't migrate settings.
    }
+
+   logmsg(kLDEBUG, "Read settings from " + getPath_drunnerSettings_sh().toString());
    return mReadOkay;
 }
 

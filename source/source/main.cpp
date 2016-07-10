@@ -75,9 +75,6 @@ int mainroutines::process()
    if (!GlobalContext::hasSettings())
       fatal("Settings global object not created.");
 
-   logmsg(kLDEBUG,"Settings read from "+GlobalContext::getSettings()->getPath_drunnerSettings_sh().toString());
-
-
    // ----------------
    // command handling
    switch (p.getCommand())

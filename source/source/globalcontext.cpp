@@ -1,6 +1,7 @@
 #include "globalcontext.h"
 #include "globallogger.h"
 #include "utils.h"
+#include "drunner_setup.h"
 
 std::shared_ptr<const params> GlobalContext::s_params = 0;
 std::shared_ptr<const drunnerSettings> GlobalContext::s_settings = 0;
@@ -20,8 +21,9 @@ void GlobalContext::init(int argc, char **argv)
 
    // load the dRunner settings from the config file.
    s_settings = std::make_shared<const drunnerSettings>();
-   if (!s_settings->mReadOkay)
-      logmsg(kLDEBUG, "Created new drunner settings at " + drunnerSettings::getPath_drunnerSettings_sh().toString());
+
+   // do this last - expects settings global object to be available.
+   drunner_setup::check_setup(false);
 }
 
 bool GlobalContext::hasParams()
