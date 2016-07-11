@@ -4,36 +4,13 @@
 #include "params.h"
 #include "drunner_settings.h"
 #include "cresult.h"
+#include "service_paths.h"
 
 class drunnerCompose;
 
 cResult service_restore(const std::string & servicename, const std::string & backupfile);
-void validateImage(std::string imagename);
 
-
-
-class servicepaths
-{
-public:
-   servicepaths(const std::string & servicename);
-
-   Poco::Path getPath() const;
-   Poco::Path getPathdRunner() const;
-   //Poco::Path getPathTemp() const;
-   Poco::Path getPathHostVolume() const;
-   //Poco::Path getPathHostVolume_servicerunner() const;
-   Poco::Path getPathHostVolume_environment() const;
-   Poco::Path getPathServiceRunner() const;
-   Poco::Path getPathDockerCompose() const;
-   Poco::Path getPathLaunchScript() const;
-
-   std::string getName() const;
-
-protected:
-   const std::string mName;
-};
-
-class service_obliterate : public servicepaths
+class service_obliterate : public servicePaths
 {
 public:
    service_obliterate(const std::string & servicename);
@@ -43,7 +20,7 @@ public:
 class cServiceEnvironment : protected settingsbash
 {
    public:
-      cServiceEnvironment(const servicepaths & paths);
+      cServiceEnvironment(const servicePaths & paths);
 
       void save_environment(std::string key, std::string value);
       std::string get_value(const std::string & key) const;
@@ -57,7 +34,7 @@ protected:
 
 
 // class to manage the dService.
-class service : public servicepaths
+class service : public servicePaths
 {
 public:
    // will load imagename from variables.sh unless overridden with parameter.

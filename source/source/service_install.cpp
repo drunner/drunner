@@ -17,6 +17,7 @@
 #include "sh_servicevars.h"
 #include "drunner_compose.h"
 #include "chmod.h"
+#include "validateimage.h"
 
 std::string service::getUserID(std::string imagename) const
 {
@@ -168,13 +169,13 @@ void service::install()
 {
    logmsg(kLDEBUG, "Installing " + getName() + " at " + getPath().toString() + ", using image " + getImageName());
 	if (utils::fileexists(getPath()))
-		logmsg(kLERROR, "Service already exists. Try:   drunner update " + getName());
+		logmsg(kLERROR, "Service already exists. Try:\n drunner update " + getName());
 
 	// make sure we have the latest version of the service.
    utils_docker::pullImage(getImageName());
 
 	logmsg(kLDEBUG, "Attempting to validate " + getImageName());
-   validateImage(getImageName());
+   validateImage::validate(getImageName());
 
    recreate(false);
 

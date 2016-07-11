@@ -64,7 +64,7 @@ namespace utils
 
    //bool isInstalled();
 
-   std::string getHostIP();
+   //std::string getHostIP();
 
    std::string getTime();
    std::string getPWD();

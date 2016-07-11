@@ -57,7 +57,7 @@ void drunnerCompose::setServiceRunnerEnv() const
    setenv_log("IMAGENAME", getService().getImageName().c_str());
    //setenv_log("SERVICETEMPDIR", getService().getPathTemp().toString().c_str());
    //setenv_log("SERVICEHOSTVOL", getService().getPathHostVolume_servicerunner().toString().c_str());
-   setenv_log("HOSTIP", utils::getHostIP().c_str());
+   //setenv_log("HOSTIP", utils::getHostIP().c_str());
    setenv_log("DEVELOPERMODE", GlobalContext::getParams()->isDevelopmentMode() ? "true" : "false");
 }
 

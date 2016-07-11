@@ -17,6 +17,7 @@
 #include "service.h"
 #include "plugins.h"
 #include "checkprerequisits.h"
+#include "validateimage.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -37,8 +38,6 @@ int main(int argc, char **argv)
 {
    try
    {
-      check_prerequisits();
-
       GlobalContext::init(argc, argv);
 
       logmsg(kLDEBUG,"dRunner C++, version "+GlobalContext::getParams()->getVersion());
@@ -108,7 +107,7 @@ int mainroutines::process()
          if (p.numArgs()<1)
             logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
          
-         validateImage(p.getArg(0));
+         validateImage::validate(p.getArg(0));
          break;
       }
 

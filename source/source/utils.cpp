@@ -20,6 +20,8 @@
 #include <Poco/Path.h>
 #include <Poco/File.h>
 #include <Poco/Util/SystemConfiguration.h>
+#include <Poco/Net/DNS.h>
+#include <Poco/Net/NetworkInterface.h>
 
 #include <sys/stat.h>
 
@@ -99,6 +101,14 @@ namespace utils
    {
       int rval;
 
+      { // log the command
+         std::ostringstream oss;
+         oss << "Runcommand: " << command;
+         for (auto x : args) oss << " " << x;
+         oss << std::endl;
+         logmsg(kLDEBUG, oss.str());
+      }
+
       try
       {
          Poco::Pipe outpipe;
@@ -110,11 +120,7 @@ namespace utils
       }
       catch (Poco::SystemException & se)
       {
-         std::ostringstream oss;
-         oss << "Runcomand: " << command;
-         for (auto x : args) oss << " " << x;
-         oss << std::endl << se.displayText();
-         fatal(oss.str());
+         fatal(se.displayText());
       }
 
       if (trim)
@@ -335,14 +341,6 @@ namespace utils
          f.remove();
          logmsg(kLDEBUG, "Deleted " + fullpath.toString());
       }
-   }
-
-   std::string getHostIP()
-   {
-      std::string hostIP;
-      if (utils::bashcommand("ip route get 1 | awk '{print $NF;exit}'", hostIP, true) != 0)
-         return "";
-      return hostIP;
    }
 
    std::string getTime()

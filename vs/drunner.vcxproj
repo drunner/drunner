@@ -41,6 +41,7 @@
     <ClCompile Include="..\source\source\servicehook.cpp" />
     <ClCompile Include="..\source\source\service_backup.cpp" />
     <ClCompile Include="..\source\source\service_install.cpp" />
+    <ClCompile Include="..\source\source\service_paths.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
     <ClCompile Include="..\source\source\drunner_settings.cpp" />
@@ -79,6 +80,7 @@
     <ClInclude Include="..\source\source\plugins\plugins.h" />
     <ClInclude Include="..\source\source\service.h" />
     <ClInclude Include="..\source\source\servicehook.h" />
+    <ClInclude Include="..\source\source\service_paths.h" />
     <ClInclude Include="..\source\source\settingsbash.h" />
     <ClInclude Include="..\source\source\showhelp.h" />
     <ClInclude Include="..\source\source\sh_backupvars.h" />
@@ -149,7 +151,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -166,7 +168,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>

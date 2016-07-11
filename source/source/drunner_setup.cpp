@@ -9,6 +9,7 @@
 #include "generate_validator_image.h"
 #include "drunner_compose.h"
 #include "drunner_paths.h"
+#include "checkprerequisits.h"
 
 #include <Poco/Process.h>
 #include <Poco/Path.h>
@@ -23,15 +24,21 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      if (!utils::fileexists(drunnerPaths::getPath_Root()))
-         utils::makedirectory(drunnerPaths::getPath_Root(), S_755);
-      else if (!forceUpdate)
-         return kRNoChange; // nothing needed.
+      if (utils::fileexists(drunnerPaths::getPath_Root()) && !forceUpdate)
+         return kRNoChange;
+
+      // check prereqs (e.g. docker installed).
+      check_prerequisits();
 
       // -----------------------------------------------------------------------------
-      // create bin directory
+      // create directory structure.
+      utils::makedirectory(drunnerPaths::getPath_Root(), S_755);
       utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
-      
+      utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_Temp(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
+
       // -----------------------------------------------------------------------------
       // generate plugin scripts
       GlobalContext::getPlugins()->generate_plugin_scripts();
@@ -39,13 +46,6 @@ namespace drunnerSetup
       // -----------------------------------------------------------------------------
       // get latest root util image.
       utils_docker::pullImage(drunnerPaths::getdrunnerUtilsImage());
-
-      // -----------------------------------------------------------------------------
-      // create services, support and temp directories
-      utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_Temp(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
 
       // create the validator script that is run inside containers
       generate_validator_image(drunnerPaths::getPath_Support());

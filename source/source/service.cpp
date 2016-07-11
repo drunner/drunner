@@ -13,21 +13,25 @@
 #include "globalcontext.h"
 #include "drunner_paths.h"
 
+// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
+
+
 service::service(const std::string & servicename, std::string imagename /*= ""*/) :
-   servicepaths(servicename),
+   servicePaths(servicename),
    mImageName( loadImageName(servicename,imagename) ),
    mEnvironment(*this)
 {
 }
 
-servicepaths::servicepaths(const std::string & servicename) :
+servicePaths::servicePaths(const std::string & servicename) :
    mName(servicename)
 {
 }
 
 std::string service::loadImageName(const std::string & servicename, std::string imagename)
 {
-   Poco::Path v = servicepaths(servicename).getPath();
+   Poco::Path v = servicePaths(servicename).getPath();
    if (utils::fileexists(v))
    {
       if (imagename.length() == 0)
@@ -52,59 +56,6 @@ std::string service::loadImageName(const std::string & servicename, std::string 
    return imagename;
 }
 
-
-Poco::Path servicepaths::getPath() const
-{
-   Poco::Path p= drunnerPaths::getPath_dServices().pushDirectory(mName);
-   poco_assert(p.isDirectory());
-   return p;
-}
-
-Poco::Path servicepaths::getPathdRunner() const
-{
-   return getPath().pushDirectory("drunner");
-}
-
-//Poco::Path servicepaths::getPathTemp() const
-//{
-//   return getPath().pushDirectory("temp");
-//}
-
-Poco::Path servicepaths::getPathHostVolume() const
-{
-   return drunnerPaths::getPath_HostVolumes().pushDirectory(mName);
-}
-
-//Poco::Path servicepaths::getPathHostVolume_servicerunner() const
-//{
-//   return getPathHostVolume().pushDirectory("servicerunner");
-//}
-
-Poco::Path servicepaths::getPathHostVolume_environment() const
-{
-   return getPathHostVolume().pushDirectory("environment");
-}
-
-Poco::Path servicepaths::getPathServiceRunner() const
-{
-   return getPathdRunner().setFileName("servicerunner");
-}
-
-Poco::Path servicepaths::getPathDockerCompose() const
-{
-   return getPathdRunner().setFileName("docker-compose.yml");
-}
-
-Poco::Path servicepaths::getPathLaunchScript() const
-{
-   return drunnerPaths::getPath_Bin().setFileName(getName());
-}
-
-
-std::string servicepaths::getName() const
-{
-   return mName;
-}
 
 void service::ensureDirectoriesExist() const
 {
@@ -221,44 +172,6 @@ int service::status()
 }
 
 
-
-void validateImage(std::string imagename)
-{
-   if (!utils::fileexists(drunnerPaths::getPath_Root()))
-      logmsg(kLERROR, "ROOTPATH not set.");
-
-   if (utils::imageisbranch(imagename))
-      logmsg(kLDEBUG, imagename + " looks like a development branch (won't be pulled).");
-   else
-      logmsg(kLDEBUG, imagename + " should be a production image.");
-
-   std::string op;
-   std::vector<std::string> args = { 
-      "run",
-      "--rm",
-      "-v",
-      drunnerPaths::getPath_Support().toString() + ":/support",
-      imagename , 
-      "/support/validator-image" 
-   };
-   int rval = utils::runcommand("docker", args, op, false);
-
-   if (rval != 0)
-   {
-      if (utils::findStringIC(op, "Unable to find image"))
-         logmsg(kLERROR, "Couldn't find image " + imagename);
-      else
-         logmsg(kLERROR, op);
-   }
-
-#ifdef _WIN32
-   logmsg(kLINFO, "[Y] " + imagename + " is dRunner compatible.");
-#else
-   logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.");
-#endif      
-}
-
-
 cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
 {
    // set environment.
@@ -286,7 +199,7 @@ const cServiceEnvironment & service::getEnvironmentConst() const
 
 //-----------------------------------------------------------------------------
 
-cServiceEnvironment::cServiceEnvironment(const servicepaths & paths) :
+cServiceEnvironment::cServiceEnvironment(const servicePaths & paths) :
    settingsbash(true)
 {
    mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
@@ -320,6 +233,6 @@ std::string cServiceEnvironment::get_value(const std::string & key) const
    return getString(key); 
 }
 
-service_obliterate::service_obliterate(const std::string & servicename) : servicepaths(servicename)
+service_obliterate::service_obliterate(const std::string & servicename) : servicePaths(servicename)
 {
 }
