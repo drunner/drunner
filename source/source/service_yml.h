@@ -9,6 +9,9 @@ class serviceyml {
 public:
    serviceyml(Poco::Path path);
 
+
+private:
+   std::vector<std::string> mVolumes;
 };
 
 

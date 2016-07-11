@@ -106,6 +106,12 @@
     <ClCompile Include="..\source\source\service_paths.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_yml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\service_config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -226,6 +232,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_paths.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_yml.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_config.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

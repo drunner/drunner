@@ -19,19 +19,14 @@ Poco::Path servicePaths::getPathHostVolume() const
    return drunnerPaths::getPath_HostVolumes().pushDirectory(mName);
 }
 
-Poco::Path servicePaths::getPathHostVolume_environment() const
+Poco::Path servicePaths::getPathServiceYml() const
 {
-   return getPathHostVolume().pushDirectory("environment");
+   return getPathdRunner().setFileName("service.yml");
 }
 
-Poco::Path servicePaths::getPathServiceRunner() const
+Poco::Path servicePaths::getPathServiceConfig() const
 {
-   return getPathdRunner().setFileName("servicerunner");
-}
-
-Poco::Path servicePaths::getPathDockerCompose() const
-{
-   return getPathdRunner().setFileName("docker-compose.yml");
+   return getPathHostVolume().setFileName("serviceconfig.yml");
 }
 
 Poco::Path servicePaths::getPathLaunchScript() const

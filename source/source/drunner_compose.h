@@ -42,10 +42,6 @@ public:
    // Services are as defined in the docker-compose.yml. These are not dServices.
    const std::vector<cServiceInfo> & getServicesInfo() const;
 
-   // Volumes are as defined in the docker-compose.yml. These include all the volumes
-   // defined in services, but may include extras.
-   const void getVolumes(std::vector<cVolInfo> & vecvols) const;
-
    // get a vector of mDockerVolumeName's (for convenience) - straight from mVolumes.
    void getDockerVolumeNames(tVecStr & dv) const;
 
@@ -58,6 +54,11 @@ private:
    void load_docker_compose_yml();
    //void setvecenv(const sb_vec & v) const;
    void setenv_log(std::string key, std::string val) const;
+
+   // Volumes are as defined in the docker-compose.yml. These include all the volumes
+   // defined in services, but may include extras.
+   const void getVolumes(std::vector<cVolInfo> & vecvols) const;
+
 
    std::vector<cServiceInfo> mServicesInfo;
 

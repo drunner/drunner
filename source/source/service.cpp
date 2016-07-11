@@ -63,7 +63,7 @@ void service::ensureDirectoriesExist() const
    utils::makedirectory(getPath(), S_755);
    utils::makedirectory(getPathdRunner(), S_777);
    //utils::makedirectory(getPathTemp(), S_777);
-   utils::makedirectories(getPathHostVolume_environment(), S_700);
+   //utils::makedirectories(getPathHostVolume_environment(), S_700);
    //utils::makedirectory(getPathHostVolume_servicerunner(), S_777);
 }
 
