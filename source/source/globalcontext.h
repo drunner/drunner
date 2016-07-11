@@ -6,7 +6,7 @@
 
 #include "enums.h"
 #include "params.h"
-#include "drunnerSettings.h"
+#include "drunner_settings.h"
 #include "plugins.h"
 
 

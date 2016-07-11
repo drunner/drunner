@@ -5,7 +5,7 @@
 #include "enums.h"
 #include "utils.h"
 #include "generate.h"
-#include "drunnerSettings.h"
+#include "drunner_paths.h"
 
 void generate_plugin_script (std::string pluginname)
 {
@@ -38,7 +38,7 @@ CMD="help"
 )EOF";
 
    vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
-   Poco::Path target = drunnerSettings::getPath_Bin().setFileName(pluginname);
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(pluginname);
    generate(target, S_755, vdata);
 }
 

@@ -3,7 +3,7 @@
 #include "servicehook.h"
 #include "globallogger.h"
 #include "utils.h"
-#include "drunnercompose.h"
+#include "drunner_compose.h"
 #include "cresult.h"
 
 servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams) :

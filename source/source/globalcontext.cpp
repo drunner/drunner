@@ -23,7 +23,7 @@ void GlobalContext::init(int argc, char **argv)
    s_settings = std::make_shared<const drunnerSettings>();
 
    // do this last - expects settings global object to be available.
-   drunner_setup::check_setup(false);
+   drunnerSetup::check_setup(false);
 }
 
 bool GlobalContext::hasParams()

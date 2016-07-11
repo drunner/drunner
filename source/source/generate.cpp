@@ -13,6 +13,7 @@ void generate(
 {
    // for now we force the generation. In future should check
    // whether any changes have been made.
+   poco_assert(fullpath.isFile());
    Poco::File f(fullpath);
    if (f.exists())
       utils::delfile(fullpath.toString());

@@ -23,10 +23,11 @@
     <ClCompile Include="..\source\source\checkprerequisits.cpp" />
     <ClCompile Include="..\source\source\command_dev.cpp" />
     <ClCompile Include="..\source\source\command_general.cpp" />
+    <ClCompile Include="..\source\source\drunner_paths.cpp" />
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
-    <ClCompile Include="..\source\source\drunnercompose.cpp" />
-    <ClCompile Include="..\source\source\dservicelogger.cpp" />
+    <ClCompile Include="..\source\source\drunner_compose.cpp" />
+    <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
     <ClCompile Include="..\source\source\generate.cpp" />
     <ClCompile Include="..\source\source\globalcontext.cpp" />
@@ -42,13 +43,14 @@
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
-    <ClCompile Include="..\source\source\drunnerSettings.cpp" />
+    <ClCompile Include="..\source\source\drunner_settings.cpp" />
     <ClCompile Include="..\source\source\termcolor.cpp" />
     <ClCompile Include="..\source\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="..\source\source\tests\unittests.cpp" />
     <ClCompile Include="..\source\source\timez.cpp" />
     <ClCompile Include="..\source\source\utils.cpp" />
     <ClCompile Include="..\source\source\utils_docker.cpp" />
+    <ClCompile Include="..\source\source\validateimage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h" />
@@ -56,11 +58,12 @@
     <ClInclude Include="..\source\source\chmod.h" />
     <ClInclude Include="..\source\source\command_dev.h" />
     <ClInclude Include="..\source\source\command_general.h" />
+    <ClInclude Include="..\source\source\drunner_paths.h" />
     <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
-    <ClInclude Include="..\source\source\drunnercompose.h" />
-    <ClInclude Include="..\source\source\dservicelogger.h" />
+    <ClInclude Include="..\source\source\drunner_compose.h" />
+    <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
     <ClInclude Include="..\source\source\exceptions.h" />
     <ClInclude Include="..\source\source\generate.h" />
@@ -80,13 +83,14 @@
     <ClInclude Include="..\source\source\showhelp.h" />
     <ClInclude Include="..\source\source\sh_backupvars.h" />
     <ClInclude Include="..\source\source\sh_ddev.h" />
-    <ClInclude Include="..\source\source\drunnerSettings.h" />
+    <ClInclude Include="..\source\source\drunner_settings.h" />
     <ClInclude Include="..\source\source\sh_servicevars.h" />
     <ClInclude Include="..\source\source\termcolor.h" />
     <ClInclude Include="..\source\source\tests\unittests.h" />
     <ClInclude Include="..\source\source\timez.h" />
     <ClInclude Include="..\source\source\utils.h" />
     <ClInclude Include="..\source\source\utils_docker.h" />
+    <ClInclude Include="..\source\source\validateimage.h" />
     <ClInclude Include="..\source\source\win\getopt.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

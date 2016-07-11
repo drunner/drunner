@@ -7,6 +7,7 @@
 #include "globalcontext.h"
 #include "globallogger.h"
 #include "utils.h"
+#include "drunner_paths.h"
 
 const std::string backupConfig::s_DisabledServices("DisabledServices");
 const std::string backupConfig::s_BackupPath("BackupPath");
@@ -61,7 +62,7 @@ bool backupConfig::save()
 
 Poco::Path backupConfig::configfilepath()
 {
-   return GlobalContext::getSettings()->getPath_drunnerbackups_cfg();
+   return drunnerPaths::getPath_drunnerbackups_cfg();
 }
 
 bool backupConfig::isEnabled(std::string servicename)

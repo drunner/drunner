@@ -5,7 +5,7 @@
 
 #include <Poco/StreamCopier.h>
 
-#include "dservicelogger.h"
+#include "service_log.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 

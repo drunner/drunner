@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "service.h"
 #include "settingsbash.h"
-#include "drunnercompose.h"
+#include "drunner_compose.h"
 
 class sh_backupvars : public settingsbash
 {

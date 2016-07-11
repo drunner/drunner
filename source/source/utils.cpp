@@ -25,11 +25,12 @@
 
 #include "utils.h"
 #include "exceptions.h"
-#include "dservicelogger.h"
+#include "service_log.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
 #include "chmod.h"
+#include "drunner_paths.h"
 
 namespace utils
 {
@@ -404,7 +405,7 @@ namespace utils
 
    void getAllServices(std::vector<std::string>& services)
    {
-      Poco::File f(GlobalContext::getSettings()->getPath_dServices());
+      Poco::File f(drunnerPaths::getPath_dServices());
       if (!f.exists())
          logmsg(kLERROR, "Services folder does not exist.");
 

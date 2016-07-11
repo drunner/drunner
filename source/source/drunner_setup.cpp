@@ -3,17 +3,18 @@
 #include "drunner_setup.h"
 #include "utils.h"
 #include "utils_docker.h"
-#include "drunnerSettings.h"
+#include "drunner_settings.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "generate_validator_image.h"
-#include "drunnercompose.h"
+#include "drunner_compose.h"
+#include "drunner_paths.h"
 
 #include <Poco/Process.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
 
-namespace drunner_setup
+namespace drunnerSetup
 {
 
    cResult check_setup(bool forceUpdate)
@@ -22,14 +23,14 @@ namespace drunner_setup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-      if (!utils::fileexists(drunnerSettings::getPath_Root()))
-         utils::makedirectory(drunnerSettings::getPath_Root(), S_755);
+      if (!utils::fileexists(drunnerPaths::getPath_Root()))
+         utils::makedirectory(drunnerPaths::getPath_Root(), S_755);
       else if (!forceUpdate)
          return kRNoChange; // nothing needed.
 
       // -----------------------------------------------------------------------------
       // create bin directory
-      utils::makedirectory(drunnerSettings::getPath_Bin(), S_700);
+      utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
       
       // -----------------------------------------------------------------------------
       // generate plugin scripts
@@ -37,17 +38,17 @@ namespace drunner_setup
 
       // -----------------------------------------------------------------------------
       // get latest root util image.
-      utils_docker::pullImage(drunnerSettings::getdrunnerUtilsImage());
+      utils_docker::pullImage(drunnerPaths::getdrunnerUtilsImage());
 
       // -----------------------------------------------------------------------------
       // create services, support and temp directories
-      utils::makedirectory(drunnerSettings::getPath_dServices(), S_755);
-      utils::makedirectory(drunnerSettings::getPath_Support(), S_755);
-      utils::makedirectory(drunnerSettings::getPath_Temp(), S_755);
-      utils::makedirectory(drunnerSettings::getPath_HostVolumes(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_Temp(), S_755);
+      utils::makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
 
       // create the validator script that is run inside containers
-      generate_validator_image(drunnerSettings::getPath_Support());
+      generate_validator_image(drunnerPaths::getPath_Support());
 
       // write settings.
       GlobalContext::getSettings()->writeSettings();
@@ -67,10 +68,10 @@ namespace drunner_setup
       const params & p(*GlobalContext::getParams().get());
       const drunnerSettings & s(*GlobalContext::getSettings().get());
 
-      logmsg(kLDEBUG, "Updating dRunner in " + s.getPath_Root().toString());
+      logmsg(kLDEBUG, "Updating dRunner in " + drunnerPaths::getPath_Root().toString());
 
       std::string url(s.getdrunnerInstallURL());
-      Poco::Path trgt(s.getPath_Root());
+      Poco::Path trgt(drunnerPaths::getPath_Root());
       trgt.setFileName("drunner-install");
 
       utils::downloadexe(url, trgt);
@@ -82,7 +83,7 @@ namespace drunner_setup
       for (auto opt : p.getOptions())
          args.push_back(opt);
       args.push_back("setup");
-      args.push_back(s.getPath_Root().toString());
+      args.push_back(drunnerPaths::getPath_Root().toString());
       
       std::ostringstream oss;
       for (auto arg : args)

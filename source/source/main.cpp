@@ -10,7 +10,7 @@
 #include "drunner_setup.h"
 #include "command_general.h"
 #include "command_dev.h"
-#include "drunnerSettings.h"
+#include "drunner_settings.h"
 #include "showhelp.h"
 #include "main.h"
 #include "unittests.h"
@@ -94,7 +94,7 @@ int mainroutines::process()
       case c_update:
       {
          if (p.numArgs()<1)
-            drunner_setup::update(); // defined in command_setup
+            drunnerSetup::update(); // defined in command_setup
          else
          { // first argument is service name.
             service s(p.getArg(0));

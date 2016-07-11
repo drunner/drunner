@@ -11,7 +11,7 @@
 #include "globallogger.h"
 #include "buildnum.h"
 #include "exceptions.h"
-#include "drunnerSettings.h"
+#include "drunner_paths.h"
 
 
 std::string params::substitute( const std::string & source ) const
@@ -19,7 +19,7 @@ std::string params::substitute( const std::string & source ) const
    std::string d(source);
    d=utils::replacestring(d,"${VERSION}",mVersion);
    d=utils::replacestring(d,"${EXENAME}","drunner");
-   d=utils::replacestring(d,"${ROOTPATH}",drunnerSettings::getPath_Exe().toString());
+   d=utils::replacestring(d,"${ROOTPATH}", drunnerPaths::getPath_Exe().toString());
    return d;
 }
 

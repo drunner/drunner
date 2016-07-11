@@ -2,7 +2,7 @@
 #define __COMMAND_DEV_H
 
 #include "params.h"
-#include "drunnerSettings.h"
+#include "drunner_settings.h"
 
 namespace command_dev
 {

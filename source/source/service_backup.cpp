@@ -10,6 +10,7 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "timez.h"
+#include "drunner_paths.h"
 
 // Back up this service to backupfile.
 void service::backup(const std::string & backupfile)
@@ -26,8 +27,8 @@ void service::backup(const std::string & backupfile)
    if (!isValid())
       logmsg(kLERROR, "Validation of " + getName() + " failed. Try drunner recover " + getName());
 
-   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp().pushDirectory("archivefolder-" + getName()));
-   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp().pushDirectory("backup-"+getName()));
+   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + getName()));
+   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
 
    // write out variables that we need to decompress everything.
    sh_backupvars shb;
@@ -124,8 +125,8 @@ cResult service_restore(const std::string & servicename, const std::string & bac
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
    logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(GlobalContext::getSettings()->getPath_Temp().pushDirectory("restore-"+servicename));
-   utils::tempfolder archivefolder(GlobalContext::getSettings()->getPath_Temp().pushDirectory("archivefolder-" + servicename));
+   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+servicename));
+   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + servicename));
 
    // for docker volumes
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");

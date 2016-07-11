@@ -15,7 +15,7 @@
 #include "service.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"
-#include "drunnercompose.h"
+#include "drunner_compose.h"
 #include "chmod.h"
 
 std::string service::getUserID(std::string imagename) const

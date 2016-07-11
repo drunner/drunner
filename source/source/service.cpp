@@ -9,8 +9,9 @@
 #include "utils.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"
-#include "drunnercompose.h"
+#include "drunner_compose.h"
 #include "globalcontext.h"
+#include "drunner_paths.h"
 
 service::service(const std::string & servicename, std::string imagename /*= ""*/) :
    servicepaths(servicename),
@@ -54,7 +55,7 @@ std::string service::loadImageName(const std::string & servicename, std::string 
 
 Poco::Path servicepaths::getPath() const
 {
-   Poco::Path p=GlobalContext::getSettings()->getPath_dServices().pushDirectory(mName);
+   Poco::Path p= drunnerPaths::getPath_dServices().pushDirectory(mName);
    poco_assert(p.isDirectory());
    return p;
 }
@@ -71,7 +72,7 @@ Poco::Path servicepaths::getPathdRunner() const
 
 Poco::Path servicepaths::getPathHostVolume() const
 {
-   return GlobalContext::getSettings()->getPath_HostVolumes().pushDirectory(mName);
+   return drunnerPaths::getPath_HostVolumes().pushDirectory(mName);
 }
 
 //Poco::Path servicepaths::getPathHostVolume_servicerunner() const
@@ -96,7 +97,7 @@ Poco::Path servicepaths::getPathDockerCompose() const
 
 Poco::Path servicepaths::getPathLaunchScript() const
 {
-   return drunnerSettings::getPath_Bin().setFileName(getName());
+   return drunnerPaths::getPath_Bin().setFileName(getName());
 }
 
 
@@ -223,7 +224,7 @@ int service::status()
 
 void validateImage(std::string imagename)
 {
-   if (!utils::fileexists(GlobalContext::getSettings()->getPath_Root())) 
+   if (!utils::fileexists(drunnerPaths::getPath_Root()))
       logmsg(kLERROR, "ROOTPATH not set.");
 
    if (utils::imageisbranch(imagename))
@@ -236,7 +237,7 @@ void validateImage(std::string imagename)
       "run",
       "--rm",
       "-v",
-      GlobalContext::getSettings()->getPath_Support().toString() + ":/support", 
+      drunnerPaths::getPath_Support().toString() + ":/support",
       imagename , 
       "/support/validator-image" 
    };
