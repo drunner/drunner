@@ -38,10 +38,10 @@ cResult servicehook::endhook()
 
 cResult servicehook::runHook(std::string se)
 {
-   if (!utils::fileexists(mServiceRunner))
+   if (!utils::fileexists(mService->getPathServiceYml()))
    {
-      logmsg(kLDEBUG, "Failed to find servicerunner at " + mServiceRunner.toString());
-      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's servicerunner is not installed.");
+      logmsg(kLDEBUG, "Failed to find service.yml at " + mService->getPathServiceYml().toString());
+      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's service.yml is not installed.");
       return kRError;
    }
 
@@ -66,7 +66,7 @@ cResult servicehook::runHook(std::string se)
 
 void servicehook::setHookCmds()
 {      
-   mServiceRunner = mService->getPathServiceRunner();
+   //mServiceRunner = mService->getPathServiceRunner();
    mStartCmd = "";
    mEndCmd = "";
 

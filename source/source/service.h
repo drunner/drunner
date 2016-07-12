@@ -58,8 +58,9 @@ public:
    const params & getParams() const;
 
    cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
-   cServiceEnvironment & getEnvironment();
-   const cServiceEnvironment & getEnvironmentConst() const;
+
+   //cServiceEnvironment & getEnvironment();
+   //const cServiceEnvironment & getEnvironmentConst() const;
 
 private:
    void ensureDirectoriesExist() const;
@@ -70,7 +71,10 @@ private:
    static std::string loadImageName(const std::string & servicename, std::string imagename);
 
    const std::string mImageName;
-   cServiceEnvironment mEnvironment;
+   serviceyml::file mServiceYml;
+
+   //cServiceEnvironment mEnvironment;
+   
 };
 
 

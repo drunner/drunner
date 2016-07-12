@@ -97,7 +97,10 @@ const service & drunnerCompose::getService() const
 
 void drunnerCompose::load_docker_compose_yml()
 {
-   if (!utils::fileexists(mService.getPathDockerCompose()))
+   fatal("Not implemented : void drunnerCompose::load_docker_compose_yml()");
+   Poco::Path path("not implemented");
+
+   if (!utils::fileexists(path))
    {
       mReadOkay = kRNotImplemented;
       return;
@@ -105,9 +108,9 @@ void drunnerCompose::load_docker_compose_yml()
 
    std::vector<cVolInfo> VolumesInfo;
 
-   logmsg(kLDEBUG, "Parsing " + mService.getPathDockerCompose().toString());
+   logmsg(kLDEBUG, "Parsing " + path.toString());
 
-   YAML::Node config = YAML::LoadFile(mService.getPathDockerCompose().toString());
+   YAML::Node config = YAML::LoadFile(path.toString());
    if (!config)
       logmsg(kLERROR, "Failed to load the docker-compose.yml file. Parse error?");
 

@@ -1,54 +1,25 @@
 #ifndef __SERVICE_CONFIG_H
 #define __SERVICE_CONFIG_H
 
-#include <cereal/access.hpp>
-
 #include "service_paths.h"
 #include "cresult.h"
 #include "service_yml.h"
+#include "service_variables.h"
 
-class keyval {
-public:
-   keyval() {}
-
-   std::string key;
-   std::string value;
-
-// --- serialisation --
-private:
-   friend class cereal::access;
-   template <class Archive>
-   void save(Archive &ar, std::uint32_t const version) const;
-   template <class Archive>
-   void load(Archive &ar, std::uint32_t const version) const;
-// --- serialisation --
-};
-CEREAL_CLASS_VERSION(keyval, 1);
-
-class serviceConfig {
+class serviceConfig : public variables {
 public:
    serviceConfig(const servicePaths & svp);
-   cResult create(const serviceyml & y);
-   cResult load();
-   cResult save();
+   cResult create(const serviceyml::file & y);
+   cResult loadconfig();
+   cResult saveconfig();
 
-   std::string getVal(std::string key) const;
-   void setVal(std::string key, std::string val);
-   const std::vector<const keyval> & getData() const;
+   variables & getVariables() { return mVariables; }
 
 private:
-   std::vector<keyval> mData;
+   variables mVariables;
    Poco::Path mServicePath;
-
-// --- serialisation --
-private:
-   friend class cereal::access;
-   template <class Archive>
-   void save(Archive &ar, std::uint32_t const version) const;
-   template <class Archive>
-   void load(Archive &ar, std::uint32_t const version) const;
-// --- serialisation --
 };
 CEREAL_CLASS_VERSION(serviceConfig, 1);
+
 
 #endif

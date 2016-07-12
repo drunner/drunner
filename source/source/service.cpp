@@ -12,6 +12,7 @@
 #include "drunner_compose.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
+#include "service_yml.h"
 
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -20,7 +21,8 @@
 service::service(const std::string & servicename, std::string imagename /*= ""*/) :
    servicePaths(servicename),
    mImageName( loadImageName(servicename,imagename) ),
-   mEnvironment(*this)
+   mServiceYml( getPathServiceYml() )
+   //mEnvironment(*this)
 {
 }
 
@@ -175,39 +177,45 @@ int service::status()
 cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
 {
    // set environment.
-   drunnerCompose drc(*this);
-   if (drc.readOkay()==kRError)
-      logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correctly.");
-   else
-      drc.setServiceRunnerEnv();
- 
+   //drunnerCompose drc(*this);
+   //if (drc.readOkay()==kRError)
+   //   logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correctly.");
+   //else
+   //   drc.setServiceRunnerEnv();
+   if (!
+   serviceyml::file 
+
+   variables
+
    poco_assert(args.size() == 0 || !utils::stringisame(args[0], "servicerunner")); // first arg shouldn't be 'servicerunner'.
 
-   cResult rval(utils::dServiceCmd(getPathServiceRunner().toString(), args, true));
-   return rval;
+   fatal("Need to switch over to running command via service_yml.");
+   //cResult rval(utils::dServiceCmd(getPathServiceRunner().toString(), args, true));
+   return kRNotImplemented;
 }
 
-cServiceEnvironment & service::getEnvironment()
-{
-   return mEnvironment;
-}
-
-const cServiceEnvironment & service::getEnvironmentConst() const
-{
-   return mEnvironment;
-}
+//cServiceEnvironment & service::getEnvironment()
+//{
+//   return mEnvironment;
+//}
+//
+//const cServiceEnvironment & service::getEnvironmentConst() const
+//{
+//   return mEnvironment;
+//}
 
 //-----------------------------------------------------------------------------
 
 cServiceEnvironment::cServiceEnvironment(const servicePaths & paths) :
    settingsbash(true)
 {
-   mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
-   if (utils::fileexists(mPath))
-   {
-      if (!readSettings(mPath))
-         fatal("servicerunner_env.sh is corrupt.");
-   }
+   fatal("Not implemented : cServiceEnvironment::cServiceEnvironment(const servicePaths & paths)");
+   //mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
+   //if (utils::fileexists(mPath))
+   //{
+   //   if (!readSettings(mPath))
+   //      fatal("servicerunner_env.sh is corrupt.");
+   //}
 }
 
 void cServiceEnvironment::save_environment(std::string key, std::string value)

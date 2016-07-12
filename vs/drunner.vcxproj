@@ -43,6 +43,7 @@
     <ClCompile Include="..\source\source\service_backup.cpp" />
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
+    <ClCompile Include="..\source\source\service_variables.cpp" />
     <ClCompile Include="..\source\source\service_yml.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="..\source\source\service.h" />
     <ClInclude Include="..\source\source\servicehook.h" />
     <ClInclude Include="..\source\source\service_paths.h" />
+    <ClInclude Include="..\source\source\service_variables.h" />
     <ClInclude Include="..\source\source\service_yml.h" />
     <ClInclude Include="..\source\source\settingsbash.h" />
     <ClInclude Include="..\source\source\showhelp.h" />

@@ -12,7 +12,7 @@ public:
    Poco::Path getPath() const;
    Poco::Path getPathdRunner() const;
    Poco::Path getPathHostVolume() const;
-   Poco::Path getPathHostVolume_environment() const;
+   //Poco::Path getPathHostVolume_environment() const;
    Poco::Path getPathLaunchScript() const;
    Poco::Path getPathServiceYml() const;
    Poco::Path getPathServiceConfig() const;

@@ -7,6 +7,7 @@
 #include "enums.h"
 #include "params.h"
 #include "cresult.h"
+#include "service_yml.h"
 
 class service;
 
@@ -26,8 +27,7 @@ private:
    std::string mActionName;
    std::vector<std::string> mHookParams;
 
-   Poco::Path mServiceRunner;
-
+   //Poco::Path mServiceRunner;
    std::string mStartCmd;
    std::string mEndCmd;
 };
