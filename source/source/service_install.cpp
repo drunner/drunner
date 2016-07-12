@@ -27,7 +27,7 @@ service_install::service_install(std::string servicename) : servicePaths(service
       fatal("No imagename specified and unable to read the service config.");
    std::string key = "IMAGENAME";
    if (!svc.hasKey(key))
-      fatal("Service config does not containt he image name.");
+      fatal("Service config does not contain the image name.");
    mImageName = svc.getVal(key);
 }
 
@@ -42,16 +42,10 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
    for (const auto & v : volumes)
    {
       // each service may be running under a different userid.
-      if (utils::dockerVolExists(v))
+      if (utils_docker::dockerVolExists(v))
          logmsg(kLINFO, "A docker volume already exists for " + v + ", reusing it.");
       else
-      {
-         std::vector<std::string> args = { "volume","create","--name=\"" + v + "\"" };
-         int rval = utils::runcommand("docker", args);
-         if (rval != 0)
-            logmsg(kLERROR, "Unable to create docker volume " + v);
-         logmsg(kLDEBUG, "Created docker volume " + v);
-      }
+         utils_docker::createDockerVolume(v);
 
       // set permissions on volume.
       tVecStr args = { "run", "--name=\"" + dname + "\"", "-v",
@@ -121,7 +115,7 @@ cResult service_install::_recreate(bool updating)
       // now can load full service.yml, using variable substitution via the defaults etc..
       serviceyml::file syfull(getPathServiceYml(), svccfg);
       if (!syfull.readokay())
-         fatal("Corrup dservice - couldn't ready full service.yml");
+         fatal("Corrupt dservice - couldn't read full service.yml");
 
       // make sure we have the latest of all exra containers.
       for (const auto & entry : syfull.getExtraContainers())

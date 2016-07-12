@@ -12,6 +12,7 @@
 #include "timez.h"
 #include "drunner_paths.h"
 #include "service_install.h"
+#include "utils_docker.h"
 
 // Back up this service to backupfile.
 void service::backup(const std::string & backupfile)
@@ -62,7 +63,7 @@ void service::backup(const std::string & backupfile)
 
    for (auto const & entry : dockervols)
    {
-      if (utils::dockerVolExists(entry))
+      if (utils_docker::dockerVolExists(entry))
       {
          Poco::Path volarchive(tempf);
          volarchive.setFileName(entry + ".tar");
@@ -184,7 +185,7 @@ cResult service_install::service_restore(const std::string & backupfile)
    // restore all the volumes.
    for (unsigned int i = 0; i < dockervols.size(); ++i)
    {
-      if (!utils::dockerVolExists(dockervols[i]))
+      if (!utils_docker::dockerVolExists(dockervols[i]))
          service_restore_fail(mName, "Installation should have created " + dockervols[i] + " but didn't!");
 
       Poco::Path volarchive(tempf);

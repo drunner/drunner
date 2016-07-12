@@ -72,7 +72,6 @@
     <ClInclude Include="..\source\source\enums.h" />
     <ClInclude Include="..\source\source\exceptions.h" />
     <ClInclude Include="..\source\source\generate.h" />
-    <ClInclude Include="..\source\source\generate_validator_image.h" />
     <ClInclude Include="..\source\source\globalcontext.h" />
     <ClInclude Include="..\source\source\globallogger.h" />
     <ClInclude Include="..\source\source\main.h" />

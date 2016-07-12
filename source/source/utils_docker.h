@@ -7,6 +7,8 @@
 
 namespace utils_docker
 {
+   bool dockerVolExists(const std::string & vol);
+   void createDockerVolume(std::string name);
    void pullImage(const std::string & image);
 }
 

@@ -5,8 +5,6 @@
 
 namespace validateImage
 {
-
-
    void validate(std::string imagename)
    {
       if (!utils::fileexists(drunnerPaths::getPath_Root()))

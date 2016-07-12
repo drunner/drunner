@@ -355,13 +355,6 @@ namespace utils
       return cwd;
    }
 
-   bool dockerVolExists(const std::string & vol)
-   { // this could be better - will match substrings rather than whole volume name. :/ 
-      // We name with big unique names so unlikely to be a problem for us.
-      int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"");
-      return (rval == 0); 
-   }
-
    std::string getenv(std::string envParam)
    {
       const char * cstr = std::getenv(envParam.c_str());

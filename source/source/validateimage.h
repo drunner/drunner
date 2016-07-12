@@ -5,6 +5,8 @@
 
 namespace validateImage
 {
+   static const std::string validateimagename("drunner-validator");
+
    void validate(std::string imagename);
 }
 

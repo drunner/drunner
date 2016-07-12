@@ -144,9 +144,6 @@
     <ClInclude Include="..\source\source\generate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\generate_validator_image.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\globalcontext.h">
       <Filter>Source Files</Filter>
     </ClInclude>

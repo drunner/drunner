@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "globallogger.h"
 #include "params.h"
+#include "utils_docker.h"
 
 namespace compress
 {
@@ -76,7 +77,7 @@ namespace compress
 
    bool compress_volume(std::string password, std::string volumename, Poco::Path archive)
    {
-      if (!utils::dockerVolExists(volumename))
+      if (!utils_docker::dockerVolExists(volumename))
          fatal("Can't compress non-existant volume " + volumename);
 
       return _compress(password, volumename, archive);
@@ -97,7 +98,7 @@ namespace compress
 
    bool decompress_volume(std::string password, std::string targetvolumename, Poco::Path archive)
    {
-      if (!utils::dockerVolExists(targetvolumename))
+      if (!utils_docker::dockerVolExists(targetvolumename))
          fatal("Can't restore into volume " + targetvolumename + " because it doesn't exist.");
 
       return _decompress(password, targetvolumename, archive);
