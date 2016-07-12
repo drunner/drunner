@@ -4,13 +4,14 @@
 
 #include "service.h"
 #include "utils.h"
-#include "sh_backupvars.h"
+#include "service_backupvars.h"
 #include "compress.h"
 #include "servicehook.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "timez.h"
 #include "drunner_paths.h"
+#include "service_install.h"
 
 // Back up this service to backupfile.
 void service::backup(const std::string & backupfile)
@@ -31,9 +32,9 @@ void service::backup(const std::string & backupfile)
    utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
 
    // write out variables that we need to decompress everything.
-   sh_backupvars shb;
-   shb.createFromdrunnerCompose(drunnerCompose(*this));
-   shb.writeSettings(shb.getPathFromParent(tempparent.getpath()));
+   backupvars bvars(tempparent.getpath().setFileName(backupvars::filename));
+   bvars.createFromServiceYml(mImageName,mServiceYml);
+   bvars.savevars();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
@@ -57,7 +58,8 @@ void service::backup(const std::string & backupfile)
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
    std::vector<std::string> dockervols;
-   shb.getDockerVolumeNames(dockervols);
+   mServiceYml.getDockerVolumeNames(dockervols);
+
    for (auto const & entry : dockervols)
    {
       if (utils::dockerVolExists(entry))
@@ -115,9 +117,15 @@ void service::backup(const std::string & backupfile)
 }
 
 
+void service_restore_fail(std::string servicename, std::string message)
+{
+   logmsg(kLWARN, message);
+   service_install sinst(servicename);
+   sinst.uninstall();
+   logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
+}
 
-
-cResult service_restore(const std::string & servicename, const std::string & backupfile)
+cResult service_install::service_restore(const std::string & backupfile)
 { // restore from backup.
    Poco::Path bf(backupfile);
    bf.makeAbsolute();
@@ -125,8 +133,8 @@ cResult service_restore(const std::string & servicename, const std::string & bac
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
    logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+servicename));
-   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + servicename));
+   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+mName));
+   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + mName));
 
    // for docker volumes
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
@@ -144,14 +152,13 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    compress::decompress_folder(password, tempparent.getpath(), bigarchive);
 
    // read in old variables, just need imagename and olddockervols from them.
-   sh_backupvars shb;
-   if (!shb.readSettings(shb.getPathFromParent(tempparent.getpath())))
-      logmsg(kLERROR, "Backup corrupt - backupvars.sh missing.");
+   backupvars bvars(tempparent.getpath().setFileName(backupvars::filename));
+   if (kRSuccess!=bvars.loadvars())
+      logmsg(kLERROR, "Backup corrupt - "+backupvars::filename+" couldn't be read.");
 
    if (!utils::fileexists(tempc))
       logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
-   std::vector<std::string> shb_dockervolumenames;
-   shb.getDockerVolumeNames(shb_dockervolumenames);
+   const std::vector<std::string> & shb_dockervolumenames(bvars.getDockerVolumeNames());
 
    for (auto entry : shb_dockervolumenames)
    {
@@ -162,33 +169,24 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    }
 
    // backup seems okay - lets go!
-   service svc(servicename, shb.getImageName());
-   if (utils::fileexists(svc.getPath()))
-      logmsg(kLERROR, "Service " + servicename + " already exists. Uninstall it before restoring from backup.");
+   service_install::service_install(mName, bvars.getImageName());
 
-   svc.install();
 
    // load in the new variables.
-   drunnerCompose drc(svc);
-   if (drc.readOkay()==kRError)
-      logmsg(kLERROR, "Installation failed - drunner-compose.yml broken.");
+   service newservice(mName);
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
-   drc.getDockerVolumeNames(dockervols);
+   newservice.getServiceYml().getDockerVolumeNames(dockervols);
    if (shb_dockervolumenames.size() != dockervols.size())
-   {
-      logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.");
-      svc.uninstall();
-      logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
-   }
-
+      service_restore_fail(mName, "Number of docker volumes stored does not match what we expect.");
+   
    // restore all the volumes.
    for (unsigned int i = 0; i < dockervols.size(); ++i)
    {
       if (!utils::dockerVolExists(dockervols[i]))
-         logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!");
-      
+         service_restore_fail(mName, "Installation should have created " + dockervols[i] + " but didn't!");
+
       Poco::Path volarchive(tempf);
       volarchive.setFileName(shb_dockervolumenames[i] + ".tar");
       compress::decompress_volume(password, dockervols[i], volarchive);
@@ -198,15 +196,15 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    logmsg(kLDEBUG, "Restoring host volume.");
    Poco::Path hostvolp(tempf);
    hostvolp.setFileName("drunner_hostvol.tar");
-   compress::decompress_folder(password, svc.getPathHostVolume(), hostvolp);
+   compress::decompress_folder(password, newservice.getPathHostVolume(), hostvolp);
 
    // tell the dService to do its restore_end action.
    tVecStr args;
    args.push_back(tempc.toString());
-   servicehook hook(&svc, "restore", args);
+   servicehook hook(&newservice, "restore", args);
    hook.endhook();
 
-   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
+   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + mName + ". Try it!");
    return kRSuccess;
 }
 

@@ -24,7 +24,7 @@ public:
    }
 
    std::string getImageName() const { return getString("IMAGENAME"); }
-   Poco::Path getPathFromParent(Poco::Path servicepath) { return servicepath.setFileName("servicevars.sh"); }
+   Poco::Path getPathFromParent(Poco::Path servicepath) { return servicepath.setFileName("imagename.sh"); }
 
 }; // sh_servicevars
 

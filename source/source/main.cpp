@@ -18,6 +18,7 @@
 #include "plugins.h"
 #include "checkprerequisits.h"
 #include "validateimage.h"
+#include "service_install.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -96,8 +97,8 @@ int mainroutines::process()
             drunnerSetup::update(); // defined in command_setup
          else
          { // first argument is service name.
-            service s(p.getArg(0));
-            s.update();
+            service_install svi(p.getArg(0));
+            return svi.update();
          }
          break;
       }
@@ -129,9 +130,8 @@ int mainroutines::process()
                servicename.erase(found);
          }
 
-         service svc(servicename, imagename);
-         svc.install();
-         break;
+         service_install svc(servicename, imagename);
+         return svc.install();
       }
 
       case c_restore:
@@ -139,7 +139,8 @@ int mainroutines::process()
          if (p.numArgs() < 2)
             logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME");
 
-         return service_restore(p.getArg(1), p.getArg(0));
+         service_install svc(p.getArg(1));
+         return svc.service_restore(p.getArg(0));
       }
 
       case c_backup:
@@ -208,16 +209,16 @@ int mainroutines::process()
             imagename = p.getArg(1);
 
          logmsg(kLINFO, "Recovering " + servicename + " from image " + imagename);
-         service svc(servicename, imagename);
-         return (int)svc.recover();
+         service_install svc(servicename, imagename);
+         return svc.recover();
       }
 
       case c_uninstall:
       {
          if (p.numArgs()<1)
             logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME");
-         service svc(p.getArg(0));
-         return (int)svc.uninstall();
+         service_install svc(p.getArg(0));
+         return svc.uninstall();
       }
 
       case c_obliterate:
@@ -225,8 +226,8 @@ int mainroutines::process()
          if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME");
 
-         service_obliterate svco(p.getArg(0));
-         return (int)svco.obliterate();
+         service_install svc(p.getArg(0));
+         return svc.obliterate();
       }
 
       case c_help:

@@ -9,7 +9,6 @@
 #include "utils.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"
-#include "drunner_compose.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "service_yml.h"
@@ -20,9 +19,9 @@
 
 service::service(const std::string & servicename, std::string imagename /*= ""*/) :
    servicePaths(servicename),
-   mImageName( loadImageName(servicename,imagename) ),
-   mServiceYml( getPathServiceYml() )
-   //mEnvironment(*this)
+   mImageName(loadImageName(servicename, imagename)),
+   mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
+   mServiceYml(servicePaths(servicename).getPathServiceYml(), mServiceCfg)
 {
 }
 
@@ -58,28 +57,11 @@ std::string service::loadImageName(const std::string & servicename, std::string 
    return imagename;
 }
 
-
-void service::ensureDirectoriesExist() const
-{
-   // create service's drunner and temp directories on host.
-   utils::makedirectory(getPath(), S_755);
-   utils::makedirectory(getPathdRunner(), S_777);
-   //utils::makedirectory(getPathTemp(), S_777);
-   //utils::makedirectories(getPathHostVolume_environment(), S_700);
-   //utils::makedirectory(getPathHostVolume_servicerunner(), S_777);
-}
-
 bool service::isValid() const
 {
    if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner())) // || !utils::fileexists(getPathTemp()))
       return false;
 
-   drunnerCompose drc(*this);
-   if (drc.readOkay()==kRError)
-   {
-      logmsg(kLDEBUG, "docker-compose.yml is broken for service "+getName());
-      return false;
-   }
    sh_servicevars shv;
    if (!shv.readSettings(getPath()))
    {
@@ -124,15 +106,6 @@ cResult service::servicecmd()
    return rval;
 }
 
-void service::update()
-{ // update the service (recreate it)
-   servicehook hook(this, "update");
-   hook.starthook();
-
-   recreate(true);
-   
-   hook.endhook();
-}
 
 const std::string service::getImageName() const
 {
@@ -182,10 +155,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
    //   logmsg(kLWARN, "Couldn't set up drunnerCompose. servicerunner will not have environment set correctly.");
    //else
    //   drc.setServiceRunnerEnv();
-   if (!
-   serviceyml::file 
-
-   variables
+   fatal("Not implemented - cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const");
 
    poco_assert(args.size() == 0 || !utils::stringisame(args[0], "servicerunner")); // first arg shouldn't be 'servicerunner'.
 
@@ -205,42 +175,42 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
 //}
 
 //-----------------------------------------------------------------------------
-
-cServiceEnvironment::cServiceEnvironment(const servicePaths & paths) :
-   settingsbash(true)
-{
-   fatal("Not implemented : cServiceEnvironment::cServiceEnvironment(const servicePaths & paths)");
-   //mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
-   //if (utils::fileexists(mPath))
-   //{
-   //   if (!readSettings(mPath))
-   //      fatal("servicerunner_env.sh is corrupt.");
-   //}
-}
-
-void cServiceEnvironment::save_environment(std::string key, std::string value)
-{
-   setString(key, value);
-   if (!writeSettings(mPath))
-      fatal("Failed to write environment file " + mPath.toString());
-}
-
-unsigned int cServiceEnvironment::getNumVars() const
-{
-   return mElements.size();
-}
-
-std::string cServiceEnvironment::index2key(unsigned int i) const
-{
-   if (i >= getNumVars()) fatal("Invalid index into cServiceEnvironment.");
-   return mElements[i].getkey();
-}
-
-std::string cServiceEnvironment::get_value(const std::string & key) const
-{ 
-   return getString(key); 
-}
-
-service_obliterate::service_obliterate(const std::string & servicename) : servicePaths(servicename)
-{
-}
+//
+//cServiceEnvironment::cServiceEnvironment(const servicePaths & paths) :
+//   settingsbash(true)
+//{
+//   fatal("Not implemented : cServiceEnvironment::cServiceEnvironment(const servicePaths & paths)");
+//   //mPath = paths.getPathHostVolume_environment().setFileName("servicerunner_env.sh");
+//   //if (utils::fileexists(mPath))
+//   //{
+//   //   if (!readSettings(mPath))
+//   //      fatal("servicerunner_env.sh is corrupt.");
+//   //}
+//}
+//
+//void cServiceEnvironment::save_environment(std::string key, std::string value)
+//{
+//   setString(key, value);
+//   if (!writeSettings(mPath))
+//      fatal("Failed to write environment file " + mPath.toString());
+//}
+//
+//unsigned int cServiceEnvironment::getNumVars() const
+//{
+//   return mElements.size();
+//}
+//
+//std::string cServiceEnvironment::index2key(unsigned int i) const
+//{
+//   if (i >= getNumVars()) fatal("Invalid index into cServiceEnvironment.");
+//   return mElements[i].getkey();
+//}
+//
+//std::string cServiceEnvironment::get_value(const std::string & key) const
+//{ 
+//   return getString(key); 
+//}
+//
+//service_obliterate::service_obliterate(const std::string & servicename) : servicePaths(servicename)
+//{
+//}

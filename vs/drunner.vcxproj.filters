@@ -91,9 +91,6 @@
     <ClCompile Include="..\source\source\validateimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\drunner_compose.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\drunner_paths.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,6 +110,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\service_variables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\service_backupvars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -144,9 +144,6 @@
     <ClInclude Include="..\source\source\generate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\generate_utils_sh.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\generate_validator_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -171,13 +168,7 @@
     <ClInclude Include="..\source\source\settingsbash.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sh_backupvars.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\sh_ddev.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\sh_servicevars.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\showhelp.h">
@@ -222,9 +213,6 @@
     <ClInclude Include="..\source\source\validateimage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\drunner_compose.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\drunner_paths.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -244,6 +232,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_variables.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_install.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_backupvars.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

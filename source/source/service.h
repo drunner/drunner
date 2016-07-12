@@ -5,33 +5,9 @@
 #include "drunner_settings.h"
 #include "cresult.h"
 #include "service_paths.h"
-
-class drunnerCompose;
-
-cResult service_restore(const std::string & servicename, const std::string & backupfile);
-
-class service_obliterate : public servicePaths
-{
-public:
-   service_obliterate(const std::string & servicename);
-   eResult obliterate();
-};
-
-class cServiceEnvironment : protected settingsbash
-{
-   public:
-      cServiceEnvironment(const servicePaths & paths);
-
-      void save_environment(std::string key, std::string value);
-      std::string get_value(const std::string & key) const;
-
-      unsigned int getNumVars() const;
-      std::string index2key(unsigned int i) const;
-
-protected:
-   Poco::Path mPath;
-};
-
+#include "service_yml.h"
+#include "service_variables.h"
+#include "service_config.h"
 
 // class to manage the dService.
 class service : public servicePaths
@@ -44,13 +20,7 @@ public:
 
    cResult servicecmd();
 
-   eResult uninstall();
-   eResult obliterate();
-   eResult recover();
    int status();
-   void update();
-   void install();
-   void recreate(bool updating);
    void backup(const std::string & backupfile);
    void enter(); // uses execl, so never returns.
 
@@ -59,22 +29,18 @@ public:
 
    cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
 
+   const serviceyml::file & getServiceYml() const { return mServiceYml; }
+   const serviceConfig & getServiceCfg() const { return mServiceCfg; }
+
    //cServiceEnvironment & getEnvironment();
    //const cServiceEnvironment & getEnvironmentConst() const;
 
 private:
-   void ensureDirectoriesExist() const;
-   void createVolumes(const drunnerCompose * const drc);
-   void createLaunchScript() const;
-   std::string getUserID(std::string imagename) const;
-
    static std::string loadImageName(const std::string & servicename, std::string imagename);
 
    const std::string mImageName;
    serviceyml::file mServiceYml;
-
-   //cServiceEnvironment mEnvironment;
-   
+   serviceConfig mServiceCfg;
 };
 
 

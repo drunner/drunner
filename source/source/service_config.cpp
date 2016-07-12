@@ -5,8 +5,8 @@
 #include "utils.h"
 
 
-serviceConfig::serviceConfig(const servicePaths & svp) :
-   mServicePath(svp.getPathServiceConfig())
+serviceConfig::serviceConfig(Poco::Path path) :
+   mServicePath(path)
 {
 }
 
@@ -25,7 +25,7 @@ cResult serviceConfig::loadconfig()
    return kRSuccess;
 }
 
-cResult serviceConfig::saveconfig()
+cResult serviceConfig::saveconfig() const
 {
    std::ofstream os(mServicePath.toString());
    if (os.bad())

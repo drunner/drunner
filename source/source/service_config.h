@@ -8,10 +8,10 @@
 
 class serviceConfig : public variables {
 public:
-   serviceConfig(const servicePaths & svp);
-   cResult create(const serviceyml::file & y);
+   serviceConfig(Poco::Path path);
+   cResult create(const serviceyml::simplefile & y);
    cResult loadconfig();
-   cResult saveconfig();
+   cResult saveconfig() const;
 
    variables & getVariables() { return mVariables; }
 

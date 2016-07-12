@@ -13,8 +13,8 @@ public:
    std::string key;
    std::string value;
 
-   // --- serialisation --
 private:
+   // --- serialisation --
    friend class cereal::access;
    template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(key, value); }
    template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(key, value); }
@@ -31,7 +31,9 @@ public:
 
    bool hasKey(std::string key) const;
    std::string getVal(std::string key) const;
-   void addkey(keyval kv);
+   void setVal(keyval kv);
+
+   std::string substitute(std::string s) const;
 
 protected:
    const std::vector<keyval> & getAll() const { return mVariables; }
@@ -40,7 +42,6 @@ private:
    std::vector<keyval> mVariables;
 
    // --- serialisation --
-private:
    friend class cereal::access;
    template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mVariables); }
    template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVariables); }

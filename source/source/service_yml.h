@@ -11,7 +11,7 @@ namespace serviceyml
    class volume {
    public:
       volume(std::string s);
-      std::string name() { return mName; }
+      std::string name() const { return mName; }
 
    private:
       std::string mName;
@@ -61,22 +61,35 @@ namespace serviceyml
       std::vector<operation> mOperations;
    };
 
-   class file {
-   public:
-      file(Poco::Path path, const variables & v); // reads file, applies variable substitution. Throws if bad.
+   class simplefile {
+   public: 
+      simplefile(Poco::Path path);
 
-      const std::vector<volume> & getVolumes() { return mVolumes; }
-      const std::vector<configitem> & getConfigItems() { return mConfigItems; }
-      const std::vector<commandline> & getCommands() { return mCommands; }
-      std::string getHelp() { return mHelp; }
+      const std::vector<std::string> & getContainers() const { return mContainers; }
+      const std::vector<configitem> & getConfigItems() const { return mConfigItems; }
+
       bool readokay() { return mReadOkay; }
+
+   protected:
+      std::vector<std::string> mContainers;
+      std::vector<configitem> mConfigItems;
+      bool mReadOkay;
+   };
+
+   class file : public simplefile {
+   public:
+      file(Poco::Path path, const variables & v); // reads file, throws if bad. Applies variable substitution using variables.
+
+      const std::vector<volume> & getVolumes() const { return mVolumes; }
+      const std::vector<commandline> & getCommands() const { return mCommands; }
+      std::string getHelp() { return mHelp; }
+
+      void getDockerVolumeNames(std::vector<std::string> & vols) const;
 
    private:
       std::vector<volume> mVolumes;
-      std::vector<configitem> mConfigItems;
       std::vector<commandline> mCommands;
       std::string mHelp;
-      bool mReadOkay;
    };
 
 } // namespace

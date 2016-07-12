@@ -1,5 +1,6 @@
 #include "service_variables.h"
 #include "utils.h"
+#include "globallogger.h"
 
 
 variables::variables(const variables & other)
@@ -31,7 +32,7 @@ std::string variables::getVal(std::string key) const
    return "";
 }
 
-void variables::addkey(keyval kv)
+void variables::setVal(keyval kv)
 {
    for (auto x : mVariables)
    {
@@ -44,3 +45,8 @@ void variables::addkey(keyval kv)
    mVariables.push_back(kv);
 }
 
+std::string variables::substitute(std::string s) const
+{
+   fatal("To do");
+   return "whee!";
+}

@@ -7,7 +7,6 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "generate_validator_image.h"
-#include "drunner_compose.h"
 #include "drunner_paths.h"
 #include "checkprerequisits.h"
 

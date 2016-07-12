@@ -11,100 +11,76 @@
 #include "exceptions.h"
 #include "settingsbash.h"
 #include "drunner_setup.h"
-#include "generate_utils_sh.h"
 #include "service.h"
 #include "servicehook.h"
 #include "sh_servicevars.h"
-#include "drunner_compose.h"
 #include "chmod.h"
 #include "validateimage.h"
+#include "service_install.h"
+#include "utils_docker.h"
+#include "service.h"
 
-std::string service::getUserID(std::string imagename) const
+service_install::service_install(std::string servicename) : servicePaths(servicename)
 {
-   std::vector<std::string> args = { "run","--rm","-i",imagename, "/bin/bash","-c","id -u" };
-   std::string op;
-	if (0 != utils::runcommand("docker",args, op, true))
-		logmsg(kLERROR, "Unable to determine the user id in container " + imagename);
-
-	logmsg(kLDEBUG, imagename+" is running under userID " + op + ".");
-	return op;
+   serviceConfig svc(getPathServiceConfig());
+   if (kRSuccess != svc.loadconfig())
+      fatal("No imagename specified and unable to read the service config.");
+   std::string key = "IMAGENAME";
+   if (!svc.hasKey(key))
+      fatal("Service config does not containt he image name.");
+   mImageName = svc.getVal(key);
 }
 
-void service::createLaunchScript() const
+service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
 {
-   Poco::Path target = getPathLaunchScript();
-   
-	// remove stale script if present
-   if (utils::fileexists(target))
-   {
-      Poco::File tf(target);
-      tf.remove();
-   }
-	// write out new one.
-	std::ofstream ofs;
-	ofs.open(target.toString());
-	if (!ofs.is_open())
-		logmsg(kLERROR, "Couldn't write launch script at " + target.toString());
-	ofs << "#!/bin/bash" << std::endl;
-	ofs << "drunner servicecmd " << getName() << " \"$@\"" << std::endl;
-	ofs.close();
-
-	// fix permissions
-	if (xchmod(target.toString().c_str(), S_700) != 0)
-		logmsg(kLERROR, "Unable to change permissions on " + target.toString());
-
-	logmsg(kLDEBUG, "Created launch script at " + target.toString());
 }
 
-void service::createVolumes(const drunnerCompose * const drc)
+void service_install::_createVolumes(std::vector<std::string> & volumes)
 {
-   if (drc == NULL)
-      logmsg(kLERROR, "createVolumes passed NULL drunnerCompose.");
-
    std::string dname = "docker-volume-maker";
 
-   for (const auto & svc : drc->getServicesInfo())
+   for (const auto & v : volumes)
    {
       // each service may be running under a different userid.
-      std::string userid = getUserID(svc.mImageName);
-      if (userid == "0")
-         logmsg(kLERROR, svc.mImageName + " is running as root user! Verboten."); // should never happen as we've validated the image already.
-
-      for (const auto & entry : svc.mVolumes)
+      if (utils::dockerVolExists(v))
+         logmsg(kLINFO, "A docker volume already exists for " + v + ", reusing it.");
+      else
       {
-         if (utils::dockerVolExists(entry.mDockerVolumeName))
-            logmsg(kLINFO, "A docker volume already exists for " + entry.mDockerVolumeName + ", reusing it for " + svc.mImageName + ".");
-         else
-         {
-            std::vector<std::string> args = { "volume","create","--name=\"" + entry.mDockerVolumeName + "\"" };
-            int rval = utils::runcommand("docker", args);
-            if (rval != 0)
-               logmsg(kLERROR, "Unable to create docker volume " + entry.mDockerVolumeName);
-            logmsg(kLDEBUG, "Created docker volume " + entry.mDockerVolumeName + " for " + svc.mImageName);
-         }
-
-         // set permissions on volume.
-         tVecStr args;
-         args.push_back("run");
-         args.push_back("--name=\"" + dname + "\"");
-         args.push_back("-v");
-         args.push_back(entry.mDockerVolumeName + ":" + "/tempmount");
-         args.push_back("drunner/rootutils");
-         args.push_back("chown");
-         args.push_back(userid + ":root");
-         args.push_back("/tempmount");
-
-         utils::dockerrun dr("/usr/bin/docker", args, dname);
-
-         logmsg(kLDEBUG, "Set permissions to allow user " + userid + " access to volume " + entry.mDockerVolumeName);
+         std::vector<std::string> args = { "volume","create","--name=\"" + v + "\"" };
+         int rval = utils::runcommand("docker", args);
+         if (rval != 0)
+            logmsg(kLERROR, "Unable to create docker volume " + v);
+         logmsg(kLDEBUG, "Created docker volume " + v);
       }
+
+      // set permissions on volume.
+      tVecStr args = { "run", "--name=\"" + dname + "\"", "-v",
+         v + ":" + "/tempmount","drunner/rootutils",
+         "chmod","0777","/tempmount" };
+
+      utils::dockerrun dr("/usr/bin/docker", args, dname);
+
+      logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
    }
+
 }
 
-void service::recreate(bool updating)
+void service_install::_ensureDirectoriesExist() const
+{
+   // create service's drunner and temp directories on host.
+   utils::makedirectory(getPath(), S_755);
+   utils::makedirectory(getPathdRunner(), S_777);
+}
+
+cResult service_install::_recreate(bool updating)
 {
    if (updating)
-      utils_docker::pullImage(getImageName());
+   { // pull all containers used by the dService.
+      serviceyml::simplefile syf(getPathServiceYml());
+      if (syf.readokay())
+         for (auto c : syf.getContainers())
+            utils_docker::pullImage(c);
+   }
    
    try
    {
@@ -120,149 +96,141 @@ void service::recreate(bool updating)
          logmsg(kLINFO, "A drunner hostVolume already exists for " + getName() + ", reusing it.");
 
       // create the basic directories.
-      ensureDirectoriesExist();
+      _ensureDirectoriesExist();
 
       // copy files to service directory on host.
       std::vector<std::string> args = { "run","--rm","-i","-v",
-         getPathdRunner().toString() + ":/tempcopy", getImageName(), "/bin/bash", "-c" ,
+         getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" ,
          "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
       std::string op;
       if (0 != utils::runcommand("docker", args, op, false))
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out variables.sh for the dService.
-      drunnerCompose drc(*this);
-      if (drc.readOkay()==kRError)
-         fatal("Unexpected error - docker-compose.yml is broken.");
-      
-      // write out servicevars.sh for ourselves.
-      sh_servicevars svcvars;
-      svcvars.create(getImageName());
-      if (!svcvars.writeSettings(svcvars.getPathFromParent(getPath())))
-         fatal("Unexpected error - couldn't write out servicevars.sh.");
+      serviceConfig svccfg(getPathServiceConfig());
+      { // use simple file temporarily.
+         serviceyml::simplefile syf(getPathServiceYml());
+         if (!syf.readokay())
+            fatal("Corrupt dService - missing service.yml");
+         svccfg.create(syf);
+      }
+      svccfg.setVal(keyval("IMAGENAME", mImageName));
+      svccfg.setVal(keyval("SERVICENAME", mName));
+      svccfg.saveconfig();
+
+      // now can load full service.yml, using variable substitution via the defaults etc..
+      serviceyml::file syfull(getPathServiceYml(), svccfg);
+      if (!syfull.readokay())
+         fatal("Corrup dservice - couldn't ready full service.yml");
 
       // make sure we have the latest of all exra containers.
-      for (const auto & entry : drc.getServicesInfo())
-         if (entry.mImageName != getImageName()) // don't pull main image again.
-            utils_docker::pullImage(entry.mImageName);
+      for (const auto & entry : syfull.getContainers())
+         if (!utils::stringisame(entry, mImageName)) // don't pull main image again.
+            utils_docker::pullImage(entry);
 
-      // create the utils.sh file for the dService.
-      generate_utils_sh(getPathdRunner());
-
-      // create launch script
-      createLaunchScript();
-
-      // create volumes
-      createVolumes(&drc);
+      // create volumes, with variables substituted.
+      std::vector<std::string> vols;
+      for (const auto & entry : syfull.getVolumes())
+         vols.push_back(entry.name());
+      _createVolumes(vols);
    }
 
    catch (const eExit & e) {
-      // tidy up.
+      // We failed. tidy up.
       if (utils::fileexists(getPath()))
          utils::deltree(getPath());
 
       throw (e);
    }
+
+   return kRSuccess;
 }
 
-void service::install()
+cResult service_install::install()
 {
-   logmsg(kLDEBUG, "Installing " + getName() + " at " + getPath().toString() + ", using image " + getImageName());
+   logmsg(kLDEBUG, "Installing " + mName + " at " + getPath().toString() + ", using image " + mImageName);
 	if (utils::fileexists(getPath()))
 		logmsg(kLERROR, "Service already exists. Try:\n drunner update " + getName());
 
 	// make sure we have the latest version of the service.
-   utils_docker::pullImage(getImageName());
+   utils_docker::pullImage(mImageName);
 
-	logmsg(kLDEBUG, "Attempting to validate " + getImageName());
-   validateImage::validate(getImageName());
+	logmsg(kLDEBUG, "Attempting to validate " + mImageName);
+   validateImage::validate(mImageName);
 
-   recreate(false);
+   _recreate(false);
 
-   servicehook hook(this, "install");
+   service svc(mName);
+   servicehook hook(&svc, "install");
    hook.endhook();
 
-   logmsg(kLINFO, "Installation complete - try running " + getName()+ " now!");
+   logmsg(kLINFO, "Installation complete - try running " + mName+ " now!");
+   return kRSuccess;
 }
 
-eResult service::uninstall()
+cResult service_install::uninstall()
 {
    if (!utils::fileexists(getPath()))
-      logmsg(kLERROR, "Can't uninstall " + getName() + " - it does not exist.");
+      logmsg(kLERROR, "Can't uninstall " + mName + " - it does not exist.");
 
-   servicehook hook(this, "uninstall");
-   hook.starthook();
+   try
+   {
+      service svc(mName);
+      servicehook hook(&svc, "uninstall");
+      hook.starthook();
+   }
+   catch (const eExit &)
+   {
+      logmsg(kLWARN, "Installation damaged, unable to use uninstall hook.");
+   }
 
    // delete the service tree.
-   logmsg(kLINFO, "Obliterating all of the dService files");
+   logmsg(kLINFO, "Deleting all of the dService files");
    utils::deltree(getPath());
-
-   // delete launch script
-   logmsg(kLINFO, "Deleting launch script");
-   utils::delfile(getPathLaunchScript());
 
    if (utils::fileexists(getPath()))
       logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath().toString());
-
-   hook.endhook();
 
    logmsg(kLINFO, "Uninstalled " + getName());
    return kRSuccess;
 }
 
-eResult service::obliterate()
+cResult service_install::obliterate()
 {
-   poco_assert(utils::fileexists(getPath()));
-
-   servicehook hook(this, "obliterate");
-   hook.starthook(); 
-
-   logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
-   {// [start] deleting docker volumes.
-      drunnerCompose drc(*this);
-      if (drc.readOkay()!=kRError)
-      {
-         tVecStr docvolnames;
-         drc.getDockerVolumeNames(docvolnames);
-         for (const auto & vol : docvolnames)
-         {
-            logmsg(kLINFO, "Obliterating docker volume " + vol);
-            std::string op;
-            std::vector<std::string> args = { "rm",vol };
-            if (0 != utils::runcommand("docker", args, op, false))
-            {
-               logmsg(kLWARN, "Failed to remove " + vol + ":");
-               logmsg(kLWARN, op);
-            }
-         }
-      }
-      else
-         logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");
-   }// [end] deleting docker volumes.
-
-   hook.endhook();
-   return kRSuccess;
-}
-
-
-eResult service_obliterate::obliterate()
-{
-   eResult rval = kRNoChange;
+   cResult rval = kRNoChange;
 
    if (utils::fileexists(getPath()))
    {
       try
       {
-         rval = kRError;
-         service svc(getName());
-         rval = svc.obliterate();
+         service svc(mName);
+         servicehook hook(&svc, "obliterate");
+         hook.starthook();
+
+         logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
+         {// [start] deleting docker volumes.
+            std::vector<std::string> vols;
+            for (const auto & entry : svc.getServiceYml().getVolumes())
+            {
+               std::string vol = svc.getServiceCfg().substitute(entry.name());
+               logmsg(kLINFO, "Obliterating docker volume " + vol);
+               std::string op;
+               std::vector<std::string> args = { "rm",vol };
+               if (0 != utils::runcommand("docker", args, op, false))
+               {
+                  logmsg(kLWARN, "Failed to remove " + vol + ":");
+                  logmsg(kLWARN, op);
+               }
+               else
+                  rval = kRSuccess;
+            }
+         }
       }
       catch (const eExit &)
       {
+         logmsg(kLWARN, "Installation damaged, unable to delete docker volumes.");
       }
    }
-   else
-      logmsg(kLWARN, "There's no "+getName()+" directory, so can't obliterate its Docker volumes.");
 
    if (utils::fileexists(getPath()))
    { // delete the service tree.
@@ -274,16 +242,8 @@ eResult service_obliterate::obliterate()
    // delete the host volumes
    if (utils::fileexists(getPathHostVolume()))
    {
-      logmsg(kLINFO, "Obliterating the hostVolumes (environment and servicerunner)");
+      logmsg(kLINFO, "Obliterating the hostVolume (includes configuration)");
       utils::deltree(getPathHostVolume());
-      rval = kRSuccess;
-   }
-
-   // delete launch script
-   if (utils::fileexists(getPathLaunchScript()))
-   {
-      logmsg(kLINFO, "Obliterating launch script");
-      utils::delfile(getPathLaunchScript());
       rval = kRSuccess;
    }
 
@@ -296,7 +256,7 @@ eResult service_obliterate::obliterate()
 
 
 
-eResult service::recover()
+cResult service_install::recover()
 {
    if (utils::fileexists(getPath()))
       uninstall();
@@ -304,5 +264,18 @@ eResult service::recover()
    install();
 
    logmsg(kLINFO, getName() + " recovered.");
+   return kRSuccess;
+}
+
+cResult service_install::update()
+{ // update the service (recreate it)
+   service svc(mName);
+   servicehook hook(&svc, "update");
+   hook.starthook();
+
+   _recreate(true);
+
+   hook.endhook();
+
    return kRSuccess;
 }

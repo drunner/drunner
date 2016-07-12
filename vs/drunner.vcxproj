@@ -26,7 +26,7 @@
     <ClCompile Include="..\source\source\drunner_paths.cpp" />
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
-    <ClCompile Include="..\source\source\drunner_compose.cpp" />
+    <ClCompile Include="..\source\source\service_backupvars.cpp" />
     <ClCompile Include="..\source\source\service_config.cpp" />
     <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
@@ -66,13 +66,12 @@
     <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
-    <ClInclude Include="..\source\source\drunner_compose.h" />
     <ClInclude Include="..\source\source\service_config.h" />
+    <ClInclude Include="..\source\source\service_install.h" />
     <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
     <ClInclude Include="..\source\source\exceptions.h" />
     <ClInclude Include="..\source\source\generate.h" />
-    <ClInclude Include="..\source\source\generate_utils_sh.h" />
     <ClInclude Include="..\source\source\generate_validator_image.h" />
     <ClInclude Include="..\source\source\globalcontext.h" />
     <ClInclude Include="..\source\source\globallogger.h" />
@@ -89,10 +88,9 @@
     <ClInclude Include="..\source\source\service_yml.h" />
     <ClInclude Include="..\source\source\settingsbash.h" />
     <ClInclude Include="..\source\source\showhelp.h" />
-    <ClInclude Include="..\source\source\sh_backupvars.h" />
+    <ClInclude Include="..\source\source\service_backupvars.h" />
     <ClInclude Include="..\source\source\sh_ddev.h" />
     <ClInclude Include="..\source\source\drunner_settings.h" />
-    <ClInclude Include="..\source\source\sh_servicevars.h" />
     <ClInclude Include="..\source\source\termcolor.h" />
     <ClInclude Include="..\source\source\tests\unittests.h" />
     <ClInclude Include="..\source\source\timez.h" />
