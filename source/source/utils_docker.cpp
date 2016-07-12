@@ -7,6 +7,8 @@
 namespace utils_docker
 {
 
+   static std::vector<std::string> S_PullList;
+
    void pullImage(const std::string & image)
    {
       if (GlobalContext::getParams()->isDevelopmentMode())
@@ -26,6 +28,13 @@ namespace utils_docker
          logmsg(kLDEBUG, image+" is not on the master branch, so assuming dev environment and not pulling.");
          return;
       }
+
+      if (std::find(S_PullList.begin(), S_PullList.end(), image) != S_PullList.end())
+      { // pulling is slow. Never do it twice in one command.
+         logmsg(kLDEBUG, "Already pulled " + image + " so not pulling again.");
+         return;
+      }
+
 
       logmsg(kLINFO, "Pulling Docker image " + image + ".\n This may take some time...");
       eResult rslt = utils::pullimage(image);

@@ -13,6 +13,7 @@
 #include "dbackup.h"
 #include "backupConfig.h"
 
+
 // -----------------------------------------------------------------------------------------------------------
 
 dbackup::dbackup()
@@ -35,32 +36,32 @@ eResult dbackup::runCommand() const
 
    logmsg(kLDEBUG, "Running command " + cmd);
 
-   switch (str2int(cmd.c_str()))
+   switch (utils::str2int(cmd.c_str()))
    {
-   case str2int("help") :
+   case utils::str2int("help") :
       return showhelp();
 
-   case str2int("config") :
-   case str2int("configure") :
+   case utils::str2int("config") :
+   case utils::str2int("configure") :
       if (args.size() == 0)
          fatal("Usage:  dbackup configure BACKUPPATH");
       return configure(args[0]);
 
-   case str2int("exclude") :
+   case utils::str2int("exclude") :
       if (args.size() == 0)
          fatal("Usage:  dbackup exclude SERVICENAME");
       return exclude(args[0]);
 
-   case str2int("include"):
+   case utils::str2int("include"):
       if (args.size() == 0)
          fatal("Usage:  dbackup include SERVICENAME");
       return include(args[0]);
 
-   case str2int("run"):
+   case utils::str2int("run"):
       return run();
 
-   case str2int("info"):
-   case str2int("list"):
+   case utils::str2int("info"):
+   case utils::str2int("list"):
       return info();
 
    default:

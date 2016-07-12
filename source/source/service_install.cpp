@@ -78,7 +78,7 @@ cResult service_install::_recreate(bool updating)
    { // pull all containers used by the dService.
       serviceyml::simplefile syf(getPathServiceYml());
       if (syf.readokay())
-         for (auto c : syf.getContainers())
+         for (auto c : syf.getExtraContainers())
             utils_docker::pullImage(c);
    }
    
@@ -124,10 +124,13 @@ cResult service_install::_recreate(bool updating)
          fatal("Corrup dservice - couldn't ready full service.yml");
 
       // make sure we have the latest of all exra containers.
-      for (const auto & entry : syfull.getContainers())
-         if (!utils::stringisame(entry, mImageName)) // don't pull main image again.
+      for (const auto & entry : syfull.getExtraContainers())
+      {
+         if (utils::stringisame(entry, mImageName)) // don't pull main image again.
+            logmsg(kLWARN, "The main container (" + mImageName + ") should not be specified in extracontainers!");
+         else
             utils_docker::pullImage(entry);
-
+      }
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
       for (const auto & entry : syfull.getVolumes())

@@ -3,7 +3,7 @@
 #include <fstream>
 #include "service_config.h"
 #include "utils.h"
-
+#include "service_yml.h"
 
 serviceConfig::serviceConfig(Poco::Path path) :
    mServicePath(path)
@@ -32,5 +32,15 @@ cResult serviceConfig::saveconfig() const
       return kRError;
    cereal::JSONOutputArchive archive(os);
    archive(mVariables);
+   return kRSuccess;
+}
+
+cResult serviceConfig::create(const serviceyml::simplefile & y)
+{
+   const std::vector<serviceyml::configitem> & ci(y.getConfigItems());
+
+   for (const auto & i : ci)
+      mVariables.setVal(keyval(i.name(), i.defaultvalue()));
+
    return kRSuccess;
 }

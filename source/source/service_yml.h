@@ -27,16 +27,18 @@ namespace serviceyml
 
    class configitem {
    public:
-      configitem(YAML::Node & node);
+      configitem(std::string name, const YAML::Node & element);
 
       bool required() const { return mRequired; }
       std::string defaultvalue() const { return mDefault; }
       std::string name() const { return mName; }
+      std::string description() const { return mDescription; }
       configtype type() const { return mType; }
 
    private:
       std::string mName;
       std::string mDefault;
+      std::string mDescription;
       configtype mType;
       bool mRequired;
    };
@@ -65,13 +67,13 @@ namespace serviceyml
    public: 
       simplefile(Poco::Path path);
 
-      const std::vector<std::string> & getContainers() const { return mContainers; }
+      const std::vector<std::string> & getExtraContainers() const { return mExtraContainers; }
       const std::vector<configitem> & getConfigItems() const { return mConfigItems; }
 
       bool readokay() { return mReadOkay; }
 
    protected:
-      std::vector<std::string> mContainers;
+      std::vector<std::string> mExtraContainers;
       std::vector<configitem> mConfigItems;
       bool mReadOkay;
    };
