@@ -105,7 +105,6 @@ namespace utils
          std::ostringstream oss;
          oss << "Runcommand: " << command;
          for (auto x : args) oss << " " << x;
-         oss << std::endl;
          logmsg(kLDEBUG, oss.str());
       }
 

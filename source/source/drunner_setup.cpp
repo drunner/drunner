@@ -75,6 +75,8 @@ namespace drunnerSetup
    int update()
    {
       logmsg(kLERROR, "Not implemented.");
+      return kRError;
+
       //const params & p(*GlobalContext::getParams().get());
       //const drunnerSettings & s(*GlobalContext::getSettings().get());
 
