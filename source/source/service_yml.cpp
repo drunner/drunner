@@ -1,3 +1,5 @@
+#include "yaml-cpp/yaml.h"
+
 #include "service_yml.h"
 #include "utils.h"
 #include "globallogger.h"
@@ -27,7 +29,7 @@ namespace serviceyml
                break;
 
             case utils::str2int("required"):
-               if (val.length() > 0 && ::tolower(val[0]) == 'n' || ::tolower(val[0]) == 'f')
+               if (val.length() > 0 && (::tolower(val[0]) == 'n' || ::tolower(val[0]) == 'f'))
                   mRequired = false;
                break;
 
@@ -77,9 +79,12 @@ namespace serviceyml
          YAML::Node configuration = yamlfile["configuration"];
          for (auto it = configuration.begin(); it != configuration.end(); ++it)
          {
-            std::string name = it->first.as<std::string>();
-            YAML::Node element(it->second.as<YAML::Node>());
-            configitem ci(name,element);
+            YAML::Node key = it->first;
+            YAML::Node value = it->second;
+            poco_assert(key.IsScalar());
+            poco_assert(value.IsMap());
+            std::string name = key.as<std::string>();
+            configitem ci(name, value);
             mConfigItems.push_back(ci);
          }
       }

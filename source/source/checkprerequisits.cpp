@@ -62,9 +62,6 @@ void check_prerequisits()
    if (!utils::commandexists("curl"))
       fatal("Please install curl before using dRunner.");
 
-   if (!utils::commandexists("docker-compose"))
-      fatal("Please install docker-compose before using dRunner.");
-
    std::vector<std::string> args = { "--version" };
    if (utils::runcommand("docker", args) != 0)
       fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");

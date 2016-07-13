@@ -170,7 +170,7 @@ cResult service_install::service_restore(const std::string & backupfile)
    }
 
    // backup seems okay - lets go!
-   service_install::service_install(mName, bvars.getImageName());
+   service_install(mName, bvars.getImageName());
 
 
    // load in the new variables.

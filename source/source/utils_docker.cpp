@@ -1,3 +1,4 @@
+#include <algorithm>
 
 #include "utils.h"
 #include "utils_docker.h"

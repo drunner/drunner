@@ -114,14 +114,13 @@ const std::string service::getImageName() const
 
 void service::enter()
 {
-#ifdef _WIN32
-   logmsg(kLERROR, "Enter is not implemented on Windows.");
-#else
-   servicehook hook(this, "enter");
-   hook.starthook();
-
-   execl(getPathServiceRunner().toString().c_str(), "servicerunner", "enter", NULL);
-#endif
+   logmsg(kLERROR, "Enter is not implemented.");
+//#else
+//   servicehook hook(this, "enter");
+//   hook.starthook();
+//
+//   execl(getPathServiceRunner().toString().c_str(), "servicerunner", "enter", NULL);
+//#endif
 }
 
 int service::status()

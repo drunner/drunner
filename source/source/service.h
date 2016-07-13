@@ -39,8 +39,8 @@ private:
    static std::string loadImageName(const std::string & servicename, std::string imagename);
 
    const std::string mImageName;
-   serviceyml::file mServiceYml;
    serviceConfig mServiceCfg;
+   serviceyml::file mServiceYml;
 };
 
 
