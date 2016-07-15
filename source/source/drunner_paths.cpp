@@ -1,4 +1,5 @@
 #include <Poco/UnicodeConverter.h>
+#include <Poco/File.h>
 
 #include "drunner_paths.h"
 #include "utils.h"
@@ -12,26 +13,10 @@
 #endif
 
 Poco::Path drunnerPaths::getPath_Root() {
-#ifdef _WIN32
-   wchar_t * ppszPath = NULL;
-   if (S_OK != SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &ppszPath))
-      fatal("Could not determine the APPDATA folder for the current user.");
-   std::wstring wpath(ppszPath);
-   CoTaskMemFree(ppszPath);
-
-   std::string path;
-   Poco::UnicodeConverter::convert(wpath, path);
-   Poco::Path drunnerdir(path);
-   drunnerdir.makeDirectory();
-   drunnerdir.pushDirectory("drunner");
-#else
    Poco::Path drunnerdir = Poco::Path::home();
    drunnerdir.makeDirectory();
    poco_assert(drunnerdir.isDirectory());
    drunnerdir.pushDirectory(".drunner");
-#endif
-   //logmsg(kLDEBUG, "drunner directory is " + drunnerdir.toString());
-
    return drunnerdir;
 }
 

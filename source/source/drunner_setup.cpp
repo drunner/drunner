@@ -32,6 +32,12 @@ namespace drunnerSetup
       // -----------------------------------------------------------------------------
       // create directory structure.
       utils::makedirectory(drunnerPaths::getPath_Root(), S_755);
+      // make root hidden on windows.
+#ifdef _WIN32
+      if (!Poco::File(drunnerPaths::getPath_Root()).isHidden())
+         SetFileAttributes(drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN);
+#endif
+
       utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
       utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
       utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
