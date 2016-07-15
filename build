@@ -67,6 +67,7 @@ function runbuild {
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
    cp ${OUTPUT} ${MYDIR}
+   chmod a+x "${MYDIR}/drunner"
 }
 
 function makeclean {
