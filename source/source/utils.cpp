@@ -128,7 +128,7 @@ namespace utils
    }
 
 
-   int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
    { // streaming as the command runs.
 
       // sanity check parameters.
@@ -281,19 +281,19 @@ namespace utils
       }
    }
 
-   void makesymlink(Poco::Path file, Poco::Path link)
-   {
-	if (!utils::fileexists(file))
-		logmsg(kLERROR, "Can't link to " + file.toString() + " because it doesn't exist");
-   if (utils::fileexists(link))
-      utils::delfile(link);
-	std::string cmd = "ln -s " + file.toString() + " " + link.toString();
-	std::string op;
-	if (utils::bashcommand(cmd, op, false) != 0)
-		logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
-   else
-      logmsg(kLDEBUG, "Created symlink at " + link.toString());
-   }
+ //  void makesymlink(Poco::Path file, Poco::Path link)
+ //  {
+	//if (!utils::fileexists(file))
+	//	logmsg(kLERROR, "Can't link to " + file.toString() + " because it doesn't exist");
+ //  if (utils::fileexists(link))
+ //     utils::delfile(link);
+	//std::string cmd = "ln -s " + file.toString() + " " + link.toString();
+	//std::string op;
+	//if (utils::bashcommand(cmd, op, false) != 0)
+	//	logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
+ //  else
+ //     logmsg(kLDEBUG, "Created symlink at " + link.toString());
+ //  }
 
    void deltree(Poco::Path s)
    {
@@ -347,14 +347,14 @@ namespace utils
       return r;
    }
 
-   bool copyfile(std::string src, std::string dest)
-   {
-      // boost bug makes copy_file grumpy with c++11x.
-      // also can't copy to another filesystem.
-      // so we just use bash.
-      int r = bashcommand("cp -a " + src + " " + dest);
-      return (r == 0);
-   }
+   //bool copyfile(std::string src, std::string dest)
+   //{
+   //   // boost bug makes copy_file grumpy with c++11x.
+   //   // also can't copy to another filesystem.
+   //   // so we just use bash.
+   //   int r = bashcommand("cp -a " + src + " " + dest);
+   //   return (r == 0);
+   //}
 
    std::string alphanumericfilter(std::string s, bool whitespace)
    {
@@ -364,6 +364,22 @@ namespace utils
       while ((pos = s.find_first_not_of(validchars)) != std::string::npos)
          s.erase(pos, 1);
       return s;
+   }
+
+   bool wordmatch(std::string s, std::string word)
+   {
+      // find whole word.
+      auto pos = s.find(word);
+      while (pos != std::string::npos)
+      {
+         pos += word.length();
+         if (pos == s.length())
+            return true;
+         if (isspace(s[pos]))
+            return true;
+         pos = s.find(word, pos);
+      }
+      return false;
    }
 
    void getAllServices(std::vector<std::string>& services)
@@ -419,35 +435,35 @@ namespace utils
 
 
 
-   dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
-      : mDockerName(dockername)
-   {
-      int rval = utils::dServiceCmd(cmd, args, false);
-      if (rval != 0)
-      {
-         std::ostringstream oss;
-         for (auto entry : args)
-            oss << entry << " ";
-         logmsg(kLDEBUG, oss.str());
-         tidy(); // throwing from ctor does not invoke dtor!
-         std::ostringstream oss2;
-         oss2 << "Docker command failed. Return code=" << rval;
-         logmsg(kLERROR, oss2.str());
-      }
-   }
-   dockerrun::~dockerrun()
-   {
-      tidy();
-   }
+   //dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
+   //   : mDockerName(dockername)
+   //{
+   //   int rval = utils::dServiceCmd(cmd, args, false);
+   //   if (rval != 0)
+   //   {
+   //      std::ostringstream oss;
+   //      for (auto entry : args)
+   //         oss << entry << " ";
+   //      logmsg(kLDEBUG, oss.str());
+   //      tidy(); // throwing from ctor does not invoke dtor!
+   //      std::ostringstream oss2;
+   //      oss2 << "Docker command failed. Return code=" << rval;
+   //      logmsg(kLERROR, oss2.str());
+   //   }
+   //}
+   //dockerrun::~dockerrun()
+   //{
+   //   tidy();
+   //}
 
-   void dockerrun::tidy()
-   {
-      int rval = utils::bashcommand("docker rm " + mDockerName);
-      if (rval != 0)
-         std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
-      else
-         logmsg(kLDEBUG, "Deleted docker container " + mDockerName);
-   }
+   //void dockerrun::tidy()
+   //{
+   //   int rval = utils::bashcommand("docker rm " + mDockerName);
+   //   if (rval != 0)
+   //      std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
+   //   else
+   //      logmsg(kLDEBUG, "Deleted docker container " + mDockerName);
+   //}
 
 
 } // namespace utils

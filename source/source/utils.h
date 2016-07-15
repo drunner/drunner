@@ -32,7 +32,7 @@ namespace utils
    eResult _makedirectories(Poco::Path path);
    void makedirectories(Poco::Path path,mode_t mode);
    void makedirectory(Poco::Path d, mode_t mode);
-   void makesymlink(Poco::Path file, Poco::Path link);
+//   void makesymlink(Poco::Path file, Poco::Path link);
 
    void deltree(Poco::Path s);
    void delfile(Poco::Path fullpath);
@@ -45,7 +45,7 @@ namespace utils
 
    int runcommand(std::string command, std::vector<std::string> args);
    int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim);
-   int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd);
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
@@ -55,6 +55,7 @@ namespace utils
    bool stringisame(const std::string & s1, const std::string &s2);
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
    std::string alphanumericfilter(std::string s, bool whitespace);
+   bool wordmatch(std::string s, std::string word);
 
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);
@@ -64,7 +65,7 @@ namespace utils
 
    std::string getenv(std::string envParam);
 
-   bool copyfile(std::string src, std::string dest);
+   // bool copyfile(std::string src, std::string dest);
 
    void getAllServices(std::vector<std::string> & services);
 
@@ -81,17 +82,17 @@ namespace utils
       Poco::Path mPath;
    };
 
-   class dockerrun
-   {
-   public:
-      dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername);
-      ~dockerrun();
+   //class dockerrun
+   //{
+   //public:
+   //   dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername);
+   //   ~dockerrun();
 
-   private:
-      void tidy();
+   //private:
+   //   void tidy();
 
-      std::string mDockerName;
-   };
+   //   std::string mDockerName;
+   //};
 
 } // namespace
 

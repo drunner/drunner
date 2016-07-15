@@ -14,27 +14,20 @@ namespace compress
    void _rundocker(std::string src, std::string dst, std::string passwd, std::string ctrcmd)
    {
       std::string cmd("docker");
-      std::vector<std::string> args;
+      std::vector<std::string> args = { "run","--rm","-i", "-v",src + ":/src","-v",dst + ":/dst" };
 
-      args.push_back("run");
-      args.push_back("-i");
-      args.push_back("--name=\"dr_compress\"");
       if (passwd.length() > 0)
       {
          logmsg(kLDEBUG, "Using password supplied.");
          args.push_back("-e");
          args.push_back("PASS=\"" + passwd + "\"");
       }
-      args.push_back("-v");
-      args.push_back(src + ":/src");
-      args.push_back("-v");
-      args.push_back(dst + ":/dst");
       args.push_back("drunner/rootutils");
       args.push_back("bash");
       args.push_back("-c");
       args.push_back(ctrcmd);
-      
-      utils::dockerrun dr(cmd, args, "dr_compress");
+
+      utils::runcommand_stream(cmd, args, false);
    }
 
    // --------------------------------------

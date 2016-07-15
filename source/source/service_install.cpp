@@ -37,8 +37,6 @@ service_install::service_install(std::string servicename, std::string imagename)
 
 void service_install::_createVolumes(std::vector<std::string> & volumes)
 {
-   std::string dname = "docker-volume-maker";
-
    for (const auto & v : volumes)
    {
       // each service may be running under a different userid.
@@ -48,11 +46,13 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
          utils_docker::createDockerVolume(v);
 
       // set permissions on volume.
-      tVecStr args = { "run", "--name=\"" + dname + "\"", "-v",
+      tVecStr args = { "run", "--rm", "-v",
          v + ":" + "/tempmount","drunner/rootutils",
          "chmod","0777","/tempmount" };
 
-      utils::dockerrun dr("/usr/bin/docker", args, dname);
+      int rval = utils::runcommand_stream("docker", args, false);
+      if (rval != 0)
+         fatal("Failed to set permissions on docker volume " + v);
 
       logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
    }

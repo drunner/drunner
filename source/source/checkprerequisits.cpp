@@ -36,7 +36,7 @@ void check_prerequisits()
 int bashcommand(std::string bashline, std::string & op, bool trim)
 {
    std::vector<std::string> args = { "-c", bashline };
-   return runcommand("/bin/bash", args, op, trim);
+   return utils::runcommand("/bin/bash", args, op, trim);
 }
 
 int bashcommand(std::string bashline)

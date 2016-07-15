@@ -64,13 +64,14 @@ namespace utils_docker
       }
    }
 
-
    bool dockerVolExists(const std::string & vol)
-   { // this could be better - will match substrings rather than whole volume name. :/ 
-     // We name with big unique names so unlikely to be a problem for us.
-      logmsg(kLERROR, "can't use bashcommand!");
-      int rval = utils::bashcommand("docker volume ls | grep \"" + vol + "\"");
-      return (rval == 0);
+   {
+      std::vector<std::string> args = { "volume","ls","-f","name="+vol };
+      std::string out;
+      int rval = utils::runcommand("docker", args,out,true);
+      if (rval != 0)
+         return false;
+      return utils::wordmatch(out, vol);
    }
 
 } // namespace

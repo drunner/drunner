@@ -10,9 +10,10 @@ namespace validateImage
 {
    void validate(std::string imagename)
    {
-//      std::string data = R"EOF(ls -la /
-//echo "whgee"
-//)EOF";
+      if (utils::imageisbranch(imagename))
+         logmsg(kLDEBUG, imagename + " looks like a development branch (won't be pulled).");
+      else
+         logmsg(kLDEBUG, imagename + " looks like a production image.");
 
       std::string data = R"EOF(#!/bin/bash
 set -o nounset
@@ -42,14 +43,8 @@ exit 0
       poco_assert(n != 1);
 
       std::string command = "docker";
-      std::vector<std::string> args = { "run","--rm","debian","/bin/bash","-c",
+      std::vector<std::string> args = { "run","--rm",imagename,"/bin/bash","-c",
          "\"echo " + encoded_data + " | base64 -di > /tmp/validate ; /bin/bash /tmp/validate\"" };
-
-
-      if (utils::imageisbranch(imagename))
-         logmsg(kLDEBUG, imagename + " looks like a development branch (won't be pulled).");
-      else
-         logmsg(kLDEBUG, imagename + " should be a production image.");
 
       std::string op;
       int rval = utils::runcommand(command, args, op, true);

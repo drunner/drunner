@@ -46,19 +46,6 @@ namespace drunnerSetup
       // get latest root util image.
       utils_docker::pullImage(drunnerPaths::getdrunnerUtilsImage());
 
-      // create the validator script that is run inside containers
-      //generate_validator_image(drunnerPaths::getPath_Support());
-      bool updateValidateScript = forceUpdate;
-      if (!utils_docker::dockerVolExists(validateImage::validateimagename))
-      {
-         updateValidateScript = true;
-         utils_docker::createDockerVolume(validateImage::validateimagename);
-      }
-      if (updateValidateScript)
-      {
-         logmsg(kLERROR, "Need to implement updateValidateScript!");
-      }
-
       // write settings.
       GlobalContext::getSettings()->writeSettings();
 
