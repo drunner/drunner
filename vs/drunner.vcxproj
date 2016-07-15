@@ -57,6 +57,7 @@
     <ClCompile Include="..\source\source\validateimage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\source\basen.h" />
     <ClInclude Include="..\source\source\buildnum.h" />
     <ClInclude Include="..\source\source\checkprerequisits.h" />
     <ClInclude Include="..\source\source\chmod.h" />

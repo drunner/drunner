@@ -237,5 +237,8 @@
     <ClInclude Include="..\source\source\service_backupvars.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\source\basen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -33,11 +33,28 @@ void check_prerequisits()
 
 #include <unistd.h>
 
+int bashcommand(std::string bashline, std::string & op, bool trim)
+{
+   std::vector<std::string> args = { "-c", bashline };
+   return runcommand("/bin/bash", args, op, trim);
+}
+
+int bashcommand(std::string bashline)
+{
+   std::string op;
+   return bashcommand(bashline, op, false);
+}
+
+
+bool commandexists(std::string command)
+{
+   return (0 == bashcommand("command -v " + command));
+}
 
 std::string getUSER()
 {
    std::string op;
-   if (0 != utils::bashcommand("echo $USER", op, true))
+   if (0 != bashcommand("echo $USER", op, true))
       logmsg(kLERROR, "Couldn't get current user. (" + op + ")");
    return op;
 }
@@ -50,16 +67,16 @@ void check_prerequisits()
       fatal("Please run as a standard user, not as root.");
 
    std::string user = getUSER();
-   if (0 != utils::bashcommand("groups $USER | grep docker"))
+   if (0 != bashcommand("groups $USER | grep docker"))
       fatal("Please add the current user to the docker group. As root: " + utils::kCODE_S + "adduser " + user + " docker" + utils::kCODE_E);
 
-   if (0 != utils::bashcommand("groups | grep docker"))
+   if (0 != bashcommand("groups | grep docker"))
       fatal(user + " hasn't picked up group docker yet. Log out then in again, or run " + utils::kCODE_S + "exec su -l " + user + utils::kCODE_E);
 
-   if (!utils::commandexists("docker"))
+   if (!commandexists("docker"))
       fatal("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
 
-   if (!utils::commandexists("curl"))
+   if (!commandexists("curl"))
       fatal("Please install curl before using dRunner.");
 
    std::vector<std::string> args = { "--version" };

@@ -127,17 +127,6 @@ namespace utils
       return rval;
    }
 
-   int bashcommand(std::string bashline, std::string & op, bool trim)
-   {
-      std::vector<std::string> args = { "-c", bashline };
-      return runcommand("/bin/bash", args, op, trim);
-   }
-
-   int bashcommand(std::string bashline)
-   {
-      std::string op;
-      return bashcommand(bashline, op, false);
-   }
 
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
    { // streaming as the command runs.
@@ -191,11 +180,6 @@ namespace utils
       return subject;
    }
 
-
-   bool commandexists(std::string command)
-   {
-      return (0 == bashcommand("command -v " + command));
-   }
 
    Poco::Path get_usersbindir()
    {
@@ -370,17 +354,6 @@ namespace utils
       // so we just use bash.
       int r = bashcommand("cp -a " + src + " " + dest);
       return (r == 0);
-   }
-
-   void downloadexe(std::string url, Poco::Path filepath)
-   {
-      // only download if server has newer version.      
-      int rval = utils::bashcommand("curl " + url + " -z " + filepath.toString() + " -o " + filepath.toString() + " --silent --location 2>&1 && chmod 0755 " + filepath.toString());
-      if (rval != 0)
-         logmsg(kLERROR, "Unable to download " + url);
-      if (!utils::fileexists(filepath))
-         logmsg(kLERROR, "Failed to download " + url + ", curl return value is success but expected file "+ filepath.toString() +" does not exist.");
-      logmsg(kLDEBUG, "Successfully downloaded " + filepath.toString());
    }
 
    std::string alphanumericfilter(std::string s, bool whitespace)

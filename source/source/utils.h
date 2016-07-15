@@ -45,8 +45,6 @@ namespace utils
 
    int runcommand(std::string command, std::vector<std::string> args);
    int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim);
-   int bashcommand(std::string bashline, std::string &op, bool trim);
-   int bashcommand(std::string bashline);
    int dServiceCmd(std::string command, const std::vector<std::string> & args, bool isServiceCmd);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
@@ -58,18 +56,8 @@ namespace utils
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
    std::string alphanumericfilter(std::string s, bool whitespace);
 
-   //std::string get_exepath();
-   //std::string get_exefullpath();
-   //std::string get_exename();
-
-   //Poco::Path get_usersbindir();   // dies if fails.
-
    bool imageisbranch(const std::string & imagename);
    eResult pullimage(const std::string & imagename);
-
-   //bool isInstalled();
-
-   //std::string getHostIP();
 
    std::string getTime();
    std::string getPWD();
@@ -77,8 +65,6 @@ namespace utils
    std::string getenv(std::string envParam);
 
    bool copyfile(std::string src, std::string dest);
-
-   void downloadexe(std::string url, Poco::Path filepath);
 
    void getAllServices(std::vector<std::string> & services);
 
