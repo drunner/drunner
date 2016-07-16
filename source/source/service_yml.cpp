@@ -101,10 +101,16 @@ namespace serviceyml
       {
          Configuration ci;
          ci.name = it->first.as<std::string>();
+         ci.required = false;
+
+         poco_assert(it->second.IsMap());
          YAML::Node value = it->second;
-         ci.description = value["description"].as<std::string>();
-         ci.defaultval = value["default"].as<std::string>();
-         ci.required = value["required"].as<bool>();
+         if (value["description"].IsDefined())
+            ci.description = value["description"].as<std::string>();
+         if (value["default"].IsDefined())
+            ci.defaultval = value["default"].as<std::string>();
+         if (value["required"].IsDefined())
+            ci.required = value["required"].as<bool>();
 
          mConfigItems.push_back(ci);
       }

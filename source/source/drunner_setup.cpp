@@ -17,6 +17,21 @@
 namespace drunnerSetup
 {
 
+   void _copyexe()
+   {
+      Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
+
+      try 
+      {
+         if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
+            Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
+      }
+      catch (const Poco::FileException & e)
+      {
+         logmsg(kLWARN, std::string("Couldn't copy exe to bin directory: ") + e.what());
+      }
+   }
+
    cResult check_setup(bool forceUpdate)
    {
       const params & p(*GlobalContext::getParams().get());
@@ -41,9 +56,7 @@ namespace drunnerSetup
 #endif
 
       utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
-      Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
-      if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString())!=0)
-         Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
+      _copyexe();
 
       utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
       utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
