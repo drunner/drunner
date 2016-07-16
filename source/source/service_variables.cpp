@@ -36,7 +36,7 @@ std::string variables::getVal(std::string key) const
 
 void variables::setVal(keyval kv)
 {
-   for (int i=0;i<mVariables.size();++i)
+   for (unsigned int i=0;i<mVariables.size();++i)
       if (utils::stringisame(kv.key, mVariables[i].key))
       {
          mVariables.erase(mVariables.begin() + i);

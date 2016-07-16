@@ -434,7 +434,7 @@ namespace utils
    }
 
 
-   bool _skipquoted(const std::string &command, int & i)
+   bool _skipquoted(const std::string &command, unsigned int & i)
    {
       char c = command[i];
       if (c != '\"' && c != '\'')
@@ -449,9 +449,9 @@ namespace utils
    }
 
    bool split_in_args(std::string command, std::vector<std::string>& qargs) {
-      int pos = 0;
+      unsigned int pos = 0;
       bool rval = true;
-      for (int i = 0; i < command.length(); ++i)
+      for (unsigned int i = 0; i < command.length(); ++i)
       {
          if (iswspace(command[i]))
          {

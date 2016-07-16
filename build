@@ -10,6 +10,8 @@ VCOMBO="NOT SET"
 DEBUG=""
 [ -v VTAG ] || VTAG="Dev"
 
+IMAGE=drunner/drunner_build
+
 function showhelp {
 cat <<EOF >&2
 
@@ -60,7 +62,7 @@ function runbuild {
       -e "VCOMBO=${VCOMBO}" \
       -e "VSHORT=${VSHORT}" \
       -e "DEBUG=${DEBUG}"   \
-      -v "${SRC}:/source" drunner/drunner_build
+      -v "${SRC}:/source" "${IMAGE}"
 
    OUTPUT=source/output/drunner
 
@@ -71,7 +73,7 @@ function runbuild {
 }
 
 function makeclean {
-   docker run --rm -v ${SRC}:/source drunner/builddrunner make dist-clean
+   docker run --rm -v "${SRC}:/source" "${IMAGE}" make dist-clean
    rm -f "${MYDIR}/drunner"
    rm -f "$PERMISSIONSFILE"
 }
@@ -92,16 +94,10 @@ function main {
       debug)
          DEBUG="-g -D _DEBUG -D POCO_ENABLE_DEBUGGER"
          runbuild
-         "${MYDIR}/drunner-install" -v ~/temp
          ;;
 
       clean)
          makeclean
-         ;;
-
-      install)
-         runbuild
-         "${MYDIR}/drunner-install" -v ~/temp
          ;;
 
       *)

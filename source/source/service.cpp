@@ -17,7 +17,7 @@
 // --------------------------------------------------------------------------------------
 
 
-service::service(const std::string & servicename) : 
+service::service(std::string servicename) : 
    servicePaths(servicename),
    mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
    mServiceYml(servicePaths(servicename).getPathServiceYml())
@@ -111,7 +111,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
    else
    {
       variables v(mServiceCfg.getVariables());
-      for (int i = 0; i < args.size(); ++i)
+      for (unsigned int i = 0; i < args.size(); ++i)
          v.setVal(keyval(std::to_string(i), args[i]));
 
       std::string command = args[0];

@@ -14,7 +14,7 @@ class service : public servicePaths
 {
 public:
    // will load imagename from variables.sh unless overridden with parameter.
-   service(const std::string & servicename); // std::string imagename = "" );
+   service(std::string servicename); 
 
    cResult servicecmd();
 
