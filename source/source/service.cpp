@@ -106,6 +106,10 @@ int service::status()
 
 cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
 {
+   std::ostringstream oss;
+   for (const auto & x : args) oss << " " << x;
+   logmsg(kLDEBUG, "serviceRunner - args are" + oss.str());
+
    if (args.size() < 1)
       return serviceRunnerCommand({ "help" });
    else
@@ -133,7 +137,9 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             logmsg(kLDEBUG, "Running command " + clog);
             if (utils::runcommand_stream(command, finalargs, true) != 0)
                return kRError;
+            return kRSuccess;
          }
    }
-   return kRSuccess;
+   logmsg(kLDEBUG, "Undefined command: " + args[0]);
+   return kRError;
 }

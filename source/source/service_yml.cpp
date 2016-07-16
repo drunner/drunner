@@ -6,73 +6,7 @@
 
 namespace serviceyml
 {
-   //volume::volume(std::string name, const YAML::Node & element) : mName(name)
-   //{
-   //   mBackedup = true;
-   //   mManaged = true;
-
-   //   poco_assert(element.IsMap());
-   //   for (auto it = element.begin(); it != element.end(); ++it)
-   //   {
-   //      std::string prop = it->first.as<std::string>();
-   //      switch (utils::str2int(prop.c_str()))
-   //      {
-   //      case utils::str2int("manage"):
-   //         mManaged = it->second.as<bool>();
-   //         break;
-
-   //      case utils::str2int("backup"):
-   //         mBackedup = it->second.as<bool>();
-   //         break;
-
-   //      default:
-   //         fatal("Unrecognised volume property: " + prop);
-   //      }
-   //   }
-   //}
-
-/*
-   configitem::configitem(std::string name, const YAML::Node & element)
-   {
-         if (!element.IsMap())
-            logmsg(kLERROR, "Configuration entries in the YAML file must be maps.");
-
-         mName = name;
-         mRequired = true;
-         mDescription = "No description set.";
-         mDefault = "";
-         mType = kCF_string;
-
-         for (auto keyvals = element.begin(); keyvals != element.end(); ++keyvals)
-         {
-            std::string key = keyvals->first.as<std::string>();
-            std::string val = keyvals->second.as<std::string>();
-            switch (utils::str2int(key.c_str()))
-            {
-            case utils::str2int("description"):
-               mDescription = val;
-               break;
-
-            case utils::str2int("required"):
-               if (val.length() > 0 && (::tolower(val[0]) == 'n' || ::tolower(val[0]) == 'f'))
-                  mRequired = false;
-               break;
-
-            case utils::str2int("default"):
-               mDefault = val;
-               break;
-
-            case utils::str2int("type"):
-               logmsg(kLWARN, "Types not yet implemented.");
-               break;
-
-            default:
-               logmsg(kLERROR, "Unkown key: " + key);
-            }
-         }
-   }
-*/
-
+ 
    simplefile::simplefile(Poco::Path path) : mPath(path)
    {
       poco_assert(mPath.isFile());
@@ -163,6 +97,7 @@ namespace serviceyml
                op.args.erase(op.args.begin());
                cl.operations.push_back(op);
             }
+            mCommands.push_back(cl);
          }
       }
 
@@ -206,48 +141,4 @@ namespace serviceyml
       return mConfigItems;
    }
 
-
-
-/*
-   operation::operation(std::string s)
-   {
-      if (s.length() == 0)
-         fatal("empty string passed to operation");
-      utils::split_in_args(s, mArgs);
-      if (mArgs.size() == 0)
-         fatal("whitespace string passed to operation");
-      mCommand = mArgs[0];
-      mArgs.erase(mArgs.begin());
-   }
-
-   commandline::commandline(std::string name) : mName(name)
-   {
-   }
-
-   void commandline::addoperation(operation o)
-   {
-      mOperations.push_back(o);
-   }
-
-   std::string commandline::getName() const
-   {
-      return mName;
-   }
-
-   const std::vector<operation> & commandline::getOperations() const
-   {
-      return mOperations;
-   }
-
-   const std::vector<std::string> & simplefile::getExtraContainers() const
-   {
-      return mExtraContainers;
-   }
-
-   const std::vector<configitem> & simplefile::getConfigItems() const
-   {
-      return mConfigItems;
-   }
-
-*/
 } // namespace

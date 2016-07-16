@@ -23,6 +23,11 @@ namespace utils_docker
 
    void pullImage(const std::string & image)
    {
+#ifdef _DEBUG
+      logmsg(kLDEBUG, "DEBUG BUILD - not pulling");
+      return;
+#endif
+
       if (GlobalContext::getParams()->isDevelopmentMode())
       {
          logmsg(kLDEBUG, "In developer mode - not pulling " + image);
