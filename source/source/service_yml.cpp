@@ -103,7 +103,7 @@ namespace serviceyml
          ci.name = it->first.as<std::string>();
          YAML::Node value = it->second;
          ci.description = value["description"].as<std::string>();
-         ci.default = value["default"].as<std::string>();
+         ci.defaultval = value["default"].as<std::string>();
          ci.required = value["required"].as<bool>();
 
          mConfigItems.push_back(ci);

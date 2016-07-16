@@ -64,7 +64,7 @@ cResult serviceConfig::create(const serviceyml::simplefile & y)
    const std::vector<serviceyml::Configuration> & ci(y.getConfigItems());
 
    for (const auto & i : ci)
-      mVariables.setVal(keyval(i.name, i.default));
+      mVariables.setVal(keyval(i.name, i.defaultval));
 
    return kRSuccess;
 }

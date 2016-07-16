@@ -31,7 +31,7 @@ namespace serviceyml
    struct Configuration 
    {
       std::string name;
-      std::string default;
+      std::string defaultval;
       std::string description;
       configtype type;
       bool required;
