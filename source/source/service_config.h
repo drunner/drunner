@@ -6,14 +6,20 @@
 #include "service_yml.h"
 #include "service_variables.h"
 
-class serviceConfig : public variables {
+class serviceConfig {
 public:
    serviceConfig(Poco::Path path);
    cResult create(const serviceyml::simplefile & y);
    cResult loadconfig();
    cResult saveconfig() const;
 
-   variables & getVariables() { return mVariables; }
+   std::string getImageName() const;
+   void setImageName(std::string iname);
+
+   std::string getServiceName() const;
+   void setServiceName(std::string sname);
+
+   const variables & getVariables() const { return mVariables; }
 
 private:
    variables mVariables;

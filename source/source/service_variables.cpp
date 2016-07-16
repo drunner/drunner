@@ -36,14 +36,13 @@ std::string variables::getVal(std::string key) const
 
 void variables::setVal(keyval kv)
 {
-   for (auto x : mVariables)
-   {
-      if (utils::stringisame(kv.key, x.key))
+   for (int i=0;i<mVariables.size();++i)
+      if (utils::stringisame(kv.key, mVariables[i].key))
       {
-         x.value = kv.value;
-         return;
+         mVariables.erase(mVariables.begin() + i);
+         --i;
       }
-   }
+
    mVariables.push_back(kv);
 }
 

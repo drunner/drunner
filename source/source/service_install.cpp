@@ -25,10 +25,7 @@ service_install::service_install(std::string servicename) : servicePaths(service
    serviceConfig svc(getPathServiceConfig());
    if (kRSuccess != svc.loadconfig())
       fatal("No imagename specified and unable to read the service config.");
-   std::string key = "IMAGENAME";
-   if (!svc.hasKey(key))
-      fatal("Service config does not contain the image name.");
-   mImageName = svc.getVal(key);
+   mImageName = svc.getImageName();
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -109,14 +106,14 @@ cResult service_install::_recreate(bool updating)
             fatal("Corrupt dService - missing service.yml");
          svccfg.create(syf);
       }
-      svccfg.setVal(keyval("IMAGENAME", mImageName));
-      svccfg.setVal(keyval("SERVICENAME", mName));
+      svccfg.setImageName(mImageName);
+      svccfg.setServiceName(mName);
       if (kRSuccess != svccfg.saveconfig())
          fatal("Could not save the service configuration!");
 
       // now can load full service.yml, using variable substitution via the defaults etc..
       serviceyml::file syfull(getPathServiceYml());
-      if (kRSuccess != syfull.loadyml(svccfg))
+      if (kRSuccess != syfull.loadyml(svccfg.getVariables()))
          fatal("Corrupt dservice - couldn't read full service.yml");
 
       // make sure we have the latest of all exra containers.
@@ -211,7 +208,7 @@ cResult service_install::obliterate()
             std::vector<std::string> vols;
             for (const auto & entry : svc.getServiceYml().getVolumes())
             {
-               std::string vol = svc.getServiceCfg().substitute(entry.name());
+               std::string vol = svc.getServiceCfg().getVariables().substitute(entry.name());
                logmsg(kLINFO, "Obliterating docker volume " + vol);
                std::string op;
                std::vector<std::string> args = { "rm",vol };

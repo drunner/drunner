@@ -17,7 +17,7 @@
 // --------------------------------------------------------------------------------------
 
 
-service::service(const std::string & servicename) : // , std::string imagename /*= ""*/) :
+service::service(const std::string & servicename) : 
    servicePaths(servicename),
    mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
    mServiceYml(servicePaths(servicename).getPathServiceYml())
@@ -25,9 +25,9 @@ service::service(const std::string & servicename) : // , std::string imagename /
    if (mServiceCfg.loadconfig() != kRSuccess)
       fatal("Could not load service configuration: " + getPathServiceConfig().toString());
 
-   if (mServiceYml.loadyml(mServiceCfg) != kRSuccess)
+   if (mServiceYml.loadyml(mServiceCfg.getVariables()) != kRSuccess)
       fatal("Could not load service yml: " + getPathServiceYml().toString());
-   mImageName = mServiceCfg.getVal("IMAGENAME");
+   mImageName = mServiceCfg.getImageName();
    poco_assert(mImageName.length() > 0);
 }
 
