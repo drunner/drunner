@@ -13,9 +13,9 @@ namespace serviceyml
    class volume {
    public:
       volume(std::string name, const YAML::Node & element);
-      std::string name() const { return mName; }
-      bool isBackedUp() const { return mBackedup; }
-      bool isManaged() const { return mManaged; }
+      std::string name() const   { return mName; }
+      bool isBackedUp() const    { return mBackedup; }
+      bool isManaged() const     { return mManaged; }
    private:
       bool mBackedup;
       bool mManaged;
@@ -34,11 +34,11 @@ namespace serviceyml
    public:
       configitem(std::string name, const YAML::Node & element);
 
-      bool required() const { return mRequired; }
+      bool required() const            { return mRequired; }
       std::string defaultvalue() const { return mDefault; }
-      std::string name() const { return mName; }
-      std::string description() const { return mDescription; }
-      configtype type() const { return mType; }
+      std::string name() const         { return mName; }
+      std::string description() const  { return mDescription; }
+      configtype type() const          { return mType; }
 
    private:
       std::string mName;
@@ -64,7 +64,9 @@ namespace serviceyml
    public:
       commandline(std::string name);
       void addoperation(operation o);
-
+      std::string getName() const;
+      const std::vector<operation> & getOperations() const;
+      
    private:
       std::string mName;
       std::vector<operation> mOperations;
@@ -74,9 +76,9 @@ namespace serviceyml
    public: 
       simplefile(Poco::Path path);
 
-      const std::vector<std::string> & getExtraContainers() const { return mExtraContainers; }
-      const std::vector<configitem> & getConfigItems() const { return mConfigItems; }
-
+      const std::vector<std::string> & getExtraContainers() const; 
+      const std::vector<configitem> & getConfigItems() const;
+      
       virtual cResult loadyml();
 
    protected:
@@ -91,9 +93,9 @@ namespace serviceyml
       
       cResult loadyml(const variables & v);
 
-      const std::vector<volume> & getVolumes() const { return mVolumes; }
-      const std::vector<commandline> & getCommands() const { return mCommands; }
-      std::string getHelp() { return mHelp; }
+      const std::vector<volume> & getVolumes() const        { return mVolumes; }
+      const std::vector<commandline> & getCommands() const  { return mCommands; }
+      std::string getHelp() const                           { return mHelp; }
 
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;

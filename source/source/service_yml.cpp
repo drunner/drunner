@@ -208,4 +208,25 @@ namespace serviceyml
       mOperations.push_back(o);
    }
 
+   std::string commandline::getName() const
+   {
+      return mName;
+   }
+
+   const std::vector<operation> & commandline::getOperations() const
+   {
+      return mOperations;
+   }
+
+   const std::vector<std::string> & simplefile::getExtraContainers() const
+   {
+      return mExtraContainers;
+   }
+
+   const std::vector<configitem> & simplefile::getConfigItems() const
+   {
+      return mConfigItems;
+   }
+
+
 } // namespace
