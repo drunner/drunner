@@ -67,11 +67,13 @@ void service_install::_ensureDirectoriesExist() const
 
 cResult service_install::_recreate(bool updating)
 {
+   poco_assert(mImageName.length() > 0);
+
    if (updating)
    { // pull all containers used by the dService.
       serviceyml::simplefile syf(getPathServiceYml());
       if (kRSuccess!= syf.loadyml())
-         for (auto c : syf.getExtraContainers())
+         for (auto c : syf.getContainers())
             utils_docker::pullImage(c);
    }
    
@@ -117,21 +119,19 @@ cResult service_install::_recreate(bool updating)
       if (kRSuccess != syfull.loadyml(svccfg.getVariables()))
          fatal("Corrupt dservice - couldn't read full service.yml");
 
-      // make sure we have the latest of all exra containers.
+      // make sure we have the latest of all containers.
       bool foundmain = false;
-      for (const auto & entry : syfull.getExtraContainers())
+      for (const auto & entry : syfull.getContainers())
       {
-         if (utils::stringisame(entry, mImageName)) // don't pull main image again.
+         utils_docker::pullImage(entry);
+         if (utils::stringisame(entry, mImageName))
             foundmain = true;
-         else
-            utils_docker::pullImage(entry);
       }
       if (!foundmain)
          logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.yml file.");
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
-      for (const auto & entry : syfull.getVolumes())
-         vols.push_back(entry.name());
+      syfull.getManageDockerVolumeNames(vols);
       _createVolumes(vols);
    }
 
@@ -210,15 +210,15 @@ cResult service_install::obliterate()
          logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
          {// [start] deleting docker volumes.
             std::vector<std::string> vols;
-            for (const auto & entry : svc.getServiceYml().getVolumes())
+            svc.getServiceYml().getManageDockerVolumeNames(vols);
+            for (const auto & entry : vols)
             {
-               std::string vol = svc.getServiceCfg().getVariables().substitute(entry.name());
-               logmsg(kLINFO, "Obliterating docker volume " + vol);
+               logmsg(kLINFO, "Obliterating docker volume " + entry);
                std::string op;
-               std::vector<std::string> args = { "rm",vol };
+               std::vector<std::string> args = { "rm",entry };
                if (0 != utils::runcommand("docker", args, op, false))
                {
-                  logmsg(kLWARN, "Failed to remove " + vol + ":");
+                  logmsg(kLWARN, "Failed to remove " + entry + ":");
                   logmsg(kLWARN, op);
                }
                else

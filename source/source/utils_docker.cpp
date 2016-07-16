@@ -60,7 +60,9 @@ namespace utils_docker
          logmsg(kLDEBUG, "No change to Docker image (it's already up to date).");
          break;
       default:
+         S_PullList.push_back(image);
          logmsg(kLINFO, "Successfully pulled " + image);
+         break;
       }
    }
 

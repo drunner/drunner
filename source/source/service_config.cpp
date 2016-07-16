@@ -61,10 +61,10 @@ void serviceConfig::setServiceName(std::string sname)
 
 cResult serviceConfig::create(const serviceyml::simplefile & y)
 {
-   const std::vector<serviceyml::configitem> & ci(y.getConfigItems());
+   const std::vector<serviceyml::Configuration> & ci(y.getConfigItems());
 
    for (const auto & i : ci)
-      mVariables.setVal(keyval(i.name(), i.defaultvalue()));
+      mVariables.setVal(keyval(i.name, i.default));
 
    return kRSuccess;
 }

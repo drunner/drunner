@@ -117,11 +117,11 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
       std::string command = args[0];
       std::string clog = command;
       for (const auto & x : mServiceYml.getCommands())
-         if (x.getName().compare(command)==0)
-         for (const auto & op : x.getOperations())
+         if (x.name.compare(command)==0)
+         for (const auto & op : x.operations)
          {
             std::vector<std::string> finalargs;
-            for (const auto &arg : op.getArgs())
+            for (const auto &arg : op.args)
             {
                std::string argument = v.substitute(arg);
                if (argument.compare("$@") == 0)

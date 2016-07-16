@@ -15,8 +15,7 @@ void backupvars::createFromServiceYml(std::string imagename, const serviceyml::f
    poco_assert(mVolumes.size() == 0);
    poco_assert(mImageName.length() == 0);
    mImageName = imagename;
-   for (const auto & entry : syf.getVolumes())
-      mVolumes.push_back(entry.name());
+   syf.getBackupDockerVolumeNames(mVolumes);
 }
 
 cResult backupvars::loadvars()

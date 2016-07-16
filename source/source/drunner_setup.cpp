@@ -23,8 +23,10 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
+#ifndef _DEBUG
       if (utils::fileexists(drunnerPaths::getPath_Root()) && !forceUpdate)
          return kRNoChange;
+#endif
 
       // check prereqs (e.g. docker installed).
       check_prerequisits();
@@ -39,6 +41,10 @@ namespace drunnerSetup
 #endif
 
       utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
+      Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
+      if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString())!=0)
+         Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
+
       utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
       utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
       utils::makedirectory(drunnerPaths::getPath_Temp(), S_755);

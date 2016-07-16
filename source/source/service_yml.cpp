@@ -6,32 +6,32 @@
 
 namespace serviceyml
 {
-   volume::volume(std::string name, const YAML::Node & element) : mName(name)
-   {
-      mBackedup = true;
-      mManaged = true;
+   //volume::volume(std::string name, const YAML::Node & element) : mName(name)
+   //{
+   //   mBackedup = true;
+   //   mManaged = true;
 
-      poco_assert(element.IsMap());
-      for (auto it = element.begin(); it != element.end(); ++it)
-      {
-         std::string prop = it->first.as<std::string>();
-         switch (utils::str2int(prop.c_str()))
-         {
-         case utils::str2int("manage"):
-            mManaged = it->second.as<bool>();
-            break;
+   //   poco_assert(element.IsMap());
+   //   for (auto it = element.begin(); it != element.end(); ++it)
+   //   {
+   //      std::string prop = it->first.as<std::string>();
+   //      switch (utils::str2int(prop.c_str()))
+   //      {
+   //      case utils::str2int("manage"):
+   //         mManaged = it->second.as<bool>();
+   //         break;
 
-         case utils::str2int("backup"):
-            mBackedup = it->second.as<bool>();
-            break;
+   //      case utils::str2int("backup"):
+   //         mBackedup = it->second.as<bool>();
+   //         break;
 
-         default:
-            fatal("Unrecognised volume property: " + prop);
-         }
-      }
-   }
+   //      default:
+   //         fatal("Unrecognised volume property: " + prop);
+   //      }
+   //   }
+   //}
 
-
+/*
    configitem::configitem(std::string name, const YAML::Node & element)
    {
          if (!element.IsMap())
@@ -71,14 +71,14 @@ namespace serviceyml
             }
          }
    }
-
+*/
 
    simplefile::simplefile(Poco::Path path) : mPath(path)
    {
       poco_assert(mPath.isFile());
    }
    
-   cResult simplefile::loadyml()
+   cResult simplefile::_loadyml()
    {
       if (!utils::fileexists(mPath))
          return kRError;
@@ -90,33 +90,39 @@ namespace serviceyml
          return kRError;
       }
 
-      if (yamlfile["containers"])
-      { // load containers
-         YAML::Node containers = yamlfile["containers"];
-         if (containers.Type() != YAML::NodeType::Sequence)
-            logmsg(kLERROR, "Error: Containers section in YAML file must be a sequence.");
-         for (auto it = containers.begin(); it != containers.end(); ++it)
-         {
-            logmsg(kLDEBUG,"Added container " + it->as<std::string>());
-            mExtraContainers.push_back(it->as<std::string>());
-         }
+      // load containers
+      YAML::Node containers = yamlfile["containers"];
+      for (auto it = containers.begin(); it != containers.end(); ++it)
+         mContainers.push_back(it->as<std::string>());
+
+      // load configuration
+      YAML::Node configuration = yamlfile["configuration"];
+      for (auto it = configuration.begin(); it != configuration.end(); ++it)
+      {
+         Configuration ci;
+         ci.name = it->first.as<std::string>();
+         YAML::Node value = it->second;
+         ci.description = value["description"].as<std::string>();
+         ci.default = value["default"].as<std::string>();
+         ci.required = value["required"].as<bool>();
+
+         mConfigItems.push_back(ci);
       }
 
-      if (yamlfile["configuration"])
-      { // load configuration
-         YAML::Node configuration = yamlfile["configuration"];
-         for (auto it = configuration.begin(); it != configuration.end(); ++it)
-         {
-            YAML::Node key = it->first;
-            YAML::Node value = it->second;
-            poco_assert(key.IsScalar());
-            poco_assert(value.IsMap());
-            std::string name = key.as<std::string>();
-            configitem ci(name, value);
-            mConfigItems.push_back(ci);
-         }
-      }
       return kRSuccess;
+   }
+
+
+   cResult simplefile::loadyml()
+   {
+      cResult rval(kRSuccess);
+      try {
+         rval=_loadyml();
+      }
+      catch (const YAML::Exception & e) {
+         logmsg(kLERROR, std::string("YAML error: ") + e.what());
+      }
+      return rval;
    }
 
    file::file(Poco::Path path) : simplefile(path)
@@ -138,17 +144,18 @@ namespace serviceyml
          YAML::Node commands = yamlfile["commands"];
          for (auto it = commands.begin(); it != commands.end(); ++it)
          {
-            YAML::Node key = it->first;
-            YAML::Node value = it->second;
-            poco_assert(key.IsScalar());
-            poco_assert(value.IsSequence());
-            commandline cl(key.as<std::string>());
-            for (auto line = value.begin(); line != value.end(); ++line)
+            CommandLine cl;
+            cl.name = it->first.as<std::string>();
+            for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
-               poco_assert(line->IsScalar());
-               std::string opline = line->as<std::string>();
-               operation o(v.substitute(opline));
-               cl.addoperation(o);
+               Operation op;
+               std::string opline = it2->as<std::string>();
+               std::string sopline = v.substitute(opline);
+               utils::split_in_args(sopline, op.args);
+               poco_assert(op.args.size() > 0);
+               op.command = op.args[0];
+               op.args.erase(op.args.begin());
+               cl.operations.push_back(op);
             }
          }
       }
@@ -158,13 +165,10 @@ namespace serviceyml
          YAML::Node volumes = yamlfile["volumes"];
          for (auto it = volumes.begin(); it != volumes.end(); ++it)
          {
-            poco_assert(it->IsMap());
-
-            YAML::Node key = it->first;
-            YAML::Node value = it->second;
-            poco_assert(key.IsScalar());
-            poco_assert(value.IsMap());
-            volume v(key.as<std::string>(), value);
+            Volume v;
+            v.name = it->first.as<std::string>();
+            v.backup = it->second["backup"].as<bool>();
+            v.manage = it->second["manage"].as<bool>();
             mVolumes.push_back(v);
          }
       }
@@ -176,18 +180,29 @@ namespace serviceyml
    {
       poco_assert(vols.size() == 0);
       for (const auto & v : mVolumes)
-         if (v.isManaged())
-            vols.push_back(v.name());
+         if (v.manage)
+            vols.push_back(v.name);
    }
    void file::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
    {
       poco_assert(vols.size() == 0);
       for (const auto & v : mVolumes)
-         if (v.isBackedUp())
-            vols.push_back(v.name());
+         if (v.backup)
+            vols.push_back(v.name);
+   }
+
+   const std::vector<std::string> & simplefile::getContainers() const
+   {
+      return mContainers;
+   }
+   const std::vector<Configuration> & simplefile::getConfigItems() const
+   {
+      return mConfigItems;
    }
 
 
+
+/*
    operation::operation(std::string s)
    {
       if (s.length() == 0)
@@ -228,5 +243,5 @@ namespace serviceyml
       return mConfigItems;
    }
 
-
+*/
 } // namespace
