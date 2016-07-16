@@ -176,9 +176,6 @@ int mainroutines::process()
             logmsg(kLERROR, "servicecmd should not be invoked manually.");
 
          service svc(p.getArg(0));
-         if (!svc.isValid())
-            logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.");
-
          return svc.servicecmd();
       }
 

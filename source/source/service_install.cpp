@@ -64,6 +64,7 @@ void service_install::_ensureDirectoriesExist() const
    // create service's drunner and temp directories on host.
    utils::makedirectory(getPath(), S_755);
    utils::makedirectory(getPathdRunner(), S_777);
+   utils::makedirectory(getPathServiceConfig().parent(), S_755);
 }
 
 cResult service_install::_recreate(bool updating)
@@ -71,7 +72,7 @@ cResult service_install::_recreate(bool updating)
    if (updating)
    { // pull all containers used by the dService.
       serviceyml::simplefile syf(getPathServiceYml());
-      if (syf.readokay())
+      if (kRSuccess!= syf.loadyml())
          for (auto c : syf.getExtraContainers())
             utils_docker::pullImage(c);
    }
@@ -100,21 +101,22 @@ cResult service_install::_recreate(bool updating)
       if (0 != utils::runcommand("docker", args, op, false))
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
-      // write out variables.sh for the dService.
+      // write out service configuration for the dService.
       serviceConfig svccfg(getPathServiceConfig());
       { // use simple file temporarily.
          serviceyml::simplefile syf(getPathServiceYml());
-         if (!syf.readokay())
+         if (kRSuccess != syf.loadyml())
             fatal("Corrupt dService - missing service.yml");
          svccfg.create(syf);
       }
       svccfg.setVal(keyval("IMAGENAME", mImageName));
       svccfg.setVal(keyval("SERVICENAME", mName));
-      svccfg.saveconfig();
+      if (kRSuccess != svccfg.saveconfig())
+         fatal("Could not save the service configuration!");
 
       // now can load full service.yml, using variable substitution via the defaults etc..
-      serviceyml::file syfull(getPathServiceYml(), svccfg);
-      if (!syfull.readokay())
+      serviceyml::file syfull(getPathServiceYml());
+      if (kRSuccess != syfull.loadyml(svccfg))
          fatal("Corrupt dservice - couldn't read full service.yml");
 
       // make sure we have the latest of all exra containers.

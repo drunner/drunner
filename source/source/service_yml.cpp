@@ -6,6 +6,31 @@
 
 namespace serviceyml
 {
+   volume::volume(std::string name, const YAML::Node & element) : mName(name)
+   {
+      mBackedup = true;
+      mManaged = true;
+
+      poco_assert(element.IsMap());
+      for (auto it = element.begin(); it != element.end(); ++it)
+      {
+         std::string prop = it->first.as<std::string>();
+         switch (utils::str2int(prop.c_str()))
+         {
+         case utils::str2int("manage"):
+            mManaged = it->second.as<bool>();
+            break;
+
+         case utils::str2int("backup"):
+            mBackedup = it->second.as<bool>();
+            break;
+
+         default:
+            fatal("Unrecognised volume property: " + prop);
+         }
+      }
+   }
+
 
    configitem::configitem(std::string name, const YAML::Node & element)
    {
@@ -48,21 +73,24 @@ namespace serviceyml
    }
 
 
-   simplefile::simplefile(Poco::Path path)
+   simplefile::simplefile(Poco::Path path) : mPath(path)
    {
-      mReadOkay = false;
-      poco_assert(path.isFile());
-      if (!utils::fileexists(path))
-         return;
+      poco_assert(mPath.isFile());
+   }
+   
+   cResult simplefile::loadyml()
+   {
+      if (!utils::fileexists(mPath))
+         return kRError;
 
-      YAML::Node yamlfile = YAML::LoadFile(path.toString());
+      YAML::Node yamlfile = YAML::LoadFile(mPath.toString());
       if (!yamlfile)
       {
-         logmsg(kLDEBUG, "Unable to read yaml file from " + path.toString());
-         return;
+         logmsg(kLDEBUG, "Unable to read yaml file from " + mPath.toString());
+         return kRError;
       }
 
-      if (yamlfile["extracontainers"])
+      if (yamlfile["containers"])
       { // load containers
          YAML::Node containers = yamlfile["containers"];
          if (containers.Type() != YAML::NodeType::Sequence)
@@ -88,31 +116,96 @@ namespace serviceyml
             mConfigItems.push_back(ci);
          }
       }
-      mReadOkay = true;
+      return kRSuccess;
    }
 
-   file::file(Poco::Path path, const variables & v) : simplefile(path)
+   file::file(Poco::Path path) : simplefile(path)
    {
-      if (!mReadOkay)
-         return; // ctor of simplefile failed to read file.
-      poco_assert(path.isFile());
-      poco_assert(utils::fileexists(path)); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
+   }
 
-      YAML::Node yamlfile = YAML::LoadFile(path.toString());
+   cResult file::loadyml(const variables & v)
+   {
+      if (kRSuccess != simplefile::loadyml())
+         return kRError;
+      poco_assert(mPath.isFile());
+      poco_assert(utils::fileexists(mPath)); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
+
+      YAML::Node yamlfile = YAML::LoadFile(mPath.toString());
       poco_assert(yamlfile);
 
       if (yamlfile["commands"])
       {// load commands.
-
+         YAML::Node commands = yamlfile["commands"];
+         for (auto it = commands.begin(); it != commands.end(); ++it)
+         {
+            YAML::Node key = it->first;
+            YAML::Node value = it->second;
+            poco_assert(key.IsScalar());
+            poco_assert(value.IsSequence());
+            commandline cl(key.as<std::string>());
+            for (auto line = value.begin(); line != value.end(); ++line)
+            {
+               poco_assert(line->IsScalar());
+               std::string opline = line->as<std::string>();
+               operation o(v.substitute(opline));
+               cl.addoperation(o);
+            }
+         }
       }
+
+      if (yamlfile["volumes"])
+      { // load volumes
+         YAML::Node volumes = yamlfile["volumes"];
+         for (auto it = volumes.begin(); it != volumes.end(); ++it)
+         {
+            poco_assert(it->IsMap());
+
+            YAML::Node key = it->first;
+            YAML::Node value = it->second;
+            poco_assert(key.IsScalar());
+            poco_assert(value.IsMap());
+            volume v(key.as<std::string>(), value);
+            mVolumes.push_back(v);
+         }
+      }
+
+      return kRSuccess;
    }
 
-   void file::getDockerVolumeNames(std::vector<std::string> & vols) const
+   void file::getManageDockerVolumeNames(std::vector<std::string> & vols) const
    {
       poco_assert(vols.size() == 0);
       for (const auto & v : mVolumes)
-         vols.push_back(v.name());
+         if (v.isManaged())
+            vols.push_back(v.name());
+   }
+   void file::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
+   {
+      poco_assert(vols.size() == 0);
+      for (const auto & v : mVolumes)
+         if (v.isBackedUp())
+            vols.push_back(v.name());
    }
 
+
+   operation::operation(std::string s)
+   {
+      if (s.length() == 0)
+         fatal("empty string passed to operation");
+      utils::split_in_args(s, mArgs);
+      if (mArgs.size() == 0)
+         fatal("whitespace string passed to operation");
+      mCommand = mArgs[0];
+      mArgs.erase(mArgs.begin());
+   }
+
+   commandline::commandline(std::string name) : mName(name)
+   {
+   }
+
+   void commandline::addoperation(operation o)
+   {
+      mOperations.push_back(o);
+   }
 
 } // namespace

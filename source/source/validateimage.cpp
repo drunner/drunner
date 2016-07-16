@@ -44,7 +44,7 @@ exit 0
 
       std::string command = "docker";
       std::vector<std::string> args = { "run","--rm",imagename,"/bin/bash","-c",
-         "\"echo " + encoded_data + " | base64 -di > /tmp/validate ; /bin/bash /tmp/validate\"" };
+         "echo " + encoded_data + " | base64 -d > /tmp/validate ; /bin/bash /tmp/validate" };
 
       std::string op;
       int rval = utils::runcommand(command, args, op, true);

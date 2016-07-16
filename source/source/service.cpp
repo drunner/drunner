@@ -17,59 +17,23 @@
 // --------------------------------------------------------------------------------------
 
 
-service::service(const std::string & servicename, std::string imagename /*= ""*/) :
+service::service(const std::string & servicename) : // , std::string imagename /*= ""*/) :
    servicePaths(servicename),
-   mImageName(loadImageName(servicename, imagename)),
    mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
-   mServiceYml(servicePaths(servicename).getPathServiceYml(), mServiceCfg)
+   mServiceYml(servicePaths(servicename).getPathServiceYml())
 {
+   if (mServiceCfg.loadconfig() != kRSuccess)
+      fatal("Could not load service configuration: " + getPathServiceConfig().toString());
+
+   if (mServiceYml.loadyml(mServiceCfg) != kRSuccess)
+      fatal("Could not load service yml: " + getPathServiceYml().toString());
+   mImageName = mServiceCfg.getVal("IMAGENAME");
+   poco_assert(mImageName.length() > 0);
 }
 
 servicePaths::servicePaths(const std::string & servicename) :
    mName(servicename)
 {
-}
-
-std::string service::loadImageName(const std::string & servicename, std::string imagename)
-{
-   Poco::Path v = servicePaths(servicename).getPath();
-   if (utils::fileexists(v))
-   {
-      if (imagename.length() == 0)
-      { // if imagename override not provided and variables.sh exists then load it from variables.sh
-         sh_servicevars shv;
-         if (!shv.readSettings( shv.getPathFromParent(v) ))
-         {
-            ::logmsg(kLWARN, "Couldn't read servicevars.sh from " + v.toString());
-            ::logmsg(kLWARN, "Service old/broken. Recover with:");
-            ::logmsg(kLWARN, "   drunner recover " + servicename + " IMAGENAME");
-            ::logmsg(kLERROR, "Unable to determine the image name. Exiting.");
-         }
-         imagename = shv.getImageName();
-      }
-      else
-         ::logmsg(kLDEBUG, "Forcing dService main image to be " + imagename);
-   }
-
-   if (imagename.length() == 0)
-      ::logmsg(kLERROR, "Couldn't determine imagename.");
-
-   return imagename;
-}
-
-bool service::isValid() const
-{
-   if (!utils::fileexists(getPath()) || !utils::fileexists(getPathdRunner())) // || !utils::fileexists(getPathTemp()))
-      return false;
-
-   sh_servicevars shv;
-   if (!shv.readSettings(getPath()))
-   {
-      logmsg(kLDEBUG, "Couldn't read servicevars.sh from service " + getName());
-      return false;
-   }
-
-   return true;
 }
 
 cResult service::servicecmd()
@@ -131,12 +95,6 @@ int service::status()
    if (!utils::fileexists(getPath()))
    {
       logmsg(kLINFO, getName() + " is not installed.");
-      hook.endhook();
-      return 1;
-   }
-   if (!isValid())
-   {
-      logmsg(kLINFO, getName() + " is not a valid service. Try  drunner recover "+getName());
       hook.endhook();
       return 1;
    }

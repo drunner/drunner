@@ -51,6 +51,7 @@
     <ClCompile Include="..\source\source\termcolor.cpp" />
     <ClCompile Include="..\source\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="..\source\source\tests\unittests.cpp" />
+    <ClCompile Include="..\source\source\test_utils.cpp" />
     <ClCompile Include="..\source\source\timez.cpp" />
     <ClCompile Include="..\source\source\utils.cpp" />
     <ClCompile Include="..\source\source\utils_docker.cpp" />

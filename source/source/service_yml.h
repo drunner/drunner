@@ -4,16 +4,21 @@
 #include <Poco/Path.h>
 #include "yaml-cpp/yaml.h"
 #include "service_variables.h"
+#include "cresult.h"
+
 
 namespace serviceyml
 {
 
    class volume {
    public:
-      volume(std::string s);
+      volume(std::string name, const YAML::Node & element);
       std::string name() const { return mName; }
-
+      bool isBackedUp() const { return mBackedup; }
+      bool isManaged() const { return mManaged; }
    private:
+      bool mBackedup;
+      bool mManaged;
       std::string mName;
    };
 
@@ -57,9 +62,11 @@ namespace serviceyml
 
    class commandline {
    public:
-      commandline(YAML::Node & node);
+      commandline(std::string name);
+      void addoperation(operation o);
 
    private:
+      std::string mName;
       std::vector<operation> mOperations;
    };
 
@@ -70,23 +77,26 @@ namespace serviceyml
       const std::vector<std::string> & getExtraContainers() const { return mExtraContainers; }
       const std::vector<configitem> & getConfigItems() const { return mConfigItems; }
 
-      bool readokay() { return mReadOkay; }
+      virtual cResult loadyml();
 
    protected:
       std::vector<std::string> mExtraContainers;
       std::vector<configitem> mConfigItems;
-      bool mReadOkay;
+      const Poco::Path mPath;
    };
 
    class file : public simplefile {
    public:
-      file(Poco::Path path, const variables & v); // reads file, throws if bad. Applies variable substitution using variables.
+      file(Poco::Path path); // reads file, throws if bad. Applies variable substitution using variables.
+      
+      cResult loadyml(const variables & v);
 
       const std::vector<volume> & getVolumes() const { return mVolumes; }
       const std::vector<commandline> & getCommands() const { return mCommands; }
       std::string getHelp() { return mHelp; }
 
-      void getDockerVolumeNames(std::vector<std::string> & vols) const;
+      void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
+      void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
 
    private:
       std::vector<volume> mVolumes;

@@ -1,3 +1,5 @@
+#include <Poco/String.h>
+
 #include "service_variables.h"
 #include "utils.h"
 #include "globallogger.h"
@@ -47,6 +49,11 @@ void variables::setVal(keyval kv)
 
 std::string variables::substitute(std::string s) const
 {
-   fatal("To do");
-   return "whee!";
+   std::string os(s);
+   for (auto it = mVariables.begin(); it != mVariables.end(); ++it)
+   {
+      Poco::replaceInPlace(os, "$" + it->key, it->value);
+      Poco::replaceInPlace(os, "${" + it->key+"}", it->value);
+   }
+   return os;
 }

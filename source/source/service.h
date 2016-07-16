@@ -14,9 +14,7 @@ class service : public servicePaths
 {
 public:
    // will load imagename from variables.sh unless overridden with parameter.
-   service(const std::string & servicename, std::string imagename = "" );
-
-   bool isValid() const;
+   service(const std::string & servicename); // std::string imagename = "" );
 
    cResult servicecmd();
 
@@ -38,7 +36,7 @@ public:
 private:
    static std::string loadImageName(const std::string & servicename, std::string imagename);
 
-   const std::string mImageName;
+   std::string mImageName;
    serviceConfig mServiceCfg;
    serviceyml::file mServiceYml;
 };

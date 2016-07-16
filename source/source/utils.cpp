@@ -434,6 +434,40 @@ namespace utils
    }
 
 
+   bool _skipquoted(const std::string &command, int & i)
+   {
+      char c = command[i];
+      if (c != '\"' && c != '\'')
+         return true;
+      if (i > 0 && command[i - 1] == '\\')
+         return true; // escaped quote.
+
+      ++i;
+      while (i < command.length() && (command[i] != c || command[i - 1] == '\\'))
+         ++i;
+      return (i != command.length());
+   }
+
+   bool split_in_args(std::string command, std::vector<std::string>& qargs) {
+      int pos = 0;
+      bool rval = true;
+      for (int i = 0; i < command.length(); ++i)
+      {
+         if (iswspace(command[i]))
+         {
+            if (i!=pos)
+               qargs.push_back(command.substr(pos, i - pos));
+            pos = i + 1;
+         }
+         rval = _skipquoted(command, i);
+      }
+      if (pos < command.length())
+         qargs.push_back(command.substr(pos, command.length() - pos));
+      return rval;
+   }
+
+
+
 
    //dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
    //   : mDockerName(dockername)

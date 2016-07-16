@@ -26,7 +26,7 @@ Poco::Path servicePaths::getPathServiceYml() const
 
 Poco::Path servicePaths::getPathServiceConfig() const
 {
-   return getPathHostVolume().setFileName("serviceconfig.yml");
+   return getPathHostVolume().setFileName("serviceconfig.json");
 }
 
 Poco::Path servicePaths::getPathLaunchScript() const

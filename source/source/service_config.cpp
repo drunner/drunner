@@ -17,6 +17,8 @@ cResult create(const serviceyml::file & y)
 
 cResult serviceConfig::loadconfig()
 {
+   if (!utils::fileexists(mServicePath))
+      return kRError;
    std::ifstream is(mServicePath.toString());
    if (is.bad())
       return kRError;
@@ -28,7 +30,7 @@ cResult serviceConfig::loadconfig()
 cResult serviceConfig::saveconfig() const
 {
    std::ofstream os(mServicePath.toString());
-   if (os.bad())
+   if (os.bad() || !os.is_open())
       return kRError;
    cereal::JSONOutputArchive archive(os);
    archive(mVariables);

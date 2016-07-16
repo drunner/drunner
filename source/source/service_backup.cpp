@@ -26,9 +26,6 @@ void service::backup(const std::string & backupfile)
    if (utils::fileexists(bf))
       logmsg(kLERROR, "Backup file " + bf.toString() + " already exists. Aborting.");
 
-   if (!isValid())
-      logmsg(kLERROR, "Validation of " + getName() + " failed. Try drunner recover " + getName());
-
    utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + getName()));
    utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
 
@@ -59,7 +56,7 @@ void service::backup(const std::string & backupfile)
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
    std::vector<std::string> dockervols;
-   mServiceYml.getDockerVolumeNames(dockervols);
+   mServiceYml.getBackupDockerVolumeNames(dockervols);
 
    for (auto const & entry : dockervols)
    {
@@ -178,7 +175,7 @@ cResult service_install::service_restore(const std::string & backupfile)
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
-   newservice.getServiceYml().getDockerVolumeNames(dockervols);
+   newservice.getServiceYml().getBackupDockerVolumeNames(dockervols);
    if (shb_dockervolumenames.size() != dockervols.size())
       service_restore_fail(mName, "Number of docker volumes stored does not match what we expect.");
    
