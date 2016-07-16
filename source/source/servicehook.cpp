@@ -51,11 +51,14 @@ cResult servicehook::runHook(std::string se)
       args.push_back(entry);
 
    cResult rval(mService->serviceRunnerCommand(args)); 
-   if (rval.isNOIMPL())
-      rval=kRNoChange; // not implemented is perfectly fine for hooks.
 
    if (rval.isError())
       logmsg(kLWARN, "dService hook " + se + " returned error.");
+   else if (rval.isNOIMPL())
+   {
+      logmsg(kLDEBUG, "dService hook " + se + " is not implemented by " + mService->getImageName());
+      rval = kRNoChange; // fine to be not implemented for hooks.
+   }
    else
       logmsg(kLDEBUG, "dService hook for " + se + " complete");
 

@@ -119,6 +119,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
          v.setVal(keyval(std::to_string(i), args[i]));
 
       std::string servicecommand = args[0];
+
       for (const auto & x : mServiceYml.getCommands())
          if (x.name.compare(servicecommand)==0)
          for (const auto & op : x.operations)
@@ -129,7 +130,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             {
                std::string argument = v.substitute(arg);
                if (argument.compare("$@") == 0)
-                  finalargs.insert(finalargs.end(), args.begin(), args.end());
+                  finalargs.insert(finalargs.end(), args.begin()+1, args.end());
                else
                   finalargs.push_back(argument);
                clog += " " + argument;
@@ -140,6 +141,6 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             return kRSuccess;
          }
    }
-   logmsg(kLDEBUG, "Undefined command: " + args[0]);
-   return kRError;
+   logmsg(kLDEBUG, "Command is not implemented by "+mName+": " + args[0]);
+   return kRNotImplemented;
 }
