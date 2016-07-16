@@ -118,12 +118,12 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
       for (unsigned int i = 0; i < args.size(); ++i)
          v.setVal(keyval(std::to_string(i), args[i]));
 
-      std::string command = args[0];
-      std::string clog = command;
+      std::string servicecommand = args[0];
       for (const auto & x : mServiceYml.getCommands())
-         if (x.name.compare(command)==0)
+         if (x.name.compare(servicecommand)==0)
          for (const auto & op : x.operations)
          {
+            std::string clog = op.command;
             std::vector<std::string> finalargs;
             for (const auto &arg : op.args)
             {
@@ -135,7 +135,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
                clog += " " + argument;
             }
             logmsg(kLDEBUG, "Running command " + clog);
-            if (utils::runcommand_stream(command, finalargs, true) != 0)
+            if (utils::runcommand_stream(op.command, finalargs, true) != 0)
                return kRError;
             return kRSuccess;
          }

@@ -133,7 +133,7 @@ namespace utils
 
       // sanity check parameters.
       Poco::Path bfp(command);
-      poco_assert(utils::fileexists(bfp));
+      //poco_assert(utils::fileexists(bfp));
       poco_assert(bfp.isFile());
       poco_assert(bfp.getFileName().compare(args[0]) != 0);
 
@@ -346,15 +346,6 @@ namespace utils
          r = std::string(cstr);
       return r;
    }
-
-   //bool copyfile(std::string src, std::string dest)
-   //{
-   //   // boost bug makes copy_file grumpy with c++11x.
-   //   // also can't copy to another filesystem.
-   //   // so we just use bash.
-   //   int r = bashcommand("cp -a " + src + " " + dest);
-   //   return (r == 0);
-   //}
 
    std::string alphanumericfilter(std::string s, bool whitespace)
    {
