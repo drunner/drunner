@@ -28,14 +28,6 @@ bool drunnerSettings::readSettings()
       return false;
    }
 
-   // migrate old settings.
-   if (utils::findStringIC(drunnerPaths::getdrunnerUtilsImage(), "drunner/rootutils"))
-   {
-      setString("DRUNNERUTILSIMAGE", "drunner/drunner_utils");
-      if (!writeSettings())
-         fatal("Couldn't migrate old dRunner settings."); // couldn't migrate settings.
-   }
-
    logmsg(kLDEBUG, "Read settings from " + drunnerPaths::getPath_drunnerSettings_sh().toString());
    return mReadOkay;
 }

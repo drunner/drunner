@@ -19,6 +19,7 @@
 #include "service_install.h"
 #include "utils_docker.h"
 #include "service.h"
+#include "drunner_paths.h"
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
 {
@@ -44,7 +45,7 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
 
       // set permissions on volume.
       tVecStr args = { "run", "--rm", "-v",
-         v + ":" + "/tempmount","drunner/rootutils",
+         v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
          "chmod","0777","/tempmount" };
 
       int rval = utils::runcommand_stream("docker", args, false);
@@ -91,7 +92,7 @@ cResult service_install::_recreate(bool updating)
       _ensureDirectoriesExist();
 
       // copy files to service directory on host.
-      std::vector<std::string> args = { "run","--rm","-i","-v",
+      std::vector<std::string> args = { "run","--rm","-v",
          getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" ,
          "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
       std::string op;
@@ -117,13 +118,16 @@ cResult service_install::_recreate(bool updating)
          fatal("Corrupt dservice - couldn't read full service.yml");
 
       // make sure we have the latest of all exra containers.
+      bool foundmain = false;
       for (const auto & entry : syfull.getExtraContainers())
       {
          if (utils::stringisame(entry, mImageName)) // don't pull main image again.
-            logmsg(kLWARN, "The main container (" + mImageName + ") should not be specified in extracontainers!");
+            foundmain = true;
          else
             utils_docker::pullImage(entry);
       }
+      if (!foundmain)
+         logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.yml file.");
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
       for (const auto & entry : syfull.getVolumes())

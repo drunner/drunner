@@ -8,13 +8,14 @@
 #include "globallogger.h"
 #include "params.h"
 #include "utils_docker.h"
+#include "drunner_paths.h"
 
 namespace compress
 {
    void _rundocker(std::string src, std::string dst, std::string passwd, std::string ctrcmd)
    {
       std::string cmd("docker");
-      std::vector<std::string> args = { "run","--rm","-i", "-v",src + ":/src","-v",dst + ":/dst" };
+      std::vector<std::string> args = { "run","--rm","-v",src + ":/src","-v",dst + ":/dst" };
 
       if (passwd.length() > 0)
       {
@@ -22,7 +23,7 @@ namespace compress
          args.push_back("-e");
          args.push_back("PASS=\"" + passwd + "\"");
       }
-      args.push_back("drunner/rootutils");
+      args.push_back(drunnerPaths::getdrunnerUtilsImage());
       args.push_back("bash");
       args.push_back("-c");
       args.push_back(ctrcmd);

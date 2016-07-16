@@ -466,38 +466,4 @@ namespace utils
       return rval;
    }
 
-
-
-
-   //dockerrun::dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername)
-   //   : mDockerName(dockername)
-   //{
-   //   int rval = utils::dServiceCmd(cmd, args, false);
-   //   if (rval != 0)
-   //   {
-   //      std::ostringstream oss;
-   //      for (auto entry : args)
-   //         oss << entry << " ";
-   //      logmsg(kLDEBUG, oss.str());
-   //      tidy(); // throwing from ctor does not invoke dtor!
-   //      std::ostringstream oss2;
-   //      oss2 << "Docker command failed. Return code=" << rval;
-   //      logmsg(kLERROR, oss2.str());
-   //   }
-   //}
-   //dockerrun::~dockerrun()
-   //{
-   //   tidy();
-   //}
-
-   //void dockerrun::tidy()
-   //{
-   //   int rval = utils::bashcommand("docker rm " + mDockerName);
-   //   if (rval != 0)
-   //      std::cerr << "failed to remove " + mDockerName << std::endl; // don't throw on dtor.
-   //   else
-   //      logmsg(kLDEBUG, "Deleted docker container " + mDockerName);
-   //}
-
-
 } // namespace utils

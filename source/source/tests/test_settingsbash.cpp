@@ -1,6 +1,7 @@
 #include "catch/catch.h"
 #include "settingsbash.h"
 #include "utils.h"
+#include "drunner_paths.h"
 
 TEST_CASE("read/write bool works", "[settingsbash]") {
    //params p(kLDEBUG);
@@ -32,12 +33,12 @@ TEST_CASE("basic settings work","[settingsbash]")
    SECTION("Test bunch'o'Stuff")
    {
       sb.setString("ROOTPATH","/home/j");
-      sb.setString("DRUNNERUTILSIMAGE","drunner/rootutils");
+      sb.setString("DRUNNERUTILSIMAGE", drunnerPaths::getdrunnerUtilsImage());
       sb.setString("DRUNNERINSTALLURL",R"EOF(https://drunner.s3.amazonaws.com/drunner-install)EOF");
       sb.setString("DRUNNERINSTALLTIME",utils::getTime());
       sb.setBool("PULLIMAGES",true);
 
-      REQUIRE( sb.getString("DRUNNERUTILSIMAGE")=="drunner/rootutils" );
+      REQUIRE( sb.getString("DRUNNERUTILSIMAGE").compare(drunnerPaths::getdrunnerUtilsImage())==0);
    }
 
 }
