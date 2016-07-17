@@ -15,6 +15,7 @@ public:
    cResult uninstall();
    cResult recover();
    cResult update();
+   void createLaunchScript() const;
    cResult install();
    cResult service_restore(const std::string & backupfile);
 

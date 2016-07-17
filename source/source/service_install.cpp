@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <fstream>
 
 #include <Poco/String.h>
 #include <Poco/File.h>
@@ -20,6 +21,8 @@
 #include "utils_docker.h"
 #include "service.h"
 #include "drunner_paths.h"
+#include "generate.h"
+
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
 {
@@ -129,10 +132,14 @@ cResult service_install::_recreate(bool updating)
       }
       if (!foundmain)
          logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.yml file.");
+      
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
       syfull.getManageDockerVolumeNames(vols);
       _createVolumes(vols);
+
+      // create launch script
+      createLaunchScript();
    }
 
    catch (const eExit & e) {
@@ -275,4 +282,24 @@ cResult service_install::update()
    hook.endhook();
 
    return kRSuccess;
+}
+
+
+
+void service_install::createLaunchScript() const
+{
+#ifdef _WIN32
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(getName()+".bat");
+   std::string vdata = R"EOF(@echo off
+drunner servicecmd __SERVICENAME__ %*
+)EOF";
+#else
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(getName());
+   std::string vdata = R"EOF(#!/bin/bash
+drunner servicecmd "__SERVICENAME__" "$@"
+)EOF";
+#endif
+
+   vdata = utils::replacestring(vdata, "__SERVICENAME__", mName);
+   generate(target, S_755, vdata);
 }

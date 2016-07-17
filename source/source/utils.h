@@ -8,6 +8,7 @@
 #include <Poco/Path.h>
 
 #include "enums.h"
+#include "cresult.h"
 
 typedef std::vector<std::string> tVecStr;
 
@@ -35,7 +36,7 @@ namespace utils
 //   void makesymlink(Poco::Path file, Poco::Path link);
 
    void deltree(Poco::Path s);
-   void delfile(Poco::Path fullpath);
+   cResult delfile(Poco::Path fullpath);
 
    void movetree(const std::string & src, const std::string & dst);
    bool getFolders(const std::string & parent, std::vector<std::string> & folders);

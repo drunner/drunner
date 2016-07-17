@@ -316,14 +316,22 @@ namespace utils
          logmsg(kLERROR, "Unable to move " + src + " to " + dst);
    }
 
-   void delfile(Poco::Path fullpath)
+   cResult delfile(Poco::Path fullpath)
    {
-      Poco::File f(fullpath);
-      if (f.exists())
+      try
       {
-         f.remove();
-         logmsg(kLDEBUG, "Deleted " + fullpath.toString());
+         Poco::File f(fullpath);
+         if (f.exists())
+         {
+            f.remove();
+            logmsg(kLDEBUG, "Deleted " + fullpath.toString());
+         }
       }
+      catch (const Poco::Exception & e) {
+         logmsg(kLDEBUG, "Couldn't delete "+fullpath.toString()+" - "+e.what());
+         return kRError;
+      }
+      return kRSuccess;
    }
 
    std::string getTime()

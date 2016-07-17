@@ -16,7 +16,8 @@ void generate(
    poco_assert(fullpath.isFile());
    Poco::File f(fullpath);
    if (f.exists())
-      utils::delfile(fullpath.toString());
+      if (kRSuccess != utils::delfile(fullpath.toString()))
+         logmsg(kLERROR, "Unable to delete file " + fullpath.toString());
 
    std::string op;
    std::ofstream ofs;
