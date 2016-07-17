@@ -64,6 +64,7 @@
     <ClInclude Include="..\source\source\chmod.h" />
     <ClInclude Include="..\source\source\command_dev.h" />
     <ClInclude Include="..\source\source\command_general.h" />
+    <ClInclude Include="..\source\source\dassert.h" />
     <ClInclude Include="..\source\source\drunner_paths.h" />
     <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />

@@ -18,7 +18,9 @@ before_install:
 script:
    - bash build
    - ./drunner unittest
-   - ./drunner install drunner/dtest
+   - ./drunner install drunner/helloworld
+   - ./drunner install drunner/minecraft
+   - ./drunner install drunner/minimalexample
 #   - dtest test
 #   - dtest test drunner/minimalexample
 #   - dtest test drunner/helloworld

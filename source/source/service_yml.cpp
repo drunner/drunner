@@ -3,13 +3,14 @@
 #include "service_yml.h"
 #include "utils.h"
 #include "globallogger.h"
+#include "dassert.h"
 
 namespace serviceyml
 {
  
    simplefile::simplefile(Poco::Path path) : mPath(path)
    {
-      poco_assert(mPath.isFile());
+      drunner_assert(mPath.isFile(),"Coding error: path provided to simplefile is not a file!");
    }
    
    cResult simplefile::_loadyml()
@@ -27,17 +28,21 @@ namespace serviceyml
       // load containers
       YAML::Node containers = yamlfile["containers"];
       for (auto it = containers.begin(); it != containers.end(); ++it)
+      {
+         drunner_assert(it->IsScalar(), "Containers must be a simple sequence of strings (container names).");
          mContainers.push_back(it->as<std::string>());
+      }
 
       // load configuration
       YAML::Node configuration = yamlfile["configuration"];
       for (auto it = configuration.begin(); it != configuration.end(); ++it)
       {
          Configuration ci;
+         drunner_assert(it->first.IsScalar(), "Configuration items must be a map of maps.");
          ci.name = it->first.as<std::string>();
          ci.required = false;
 
-         poco_assert(it->second.IsMap());
+         drunner_assert(it->second.IsMap(),"service.yml format is incorrect - the configuration "+ci.name+" must contain a map of properties.");
          YAML::Node value = it->second;
          if (value["description"].IsDefined())
             ci.description = value["description"].as<std::string>();
@@ -73,11 +78,11 @@ namespace serviceyml
    {
       if (kRSuccess != simplefile::loadyml())
          return kRError;
-      poco_assert(mPath.isFile());
-      poco_assert(utils::fileexists(mPath)); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
+      drunner_assert(mPath.isFile(),"Coding error: path provided to loadyml is not a file.");
+      drunner_assert(utils::fileexists(mPath),"The expected file does not exist: "+mPath.toString()); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
 
       YAML::Node yamlfile = YAML::LoadFile(mPath.toString());
-      poco_assert(yamlfile);
+      drunner_assert(yamlfile,"Unable to read the yaml file: "+mPath.toString());
 
       if (yamlfile["commands"])
       {// load commands.
@@ -85,14 +90,16 @@ namespace serviceyml
          for (auto it = commands.begin(); it != commands.end(); ++it)
          {
             CommandLine cl;
+            drunner_assert(it->first.IsScalar(), "Command lines must be a map of sequences.");
             cl.name = it->first.as<std::string>();
+            drunner_assert(it->second.IsSequence(), "Command " + cl.name + " must contain a sequence of commands to run.");
             for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
                Operation op;
                std::string opline = it2->as<std::string>();
                std::string sopline = v.substitute(opline);
                utils::split_in_args(sopline, op.args);
-               poco_assert(op.args.size() > 0);
+               drunner_assert(op.args.size() > 0, "Empty command line in yaml file for command "+cl.name);
                op.command = op.args[0];
                op.args.erase(op.args.begin());
                cl.operations.push_back(op);
@@ -119,14 +126,14 @@ namespace serviceyml
 
    void file::getManageDockerVolumeNames(std::vector<std::string> & vols) const
    {
-      poco_assert(vols.size() == 0);
+      drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
       for (const auto & v : mVolumes)
          if (v.manage)
             vols.push_back(v.name);
    }
    void file::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
    {
-      poco_assert(vols.size() == 0);
+      drunner_assert(vols.size() == 0, "Coding error: passing dirty volume vector to getBackupDockerVolumeNames");
       for (const auto & v : mVolumes)
          if (v.backup)
             vols.push_back(v.name);
