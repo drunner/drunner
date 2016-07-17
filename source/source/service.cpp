@@ -106,14 +106,17 @@ int service::status()
 
 cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
 {
-   std::ostringstream oss;
-   for (const auto & x : args) oss << " " << x;
-   logmsg(kLDEBUG, "serviceRunner - args are" + oss.str());
-
-   if (args.size() < 1)
-      return serviceRunnerCommand({ "help" });
+   if (args.size() < 1 || utils::stringisame(args[0], "help"))
+   { // show help
+      std::cout << std::endl << mServiceYml.getHelp() << std::endl;
+      return kRSuccess;
+   }
    else
    {
+      std::ostringstream oss;
+      for (const auto & x : args) oss << " " << x;
+      logmsg(kLDEBUG, "serviceRunner - args are" + oss.str());
+      
       variables v(mServiceCfg.getVariables());
       for (unsigned int i = 0; i < args.size(); ++i)
          v.setVal(std::to_string(i), args[i]);

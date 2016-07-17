@@ -121,6 +121,9 @@ namespace serviceyml
          }
       }
 
+      drunner_assert(yamlfile["help"], "All service.yml files are required to have a help command.");
+      mHelp = v.substitute(yamlfile["help"].as<std::string>());
+
       return kRSuccess;
    }
 

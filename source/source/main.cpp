@@ -56,6 +56,15 @@ int main(int argc, char **argv)
    }
 }
 
+// 
+
+std::string _imageparse(std::string imagename)
+{
+   if (imagename.find('/') == std::string::npos)
+      return "drunner/" + imagename;
+   return imagename;
+}
+
 // ----------------------------------------------------------------------------------------------------------------------
 
 int mainroutines::process()
@@ -110,7 +119,7 @@ int mainroutines::process()
          if (p.numArgs()<1)
             logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
          
-         validateImage::validate(p.getArg(0));
+         validateImage::validate(_imageparse(p.getArg(0)));
          break;
       }
 
@@ -118,7 +127,7 @@ int mainroutines::process()
       {
          if (p.numArgs()<1 || p.numArgs()>2)
             logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
-         std::string imagename = p.getArg(0);
+         std::string imagename = _imageparse(p.getArg(0));
          std::string servicename;
          if ( p.numArgs()==2)
             servicename=p.getArg(1); // if empty then install will set to default from imagename.
@@ -196,7 +205,7 @@ int mainroutines::process()
          std::string servicename = p.getArg(0);
          if (p.numArgs() == 2)
          {
-            service_install svc(servicename, p.getArg(1));
+            service_install svc(servicename, _imageparse(p.getArg(1)));
             return svc.recover();
          }
          else {
