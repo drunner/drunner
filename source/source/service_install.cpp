@@ -261,10 +261,7 @@ cResult service_install::recover()
    if (utils::fileexists(getPath()))
       uninstall();
 
-   install();
-
-   logmsg(kLINFO, getName() + " recovered.");
-   return kRSuccess;
+   return install();
 }
 
 cResult service_install::update()

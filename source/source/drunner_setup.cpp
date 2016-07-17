@@ -38,10 +38,15 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create rootpath if it doesn't exist.
-#ifndef _DEBUG
       if (utils::fileexists(drunnerPaths::getPath_Root()) && !forceUpdate)
+#ifndef _DEBUG
          return kRNoChange;
+#else 
+         logmsg(kLINFO, "Debug build - checking drunner setup is up to date.");
 #endif
+      else
+         logmsg(kLINFO, forceUpdate ? "Ensuring drunner setup is up to date." :
+            "Settup up drunner for the first time.");
 
       // check prereqs (e.g. docker installed).
       check_prerequisits();
@@ -76,47 +81,12 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // Finished!
-      if (forceUpdate)
-         logmsg(kLINFO, "Update of drunner to " + p.getVersion() + " completed succesfully.");
-      else
-         logmsg(kLINFO, "Initial setup of drunner " + p.getVersion() + " completed succesfully.");
-
       return kRSuccess;
    }
 
    int update()
    {
-      logmsg(kLERROR, "Not implemented.");
-      return kRError;
-
-      //const params & p(*GlobalContext::getParams().get());
-      //const drunnerSettings & s(*GlobalContext::getSettings().get());
-
-      //logmsg(kLDEBUG, "Updating dRunner in " + drunnerPaths::getPath_Root().toString());
-
-      //std::string url(s.getdrunnerInstallURL());
-      //Poco::Path trgt(drunnerPaths::getPath_Root());
-      //trgt.setFileName("drunner-install");
-
-      //utils::downloadexe(url, trgt);
-
-      //logmsg(kLINFO, "Updating...");
-
-      //tVecStr args;
-      //args.push_back("drunner-install");
-      //for (auto opt : p.getOptions())
-      //   args.push_back(opt);
-      //args.push_back("setup");
-      //args.push_back(drunnerPaths::getPath_Root().toString());
-      //
-      //std::ostringstream oss;
-      //for (auto arg : args)
-      //   oss << arg << " ";
-      //logmsg(kLDEBUG, utils::trim_copy(oss.str()));
-
-      //Poco::ProcessHandle ph = Poco::Process::launch(trgt.toString(), args);
-      //int result = ph.wait();
-      //return result;
+      return check_setup(true);
    }
 
 }

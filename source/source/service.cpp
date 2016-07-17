@@ -141,6 +141,6 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             return kRSuccess;
          }
    }
-   logmsg(kLDEBUG, "Command is not implemented by "+mName+": " + args[0]);
+   //logmsg(kLDEBUG, "Command is not implemented by "+mName+": " + args[0]);
    return kRNotImplemented;
 }
