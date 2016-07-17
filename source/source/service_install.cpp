@@ -22,14 +22,15 @@
 #include "service.h"
 #include "drunner_paths.h"
 #include "generate.h"
-
+#include "dassert.h"
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
 {
    serviceConfig svc(getPathServiceConfig());
-   if (kRSuccess != svc.loadconfig())
-      fatal("No imagename specified and unable to read the service config.");
-   mImageName = svc.getImageName();
+   if (kRSuccess == svc.loadconfig())
+      mImageName = svc.getImageName();
+   else
+      logmsg(kLWARN,"No imagename specified and unable to read the service config.");
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -71,7 +72,7 @@ void service_install::_ensureDirectoriesExist() const
 
 cResult service_install::_recreate(bool updating)
 {
-   poco_assert(mImageName.length() > 0);
+   drunner_assert(mImageName.length() > 0, "Can't recreate service "+mName + " - image name could not be determined.");
 
    if (updating)
    { // pull all containers used by the dService.
@@ -156,6 +157,8 @@ cResult service_install::_recreate(bool updating)
 
 cResult service_install::install()
 {
+   drunner_assert(mImageName.length() > 0, "Can't install service " + mName + " - image name could not be determined.");
+
    logmsg(kLDEBUG, "Installing " + mName + " at " + getPath().toString() + ", using image " + mImageName);
 	if (utils::fileexists(getPath()))
 		logmsg(kLERROR, "Service already exists. Try:\n drunner update " + getName());
@@ -274,6 +277,8 @@ cResult service_install::recover()
 
 cResult service_install::update()
 { // update the service (recreate it)
+   drunner_assert(mImageName.length() > 0, "Can't update service " + mName + " - image name could not be determined.");
+
    service svc(mName);
    servicehook hook(&svc, "update");
    hook.starthook();
