@@ -28,11 +28,13 @@ using namespace utils;
 
 void waitforreturn()
 {
-#if defined(_WIN32) && defined(_DEBUG)
-   std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
-   std::string s;
-   std::getline(std::cin, s);
-#endif
+   if (GlobalContext::hasParams())
+      if (GlobalContext::getParams()->doPause())
+      {
+         std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
+         std::string s;
+         std::getline(std::cin, s);
+      }
 }
 
 int main(int argc, char **argv)
@@ -91,10 +93,10 @@ int mainroutines::process()
          break;
       }
 
-      case c_update:
+      case c_setup:
       {
          if (p.numArgs()<1)
-            drunnerSetup::update(); // defined in command_setup
+            drunnerSetup::setup(); // defined in command_setup
          else
          { // first argument is service name.
             service_install svi(p.getArg(0));

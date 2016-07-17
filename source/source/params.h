@@ -25,6 +25,7 @@ public:
   
    const std::vector<std::string> & getOptions() const { return mOptions; }
    bool isDevelopmentMode() const { return mDevelopmentMode; }
+   bool doPause() const { return mPause; }
 
 private:
    std::string mVersion;
@@ -33,6 +34,7 @@ private:
    std::vector<std::string> mArgs;
    eLogLevel mLogLevel;
    bool mDevelopmentMode;
+   bool mPause;
    
    edServiceOutput mServiceOutput_hooks;
    edServiceOutput mServiceOutput_servicecmd;

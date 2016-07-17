@@ -7,6 +7,27 @@
 #include "generate.h"
 #include "drunner_paths.h"
 
+
+#ifdef _WIN32
+
+
+void generate_plugin_script(std::string pluginname)
+{
+   std::string vdata = R"EOF(
+@echo off
+drunner __plugin____PLUGINNAME__ %*
+)EOF";
+
+   vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
+
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(pluginname + ".bat");
+   generate(target, S_755, vdata);
+}
+
+
+#else
+
+
 void generate_plugin_script (std::string pluginname)
 {
    std::string vdata = R"EOF(#!/bin/bash
@@ -41,6 +62,8 @@ CMD="help"
    Poco::Path target = drunnerPaths::getPath_Bin().setFileName(pluginname);
    generate(target, S_755, vdata);
 }
+
+#endif
 
 #endif
 

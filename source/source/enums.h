@@ -44,7 +44,7 @@ enum eCommand {
    c_UNDEFINED,
    c_clean,
    c_list,
-   c_update,
+   c_setup,
    c_checkimage,
    c_backup,
    c_restore,

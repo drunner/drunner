@@ -32,8 +32,13 @@ namespace drunnerSetup
       }
    }
 
+   static bool s_setup_fully_checked = false;
+
    cResult check_setup(bool forceUpdate)
    {
+      if (s_setup_fully_checked)
+         return kRNoChange;
+
       const params & p(*GlobalContext::getParams().get());
 
       // -----------------------------------------------------------------------------
@@ -47,6 +52,8 @@ namespace drunnerSetup
       else
          logmsg(kLINFO, forceUpdate ? "Ensuring drunner setup is up to date." :
             "Settup up drunner for the first time.");
+
+      s_setup_fully_checked = true;
 
       // check prereqs (e.g. docker installed).
       check_prerequisits();
@@ -84,9 +91,11 @@ namespace drunnerSetup
       return kRSuccess;
    }
 
-   int update()
+   cResult setup()
    {
-      return check_setup(true);
+      cResult rval = check_setup(true);
+      logmsg(kLINFO, "Setup complete.");
+      return rval;
    }
 
 }

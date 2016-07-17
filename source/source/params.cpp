@@ -29,7 +29,8 @@ void params::parsecmd()
 
    commandlist["clean"] = c_clean;
    commandlist["list"] = c_list;
-   commandlist["update"] = c_update;
+   commandlist["update"] = c_setup;
+   commandlist["setup"] = c_setup;
    commandlist["checkimage"] = c_checkimage;
    commandlist["backup"] = c_backup;
    commandlist["restore"] = c_restore;
@@ -71,6 +72,7 @@ void params::setdefaults()
    mCmd = c_UNDEFINED;
 
    mDevelopmentMode = false;
+   mPause = false;
 }
 
 // Parse command line parameters.
@@ -91,6 +93,7 @@ while (1)
             {"normal", 0, 0, 'n'},
             {"logged",0,0,'l'},
             {"developer",0,0,'d'},
+            {"pause",0,0,'p'},
 //            {"create", 1, 0, 'c'},
             {0, 0, 0, 0}
          };
@@ -98,7 +101,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsnold",
+      c = getopt_long (argc, argv, "vsnoldp",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -144,6 +147,10 @@ while (1)
          case 'd':
             mDevelopmentMode = true;
             mOptions.push_back("-d");
+            break;
+
+         case 'p':
+            mPause = true;
             break;
 
          default:

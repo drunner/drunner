@@ -188,6 +188,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\poco-1.7.3\lib;$(SolutionDir)..\..\yaml-cpp\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
