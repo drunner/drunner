@@ -231,9 +231,10 @@ cResult service_install::obliterate()
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
                   logmsg(kLWARN, op);
+                  rval += kRError;
                }
                else
-                  rval = kRSuccess;
+                  rval += kRSuccess;
             }
          }
       }
@@ -245,21 +246,27 @@ cResult service_install::obliterate()
 
    if (utils::fileexists(getPath()))
    { // delete the service tree.
-      logmsg(kLINFO, "Obliterating all of the dService files");
-      utils::deltree(getPath());
-      rval = kRSuccess;
+      logmsg(kLINFO, "Obliterating all of the dService files.");
+      cResult result = utils::deltree(getPath());
+      rval += result;
+      if (result != kRSuccess)
+         logmsg(kLINFO, "Failed to delete the dService files.");
    }
 
    // delete the host volumes
    if (utils::fileexists(getPathHostVolume()))
    {
-      logmsg(kLINFO, "Obliterating the hostVolume (includes configuration)");
-      utils::deltree(getPathHostVolume());
-      rval = kRSuccess;
+      logmsg(kLINFO, "Obliterating the hostVolume (includes configuration).");
+      cResult result = utils::deltree(getPathHostVolume());
+      rval += result;
+      if (result != kRSuccess)
+         logmsg(kLINFO, "Failed to delete the hostVolume files.");
    }
 
    if (rval == kRNoChange)
       logmsg(kLWARN, "Couldn't find any trace of dService " + getName() + " - no changes made.");
+   else if (rval == kRError)
+      logmsg(kLWARN, "Obliterated what we could, but system is not clean.");
    else
       logmsg(kLINFO, "Obliterated " + getName());
    return rval;

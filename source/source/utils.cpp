@@ -295,18 +295,24 @@ namespace utils
  //     logmsg(kLDEBUG, "Created symlink at " + link.toString());
  //  }
 
-   void deltree(Poco::Path s)
+   cResult deltree(Poco::Path s)
    {
-      Poco::File f(s);
-      if (f.exists())
+      try
       {
-         f.remove(true);
-         logmsg(kLDEBUG, "Recursively deleted " + s.toString());
+         Poco::File f(s);
+         if (f.exists())
+         {
+            f.remove(true);
+            logmsg(kLDEBUG, "Recursively deleted " + s.toString());
+         }
+         else
+            logmsg(kLDEBUG, "Directory " + s.toString() + " does not exist (no need to delete).");
       }
-      else
-         logmsg(kLDEBUG, "Directory " + s.toString() + " does not exist (no need to delete).");
-
-//      logmsg(kLERROR, "Unable to remove existing directory at "+s+" - "+op);
+      catch (const Poco::Exception & e) {
+         logmsg(kLDEBUG, "Couldn't delete " + s.toString() + " - " + e.what());
+         return kRError;
+      }
+      return kRSuccess;
    }
 
    void movetree(const std::string &src, const std::string &dst)

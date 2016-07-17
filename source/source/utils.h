@@ -36,7 +36,7 @@ namespace utils
    void makedirectory(Poco::Path d, mode_t mode);
 //   void makesymlink(Poco::Path file, Poco::Path link);
 
-   void deltree(Poco::Path s);
+   cResult deltree(Poco::Path s);
    cResult delfile(Poco::Path fullpath);
 
    void movetree(const std::string & src, const std::string & dst);
