@@ -22,8 +22,16 @@ cResult serviceConfig::loadconfig()
    std::ifstream is(mServicePath.toString());
    if (is.bad())
       return kRError;
-   cereal::JSONInputArchive archive(is);
-   archive(mVariables);
+
+   try
+   {
+      cereal::JSONInputArchive archive(is);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception &)
+   {
+      return kRError;
+   }
    return kRSuccess;
 }
 
@@ -32,8 +40,16 @@ cResult serviceConfig::saveconfig() const
    std::ofstream os(mServicePath.toString());
    if (os.bad() || !os.is_open())
       return kRError;
-   cereal::JSONOutputArchive archive(os);
-   archive(mVariables);
+
+   try
+   {
+      cereal::JSONOutputArchive archive(os);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception &)
+   {
+      return kRError;
+   }
    return kRSuccess;
 }
 
@@ -46,7 +62,7 @@ std::string serviceConfig::getImageName() const
 
 void serviceConfig::setImageName(std::string iname)
 {
-   mVariables.setVal(keyval("IMAGENAME", iname));
+   mVariables.setVal("IMAGENAME", iname);
 }
 
 std::string serviceConfig::getServiceName() const
@@ -56,7 +72,7 @@ std::string serviceConfig::getServiceName() const
 
 void serviceConfig::setServiceName(std::string sname)
 {
-   mVariables.setVal(keyval("SERVICENAME", sname));
+   mVariables.setVal("SERVICENAME", sname);
 }
 
 cResult serviceConfig::create(const serviceyml::simplefile & y)
@@ -64,7 +80,7 @@ cResult serviceConfig::create(const serviceyml::simplefile & y)
    const std::vector<serviceyml::Configuration> & ci(y.getConfigItems());
 
    for (const auto & i : ci)
-      mVariables.setVal(keyval(i.name, i.defaultval));
+      mVariables.setVal(i.name, i.defaultval);
 
    return kRSuccess;
 }

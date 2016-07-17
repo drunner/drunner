@@ -116,7 +116,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
    {
       variables v(mServiceCfg.getVariables());
       for (unsigned int i = 0; i < args.size(); ++i)
-         v.setVal(keyval(std::to_string(i), args[i]));
+         v.setVal(std::to_string(i), args[i]);
 
       std::string servicecommand = args[0];
 
@@ -136,7 +136,8 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
                clog += " " + argument;
             }
             logmsg(kLDEBUG, "Running command " + clog);
-            if (utils::runcommand_stream(op.command, finalargs, true) != 0)
+
+            if (utils::runcommand_stream(op.command, finalargs, true, getPathdRunner(), v.getEnv()) != 0)
                return kRError;
             return kRSuccess;
          }

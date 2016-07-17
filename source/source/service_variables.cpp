@@ -7,43 +7,36 @@
 
 variables::variables(const variables & other)
 {
-   const std::vector<keyval> & otherkvs(other.getAll());
-   mVariables.insert(mVariables.end(), otherkvs.begin(), otherkvs.end());
+   const tKeyVals & otherkvs(other.getAll());
+   mVariables.insert(otherkvs.begin(), otherkvs.end());
 }
 variables::variables(const variables & other1, const variables & other2)
 {
-   const std::vector<keyval> & otherkvs1(other1.getAll());
-   const std::vector<keyval> & otherkvs2(other2.getAll());
-   mVariables.insert(mVariables.end(), otherkvs1.begin(), otherkvs1.end());
-   mVariables.insert(mVariables.end(), otherkvs2.begin(), otherkvs2.end());
+   const tKeyVals & otherkvs1(other1.getAll());
+   const tKeyVals & otherkvs2(other2.getAll());
+   mVariables.insert(otherkvs1.begin(), otherkvs1.end());
+   mVariables.insert(otherkvs2.begin(), otherkvs2.end());
 }
 
 bool variables::hasKey(std::string key) const
 {
-   for (auto x : mVariables)
-      if (utils::stringisame(key, x.key))
+   for (const auto & x : mVariables)
+      if (utils::stringisame(key, x.first))
          return true;
    return false;
 }
 
 std::string variables::getVal(std::string key) const
 {
-   for (auto x : mVariables)
-      if (utils::stringisame(key, x.key))
-         return x.value;
+   for (const auto & x : mVariables)
+      if (utils::stringisame(key, x.first))
+         return x.second;
    return "";
 }
 
-void variables::setVal(keyval kv)
+void variables::setVal(std::string key, std::string val) 
 {
-   for (unsigned int i=0;i<mVariables.size();++i)
-      if (utils::stringisame(kv.key, mVariables[i].key))
-      {
-         mVariables.erase(mVariables.begin() + i);
-         --i;
-      }
-
-   mVariables.push_back(kv);
+   mVariables[key] = val;
 }
 
 std::string variables::substitute(std::string s) const
@@ -51,8 +44,13 @@ std::string variables::substitute(std::string s) const
    std::string os(s);
    for (auto it = mVariables.begin(); it != mVariables.end(); ++it)
    {
-      Poco::replaceInPlace(os, "$" + it->key, it->value);
-      Poco::replaceInPlace(os, "${" + it->key+"}", it->value);
+      Poco::replaceInPlace(os, "$" + it->first, it->second);
+      Poco::replaceInPlace(os, "${" + it->first+"}", it->second);
    }
    return os;
+}
+
+const Poco::Process::Env & variables::getEnv() const
+{
+   return mVariables;
 }

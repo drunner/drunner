@@ -9,6 +9,7 @@
 #include "params.h"
 #include "utils_docker.h"
 #include "drunner_paths.h"
+#include "service_variables.h"
 
 namespace compress
 {
@@ -28,7 +29,9 @@ namespace compress
       args.push_back("-c");
       args.push_back(ctrcmd);
 
-      utils::runcommand_stream(cmd, args, false);
+      tKeyVals env;
+      env["PASS"] = passwd; // not necessary
+      utils::runcommand_stream(cmd, args, false, drunnerPaths::getPath_empty(), env);
    }
 
    // --------------------------------------

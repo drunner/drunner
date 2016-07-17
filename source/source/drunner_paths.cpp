@@ -84,6 +84,11 @@ Poco::Path drunnerPaths::getPath_drunnerbackups_cfg()
    return getPath_Root().setFileName("drunnerBackups.cfg");
 }
 
+Poco::Path drunnerPaths::getPath_empty()
+{
+   return getPath_Root().pushDirectory(".empty");
+}
+
 std::string drunnerPaths::getdrunnerUtilsImage()
 {
    return  "drunner/drunner_utils";

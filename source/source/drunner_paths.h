@@ -15,6 +15,8 @@ namespace drunnerPaths
    Poco::Path getPath_HostVolumes();
    Poco::Path getPath_drunnerSettings_sh();
    Poco::Path getPath_drunnerbackups_cfg();
+   Poco::Path getPath_empty();
+
    std::string getdrunnerUtilsImage();
 }
 

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 
 #include <Poco/Path.h>
+#include <Poco/Process.h>
 
 #include "enums.h"
 #include "cresult.h"
@@ -46,7 +47,7 @@ namespace utils
 
    int runcommand(std::string command, std::vector<std::string> args);
    int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim);
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd);
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd, Poco::Path initialDirectory, const Poco::Process::Env & env);
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");

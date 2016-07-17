@@ -128,7 +128,7 @@ namespace utils
    }
 
 
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd)
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd, Poco::Path initialDirectory, const Poco::Process::Env & env)
    { // streaming as the command runs.
 
       // sanity check parameters.
@@ -141,10 +141,10 @@ namespace utils
       std::string cmd = command;
       for (const auto & entry : args)
          cmd += " [" + entry + "]";
-      logmsg(kLDEBUG, "dServiceCmd: " + cmd);
+      logmsg(kLDEBUG, "runcommand_stream: " + cmd);
 
       Poco::Pipe outpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe);
+      Poco::ProcessHandle ph = Poco::Process::launch(command, args, initialDirectory.toString(), 0, &outpipe, &outpipe, env);
       Poco::PipeInputStream istrout(outpipe);
 
       // stream the output to the logger.

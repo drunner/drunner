@@ -4,24 +4,11 @@
 #include <cereal/access.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
+#include <cereal/types/map.hpp>
 
-class keyval {
-public:
-   keyval() {}
-   keyval(std::string k, std::string v) : key(k), value(v) {}
+#include <Poco/Process.h>
 
-   std::string key;
-   std::string value;
-
-private:
-   // --- serialisation --
-   friend class cereal::access;
-   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(key, value); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(key, value); }
-   // --- serialisation --
-};
-CEREAL_CLASS_VERSION(keyval, 1);
-
+typedef std::map<std::string, std::string> tKeyVals;
 
 class variables {
 public:
@@ -31,15 +18,16 @@ public:
 
    bool hasKey(std::string key) const;
    std::string getVal(std::string key) const;
-   void setVal(keyval kv);
+   void setVal(std::string key, std::string val);
 
    std::string substitute(std::string s) const;
+   const Poco::Process::Env & getEnv() const;
 
 protected:
-   const std::vector<keyval> & getAll() const { return mVariables; }
+   const tKeyVals & getAll() const { return mVariables; }
 
 private:
-   std::vector<keyval> mVariables;
+   tKeyVals mVariables;
 
    // --- serialisation --
    friend class cereal::access;
