@@ -22,6 +22,7 @@
 #include <Poco/Util/SystemConfiguration.h>
 #include <Poco/Net/DNS.h>
 #include <Poco/Net/NetworkInterface.h>
+#include <Poco/DirectoryIterator.h>
 
 #include <sys/stat.h>
 
@@ -33,6 +34,7 @@
 #include "enums.h"
 #include "chmod.h"
 #include "drunner_paths.h"
+#include "dassert.h"
 
 namespace utils
 {
@@ -295,18 +297,31 @@ namespace utils
  //     logmsg(kLDEBUG, "Created symlink at " + link.toString());
  //  }
 
+
+   // recusively delete the path given. we do this manually to set the permissions to writable,
+   // so that windows doesn't cause permission denied errors.
    cResult deltree(Poco::Path s)
    {
+      drunner_assert(s.isDirectory(), "deltree: asked to delete a file.");
+      cResult rval = kRNoChange;
+
       try
       {
+         Poco::DirectoryIterator end;
+         for (Poco::DirectoryIterator it(s); it != end; ++it)
+            if (it->isFile())
+               rval += delfile(it->path());
+            else
+            {
+               Poco::Path subdir(it->path());
+               subdir.makeDirectory();
+               rval += deltree(subdir);
+            }
+
          Poco::File f(s);
-         if (f.exists())
-         {
-            f.remove(true);
-            logmsg(kLDEBUG, "Recursively deleted " + s.toString());
-         }
-         else
-            logmsg(kLDEBUG, "Directory " + s.toString() + " does not exist (no need to delete).");
+         f.setWriteable(true);
+         f.remove();
+         logmsg(kLDEBUG, "Deleted " + f.path());
       }
       catch (const Poco::Exception & e) {
          logmsg(kLDEBUG, "Couldn't delete " + s.toString() + " - " + e.what());
@@ -324,11 +339,13 @@ namespace utils
 
    cResult delfile(Poco::Path fullpath)
    {
+      drunner_assert(fullpath.isFile(), "delfile: asked to delete a directory: "+fullpath.toString());
       try
       {
          Poco::File f(fullpath);
          if (f.exists())
          {
+            f.setWriteable(true);
             f.remove();
             logmsg(kLDEBUG, "Deleted " + fullpath.toString());
          }

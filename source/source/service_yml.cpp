@@ -113,11 +113,11 @@ namespace serviceyml
          YAML::Node volumes = yamlfile["volumes"];
          for (auto it = volumes.begin(); it != volumes.end(); ++it)
          {
-            Volume v;
-            v.name = it->first.as<std::string>();
-            v.backup = it->second["backup"].as<bool>();
-            v.manage = it->second["manage"].as<bool>();
-            mVolumes.push_back(v);
+            Volume vol;
+            vol.name = v.substitute(it->first.as<std::string>());
+            vol.backup = it->second["backup"].as<bool>();
+            vol.manage = it->second["manage"].as<bool>();
+            mVolumes.push_back(vol);
          }
       }
 

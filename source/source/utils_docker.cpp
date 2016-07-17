@@ -13,7 +13,7 @@ namespace utils_docker
 
    void createDockerVolume(std::string name)
    {
-      std::vector<std::string> args = { "volume","create","--name=\"" + name + "\"" };
+      std::vector<std::string> args = { "volume","create","--name=" + name };
       int rval = utils::runcommand("docker", args);
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
