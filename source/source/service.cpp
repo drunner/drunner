@@ -12,6 +12,7 @@
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "service_yml.h"
+#include "dassert.h"
 
 // --------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -39,52 +40,31 @@ servicePaths::servicePaths(const std::string & servicename) :
 cResult service::servicecmd()
 {
    const params & p(*GlobalContext::getParams());
-   poco_assert(p.numArgs() > 0); // should never have 0 args to servicecmd!
+   drunner_assert(p.numArgs() > 0, "servicecmd requires an argument..."); // should never have 0 args to servicecmd!
 
    std::vector<std::string> cargs( p.getArgs().begin() + 1, p.getArgs().end() );
 
-   if (p.numArgs() < 2 || utils::stringisame(mName, "help"))
-   {
-      cargs.push_back("help");
-      serviceRunnerCommand(cargs);
-      return kRSuccess;
-   }
-
    std::string command = p.getArgs()[1];
-   std::string reservedwords = " install backupstart backupend backup restore update enter uninstall obliterate recover ";
-   if (utils::findStringIC(reservedwords, " " + command + " ")) // spaces are to ensure whole word match.
-   {
-      if (command != "enter")
-         logmsg(kLERROR, command + " is a reserved word. You might want  drunner " + command + " " + mName + "  instead.");
-      enter(); // uses execl so never returns.
-      logmsg(kLERROR, "Should never get here. Enter command shouldn't return.");
-   }
+   if (p.isdrunnerCommand(command))
+      logmsg(kLERROR, command + " is a reserved word.\nTry:\n drunner " + command + " " + mName);
+   if (p.isHook(command))
+      logmsg(kLERROR, command + " is a reserved word and not available from the comamnd line for "+mName);
 
    servicehook hook(this, "servicecmd", cargs);
    hook.starthook();
 
-   cResult rval( serviceRunnerCommand(cargs) );
+   cResult rval(serviceRunnerCommand(cargs));
+   if (rval==kRNotImplemented)
+      logmsg(kLERROR, "Command is not implemented by "+mName+": " + cargs[0]);
 
    hook.endhook();
 
    return rval;
 }
 
-
 const std::string service::getImageName() const
 {
    return mImageName;
-}
-
-void service::enter()
-{
-   logmsg(kLERROR, "Enter is not implemented.");
-//#else
-//   servicehook hook(this, "enter");
-//   hook.starthook();
-//
-//   execl(getPathServiceRunner().toString().c_str(), "servicerunner", "enter", NULL);
-//#endif
 }
 
 int service::status()
@@ -145,6 +125,5 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             return kRSuccess;
          }
    }
-   //logmsg(kLDEBUG, "Command is not implemented by "+mName+": " + args[0]);
    return kRNotImplemented;
 }

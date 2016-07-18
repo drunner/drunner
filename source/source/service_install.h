@@ -15,13 +15,14 @@ public:
    cResult uninstall();
    cResult recover();
    cResult update();
-   void createLaunchScript() const;
    cResult install();
    cResult service_restore(const std::string & backupfile);
 
 private:
+   void _createLaunchScript() const;
    void _createVolumes(std::vector<std::string> & volumes);
    void _ensureDirectoriesExist() const;
+   cResult _removeLaunchScript() const;
    cResult _recreate(bool updating);
 
    std::string mImageName;

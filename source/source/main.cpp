@@ -163,14 +163,14 @@ int mainroutines::process()
          break;
       }
 
-      case c_enter:
-      {
-         if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner enter SERVICENAME");
-         service svc(p.getArg(0));
-         svc.enter();
-         break;
-      }
+      //case c_enter:
+      //{
+      //   if (p.numArgs() < 1)
+      //      logmsg(kLERROR, "Usage: drunner enter SERVICENAME");
+      //   service svc(p.getArg(0));
+      //   svc.enter();
+      //   break;
+      //}
 
       case c_build:
       {
@@ -179,6 +179,11 @@ int mainroutines::process()
          else
             command_dev::build(p.getArg(0));
          break;
+      }
+
+      case c_configure:
+      {
+
       }
 
       case c_servicecmd:
@@ -198,7 +203,7 @@ int mainroutines::process()
          return svc.status();
       }
 
-      case c_recover:
+      case c_recreate:
       {
          if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]");

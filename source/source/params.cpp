@@ -12,7 +12,33 @@
 #include "buildnum.h"
 #include "exceptions.h"
 #include "drunner_paths.h"
+#include "dassert.h"
 
+// Parse command line parameters.
+params::params(int argc, char **argv) :
+   mCommandList({
+   {"clean",c_clean},
+   {"list",c_list},
+   {"checkimage",c_checkimage},
+   {"unittest",c_unittest},
+   {"help",c_help},
+   {"install",c_install},
+   {"uninstall",c_uninstall},
+   {"obliterate",c_obliterate},
+   {"update",c_setup},
+   {"setup",c_setup},
+   {"backup",c_backup},
+   {"restore",c_restore},
+   {"recreate",c_recreate},
+   {"status",c_status},
+   {"build",c_build},
+   {"configure",c_configure},
+   {"servicecmd",c_servicecmd}
+   })
+{
+   _setdefaults();
+   _parse(argc, argv);
+}
 
 std::string params::substitute( const std::string & source ) const
 {
@@ -23,45 +49,38 @@ std::string params::substitute( const std::string & source ) const
    return d;
 }
 
-void params::parsecmd()
+bool params::isdrunnerCommand(std::string c) const
 {
-   std::map<std::string, eCommand> commandlist;
-
-   commandlist["clean"] = c_clean;
-   commandlist["list"] = c_list;
-   commandlist["update"] = c_setup;
-   commandlist["setup"] = c_setup;
-   commandlist["checkimage"] = c_checkimage;
-   commandlist["backup"] = c_backup;
-   commandlist["restore"] = c_restore;
-   commandlist["install"] = c_install;
-   commandlist["recover"] = c_recover;
-   commandlist["recreate"] = c_recover; // synonym for recover.
-   commandlist["uninstall"] = c_uninstall;
-   commandlist["obliterate"] = c_obliterate;
-   commandlist["enter"] = c_enter;
-   commandlist["status"] = c_status;
-   commandlist["build"] = c_build;
-   commandlist["unittest"] = c_unittest;
-   commandlist["servicecmd"] = c_servicecmd;
-   commandlist["help"] = c_help;
-   commandlist["__save-environment"]  = c_saveenvironment;
-
-   if (mCmdStr.compare(0, 10, "__plugin__") == 0)
-   {
-      mCmdStr.erase(0,10);
-      mCmd = c_plugin;
-   }
-   else
-   {
-      auto it = commandlist.find(mCmdStr);
-      if (it == commandlist.end())
-         throw eExit("Unknown command \"" + mCmdStr + "\".");
-      mCmd = it->second;
-   }
+   return (getdrunnerCommand(c) != c_UNDEFINED);
 }
 
-void params::setdefaults()
+bool params::isHook(std::string c) const
+{
+   size_t pos = c.find_last_of('_');
+   if (pos == std::string::npos) // no _
+      return false;
+   std::string tag = c;
+   tag.erase(0, pos+1);
+   c.erase(pos);
+
+   if (utils::stringisame(tag, "start") || utils::stringisame(tag, "end"))
+      return isdrunnerCommand(c);
+   else
+      return false; // tag is not start or end.
+}
+
+eCommand params::getdrunnerCommand(std::string c) const
+{
+   auto it = mCommandList.find(c);
+   if (it == mCommandList.end())
+      return c_UNDEFINED;
+   if (utils::stringisame(it->first, c))
+      return it->second;
+   else
+      return c_UNDEFINED;
+}
+
+void params::_setdefaults()
 {
    mVersion = getVersionStr();
    mLogLevel = kLINFO;
@@ -75,11 +94,10 @@ void params::setdefaults()
    mPause = false;
 }
 
-// Parse command line parameters.
-params::params(int argc, char **argv)
-{
-setdefaults();
 
+
+void params::_parse(int argc, char **argv)
+{
 // parse command line stuff.
 int c;
 while (1)
@@ -171,12 +189,20 @@ while (1)
    {
       mCmdStr = argv[opx++];
       std::transform(mCmdStr.begin(), mCmdStr.end(), mCmdStr.begin(), ::tolower);
-      parsecmd();
+
+      // store the arguments to the command. getopt_long permeates the args so all non-options are at end.
+      for (int i = opx; i<argc; ++i)
+         mArgs.push_back(argv[i]);
+
+      if (mCmdStr.compare(0, 10, "__plugin__") == 0)
+      {
+         mCmdStr.erase(0, 10);
+         mCmd = c_plugin;
+      }
+      else
+         mCmd = getdrunnerCommand(mCmdStr);
    }
 
-   // store the arguments to the command.
-   for (int i=opx;i<argc;++i)
-      mArgs.push_back(argv[i]);
 }
 
 const std::string & params::getArg(int n) const 

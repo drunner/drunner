@@ -20,7 +20,7 @@ public:
 
    int status();
    void backup(const std::string & backupfile);
-   void enter(); // uses execl, so never returns.
+   //void enter(); // uses execl, so never returns.
 
    const std::string getImageName() const;
    const params & getParams() const;

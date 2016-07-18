@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #include "enums.h"
 
@@ -27,6 +28,10 @@ public:
    bool isDevelopmentMode() const { return mDevelopmentMode; }
    bool doPause() const { return mPause; }
 
+   bool isdrunnerCommand(std::string c) const;
+   bool isHook(std::string c) const;
+   eCommand getdrunnerCommand(std::string c) const;
+
 private:
    std::string mVersion;
    eCommand mCmd;
@@ -35,14 +40,16 @@ private:
    eLogLevel mLogLevel;
    bool mDevelopmentMode;
    bool mPause;
-   
+   const std::map<std::string, eCommand> mCommandList;
+
    edServiceOutput mServiceOutput_hooks;
    edServiceOutput mServiceOutput_servicecmd;
 
    std::vector<std::string> mOptions;
    void parsecmd();
    params();
-   void setdefaults();
+   void _setdefaults();
+   void _parse(int argc, char **argv);
 };
 
 #endif

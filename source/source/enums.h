@@ -49,10 +49,9 @@ enum eCommand {
    c_backup,
    c_restore,
    c_install,
-   c_recover,
+   c_recreate,
    c_uninstall,
    c_obliterate,
-   c_enter,
    c_status,
    c_build,
    c_unittest,
@@ -60,6 +59,7 @@ enum eCommand {
    c_help,
    c_saveenvironment,
    c_plugin,
+   c_configure,
 };
 
 

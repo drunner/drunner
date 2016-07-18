@@ -141,7 +141,7 @@ cResult service_install::_recreate(bool updating)
       _createVolumes(vols);
 
       // create launch script
-      createLaunchScript();
+      _createLaunchScript();
    }
 
    catch (const eExit & e) {
@@ -181,6 +181,8 @@ cResult service_install::install()
 
 cResult service_install::uninstall()
 {
+   cResult rval = kRNoChange;
+
    if (!utils::fileexists(getPath()))
       logmsg(kLERROR, "Can't uninstall " + mName + " - it does not exist.");
 
@@ -197,13 +199,16 @@ cResult service_install::uninstall()
 
    // delete the service tree.
    logmsg(kLINFO, "Deleting all of the dService files");
-   utils::deltree(getPath());
+   rval += utils::deltree(getPath());
 
    if (utils::fileexists(getPath()))
       logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath().toString());
 
+   // delete the launch script
+   rval += _removeLaunchScript();
+
    logmsg(kLINFO, "Uninstalled " + getName());
-   return kRSuccess;
+   return rval;
 }
 
 cResult service_install::obliterate()
@@ -263,6 +268,9 @@ cResult service_install::obliterate()
          logmsg(kLINFO, "Failed to delete the hostVolume files.");
    }
 
+   // delete the launch script
+   rval += _removeLaunchScript();
+
    if (rval == kRNoChange)
       logmsg(kLWARN, "Couldn't find any trace of dService " + getName() + " - no changes made.");
    else if (rval == kRError)
@@ -299,7 +307,7 @@ cResult service_install::update()
 
 
 
-void service_install::createLaunchScript() const
+void service_install::_createLaunchScript() const
 {
 #ifdef _WIN32
    Poco::Path target = drunnerPaths::getPath_Bin().setFileName(getName()+".bat");
@@ -315,4 +323,29 @@ drunner servicecmd "__SERVICENAME__" "$@"
 
    vdata = utils::replacestring(vdata, "__SERVICENAME__", mName);
    generate(target, S_755, vdata);
+}
+
+cResult service_install::_removeLaunchScript() const
+{
+   cResult rval = kRNoChange;
+
+#ifdef _WIN32
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(getName() + ".bat");
+#else
+   Poco::Path target = drunnerPaths::getPath_Bin().setFileName(getName());
+#endif
+
+   if (!utils::fileexists(target))
+   {
+      logmsg(kLDEBUG, "Launch script " + target.toString() + " does not exist.");
+      return rval;
+   }
+
+   rval += utils::delfile(target);
+   
+   if (rval==kRSuccess)
+      logmsg(kLDEBUG, "Deleted " + target.toString());
+   else
+      logmsg(kLWARN, "Couldn't remove launch script");
+   return rval;
 }

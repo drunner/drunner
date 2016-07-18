@@ -79,7 +79,7 @@ void servicehook::setHookCmds()
    // spaces are to ensure whole word match.
    if (utils::findStringIC(" install_start "," "+mStartCmd+" "))
       mStartCmd = "";
-   if (utils::findStringIC(" uninstall_end obliterate_end enter_end "," "+mEndCmd+" "))
+   if (utils::findStringIC(" uninstall_end obliterate_end "," "+mEndCmd+" "))
       mEndCmd = "";
 }
 
