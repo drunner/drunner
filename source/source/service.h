@@ -34,7 +34,8 @@ public:
    //const cServiceEnvironment & getEnvironmentConst() const;
 
 private:
-   static std::string loadImageName(const std::string & servicename, std::string imagename);
+   static std::string _loadImageName(const std::string & servicename, std::string imagename);
+   cResult _handleconfigure(const std::vector<std::string> & cargs);
 
    std::string mImageName;
    serviceConfig mServiceCfg;

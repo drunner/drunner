@@ -87,32 +87,8 @@ cResult serviceConfig::create(const serviceyml::simplefile & y)
    return kRSuccess;
 }
 
-void serviceConfig::setSaveVariable(std::string keyval)
+void serviceConfig::setSaveVariable(std::string key, std::string val)
 {
-   std::string key, val;
-   size_t epos = keyval.find('=');
-   if (epos == std::string::npos)
-   {
-      key = keyval;
-      try {
-         val = Poco::Environment::get(key);
-      }
-      catch (const Poco::Exception & e)
-      {
-         logmsg(kLDEBUG, e.what());
-         logmsg(kLERROR, "Configuration variables must be given in the form key=value, or the value set as an environment variable");
-      }
-   }
-   else 
-   {
-      if (epos == 0)
-         logmsg(kLERROR, "Missing key.");
-      if (epos == keyval.length() - 1)
-         logmsg(kLERROR, "Missing value.");
-
-      key = keyval.substr(0, epos);
-      val = keyval.substr(epos + 1);
-   }
    mVariables.setVal(key, val);
    logmsg(kLDEBUG, "Set key " + key + " to value " + val);
    saveconfig();
