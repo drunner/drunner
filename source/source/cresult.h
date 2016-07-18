@@ -6,15 +6,21 @@
 class cResult
 {
 public:
+
+   cResult()
+   {
+      mResult = kRNoChange;
+   }
+
+   cResult(eResult x) : mResult(x)
+   {
+   }
+
    cResult(int x)
    {
       mResult = kRError;
       if (x == 0 || x == 3 || x == 127)
          mResult = (eResult)x;
-   }
-
-   cResult(eResult x) : mResult(x)
-   {
    }
 
    cResult & operator += (const cResult & rhs)

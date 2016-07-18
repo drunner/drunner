@@ -41,23 +41,33 @@ cResult service::servicecmd()
 {
    const params & p(*GlobalContext::getParams());
    drunner_assert(p.numArgs() > 0, "servicecmd requires an argument..."); // should never have 0 args to servicecmd!
+   drunner_assert(utils::stringisame(p.getArg(0), mName), "First argument should be service name.");
 
    std::vector<std::string> cargs( p.getArgs().begin() + 1, p.getArgs().end() );
+   cResult rval;
 
-   std::string command = p.getArgs()[1];
-   if (p.isdrunnerCommand(command))
-      logmsg(kLERROR, command + " is a reserved word.\nTry:\n drunner " + command + " " + mName);
-   if (p.isHook(command))
-      logmsg(kLERROR, command + " is a reserved word and not available from the comamnd line for "+mName);
+   if (cargs.size() == 0)
+   {
+      cargs.push_back("help");
+      rval = serviceRunnerCommand(cargs);
+   }
+   else
+   {
+      std::string command = cargs[0];
+      if (p.isdrunnerCommand(command))
+         logmsg(kLERROR, command + " is a reserved word.\nTry:\n drunner " + command + " " + mName);
+      if (p.isHook(command))
+         logmsg(kLERROR, command + " is a reserved word and not available from the comamnd line for " + mName);
 
-   servicehook hook(this, "servicecmd", cargs);
-   hook.starthook();
+      servicehook hook(this, "servicecmd", cargs);
+      hook.starthook();
 
-   cResult rval(serviceRunnerCommand(cargs));
-   if (rval==kRNotImplemented)
-      logmsg(kLERROR, "Command is not implemented by "+mName+": " + cargs[0]);
+      rval = serviceRunnerCommand(cargs);
+      if (rval == kRNotImplemented)
+         logmsg(kLERROR, "Command is not implemented by " + mName + ": " + command);
 
-   hook.endhook();
+      hook.endhook();
+   }
 
    return rval;
 }
