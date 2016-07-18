@@ -51,6 +51,10 @@ cResult service::servicecmd()
       cargs.push_back("help");
       rval = serviceRunnerCommand(cargs);
    }
+   else if (utils::stringisame(cargs[0], "configure"))
+   { // configure variable. cargs[1]: key=value
+      mServiceCfg.setSaveVariable(cargs[1]);
+   }
    else
    {
       std::string command = cargs[0];
@@ -58,7 +62,10 @@ cResult service::servicecmd()
          logmsg(kLERROR, command + " is a reserved word.\nTry:\n drunner " + command + " " + mName);
       if (p.isHook(command))
          logmsg(kLERROR, command + " is a reserved word and not available from the comamnd line for " + mName);
+      
+      // check all required variables are configured.
 
+      // run the command
       servicehook hook(this, "servicecmd", cargs);
       hook.starthook();
 

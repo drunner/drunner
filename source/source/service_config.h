@@ -20,6 +20,7 @@ public:
    void setServiceName(std::string sname);
 
    const variables & getVariables() const { return mVariables; }
+   void setSaveVariable(std::string keyval);
 
 private:
    variables mVariables;
