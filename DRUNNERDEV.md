@@ -20,4 +20,4 @@ This uses a docker container to build drunner. Works fine compiling for Linux fr
 buildwin.cmd 140 build static_md both Win32 nosamples notests
 ```
 * Now open the drunner VS soln and build
-* Add %HOME%/.drunner/bin to your path (edit environment variables in Windows control panel).
+* Add [your home dir]/.drunner/bin to your path (edit environment variables in Windows control panel).
