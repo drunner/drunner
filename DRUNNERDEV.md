@@ -18,6 +18,6 @@ This uses a docker container to build drunner. Works fine compiling for Linux fr
 ```
 buildwin.cmd 140 build static_md both Win32 nosamples notests
 ```
-* Download yampl-cpp into dev/yaml-cpp
+* Download yampl-cpp [from here](https://github.com/jbeder/yaml-cpp) into dev/yaml-cpp
 * Build in VS
 * Now open the drunner VS soln and build
