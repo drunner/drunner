@@ -122,12 +122,13 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 
 dRunner provides several flags to control the output mode:
 
-| Flag    |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
+| Flag    |      Mode      |  dRunner Output | Support calls  | dService servicecmd |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
 | -n      | normal         | info and above  | logged         | raw                 |
 | -v      | verbose        | debug and above | logged         | raw                 |
 | -l      | logged         | errors only     | logged         | logged              |
-| -o      | capture output | errors only     | raw            | raw                 |
+| -r      | raw            | info and above  | raw            | raw                 |
+| -o      | capture output | errors only     | suppressed     | raw                 |
 | -s      | silent         | errors only     | suppressed     | suppressed          |
 
 In addition, you can specify -d for 'development mode', which currently just skips any explicit docker pulls.
