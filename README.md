@@ -122,7 +122,7 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 
 dRunner provides several flags to control the output to stdout:
 
-| Flag    |      Mode      |  dRunner Output | Support calls  | dService servicecmd |
+| Flag    |      Mode      |  dRunner output | Support calls  | dService output |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
 |         | default        | info and above  |                | yes           |
 | -v      | verbose        | debug and above | yes      | yes           |
