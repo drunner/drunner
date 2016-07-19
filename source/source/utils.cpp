@@ -206,7 +206,7 @@ namespace utils
       std::string op;
 
       std::vector<std::string> args = { "pull",imagename };
-      int rval = runcommand_stream("docker", args, GlobalContext::getParams()->getServiceOutput_supportcalls());
+      int rval = runcommand_stream("docker", args, GlobalContext::getParams()->supportCallMode());
       
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;
@@ -452,37 +452,51 @@ namespace utils
       logmsg(kLDEBUG, "Recursively deleted " + mPath.toString());
    }
 
+   std::string _nextword(std::string & command, unsigned int & startpos)
+   { 
+      // skip leading whitespace.
+      while (startpos < command.length() && iswspace(command[startpos]))
+         ++startpos;
+      
+      // if the arg starts with a " then skip ahead to the closing quote, 
+      // unescaping any other "'s in the arg as we go.
+      int osp = startpos;
+      if (startpos < command.length() && command[startpos] == '"')
+      {
+         ++osp;  ++startpos; // skip opening quote.
+         while (startpos < command.length())
+         {      // looking for closing quote.
+            if (command[startpos] != '"')
+               ++startpos;
+            else if (startpos > 0 && command[startpos - 1] == '\\')
+               command.erase(startpos - 1, 1); // erase the escape char and fall through.
+            else
+            { // we found the closing quote! :-)
+               command.erase(startpos, 1); // erase the quote.
+               break;
+            }
+         }
+      }
 
-   bool _skipquoted(const std::string &command, unsigned int & i)
-   {
-      char c = command[i];
-      if (c != '\"' && c != '\'')
-         return true;
-      if (i > 0 && command[i - 1] == '\\')
-         return true; // escaped quote.
-
-      ++i;
-      while (i < command.length() && (command[i] != c || command[i - 1] == '\\'))
-         ++i;
-      return (i != command.length());
+      // find whitespace or end of string to terminate arg. We allow things like "dave"123  ->  dave123
+      while (startpos < command.length() && !iswspace(command[startpos]))
+         ++startpos;
+      return command.substr(osp, startpos - osp);
    }
 
-   bool split_in_args(std::string command, std::vector<std::string>& qargs) {
-      unsigned int pos = 0;
-      bool rval = true;
-      for (unsigned int i = 0; i < command.length(); ++i)
+   void split_in_args(std::string command, std::vector<std::string>& qargs) 
+   {
+      poco_assert(qargs.size() == 0);
+
+      unsigned int startpos = 0;
+      while (true)
       {
-         if (iswspace(command[i]))
-         {
-            if (i!=pos)
-               qargs.push_back(command.substr(pos, i - pos));
-            pos = i + 1;
-         }
-         rval = _skipquoted(command, i);
+         std::string nw = _nextword(command, startpos);
+         if (nw.length() == 0)
+            return;
+         qargs.push_back(nw);
       }
-      if (pos < command.length())
-         qargs.push_back(command.substr(pos, command.length() - pos));
-      return rval;
+      
    }
 
 } // namespace utils

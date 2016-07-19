@@ -83,10 +83,10 @@ eCommand params::getdrunnerCommand(std::string c) const
 void params::_setdefaults()
 {
    mVersion = getVersionStr();
+
    mLogLevel = kLINFO;
-   
-   mServiceOutput_supportcalls = kOLogged;
-   mServiceOutput_servicecmd = kORaw;
+   mServiceOutput_supportcalls = false;
+   mServiceOutput_servicecmd = true;
 
    mCmd = c_UNDEFINED;
 
@@ -105,12 +105,10 @@ while (1)
    int option_index = 0;
    static struct option long_options[] =
          { // name, has_arg, flag=0, val={0, character}
-            {"raw",0,0,'r'},
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
             {"getoutput", 0, 0, 'o'},
             {"normal", 0, 0, 'n'},
-            {"logged",0,0,'l'},
             {"developer",0,0,'d'},
             {"pause",0,0,'p'},
 //            {"create", 1, 0, 'c'},
@@ -120,7 +118,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsnoldpr",
+      c = getopt_long (argc, argv, "vsnodp",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -128,46 +126,32 @@ while (1)
 
       switch (c)
       {
-         case 'r':
-            mLogLevel = kLINFO;
-            mServiceOutput_supportcalls = kORaw;
-            mServiceOutput_servicecmd = kORaw;
-            mOptions.push_back("-r");
-            break;
-
          case 's':
             mLogLevel=kLERROR;
-            mServiceOutput_supportcalls = kOSuppressed;
-            mServiceOutput_servicecmd = kOSuppressed;
+            mServiceOutput_supportcalls = false;
+            mServiceOutput_servicecmd = false;
             mOptions.push_back("-s");
             break;
 
          case 'v':
             mLogLevel=kLDEBUG;
-            mServiceOutput_supportcalls = kOLogged;
-            mServiceOutput_servicecmd = kORaw;
+            mServiceOutput_supportcalls = true;
+            mServiceOutput_servicecmd = true;
             mOptions.push_back("-v");
             break;
 
          case 'o':
             mLogLevel=kLERROR;
-            mServiceOutput_supportcalls = kOSuppressed;
-            mServiceOutput_servicecmd = kORaw;
+            mServiceOutput_supportcalls = false;
+            mServiceOutput_servicecmd = true;
             mOptions.push_back("-o");
             break;
 
          case 'n':
             mLogLevel=kLINFO;
-            mServiceOutput_supportcalls = kOLogged;
-            mServiceOutput_servicecmd = kORaw;
+            mServiceOutput_supportcalls = false;
+            mServiceOutput_servicecmd = true;
             mOptions.push_back("-n");
-            break;
-
-         case 'l':
-            mLogLevel = kLINFO;
-            mServiceOutput_supportcalls = kOLogged;
-            mServiceOutput_servicecmd = kOLogged;
-            mOptions.push_back("-l");
             break;
 
          case 'd':

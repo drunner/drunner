@@ -206,7 +206,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             int rval = utils::runcommand_stream(
                op.command, 
                finalargs, 
-               GlobalContext::getParams()->getServiceOutput_servicecmd(), 
+               GlobalContext::getParams()->serviceCmdMode(), 
                getPathdRunner(), 
                v.getEnv()
             );

@@ -46,7 +46,7 @@ exit 0
       logmsg(kLDEBUG, op);
 
 #ifdef _WIN32
-      logmsg(kLINFO, "[Y] " + imagename + " is dRunner compatible.");
+      logmsg(kLINFO, imagename + " is dRunner compatible.");
 #else
       logmsg(kLINFO, "\u2714  " + imagename + " is dRunner compatible.");
 #endif      

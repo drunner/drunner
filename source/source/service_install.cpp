@@ -52,7 +52,7 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
          v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
          "chmod","0777","/tempmount" };
       
-      int rval = utils::runcommand_stream("docker", args, GlobalContext::getParams()->getServiceOutput_supportcalls());
+      int rval = utils::runcommand_stream("docker", args, GlobalContext::getParams()->supportCallMode());
       if (rval != 0)
          fatal("Failed to set permissions on docker volume " + v);
 

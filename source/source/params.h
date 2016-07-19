@@ -17,8 +17,8 @@ public:
    std::string getCommandStr() const { return mCmdStr; }
    eLogLevel getLogLevel() const { return mLogLevel; }
 
-   edServiceOutput getServiceOutput_supportcalls() const { return mServiceOutput_supportcalls; }
-   edServiceOutput getServiceOutput_servicecmd() const { return mServiceOutput_servicecmd; }
+   edServiceOutput supportCallMode() const { return mServiceOutput_supportcalls ? kOLogged : kOSuppressed; }
+   edServiceOutput serviceCmdMode() const { return mServiceOutput_servicecmd ? kORaw : kOSuppressed; }
 
    const std::vector<std::string> & getArgs() const { return mArgs; }
    int numArgs() const { return mArgs.size(); }
@@ -42,11 +42,10 @@ private:
    bool mPause;
    const std::map<std::string, eCommand> mCommandList;
 
-   edServiceOutput mServiceOutput_supportcalls;
-   edServiceOutput mServiceOutput_servicecmd;
+   bool mServiceOutput_supportcalls;
+   bool mServiceOutput_servicecmd;
 
    std::vector<std::string> mOptions;
-   void parsecmd();
    params();
    void _setdefaults();
    void _parse(int argc, char **argv);

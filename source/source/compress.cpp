@@ -30,7 +30,7 @@ namespace compress
       args.push_back("-c");
       args.push_back(ctrcmd);
 
-      utils::runcommand_stream(cmd, args, GlobalContext::getParams()->getServiceOutput_supportcalls() );
+      utils::runcommand_stream(cmd, args, GlobalContext::getParams()->supportCallMode() );
    }
 
    // --------------------------------------

@@ -69,7 +69,7 @@ namespace utils_docker
          break;
       default:
          S_PullList.push_back(image);
-         logmsg(kLINFO, "Successfully pulled " + image);
+         logmsg(kLDEBUG, "Successfully pulled " + image);
          break;
       }
    }

@@ -78,7 +78,7 @@ namespace utils
 
    void getAllServices(std::vector<std::string> & services);
 
-   bool split_in_args(std::string command, std::vector<std::string>& qargs);
+   void split_in_args(std::string command, std::vector<std::string>& qargs);
 
    class tempfolder
    {
