@@ -124,10 +124,9 @@ dRunner provides several flags to control the output mode:
 
 | Flag    |      Mode      |  dRunner Output | Support calls  | dService servicecmd |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
-| -n      | normal         | info and above  | logged         | raw                 |
+|         | default        | info and above  | logged         | raw                 |
 | -v      | verbose        | debug and above | logged         | raw                 |
 | -l      | logged         | errors only     | logged         | logged              |
-| -r      | raw            | info and above  | raw            | raw                 |
 | -o      | capture output | errors only     | suppressed     | raw                 |
 | -s      | silent         | errors only     | suppressed     | suppressed          |
 
