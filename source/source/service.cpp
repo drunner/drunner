@@ -203,9 +203,15 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             }
             logmsg(kLDEBUG, "Running command " + clog);
 
-            if (utils::runcommand_stream(op.command, finalargs, true, getPathdRunner(), v.getEnv()) != 0)
-               return kRError;
-            return kRSuccess;
+            int rval = utils::runcommand_stream(
+               op.command, 
+               finalargs, 
+               GlobalContext::getParams()->getServiceOutput_servicecmd(), 
+               getPathdRunner(), 
+               v.getEnv()
+            );
+            
+            return (rval == 0 ? kRSuccess : kRError);
          }
    }
    return kRNotImplemented;

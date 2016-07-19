@@ -27,45 +27,28 @@ void stripescapes(std::string &s)
    }
 }
 
-void dServiceLog(Poco::PipeInputStream & istrm_cout, bool isServiceCmd)
+void dServiceLog(Poco::PipeInputStream & istrm_cout)
 {
-   edServiceOutput mOutputMode;
+   escapefilter ef;
+   char buf[2] = { 'x',0 };
+   bool initialised = false;
 
-   if (isServiceCmd)
-      mOutputMode = GlobalContext::getParams()->getServiceOutput_servicecmd();
-   else
-      mOutputMode = GlobalContext::getParams()->getServiceOutput_hooks();
-
-   if (mOutputMode == kOSuppressed)
-      return; // nothing to output :-)
-
-   if (mOutputMode == kORaw)
+   while (true)
    {
-      Poco::StreamCopier::copyStreamUnbuffered(istrm_cout, std::cout);
-   }
-   else
-   {
-      escapefilter ef;
-      char buf[2] = { 'x',0 };
-      bool initialised = false;
+      int i = istrm_cout.get();
+      if (i == -1)
+         return;
+      char c = (char)i;
 
-      while (true)
-      {
-         int i = istrm_cout.get();
-         if (i == -1)
-            return;
-         char c = (char)i;
-
-         if (ef.valid(c))
-         { // output c.
-            if (!initialised)
-               logverbatim(kLINFO, getheader(kLINFO));
-            initialised = true;
-            buf[0] = c;
-            logverbatim(kLINFO, buf);
-            if (c == '\n')
-               initialised = false;
-         }
+      if (ef.valid(c))
+      { // output c.
+         if (!initialised)
+            logverbatim(kLINFO, getheader(kLINFO));
+         initialised = true;
+         buf[0] = c;
+         logverbatim(kLINFO, buf);
+         if (c == '\n')
+            initialised = false;
       }
    }
 }

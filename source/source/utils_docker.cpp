@@ -1,5 +1,7 @@
 #include <algorithm>
+#include <iterator>
 
+#include "basen.h"
 #include "utils.h"
 #include "utils_docker.h"
 #include "globalcontext.h"
@@ -14,7 +16,8 @@ namespace utils_docker
    void createDockerVolume(std::string name)
    {
       std::vector<std::string> args = { "volume","create","--name=" + name };
-      int rval = utils::runcommand("docker", args);
+      std::string op;
+      int rval = utils::runcommand("docker", args, op, 0);
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
       logmsg(kLDEBUG, "Created docker volume " + name);
@@ -69,6 +72,25 @@ namespace utils_docker
          logmsg(kLINFO, "Successfully pulled " + image);
          break;
       }
+   }
+
+   cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op)
+   {
+      std::string encoded_data;
+      bn::encode_b64(data.begin(), data.end(), std::back_inserter(encoded_data));
+      int n = encoded_data.length() % 4;
+      if (n == 2) encoded_data += "==";
+      if (n == 3) encoded_data += "=";
+      poco_assert(n != 1);
+
+      std::string command = "docker";
+      std::vector<std::string> args = { "run","--rm",imagename,"/bin/bash","-c",
+         "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script" };
+
+      int rval=utils::runcommand(command, args, op, true);
+      if (rval == 0)
+         return kRSuccess;
+      return kRError;
    }
 
    bool dockerVolExists(const std::string & vol)

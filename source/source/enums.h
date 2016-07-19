@@ -3,6 +3,12 @@
 
 #include <sys/stat.h>
 
+#include <iostream>
+#include <numeric>
+#include <string>
+
+#include <initializer_list>
+
 #ifdef _WIN32
 #include "chmod.h"
 #endif
@@ -61,6 +67,9 @@ enum eCommand {
    c_plugin,
    c_configure,
 };
+
+
+// -----------------------------------------------------------------------------
 
 
 #endif

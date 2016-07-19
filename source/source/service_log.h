@@ -8,7 +8,7 @@
 #include <Poco/PipeStream.h>
 
 
-void dServiceLog(Poco::PipeInputStream & istrm_cout, bool isServiceCmd);
+void dServiceLog(Poco::PipeInputStream & istrm_cout);
 
 
 enum eStage

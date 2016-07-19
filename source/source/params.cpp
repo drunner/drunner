@@ -85,7 +85,7 @@ void params::_setdefaults()
    mVersion = getVersionStr();
    mLogLevel = kLINFO;
    
-   mServiceOutput_hooks = kOLogged;
+   mServiceOutput_supportcalls = kOLogged;
    mServiceOutput_servicecmd = kORaw;
 
    mCmd = c_UNDEFINED;
@@ -105,6 +105,7 @@ while (1)
    int option_index = 0;
    static struct option long_options[] =
          { // name, has_arg, flag=0, val={0, character}
+            {"raw",0,0,'r'},
             {"verbose", 0, 0, 'v'},
             {"silent", 0, 0, 's'},
             {"getoutput", 0, 0, 'o'},
@@ -119,7 +120,7 @@ while (1)
       // run getopt_long, hiding errors.
       extern int opterr;
       opterr = 0;
-      c = getopt_long (argc, argv, "vsnoldp",
+      c = getopt_long (argc, argv, "vsnoldpr",
                      long_options, &option_index);
 
       if (c == -1) // no more options.
@@ -127,37 +128,44 @@ while (1)
 
       switch (c)
       {
+         case 'r':
+            mLogLevel = kLINFO;
+            mServiceOutput_supportcalls = kORaw;
+            mServiceOutput_servicecmd = kORaw;
+            mOptions.push_back("-r");
+            break;
+
          case 's':
             mLogLevel=kLERROR;
-            mServiceOutput_hooks = kOSuppressed;
+            mServiceOutput_supportcalls = kOSuppressed;
             mServiceOutput_servicecmd = kOSuppressed;
             mOptions.push_back("-s");
             break;
 
          case 'v':
             mLogLevel=kLDEBUG;
-            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_supportcalls = kOLogged;
             mServiceOutput_servicecmd = kORaw;
             mOptions.push_back("-v");
             break;
 
          case 'o':
             mLogLevel=kLERROR;
-            mServiceOutput_hooks = kORaw;
+            mServiceOutput_supportcalls = kOSuppressed;
             mServiceOutput_servicecmd = kORaw;
             mOptions.push_back("-o");
             break;
 
          case 'n':
             mLogLevel=kLINFO;
-            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_supportcalls = kOLogged;
             mServiceOutput_servicecmd = kORaw;
             mOptions.push_back("-n");
             break;
 
          case 'l':
             mLogLevel = kLINFO;
-            mServiceOutput_hooks = kOLogged;
+            mServiceOutput_supportcalls = kOLogged;
             mServiceOutput_servicecmd = kOLogged;
             mOptions.push_back("-l");
             break;

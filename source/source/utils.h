@@ -13,9 +13,17 @@
 
 typedef std::vector<std::string> tVecStr;
 
+
 // Shell utilities
 namespace utils
 {
+   enum RunCommandFlags
+   {
+      RC_Trim    = 1 << 0,
+      RC_LogCmd  = 1 << 1,
+   };
+   typedef unsigned char tFlags;
+
 #ifdef _WIN32
    const std::string kCODE_S = "";
    const std::string kCODE_E = "";
@@ -44,10 +52,9 @@ namespace utils
 
    bool fileexists(const Poco::Path& name);
    bool commandexists(std::string command);
-
-   int runcommand(std::string command, std::vector<std::string> args);
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim);
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd, Poco::Path initialDirectory, const Poco::Process::Env & env);
+   
+   int runcommand(std::string command, std::vector<std::string> args, std::string &out, tFlags rcf);
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, edServiceOutput outputMode, Poco::Path initialDirectory = "", const Poco::Process::Env & env = {});
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");

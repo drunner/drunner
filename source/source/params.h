@@ -17,7 +17,7 @@ public:
    std::string getCommandStr() const { return mCmdStr; }
    eLogLevel getLogLevel() const { return mLogLevel; }
 
-   edServiceOutput getServiceOutput_hooks() const { return mServiceOutput_hooks; }
+   edServiceOutput getServiceOutput_supportcalls() const { return mServiceOutput_supportcalls; }
    edServiceOutput getServiceOutput_servicecmd() const { return mServiceOutput_servicecmd; }
 
    const std::vector<std::string> & getArgs() const { return mArgs; }
@@ -42,7 +42,7 @@ private:
    bool mPause;
    const std::map<std::string, eCommand> mCommandList;
 
-   edServiceOutput mServiceOutput_hooks;
+   edServiceOutput mServiceOutput_supportcalls;
    edServiceOutput mServiceOutput_servicecmd;
 
    std::vector<std::string> mOptions;

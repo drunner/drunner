@@ -93,16 +93,11 @@ namespace utils
        return utils::trim(s, t);
    }
 
-   int runcommand(std::string command, std::vector<std::string> args)
-   {
-      std::string out;
-      return runcommand(command, args, out, false);
-   }
-
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out, bool trim)
+   int runcommand(std::string command, std::vector<std::string> args, std::string &out, tFlags rcf)
    {
       int rval;
 
+      if (rcf & RC_LogCmd)
       { // log the command
          std::ostringstream oss;
          oss << "Runcommand: " << command;
@@ -124,13 +119,13 @@ namespace utils
          fatal(se.displayText());
       }
 
-      if (trim)
+      if (rcf & RC_Trim)
          Poco::trimInPlace(out);
       return rval;
    }
 
 
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, bool isServiceCmd, Poco::Path initialDirectory, const Poco::Process::Env & env)
+   int runcommand_stream(std::string command, const std::vector<std::string> & args, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env)
    { // streaming as the command runs.
 
       // sanity check parameters.
@@ -149,8 +144,10 @@ namespace utils
       Poco::ProcessHandle ph = Poco::Process::launch(command, args, initialDirectory.toString(), 0, &outpipe, &outpipe, env);
       Poco::PipeInputStream istrout(outpipe);
 
-      // stream the output to the logger.
-      dServiceLog(istrout, isServiceCmd);
+      if (outputMode == kORaw)
+         Poco::StreamCopier::copyStreamUnbuffered(istrout, std::cout);
+      else if (outputMode != kOSuppressed)
+         dServiceLog(istrout);
 
       int rval = ph.wait();
       std::ostringstream oss;
@@ -209,8 +206,8 @@ namespace utils
       std::string op;
 
       std::vector<std::string> args = { "pull",imagename };
-      int rval = runcommand("docker", args);
-
+      int rval = runcommand_stream("docker", args, GlobalContext::getParams()->getServiceOutput_supportcalls());
+      
       if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
          return kRNoChange;
 

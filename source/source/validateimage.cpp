@@ -1,10 +1,8 @@
-#include <iterator>
-
 #include "validateimage.h"
 #include "utils.h"
 #include "drunner_paths.h"
 #include "globallogger.h"
-#include "basen.h"
+#include "utils_docker.h"
 
 namespace validateImage
 {
@@ -35,21 +33,9 @@ if [ "$UID" -eq 0 ]; then die "the container runs as root." ; fi
 
 exit 0
 )EOF";
-      std::string encoded_data;
-      bn::encode_b64(data.begin(), data.end(), std::back_inserter(encoded_data));
-      int n = encoded_data.length() % 4;
-      if (n == 2) encoded_data += "==";
-      if (n == 3) encoded_data += "=";
-      poco_assert(n != 1);
-
-      std::string command = "docker";
-      std::vector<std::string> args = { "run","--rm",imagename,"/bin/bash","-c",
-         "echo " + encoded_data + " | base64 -d > /tmp/validate ; /bin/bash /tmp/validate" };
 
       std::string op;
-      int rval = utils::runcommand(command, args, op, true);
-
-      if (rval != 0)
+      if (utils_docker::runBashScriptInContainer(data, imagename, op) != kRSuccess)
       {
          if (utils::findStringIC(op, "Unable to find image"))
             logmsg(kLERROR, "Couldn't find image " + imagename);

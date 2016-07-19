@@ -20,7 +20,8 @@
 void check_prerequisits()
 {
    std::vector<std::string> args = { "--version" };
-   if (utils::runcommand("docker", args) != 0)
+   std::string op;
+   if (utils::runcommand("docker", args, op, 0) != 0)
       fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
 }
 
