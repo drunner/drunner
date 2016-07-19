@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\yaml-cpp">
+      <UniqueIdentifier>{e3d0b816-b7a9-40b4-979d-166f89fe62e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp">
@@ -117,6 +120,93 @@
     </ClCompile>
     <ClCompile Include="..\source\source\test_utils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\binary.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\convert.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\directives.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\emit.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\emitfromevents.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\emitter.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\emitterstate.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\emitterutils.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\exp.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\memory.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\node.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\node_data.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\nodebuilder.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\nodeevents.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\null.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\ostream_wrapper.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\parse.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\parser.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\regex_yaml.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\scanner.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\scanscalar.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\scantag.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\scantoken.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\simplekey.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\singledocparser.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\stream.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\tag.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\contrib\graphbuilder.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\deps\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
+      <Filter>Source Files\yaml-cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +335,72 @@
     </ClInclude>
     <ClInclude Include="..\source\source\dassert.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\collectionstack.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\directives.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\emitterstate.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\emitterutils.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\exp.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\indentation.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\nodebuilder.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\nodeevents.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\ptr_vector.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\regex_yaml.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\regeximpl.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\scanner.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\scanscalar.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\scantag.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\setting.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\singledocparser.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\stream.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\streamcharsource.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\stringsource.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\tag.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\token.h">
+      <Filter>Source Files\yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\deps\yaml-cpp\src\contrib\graphbuilderadapter.h">
+      <Filter>Source Files\yaml-cpp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
