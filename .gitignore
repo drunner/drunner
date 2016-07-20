@@ -28,7 +28,7 @@
 *.app
 
 .depend
-drunnerc
+drunner
 drunner-install
 .permissions
 
