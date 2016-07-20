@@ -1,6 +1,10 @@
 #include <sstream>
 #include <Poco/Environment.h>
 
+//#include <Poco/Process.h>
+//#include <Poco/Pipe.h>
+//#include <Poco/StreamCopier.h>
+//#include <Poco/PipeStream.h>
 
 #ifndef _WIN32
 #include <unistd.h>
