@@ -1,6 +1,7 @@
 #include <sstream>
 #include <Poco/Environment.h>
 
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -194,13 +195,14 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
             std::vector<std::string> finalargs;
             for (const auto &arg : op.args)
             {
-               std::string argument = v.substitute(arg);
-               if (argument.compare("$@") == 0)
-                  finalargs.insert(finalargs.end(), args.begin()+1, args.end());
+               if (arg.compare("$@") == 0)
+                  finalargs.insert(finalargs.end(), args.begin() + 1, args.end());
                else
-                  finalargs.push_back(argument);
-               clog += " " + argument;
+                  finalargs.push_back(v.substitute(arg));
             }
+
+            for (const auto & arg : finalargs)
+               clog += " " + arg;
             logmsg(kLDEBUG, "Running command " + clog);
 
             int rval = utils::runcommand_stream(
