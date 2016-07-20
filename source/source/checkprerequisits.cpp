@@ -2,27 +2,30 @@
 #include "checkprerequisits.h"
 #include "globallogger.h"
 
-// ---------------------------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------------------------------
-#ifdef _WIN32
-// Windows
-
-//std::string getUSER()
-//{
-//   char user_name[501];
-//   DWORD user_name_size = sizeof(user_name);
-//   if (!GetUserName(user_name, &user_name_size))
-//      fatal("Couldn't get current user.");
-//   return user_name;
-//}
-
-void check_prerequisits()
+void _check_prereqs_xplatform()
 {
    std::vector<std::string> args = { "--version" };
    std::string op;
    if (utils::runcommand("docker", args, op, 0) != 0)
-      fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
+      fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n"+op);
+
+   op = "";
+   if (utils::runcommand("docker-compose", args, op, 0) != 0)
+      fatal("Running \"docker-compose --version\" failed!\nIs docker-compose correctly installed on this machine?\n"+op);
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#ifdef _WIN32
+// Windows
+
+void check_prerequisits()
+{
+   _check_prereqs_xplatform();
 }
 
 
@@ -80,9 +83,7 @@ void check_prerequisits()
    if (!commandexists("curl"))
       fatal("Please install curl before using dRunner.");
 
-   std::vector<std::string> args = { "--version" };
-   if (utils::runcommand("docker", args) != 0)
-      fatal("Running \"docker --version\" failed! Is docker correctly installed on this machine?");
+   _check_prereqs_xplatform();
 }
 
 
