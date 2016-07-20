@@ -207,7 +207,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;POCO_STATIC;VERSION_STR="WINDOWS BUILD - UNDEFINED VERSION";VERSION_STR_SHORT="WIN";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -225,7 +225,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;POCO_STATIC;VERSION_STR="WINDOWS BUILD - UNDEFINED VERSION";VERSION_STR_SHORT="WIN";VERSION_STR_SHORT="WIN";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
