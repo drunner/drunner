@@ -74,6 +74,15 @@ namespace serviceyml
    {
    }
 
+   void _setoperation(std::string opline, const variables &v, Operation &op)
+   {
+      std::string sopline = v.substitute(opline);
+      utils::split_in_args(sopline, op.args);
+      drunner_assert(op.args.size() > 0, "Empty command line in yaml file");
+      op.command = op.args[0];
+      op.args.erase(op.args.begin());
+   }
+
    cResult file::loadyml(const variables & v)
    {
       if (kRSuccess != simplefile::loadyml())
@@ -92,17 +101,22 @@ namespace serviceyml
             CommandLine cl;
             drunner_assert(it->first.IsScalar(), "Command lines must be a map of sequences.");
             cl.name = it->first.as<std::string>();
-            drunner_assert(it->second.IsSequence(), "Command " + cl.name + " must contain a sequence of commands to run.");
-            for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            Operation op;
+            if (it->second.IsScalar())
             {
                Operation op;
-               std::string opline = it2->as<std::string>();
-               std::string sopline = v.substitute(opline);
-               utils::split_in_args(sopline, op.args);
-               drunner_assert(op.args.size() > 0, "Empty command line in yaml file for command "+cl.name);
-               op.command = op.args[0];
-               op.args.erase(op.args.begin());
+               _setoperation(it->second.as<std::string>(), v, op);
                cl.operations.push_back(op);
+            }
+            else
+            {
+               drunner_assert(it->second.IsSequence(), "Command " + cl.name + " must contain a sequence of commands to run.");
+               for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+               {
+                  Operation op;
+                  _setoperation(it2->as<std::string>(), v, op);
+                  cl.operations.push_back(op);
+               }
             }
             mCommands.push_back(cl);
          }
@@ -116,7 +130,8 @@ namespace serviceyml
             Volume vol;
             vol.name = v.substitute(it->first.as<std::string>());
             vol.backup = it->second["backup"].as<bool>();
-            vol.manage = it->second["manage"].as<bool>();
+            if (it->second["external"])
+               vol.external = it->second["external"].as<bool>();
             mVolumes.push_back(vol);
          }
       }
@@ -131,7 +146,7 @@ namespace serviceyml
    {
       drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
       for (const auto & v : mVolumes)
-         if (v.manage)
+         if (v.external)
             vols.push_back(v.name);
    }
    void file::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
