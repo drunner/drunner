@@ -10,11 +10,6 @@
 
 cResult service::_launchOperation(std::string command, const std::vector<std::string> & args) const
 {
-   std::string clog = command;
-   for (const auto & arg : args)
-      clog += " " + arg;
-   logmsg(kLDEBUG, "Running command " + clog);
-
    int result = utils::runcommand_stream(
       command,
       args,
@@ -94,6 +89,12 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandLine & x, con
             finalargs.push_back(v.substitute(arg));
       }
 
+      std::string clog = operation.command;
+      for (const auto & arg : finalargs)
+         clog += " " + arg;
+      logmsg(kLDEBUG, "Running command " + clog);
+
+
       bool processed = false;
       // see if it's a standard command (e.g. link to another command).
       cResult standres = _handleStandardCommands(operation.command, finalargs, processed);
@@ -120,7 +121,7 @@ cResult service::serviceRunnerCommand(const std::vector<std::string> & args) con
 
    std::ostringstream oss;
    for (const auto & x : args) oss << " " << x;
-   logmsg(kLDEBUG, "serviceRunner - args are" + oss.str());
+   logmsg(kLDEBUG, "serviceRunner - cli args are" + oss.str());
 
    std::string servicecommand = args[0];
 
