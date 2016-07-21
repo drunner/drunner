@@ -36,7 +36,9 @@ public:
 private:
    static std::string _loadImageName(const std::string & servicename, std::string imagename);
    cResult _handleconfigure(const std::vector<std::string> & cargs);
-
+   cResult _runserviceRunnerCommand(const serviceyml::CommandLine & x, const std::vector<std::string> & args) const;
+   cResult _launchOperation(std::string command, const std::vector<std::string> & args) const;
+   cResult _handleStandardCommands(std::string command, const std::vector<std::string> & args, bool & processed) const;
    std::string mImageName;
    serviceConfig mServiceCfg;
    serviceyml::file mServiceYml;

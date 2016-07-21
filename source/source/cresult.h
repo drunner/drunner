@@ -1,6 +1,8 @@
 #ifndef __C_RESULT_H
 #define __C_RESULT_H
 
+#include <Poco/Foundation.h>
+
 #include "enums.h"
 
 class cResult
