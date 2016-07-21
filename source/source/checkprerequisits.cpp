@@ -9,9 +9,6 @@ void _check_prereqs_xplatform()
    if (utils::runcommand("docker", args, op, 0) != 0)
       fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n"+op);
 
-   op = "";
-   if (utils::runcommand("docker-compose", args, op, 0) != 0)
-      fatal("Running \"docker-compose --version\" failed!\nIs docker-compose correctly installed on this machine?\n"+op);
 }
 
 
