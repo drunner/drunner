@@ -32,6 +32,7 @@ cResult service::_dstop(const std::vector<std::string> & args) const
    std::string cname = args[1];
    if (utils_docker::dockerContainerExists(cname))
    {
+      logmsg(kLDEBUG, "Stopping and removing container " + cname);
       std::string out;
       std::vector<std::string> args = { "stop", cname };
       if (utils::runcommand("docker", args, out, utils::RC_LogCmd) != 0)
@@ -41,6 +42,8 @@ cResult service::_dstop(const std::vector<std::string> & args) const
          return kRError;
       return kRSuccess;
    }
+
+   logmsg(kLDEBUG, "Container " + cname + " is not running.");
    return kRNoChange;
 }
 
