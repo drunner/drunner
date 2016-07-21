@@ -103,4 +103,15 @@ namespace utils_docker
       return utils::wordmatch(out, vol);
    }
 
+
+   bool dockerContainerExists(const std::string & container)
+   {
+      std::vector<std::string> args = { "ps","-f","name=" + container };
+      std::string out;
+      int rval = utils::runcommand("docker", args, out, utils::RC_LogCmd);
+      if (rval != 0)
+         return false;
+      return utils::wordmatch(out, container);
+   }
+
 } // namespace

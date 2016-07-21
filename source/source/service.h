@@ -39,6 +39,9 @@ private:
    cResult _runserviceRunnerCommand(const serviceyml::CommandLine & x, const std::vector<std::string> & args) const;
    cResult _launchOperation(std::string command, const std::vector<std::string> & args) const;
    cResult _handleStandardCommands(std::string command, const std::vector<std::string> & args, bool & processed) const;
+
+   cResult _dstop(const std::vector<std::string> & args) const;
+
    std::string mImageName;
    serviceConfig mServiceCfg;
    serviceyml::file mServiceYml;

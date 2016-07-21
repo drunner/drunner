@@ -72,6 +72,7 @@
     <ClCompile Include="..\source\source\service_backup.cpp" />
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
+    <ClCompile Include="..\source\source\service_serviceRunnerCommand.cpp" />
     <ClCompile Include="..\source\source\service_variables.cpp" />
     <ClCompile Include="..\source\source\service_yml.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />

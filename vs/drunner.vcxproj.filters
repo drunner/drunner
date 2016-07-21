@@ -208,6 +208,9 @@
     <ClCompile Include="..\source\deps\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
       <Filter>Source Files\yaml-cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_serviceRunnerCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
