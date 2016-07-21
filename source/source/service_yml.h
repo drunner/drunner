@@ -16,7 +16,7 @@ namespace serviceyml
    struct Volume 
    {
       bool backup;
-      bool manage;
+      bool external;
       std::string name;
    };
 
