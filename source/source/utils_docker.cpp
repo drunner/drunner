@@ -17,7 +17,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "volume","create","--name=" + name });
       std::string op;
-      int rval = utils::runcommand(cl, op, 0);
+      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
       logmsg(kLDEBUG, "Created docker volume " + name);
@@ -86,7 +86,7 @@ namespace utils_docker
       CommandLine cl("docker", {"run","--rm",imagename,"/bin/bash","-c",
          "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
 
-      int rval=utils::runcommand(cl, op, 0);
+      int rval=utils::runcommand(cl, op, utils::kRC_Defaults);
       return (rval == 0 ? kRSuccess : kRError);
    }
 
@@ -94,7 +94,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "volume","ls","-f","name=" + vol });
       std::string out;
-      int rval = utils::runcommand(cl,out,0);
+      int rval = utils::runcommand(cl,out, utils::kRC_Defaults);
       return (rval != 0 ? false : utils::wordmatch(out, vol));
    }
 
@@ -103,7 +103,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "ps","-f","name=" + container });
       std::string out;
-      int rval = utils::runcommand(cl, out, 0);
+      int rval = utils::runcommand(cl, out, utils::kRC_Defaults);
       return (rval != 0 ? false : utils::wordmatch(out, container));
    }
 
