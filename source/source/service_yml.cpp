@@ -74,13 +74,11 @@ namespace serviceyml
    {
    }
 
-   void _setoperation(std::string opline, const variables &v, Operation &op)
+   void _setoperation(std::string opline, const variables &v, CommandLine &op)
    {
       std::string sopline = v.substitute(opline);
-      utils::split_in_args(sopline, op.args);
-      drunner_assert(op.args.size() > 0, "Empty command line in yaml file");
-      op.command = op.args[0];
-      op.args.erase(op.args.begin());
+      if (kRError == utils::split_in_args(sopline, op))
+         fatal("Empty command line in yaml file");
    }
 
    cResult file::loadyml(const variables & v)
@@ -98,13 +96,13 @@ namespace serviceyml
          YAML::Node commands = yamlfile["commands"];
          for (auto it = commands.begin(); it != commands.end(); ++it)
          {
-            CommandLine cl;
+            CommandDefinition cl;
             drunner_assert(it->first.IsScalar(), "Command lines must be a map of sequences.");
             cl.name = it->first.as<std::string>();
-            Operation op;
+            CommandLine op;
             if (it->second.IsScalar())
             {
-               Operation op;
+               CommandLine op;
                _setoperation(it->second.as<std::string>(), v, op);
                cl.operations.push_back(op);
             }
@@ -113,7 +111,7 @@ namespace serviceyml
                drunner_assert(it->second.IsSequence(), "Command " + cl.name + " must contain a sequence of commands to run.");
                for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
                {
-                  Operation op;
+                  CommandLine op;
                   _setoperation(it2->as<std::string>(), v, op);
                   cl.operations.push_back(op);
                }

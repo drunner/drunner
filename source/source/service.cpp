@@ -43,9 +43,9 @@ servicePaths::servicePaths(const std::string & servicename) :
 {
 }
 
-cResult service::_handleconfigure(const std::vector<std::string> & cargs)
-{ // configure variable. cargs[1]: key=value
-   if (cargs.size() == 1)
+cResult service::_handleconfigure(const CommandLine & cl)
+{ // configure variable. cargs[0]: key=value
+   if (cl.args.size()==0)
    { // show current variables.
       logmsg(kLINFO, "Current configuration for " + mName + " is:");
       for (const auto & x : mServiceCfg.getVariables().getEnv())
@@ -55,29 +55,20 @@ cResult service::_handleconfigure(const std::vector<std::string> & cargs)
       return kRSuccess;
    }
 
-   std::string key, val;
-   if (cargs.size() == 3)
+   for (const auto & kv : cl.args)
    {
-      key = cargs[1];
-      val = cargs[2];
-      logmsg(kLINFO, "Setting " + key + " to " + val);
-   }
-   else
-   {
-      if (cargs.size() != 2)
-         logmsg(kLERROR, "Configuration variables must be given in form key=val, or key val, or set as an environment variable.");
-      std::string keyval = cargs[1];
-      size_t epos = keyval.find('=');
+      std::string key, val;
+      size_t epos = kv.find('=');
       if (epos == std::string::npos)
       { // env variable
-         key = cargs[1];
          try {
+            key = kv;
             val = Poco::Environment::get(key);
          }
          catch (const Poco::Exception & e)
          {
             logmsg(kLDEBUG, e.what());
-            logmsg(kLERROR, "Configuration variables must be given in form key=val, or key val, or set as an environment variable.");
+            logmsg(kLERROR, "Configuration variables must be given in form key=val or set as an environment variable.");
          }
          logmsg(kLINFO, "Setting " + key + " to value from environment [not logged].");
       }
@@ -85,29 +76,25 @@ cResult service::_handleconfigure(const std::vector<std::string> & cargs)
       { // form key=val.
          if (epos == 0)
             logmsg(kLERROR, "Missing key.");
-         if (epos == keyval.length() - 1)
+         if (epos == kv.length() - 1)
             logmsg(kLERROR, "Missing value.");
 
-         key = keyval.substr(0, epos);
-         val = keyval.substr(epos + 1);
+         key = kv.substr(0, epos);
+         val = kv.substr(epos + 1);
          logmsg(kLINFO, "Setting " + key + " to " + val);
       }
-   }
 
-   bool set = false;
-   for (const auto & y : mServiceYml.getConfigItems())
-      if (utils::stringisame(key, y.name))
-      {
-         mServiceCfg.setSaveVariable(key, val);
-         set = true;
-      }
-   if (!set)
-   {
-      logmsg(kLERROR, "Unrecognised setting " + key);
-      return kRError;
+      // find the corresponding configuration definition and set the variable.
+      for (const auto & y : mServiceYml.getConfigItems())
+         if (utils::stringisame(key, y.name))
+         {
+            // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
+            mServiceCfg.setSaveVariable(key, val);
+         }
+      if (!mServiceCfg.getVariables().hasKey(key))
+         fatal("Unrecognised setting " + key);
    }
-   else
-      return kRSuccess;
+   return kRSuccess;
 }
 
 cResult service::servicecmd()
@@ -116,36 +103,36 @@ cResult service::servicecmd()
    drunner_assert(p.numArgs() > 0, "servicecmd requires an argument..."); // should never have 0 args to servicecmd!
    drunner_assert(utils::stringisame(p.getArg(0), mName), "First argument should be service name.");
 
-   std::vector<std::string> cargs( p.getArgs().begin() + 1, p.getArgs().end() );
+   if (p.getArgs().size() < 2)
+      return serviceRunnerCommand( CommandLine("help") );
 
-   if (cargs.size() == 0)
-   {
-      cargs.push_back("help");
-      return serviceRunnerCommand(cargs);
-   }
+   // e.g. minecraft import james.backup
+   CommandLine cl;
+   cl.command = p.getArg(1); // import
+   if (p.getArgs().size() > 2)
+      cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
-   if (utils::stringisame(cargs[0], "configure"))
+   if (utils::stringisame(cl.command, "configure"))
    {
-      _handleconfigure(cargs);
+      _handleconfigure(cl);
       return kRSuccess;
    }
 
    cResult rval = kRError;
-   std::string command = cargs[0];
-   if (p.isdrunnerCommand(command))
-      logmsg(kLERROR, command + " is a reserved word.\nTry:\n drunner " + command + " " + mName);
-   if (p.isHook(command))
-      logmsg(kLERROR, command + " is a reserved word and not available from the comamnd line for " + mName);
+   if (p.isdrunnerCommand(cl.command))
+      logmsg(kLERROR, cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
+   if (p.isHook(cl.command))
+      logmsg(kLERROR, cl.command + " is a reserved word and not available from the comamnd line for " + mName);
       
    // check all required variables are configured.
 
    // run the command
-   servicehook hook(this, "servicecmd", cargs);
+   servicehook hook(this, "servicecmd", p.getArgs());
    hook.starthook();
 
-   rval = serviceRunnerCommand(cargs);
+   rval = serviceRunnerCommand(cl);
    if (rval == kRNotImplemented)
-      logmsg(kLERROR, "Command is not implemented by " + mName + ": " + command);
+      logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
 
    hook.endhook();
    return rval;

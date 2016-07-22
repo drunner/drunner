@@ -13,14 +13,24 @@
 
 typedef std::vector<std::string> tVecStr;
 
+class CommandLine
+{
+public:
+   CommandLine() {}
+   CommandLine(std::string c) : command(c) {}
+   CommandLine(std::string c, const std::vector<std::string> & a) : command(c), args(a) { }
+   std::string command;
+   std::vector<std::string> args;
+};
 
 // Shell utilities
 namespace utils
 {
    enum RunCommandFlags
    {
-      RC_Trim    = 1 << 0,
-      RC_LogCmd  = 1 << 1,
+      kRC_Defaults = 0,
+      kRC_Trim     = 1 << 0,
+      kRC_LogCmd   = 1 << 1,
    };
    typedef unsigned char tFlags;
 
@@ -53,8 +63,8 @@ namespace utils
    bool fileexists(const Poco::Path& name);
    bool commandexists(std::string command);
    
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out, tFlags rcf);
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, edServiceOutput outputMode, Poco::Path initialDirectory = "", const Poco::Process::Env & env = {});
+   int runcommand(const CommandLine & operation, std::string &out, tFlags rcf);
+   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory = "", const Poco::Process::Env & env = {});
 
    std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
    std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
@@ -78,7 +88,7 @@ namespace utils
 
    void getAllServices(std::vector<std::string> & services);
 
-   void split_in_args(std::string command, std::vector<std::string>& qargs);
+   cResult split_in_args(std::string command, CommandLine & cl);
 
    class tempfolder
    {
@@ -92,18 +102,6 @@ namespace utils
       void tidy();
       Poco::Path mPath;
    };
-
-   //class dockerrun
-   //{
-   //public:
-   //   dockerrun(const std::string & cmd, const std::vector<std::string> & args, std::string dockername);
-   //   ~dockerrun();
-
-   //private:
-   //   void tidy();
-
-   //   std::string mDockerName;
-   //};
 
 } // namespace
 

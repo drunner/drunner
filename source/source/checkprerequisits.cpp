@@ -4,9 +4,9 @@
 
 void _check_prereqs_xplatform()
 {
-   std::vector<std::string> args = { "--version" };
+   CommandLine cl("docker", { "--version" });
    std::string op;
-   if (utils::runcommand("docker", args, op, 0) != 0)
+   if (utils::runcommand(cl, op, utils::kRC_Defaults) != 0)
       fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n"+op);
 
 }

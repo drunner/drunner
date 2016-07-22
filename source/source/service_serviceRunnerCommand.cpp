@@ -8,11 +8,10 @@
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
 
-cResult service::_launchOperation(std::string command, const std::vector<std::string> & args) const
+cResult service::_launchCommandLine(const CommandLine & operation) const
 {
    int result = utils::runcommand_stream(
-      command,
-      args,
+      operation,
       GlobalContext::getParams()->serviceCmdMode(),
       getPathdRunner(),
       mServiceCfg.getVariables().getEnv()
@@ -20,20 +19,20 @@ cResult service::_launchOperation(std::string command, const std::vector<std::st
    return (result == 0 ? kRSuccess : kRError);
 }
 
-cResult service::_dstop(const std::vector<std::string> & args) const
+cResult service::_dstop(const CommandLine & operation) const
 {
-   if (args.size() != 2)
+   if (operation.args.size() != 1)
       fatal("dstop requires exactly one argument: the docker container to stop and remove.");
-   std::string cname = args[1];
+   std::string cname = operation.args[0];
    if (utils_docker::dockerContainerExists(cname))
    {
       logmsg(kLDEBUG, "Stopping and removing container " + cname);
       std::string out;
-      std::vector<std::string> args = { "stop", cname };
-      if (utils::runcommand("docker", args, out, utils::RC_LogCmd) != 0)
+      CommandLine cl("docker", { "stop",cname });
+      if (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0)
          return kRError;
-      args[0] = "rm";
-      if (utils::runcommand("docker", args, out, utils::RC_LogCmd) != 0)
+      cl.args[0] = "rm";
+      if (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0)
          return kRError;
       return kRSuccess;
    }
@@ -43,21 +42,21 @@ cResult service::_dstop(const std::vector<std::string> & args) const
 }
 
 
-cResult service::_handleStandardCommands(std::string command, const std::vector<std::string> & args, bool & processed) const
+cResult service::_handleStandardCommands(const CommandLine & operation, bool & processed) const
 {
    processed = true;
 
    for (const auto & y : mServiceYml.getCommands())
-      if (utils::stringisame(y.name, command))
-         return _runserviceRunnerCommand(y, args);  // link to another command.
+      if (utils::stringisame(y.name, operation.command))
+         return _runserviceRunnerCommand(y, operation);  // link to another command.
       
    // check other commands.
    {
       using namespace utils;
-      switch (str2int(command.c_str()))
+      switch (str2int(operation.command.c_str()))
       {
       case str2int("dstop"):
-         return _dstop(args);
+         return _dstop(operation);
          break;
       default:
          break;
@@ -68,41 +67,42 @@ cResult service::_handleStandardCommands(std::string command, const std::vector<
 }
 
 
-cResult service::_runserviceRunnerCommand(const serviceyml::CommandLine & x, const std::vector<std::string> & args) const
+cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & x, const CommandLine & serviceCmd) const
 {
    cResult rval = kRNoChange;
 
    variables v(mServiceCfg.getVariables());
-   for (unsigned int i = 0; i < args.size(); ++i)
-      v.setVal(std::to_string(i), args[i]);
+   for (unsigned int i = 0; i < serviceCmd.args.size(); ++i)
+      v.setVal(std::to_string(i), serviceCmd.args[i]);
 
    // loop through all the operations in the command.
-   for (const auto & operation : x.operations)
+   for (const auto & rawoperation : x.operations)
    {
       // do variable substitution on all the arguments of the operation
-      std::vector<std::string> finalargs;
+      CommandLine operation;
+      operation.command = rawoperation.command;
       for (const auto &arg : operation.args)
       {
          if (arg.compare("$@") == 0)
-            finalargs.insert(finalargs.end(), args.begin() + 1, args.end());
+            operation.args.insert(operation.args.end(), serviceCmd.args.begin(), serviceCmd.args.end());
          else
-            finalargs.push_back(v.substitute(arg));
+            operation.args.push_back(v.substitute(arg));
       }
 
       std::string clog = operation.command;
-      for (const auto & arg : finalargs)
+      for (const auto & arg : operation.args)
          clog += " " + arg;
       logmsg(kLDEBUG, "Running command " + clog);
 
 
       bool processed = false;
       // see if it's a standard command (e.g. link to another command).
-      cResult standres = _handleStandardCommands(operation.command, finalargs, processed);
+      cResult standres = _handleStandardCommands(operation, processed);
       if (processed)
          rval += standres;
       else
       {
-         rval += _launchOperation(operation.command, finalargs);
+         rval += _launchCommandLine(operation);
          if (rval == kRError)
             fatal("Result from command " + operation.command + " was non-zero. Aborting.");
       }
@@ -111,24 +111,22 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandLine & x, con
 }
 
 
-cResult service::serviceRunnerCommand(const std::vector<std::string> & args) const
+cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
 {
-   if (args.size() < 1 || utils::stringisame(args[0], "help"))
+   if (serviceCmd.command.length()==0 || utils::stringisame(serviceCmd.command, "help"))
    { // show help
       std::cout << std::endl << mServiceYml.getHelp() << std::endl;
       return kRSuccess;
    }
 
-   std::ostringstream oss;
-   for (const auto & x : args) oss << " " << x;
+   std::ostringstream oss(serviceCmd.command);
+   for (const auto & x : serviceCmd.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceRunner - cli args are" + oss.str());
-
-   std::string servicecommand = args[0];
 
    // find the command in our command list and run it.
    for (const auto & y : mServiceYml.getCommands())
-      if (utils::stringisame(y.name, servicecommand) == 0)
-         return _runserviceRunnerCommand(y, args);
+      if (utils::stringisame(y.name, serviceCmd.command) == 0)
+         return _runserviceRunnerCommand(y, serviceCmd);
 
    return kRNotImplemented;
 }

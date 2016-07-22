@@ -15,9 +15,9 @@ namespace utils_docker
 
    void createDockerVolume(std::string name)
    {
-      std::vector<std::string> args = { "volume","create","--name=" + name };
+      CommandLine cl("docker", { "volume","create","--name=" + name });
       std::string op;
-      int rval = utils::runcommand("docker", args, op, 0);
+      int rval = utils::runcommand(cl, op, 0);
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
       logmsg(kLDEBUG, "Created docker volume " + name);
@@ -83,35 +83,28 @@ namespace utils_docker
       if (n == 3) encoded_data += "=";
       poco_assert(n != 1);
 
-      std::string command = "docker";
-      std::vector<std::string> args = { "run","--rm",imagename,"/bin/bash","-c",
-         "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script" };
+      CommandLine cl("docker", {"run","--rm",imagename,"/bin/bash","-c",
+         "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
 
-      int rval=utils::runcommand(command, args, op, true);
-      if (rval == 0)
-         return kRSuccess;
-      return kRError;
+      int rval=utils::runcommand(cl, op, 0);
+      return (rval == 0 ? kRSuccess : kRError);
    }
 
    bool dockerVolExists(const std::string & vol)
    {
-      std::vector<std::string> args = { "volume","ls","-f","name="+vol };
+      CommandLine cl("docker", { "volume","ls","-f","name=" + vol });
       std::string out;
-      int rval = utils::runcommand("docker", args,out,true);
-      if (rval != 0)
-         return false;
-      return utils::wordmatch(out, vol);
+      int rval = utils::runcommand(cl,out,0);
+      return (rval != 0 ? false : utils::wordmatch(out, vol));
    }
 
 
    bool dockerContainerExists(const std::string & container)
    {
-      std::vector<std::string> args = { "ps","-f","name=" + container };
+      CommandLine cl("docker", { "ps","-f","name=" + container });
       std::string out;
-      int rval = utils::runcommand("docker", args, out, utils::RC_LogCmd);
-      if (rval != 0)
-         return false;
-      return utils::wordmatch(out, container);
+      int rval = utils::runcommand(cl, out, 0);
+      return (rval != 0 ? false : utils::wordmatch(out, container));
    }
 
 } // namespace

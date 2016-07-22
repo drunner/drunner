@@ -44,13 +44,8 @@ cResult servicehook::runHook(std::string se)
       return kRError;
    }
 
-   std::vector<std::string> args;
-   //args.push_back("servicerunner");
-   args.push_back(se);
-   for (const auto & entry : mHookParams)
-      args.push_back(entry);
-
-   cResult rval(mService->serviceRunnerCommand(args)); 
+   CommandLine serviceCmd(se, mHookParams);
+   cResult rval = mService->serviceRunnerCommand(serviceCmd);
 
    if (rval.isError())
       logmsg(kLWARN, "dService hook " + se + " returned error.");

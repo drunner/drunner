@@ -25,7 +25,7 @@ public:
    const std::string getImageName() const;
    const params & getParams() const;
 
-   cResult serviceRunnerCommand(const std::vector<std::string> & args) const;
+   cResult serviceRunnerCommand(const CommandLine & serviceCmd) const;
 
    const serviceyml::file & getServiceYml() const { return mServiceYml; }
    const serviceConfig & getServiceCfg() const { return mServiceCfg; }
@@ -35,12 +35,12 @@ public:
 
 private:
    static std::string _loadImageName(const std::string & servicename, std::string imagename);
-   cResult _handleconfigure(const std::vector<std::string> & cargs);
-   cResult _runserviceRunnerCommand(const serviceyml::CommandLine & x, const std::vector<std::string> & args) const;
-   cResult _launchOperation(std::string command, const std::vector<std::string> & args) const;
-   cResult _handleStandardCommands(std::string command, const std::vector<std::string> & args, bool & processed) const;
+   cResult _handleconfigure(const CommandLine & operation);
+   cResult _runserviceRunnerCommand(const serviceyml::CommandDefinition & x, const CommandLine & serviceCmd) const;
+   cResult _launchCommandLine(const CommandLine & operation) const;
+   cResult _handleStandardCommands(const CommandLine & operation, bool & processed) const;
 
-   cResult _dstop(const std::vector<std::string> & args) const;
+   cResult _dstop(const CommandLine & operation) const;
 
    std::string mImageName;
    serviceConfig mServiceCfg;

@@ -32,8 +32,8 @@ namespace command_general
       utils_docker::pullImage("spotify/docker-gc");
 
       logmsg(kLINFO,"Cleaning.");
-      std::vector<std::string> args = { "run","--rm","-v","/var/run/docker.sock:/var/run/docker.sock","spotify/docker-gc" };
-      if (utils::runcommand_stream("docker",args,kORaw)!=0)
+      CommandLine cl("docker", { "run","--rm","-v","/var/run/docker.sock:/var/run/docker.sock","spotify/docker-gc" });
+      if (utils::runcommand_stream(cl,kORaw)!=0)
          logmsg(kLERROR,"Unable to run spotify/docker-gc to clean docker images.");
 
       logmsg(kLINFO,"Cleaning is complete.");

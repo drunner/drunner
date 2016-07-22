@@ -13,8 +13,8 @@ using namespace utils;
 
    bool isrepo(const std::string & d,std::string & branch)
    {
-      std::vector<std::string> args = { "rev-parse", "--abbrev-ref","HEAD",d };
-      int r = runcommand("git", args, branch, true);
+      CommandLine cl("git", { "rev-parse", "--abbrev-ref","HEAD",d });
+      int r = runcommand(cl, branch, kRC_Defaults);
       // drop everything after branch name
       branch.erase( branch.find_first_of("\r\n ") );
       logmsg(kLDEBUG,"Branch:           "+branch);
@@ -46,9 +46,9 @@ using namespace utils;
          }
 
       // build it
-      std::vector<std::string> args = { "build", "-t",branchedimagename,pwd };
+      CommandLine cl("docker", { "build", "-t",branchedimagename,pwd });
       std::string oout;
-      int r = runcommand("docker", args, oout, false);
+      int r = runcommand(cl, oout, kRC_Defaults);
       if (r!=0) logmsg(kLERROR,"docker build faild.\n"+ oout);
    }
 

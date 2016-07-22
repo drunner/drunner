@@ -8,7 +8,7 @@
 #include "yaml-cpp/yaml.h"
 #include "service_variables.h"
 #include "cresult.h"
-
+#include "utils.h"
 
 namespace serviceyml
 {
@@ -37,16 +37,10 @@ namespace serviceyml
       bool required;
    };
 
-   struct Operation 
-   {
-      std::string command;
-      std::vector<std::string> args;
-   };
-
-   struct CommandLine
+   struct CommandDefinition
    {
       std::string name;
-      std::vector<Operation> operations;
+      std::vector<CommandLine> operations;
    };
 
    class simplefile {
@@ -73,7 +67,7 @@ namespace serviceyml
       cResult loadyml(const variables & v);
 
       //const std::vector<Volume> & getVolumes() const        { return mVolumes; }
-      const std::vector<CommandLine> & getCommands() const  { return mCommands; }
+      const std::vector<CommandDefinition> & getCommands() const  { return mCommands; }
       std::string getHelp() const                           { return mHelp; }
 
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
@@ -81,7 +75,7 @@ namespace serviceyml
 
    private:
       std::vector<Volume> mVolumes;
-      std::vector<CommandLine> mCommands;
+      std::vector<CommandDefinition> mCommands;
       std::string mHelp;
    };
 

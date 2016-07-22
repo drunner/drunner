@@ -93,22 +93,22 @@ namespace utils
        return utils::trim(s, t);
    }
 
-   int runcommand(std::string command, std::vector<std::string> args, std::string &out, tFlags rcf)
+   int runcommand(const CommandLine & operation, std::string &out, tFlags rcf)
    {
       int rval;
 
-      if (rcf & RC_LogCmd)
+      if (rcf & kRC_LogCmd)
       { // log the command
          std::ostringstream oss;
-         oss << "Runcommand: " << command;
-         for (auto x : args) oss << " " << x;
+         oss << "Runcommand: " << operation.command;
+         for (auto x : operation.args) oss << " " << x;
          logmsg(kLDEBUG, oss.str());
       }
 
       try
       {
          Poco::Pipe outpipe;
-         Poco::ProcessHandle ph = Poco::Process::launch(command, args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
+         Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
          Poco::PipeInputStream istrout(outpipe);
          Poco::StreamCopier::copyToString(istrout, out);
 
@@ -119,29 +119,29 @@ namespace utils
          fatal(se.displayText());
       }
 
-      if (rcf & RC_Trim)
+      if (rcf & kRC_Trim)
          Poco::trimInPlace(out);
       return rval;
    }
 
 
-   int runcommand_stream(std::string command, const std::vector<std::string> & args, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env)
+   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env)
    { // streaming as the command runs.
 
       // sanity check parameters.
-      Poco::Path bfp(command);
+      Poco::Path bfp(operation.command);
       //poco_assert(utils::fileexists(bfp));
       poco_assert(bfp.isFile());
-      poco_assert(bfp.getFileName().compare(args[0]) != 0);
 
       // log the command, getting the args right is non-trivial in some cases so this is useful.
-      std::string cmd = command;
-      for (const auto & entry : args)
+      std::string cmd = operation.command;
+      for (const auto & entry : operation.args)
          cmd += " [" + entry + "]";
       logmsg(kLDEBUG, "runcommand_stream: " + cmd);
 
       Poco::Pipe outpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(command, args, initialDirectory.toString(), 0, &outpipe, &outpipe, env);
+      Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args, 
+         initialDirectory.toString(), 0, &outpipe, &outpipe, env);
       Poco::PipeInputStream istrout(outpipe);
 
       if (outputMode == kORaw)
@@ -204,13 +204,8 @@ namespace utils
    eResult pullimage(const std::string & imagename)
    {
       std::string op;
-
-      std::vector<std::string> args = { "pull",imagename };
-      int rval = runcommand_stream("docker", args, GlobalContext::getParams()->supportCallMode());
-      
-      if (rval==0 && op.find("Image is up to date",0) != std::string::npos)
-         return kRNoChange;
-
+      CommandLine cl("docker", { "pull",imagename });
+      int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
       return (rval==0) ? kRSuccess : kRError;
    }
 
@@ -484,19 +479,25 @@ namespace utils
       return command.substr(osp, startpos - osp);
    }
 
-   void split_in_args(std::string command, std::vector<std::string>& qargs) 
+   cResult split_in_args(std::string command, CommandLine & cl)
    {
-      poco_assert(qargs.size() == 0);
+      poco_assert(cl.args.size() == 0);
 
       unsigned int startpos = 0;
+
+      std::string nw = _nextword(command, startpos);
+      if (nw.length() == 0)
+         return kRError; // no command.
+      cl.command = nw;
+
       while (true)
       {
-         std::string nw = _nextword(command, startpos);
+         nw = _nextword(command, startpos);
          if (nw.length() == 0)
-            return;
-         qargs.push_back(nw);
+            return kRSuccess;
+         cl.args.push_back(nw);
       }
-      
+      return kRError;
    }
 
 } // namespace utils

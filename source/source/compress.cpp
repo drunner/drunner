@@ -16,21 +16,18 @@ namespace compress
 {
    void _rundocker(std::string src, std::string dst, std::string passwd, std::string ctrcmd)
    {
-      std::string cmd("docker");
-      std::vector<std::string> args = { "run","--rm","-v",src + ":/src","-v",dst + ":/dst" };
+      CommandLine cl;
+      cl.command = "docker";
 
-      if (passwd.length() > 0)
-      {
-         logmsg(kLDEBUG, "Using password supplied.");
-         args.push_back("-e");
-         args.push_back("PASS=\"" + passwd + "\"");
-      }
-      args.push_back(drunnerPaths::getdrunnerUtilsImage());
-      args.push_back("bash");
-      args.push_back("-c");
-      args.push_back(ctrcmd);
+      if (passwd.length()==0)
+         cl.args = { "run","--rm","-v",src + ":/src","-v",dst + ":/dst", 
+            drunnerPaths::getdrunnerUtilsImage(), "bash", "-c", ctrcmd};
+      else
+         cl.args = { "run","--rm","-v",src + ":/src","-v",dst + ":/dst",
+            "-e","PASS=\"" + passwd + "\"",
+            drunnerPaths::getdrunnerUtilsImage(), "bash", "-c", ctrcmd };
 
-      utils::runcommand_stream(cmd, args, GlobalContext::getParams()->supportCallMode() );
+      utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode() );
    }
 
    // --------------------------------------

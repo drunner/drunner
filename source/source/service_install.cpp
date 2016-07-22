@@ -48,11 +48,11 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
          utils_docker::createDockerVolume(v);
 
       // set permissions on volume.
-      tVecStr args = { "run", "--rm", "-v",
+      CommandLine cl("docker", { "run", "--rm", "-v",
          v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
-         "chmod","0777","/tempmount" };
+         "chmod","0777","/tempmount" } );
       
-      int rval = utils::runcommand_stream("docker", args, GlobalContext::getParams()->supportCallMode());
+      int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
       if (rval != 0)
          fatal("Failed to set permissions on docker volume " + v);
 
@@ -98,11 +98,11 @@ cResult service_install::_recreate(bool updating)
       _ensureDirectoriesExist();
 
       // copy files to service directory on host.
-      std::vector<std::string> args = { "run","--rm","-v",
+      CommandLine cl("docker", { "run","--rm","-v",
          getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" ,
-         "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" };
+         "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" });
       std::string op;
-      if (0 != utils::runcommand("docker", args, op, false))
+      if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
          logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out service configuration for the dService.
@@ -230,8 +230,8 @@ cResult service_install::obliterate()
             {
                logmsg(kLINFO, "Obliterating docker volume " + entry);
                std::string op;
-               std::vector<std::string> args = { "rm",entry };
-               if (0 != utils::runcommand("docker", args, op, false))
+               CommandLine cl("docker", { "rm",entry } );
+               if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
                   logmsg(kLWARN, op);
