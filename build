@@ -63,7 +63,7 @@ function runbuild {
       -e "VSHORT=${VSHORT}" \
       -e "DEBUG=${DEBUG}"   \
       -v "${SRC}:/source" "${IMAGE}" \
-      /bin/bash -c "make -j4"
+      /bin/bash -c "make"
 
    OUTPUT=source/output/drunner
 

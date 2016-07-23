@@ -1,9 +1,11 @@
 APP=output/drunner
 CPP=g++
 INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/yaml-cpp/include -Ideps/lua
-CPPFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
+
+CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
  -Wall -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
+
 CFLAGS=-MD -MP -fdiagnostics-color=always -Wall -Wno-unknown-pragmas -static-libgcc $(INC)
 
 LDFLAGS=-static -pthread
@@ -26,11 +28,5 @@ $(APP): $(OBJS) $(OBJSC)
 -include $(SRCS:.cpp=.d)
 -include $(SRCSC:.c=.d)
 
-%.o: %.cpp
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
-
-%.o: %.c
-	gcc $(CFLAGS) -c -o $@ $<
-
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(OBJSC)

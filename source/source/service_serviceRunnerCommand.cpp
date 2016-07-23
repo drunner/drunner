@@ -128,7 +128,7 @@ cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
 
    std::ostringstream oss(serviceCmd.command);
    for (const auto & x : serviceCmd.args) oss << " " << x;
-   logmsg(kLDEBUG, "serviceRunner - cli args are" + oss.str());
+   logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
 
    // find the command in our command list and run it.
    for (const auto & y : mServiceYml.getCommands())
