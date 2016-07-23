@@ -501,3 +501,13 @@ namespace utils
    }
 
 } // namespace utils
+
+void CommandLine::logcommand(std::string prefix) const
+{
+   std::ostringstream oss;
+   oss << prefix;
+   oss << command;
+   for (const auto & a : args)
+      oss << " [" << a << "]";
+   logmsg(kLDEBUG, oss.str());
+}

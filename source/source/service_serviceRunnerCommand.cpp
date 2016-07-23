@@ -9,6 +9,8 @@
 #include "globallogger.h"
 #include "utils.h"
 #include "utils_docker.h"
+#include "drunner_paths.h"
+#include "service_paths.h"
 
 
 
@@ -16,71 +18,95 @@
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
 
-cResult service::_launchCommandLine(const CommandLine & operation) const
+
+static std::string sServiceName;
+
+extern "C" int l_dstop(lua_State *L)
 {
-   int result = utils::runcommand_stream(
-      operation,
-      GlobalContext::getParams()->serviceCmdMode(),
-      getPathdRunner(),
-      mServiceCfg.getVariables().getEnv()
-   );
-   return (result == 0 ? kRSuccess : kRError);
-}
+   if (lua_gettop(L) != 1)
+      return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
+   std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
 
-cResult service::_dstop(const CommandLine & operation) const
-{
-   if (operation.args.size() != 1)
-      fatal("dstop requires exactly one argument: the docker container to stop and remove.");
-   std::string cname = operation.args[0];
+   cResult rval; // defaults to kRNoChange.
    if (utils_docker::dockerContainerExists(cname))
    {
       logmsg(kLDEBUG, "Stopping and removing container " + cname);
       std::string out;
       CommandLine cl("docker", { "stop",cname });
-      if (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0)
-         return kRError;
+      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
       cl.args[0] = "rm";
-      if (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0)
-         return kRError;
-      return kRSuccess;
-   }
+      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
 
-   logmsg(kLDEBUG, "Container " + cname + " is not running.");
-   return kRNoChange;
+   }
+   else
+      logmsg(kLDEBUG, "Container " + cname + " is not running.");
+
+   lua_pushinteger(L, rval);
+   return 1; // one argument to return.
 }
 
-
-cResult service::_handleStandardCommands(const CommandLine & operation, bool & processed) const
+extern "C" int l_run(lua_State *L)
 {
-   processed = true;
+   if (lua_gettop(L) != 1)
+      return luaL_error(L, "Expected exactly one argument (the command to run as a string) for run.");
+   std::string command = lua_tostring(L, 1); // first argument. 
 
-   for (const auto & y : mServiceYml.getCommands())
-      if (utils::stringisame(y.name, operation.command))
-         return _runserviceRunnerCommand(y, operation);  // link to another command.
-      
-   // check other commands.
-   {
-      using namespace utils;
-      switch (str2int(operation.command.c_str()))
-      {
-      case str2int("dstop"):
-         return _dstop(operation);
-         break;
-      default:
-         break;
-      }
-   }
-   processed = false;
-   return kRNoChange;
+   cResult rval; // defaults to kRNoChange.
+
+   CommandLine cl;
+   utils::split_in_args(command, cl);
+   cl.logcommand("Run: ");
+
+   servicePaths sp(sServiceName);
+   rval += utils::runcommand_stream(
+      cl,
+      GlobalContext::getParams()->serviceCmdMode(),
+      servicePaths(sServiceName).getPathdRunner()
+   );
+
+   lua_pushinteger(L, rval);
+   return 1; // one argument to return.
 }
+
+
+//cResult service::_handleStandardCommands(const CommandLine & operation, bool & processed) const
+//{
+//   processed = true;
+//
+//   for (const auto & y : mServiceYml.getCommands())
+//      if (utils::stringisame(y.name, operation.command))
+//         return _runserviceRunnerCommand(y, operation);  // link to another command.
+//      
+//   // check other commands.
+//   {
+//      using namespace utils;
+//      switch (str2int(operation.command.c_str()))
+//      {
+//      case str2int("dstop"):
+//         return _dstop(operation);
+//         break;
+//      default:
+//         break;
+//      }
+//   }
+//   processed = false;
+//   return kRNoChange;
+//}
 
 
 cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & x, const CommandLine & serviceCmd) const
 {
    cResult rval = kRNoChange;
 
+   sServiceName = mName;
+
    lua_State * L = luaL_newstate();
    luaL_openlibs(L);
+
+   lua_pushcfunction(L, l_dstop);
+   lua_setglobal(L, "dstop");
+   lua_pushcfunction(L, l_run);
+   lua_setglobal(L, "run");
 
    variables v(mServiceCfg.getVariables());
 
