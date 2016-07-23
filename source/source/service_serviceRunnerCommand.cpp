@@ -130,13 +130,13 @@ cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
    }
 
    std::ostringstream oss;
-   oss << serviceCmd.command;
+   oss << "[" << serviceCmd.command << "]";
    for (const auto & x : serviceCmd.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
 
    // find the command in our command list and run it.
    for (const auto & y : mServiceYml.getCommands())
-      if (utils::stringisame(y.name, serviceCmd.command) == 0)
+      if (utils::stringisame(y.name, serviceCmd.command))
          return _runserviceRunnerCommand(y, serviceCmd);
 
    return kRNotImplemented;

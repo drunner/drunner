@@ -30,3 +30,4 @@ $(APP): $(OBJS) $(OBJSC)
 
 clean:
 	rm -f $(OBJS) $(OBJSC)
+	rm -f $(SRCS:.cpp=.d) $(SRCSC:.c=.d)
