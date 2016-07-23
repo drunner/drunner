@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <Poco/String.h>
+
 #include "lua.hpp"
 
 #include "service.h"
@@ -81,30 +83,31 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
    luaL_openlibs(L);
 
    variables v(mServiceCfg.getVariables());
+
+   // $0 is script name (serviceCmd)
+   v.setVal(std::to_string(0), serviceCmd.command);
+
+   // $1, $2, .... $n for individual arguments.
    for (unsigned int i = 0; i < serviceCmd.args.size(); ++i)
-      v.setVal(std::to_string(i), serviceCmd.args[i]);
+      v.setVal(std::to_string(i+1), serviceCmd.args[i]);
+
+   // $# is number of args.
    v.setVal("#", std::to_string(serviceCmd.args.size()));
+   
+   // $@ is all args (but not script command).
+   std::ostringstream allargs;
+   for (const auto & sca : serviceCmd.args)
+      allargs << sca << " ";
+   v.setVal("@", Poco::trim(allargs.str()));
 
    // loop through all the operations in the command.
    for (const auto & rawoperation : x.operations)
    {
       // do variable substitution on all the arguments of the operation
-      CommandLine operation;
-      operation.command = rawoperation.command;
-      for (const auto &arg : operation.args)
-      {
-         if (arg.compare("$@") == 0)
-            operation.args.insert(operation.args.end(), serviceCmd.args.begin(), serviceCmd.args.end());
-         else
-            operation.args.push_back(v.substitute(arg));
-      }
+      std::string lualine(v.substitute(rawoperation));
+      logmsg(kLDEBUG, "Running command " + lualine);
 
-      std::string clog = operation.command;
-      for (const auto & arg : operation.args)
-         clog += " " + arg;
-      logmsg(kLDEBUG, "Running command " + clog);
-
-      int ls = luaL_loadstring(L, clog.c_str());
+      int ls = luaL_loadstring(L, lualine.c_str());
       if (!ls)
          ls = lua_pcall(L, 0, LUA_MULTRET, 0);
 
@@ -126,7 +129,8 @@ cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
       return kRSuccess;
    }
 
-   std::ostringstream oss(serviceCmd.command);
+   std::ostringstream oss;
+   oss << serviceCmd.command;
    for (const auto & x : serviceCmd.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
 

@@ -74,12 +74,12 @@ namespace serviceyml
    {
    }
 
-   void _setoperation(std::string opline, const variables &v, CommandLine &op)
-   {
-      std::string sopline = v.substitute(opline);
-      if (kRError == utils::split_in_args(sopline, op))
-         fatal("Empty command line in yaml file");
-   }
+   //void _setoperation(std::string opline, const variables &v, CommandLine &op)
+   //{
+   //   std::string sopline = v.substitute(opline);
+   //   if (kRError == utils::split_in_args(sopline, op))
+   //      fatal("Empty command line in yaml file");
+   //}
 
    cResult file::loadyml(const variables & v)
    {
@@ -102,18 +102,16 @@ namespace serviceyml
             CommandLine op;
             if (it->second.IsScalar())
             {
-               CommandLine op;
-               _setoperation(it->second.as<std::string>(), v, op);
-               cl.operations.push_back(op);
+               std::string opline = v.substitute(it->second.as<std::string>());
+               cl.operations.push_back(opline);
             }
             else
             {
                drunner_assert(it->second.IsSequence(), "Command " + cl.name + " must contain a sequence of commands to run.");
                for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
                {
-                  CommandLine op;
-                  _setoperation(it2->as<std::string>(), v, op);
-                  cl.operations.push_back(op);
+                  std::string opline = v.substitute(it2->as<std::string>());
+                  cl.operations.push_back(opline);
                }
             }
             mCommands.push_back(cl);

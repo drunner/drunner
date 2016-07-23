@@ -40,7 +40,7 @@ namespace serviceyml
    struct CommandDefinition
    {
       std::string name;
-      std::vector<CommandLine> operations;
+      std::vector<std::string> operations;
    };
 
    class simplefile {
