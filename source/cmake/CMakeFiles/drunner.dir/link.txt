@@ -1,1 +1,1 @@
-/usr/bin/c++.exe    -Wl,--enable-auto-import CMakeFiles/drunner.dir/CMakeFiles/3.3.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o  -o drunner.exe -Wl,--out-implib,libdrunner.dll.a -Wl,--major-image-version,0,--minor-image-version,0  -lPocoFoundation -lPocoUtil 
+/usr/bin/c++       CMakeFiles/drunner.dir/CMakeFiles/3.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o  -o drunner -rdynamic -lPocoFoundation -lPocoUtil 
