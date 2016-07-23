@@ -1,13 +1,29 @@
 source/service_serviceRunnerCommand.o: \
  source/service_serviceRunnerCommand.cpp /usr/include/stdc-predef.h \
- source/service.h source/params.h /usr/include/c++/4.9/vector \
- /usr/include/c++/4.9/bits/stl_algobase.h \
- /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
- /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h \
- /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+ /usr/include/stdio.h /usr/include/features.h \
+ /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/libio.h \
+ /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/sys_errlist.h deps/lua/lua.hpp \
+ deps/lua/lua.h deps/lua/luaconf.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
+ /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/xopen_lim.h deps/lua/lualib.h \
+ deps/lua/lauxlib.h source/service.h source/params.h \
+ /usr/include/c++/4.9/vector /usr/include/c++/4.9/bits/stl_algobase.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/cpu_defines.h \
  /usr/include/c++/4.9/bits/functexcept.h \
  /usr/include/c++/4.9/bits/exception_defines.h \
@@ -45,19 +61,14 @@ source/service_serviceRunnerCommand.o: \
  /usr/include/c++/4.9/bits/stringfwd.h \
  /usr/include/c++/4.9/bits/char_traits.h \
  /usr/include/c++/4.9/bits/postypes.h /usr/include/c++/4.9/cwchar \
- /usr/include/wchar.h /usr/include/stdio.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
- /usr/include/xlocale.h /usr/include/c++/4.9/cstdint \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h /usr/include/xlocale.h \
+ /usr/include/c++/4.9/cstdint \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
  /usr/include/c++/4.9/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++locale.h \
  /usr/include/c++/4.9/clocale /usr/include/locale.h \
  /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/4.9/iosfwd \
- /usr/include/c++/4.9/cctype /usr/include/ctype.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/endian.h \
+ /usr/include/c++/4.9/cctype /usr/include/ctype.h /usr/include/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
@@ -86,12 +97,9 @@ source/service_serviceRunnerCommand.o: \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h /usr/include/alloca.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/c++/4.9/cstdio /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /usr/include/c++/4.9/cerrno /usr/include/errno.h \
- /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
- /usr/include/x86_64-linux-gnu/asm/errno.h \
+ /usr/include/c++/4.9/cstdio /usr/include/c++/4.9/cerrno \
+ /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
+ /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/c++/4.9/bits/basic_string.tcc /usr/include/c++/4.9/map \
  /usr/include/c++/4.9/bits/stl_tree.h \
@@ -201,6 +209,62 @@ source/service_serviceRunnerCommand.o: \
 
 /usr/include/stdc-predef.h:
 
+/usr/include/stdio.h:
+
+/usr/include/features.h:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
+
+deps/lua/lua.hpp:
+
+deps/lua/lua.h:
+
+deps/lua/luaconf.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
+
+deps/lua/lualib.h:
+
+deps/lua/lauxlib.h:
+
 source/service.h:
 
 source/params.h:
@@ -212,16 +276,6 @@ source/params.h:
 /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h:
 
 /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h:
-
-/usr/include/features.h:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/x86_64-linux-gnu/c++/4.9/bits/cpu_defines.h:
 
@@ -305,15 +359,7 @@ source/params.h:
 
 /usr/include/c++/4.9/cwchar:
 
-/usr/include/wchar.h:
-
-/usr/include/stdio.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h:
-
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h:
 
 /usr/include/xlocale.h:
 
@@ -338,10 +384,6 @@ source/params.h:
 /usr/include/c++/4.9/cctype:
 
 /usr/include/ctype.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
 /usr/include/endian.h:
 
@@ -410,14 +452,6 @@ source/params.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
 /usr/include/c++/4.9/cstdio:
-
-/usr/include/libio.h:
-
-/usr/include/_G_config.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
 
 /usr/include/c++/4.9/cerrno:
 

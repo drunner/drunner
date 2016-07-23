@@ -1,5 +1,5 @@
 deps/yaml-cpp/src/binary.o: deps/yaml-cpp/src/binary.cpp \
- /usr/include/stdc-predef.h /usr/include/yaml-cpp/binary.h \
+ /usr/include/stdc-predef.h deps/yaml-cpp/include/yaml-cpp/binary.h \
  /usr/include/c++/4.9/string \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h \
@@ -93,11 +93,12 @@ deps/yaml-cpp/src/binary.o: deps/yaml-cpp/src/binary.cpp \
  /usr/include/c++/4.9/bits/stl_uninitialized.h \
  /usr/include/c++/4.9/bits/stl_vector.h \
  /usr/include/c++/4.9/bits/stl_bvector.h \
- /usr/include/c++/4.9/bits/vector.tcc
+ /usr/include/c++/4.9/bits/vector.tcc \
+ deps/yaml-cpp/include/yaml-cpp/dll.h
 
 /usr/include/stdc-predef.h:
 
-/usr/include/yaml-cpp/binary.h:
+deps/yaml-cpp/include/yaml-cpp/binary.h:
 
 /usr/include/c++/4.9/string:
 
@@ -328,3 +329,5 @@ deps/yaml-cpp/src/binary.o: deps/yaml-cpp/src/binary.cpp \
 /usr/include/c++/4.9/bits/stl_bvector.h:
 
 /usr/include/c++/4.9/bits/vector.tcc:
+
+deps/yaml-cpp/include/yaml-cpp/dll.h:

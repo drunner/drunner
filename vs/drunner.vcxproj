@@ -19,6 +19,39 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\deps\lua\lapi.c" />
+    <ClCompile Include="..\source\deps\lua\lauxlib.c" />
+    <ClCompile Include="..\source\deps\lua\lbaselib.c" />
+    <ClCompile Include="..\source\deps\lua\lbitlib.c" />
+    <ClCompile Include="..\source\deps\lua\lcode.c" />
+    <ClCompile Include="..\source\deps\lua\lcorolib.c" />
+    <ClCompile Include="..\source\deps\lua\lctype.c" />
+    <ClCompile Include="..\source\deps\lua\ldblib.c" />
+    <ClCompile Include="..\source\deps\lua\ldebug.c" />
+    <ClCompile Include="..\source\deps\lua\ldo.c" />
+    <ClCompile Include="..\source\deps\lua\ldump.c" />
+    <ClCompile Include="..\source\deps\lua\lfunc.c" />
+    <ClCompile Include="..\source\deps\lua\lgc.c" />
+    <ClCompile Include="..\source\deps\lua\linit.c" />
+    <ClCompile Include="..\source\deps\lua\liolib.c" />
+    <ClCompile Include="..\source\deps\lua\llex.c" />
+    <ClCompile Include="..\source\deps\lua\lmathlib.c" />
+    <ClCompile Include="..\source\deps\lua\lmem.c" />
+    <ClCompile Include="..\source\deps\lua\loadlib.c" />
+    <ClCompile Include="..\source\deps\lua\lobject.c" />
+    <ClCompile Include="..\source\deps\lua\lopcodes.c" />
+    <ClCompile Include="..\source\deps\lua\loslib.c" />
+    <ClCompile Include="..\source\deps\lua\lparser.c" />
+    <ClCompile Include="..\source\deps\lua\lstate.c" />
+    <ClCompile Include="..\source\deps\lua\lstring.c" />
+    <ClCompile Include="..\source\deps\lua\lstrlib.c" />
+    <ClCompile Include="..\source\deps\lua\ltable.c" />
+    <ClCompile Include="..\source\deps\lua\ltablib.c" />
+    <ClCompile Include="..\source\deps\lua\ltm.c" />
+    <ClCompile Include="..\source\deps\lua\lundump.c" />
+    <ClCompile Include="..\source\deps\lua\lutf8lib.c" />
+    <ClCompile Include="..\source\deps\lua\lvm.c" />
+    <ClCompile Include="..\source\deps\lua\lzio.c" />
     <ClCompile Include="..\source\deps\yaml-cpp\src\binary.cpp" />
     <ClCompile Include="..\source\deps\yaml-cpp\src\contrib\graphbuilder.cpp" />
     <ClCompile Include="..\source\deps\yaml-cpp\src\contrib\graphbuilderadapter.cpp" />
@@ -88,6 +121,32 @@
     <ClCompile Include="..\source\source\validateimage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\deps\lua\lapi.h" />
+    <ClInclude Include="..\source\deps\lua\lauxlib.h" />
+    <ClInclude Include="..\source\deps\lua\lcode.h" />
+    <ClInclude Include="..\source\deps\lua\lctype.h" />
+    <ClInclude Include="..\source\deps\lua\ldebug.h" />
+    <ClInclude Include="..\source\deps\lua\ldo.h" />
+    <ClInclude Include="..\source\deps\lua\lfunc.h" />
+    <ClInclude Include="..\source\deps\lua\lgc.h" />
+    <ClInclude Include="..\source\deps\lua\llex.h" />
+    <ClInclude Include="..\source\deps\lua\llimits.h" />
+    <ClInclude Include="..\source\deps\lua\lmem.h" />
+    <ClInclude Include="..\source\deps\lua\lobject.h" />
+    <ClInclude Include="..\source\deps\lua\lopcodes.h" />
+    <ClInclude Include="..\source\deps\lua\lparser.h" />
+    <ClInclude Include="..\source\deps\lua\lprefix.h" />
+    <ClInclude Include="..\source\deps\lua\lstate.h" />
+    <ClInclude Include="..\source\deps\lua\lstring.h" />
+    <ClInclude Include="..\source\deps\lua\ltable.h" />
+    <ClInclude Include="..\source\deps\lua\ltm.h" />
+    <ClInclude Include="..\source\deps\lua\lua.h" />
+    <ClInclude Include="..\source\deps\lua\lua.hpp" />
+    <ClInclude Include="..\source\deps\lua\luaconf.h" />
+    <ClInclude Include="..\source\deps\lua\lualib.h" />
+    <ClInclude Include="..\source\deps\lua\lundump.h" />
+    <ClInclude Include="..\source\deps\lua\lvm.h" />
+    <ClInclude Include="..\source\deps\lua\lzio.h" />
     <ClInclude Include="..\source\deps\yaml-cpp\src\collectionstack.h" />
     <ClInclude Include="..\source\deps\yaml-cpp\src\contrib\graphbuilderadapter.h" />
     <ClInclude Include="..\source\deps\yaml-cpp\src\directives.h" />
@@ -212,7 +271,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\yaml-cpp\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -229,7 +288,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\..\poco-1.7.3\Foundation\include;$(SolutionDir)..\..\poco-1.7.3\Util\include;$(SolutionDir)..\..\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\yaml-cpp\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>

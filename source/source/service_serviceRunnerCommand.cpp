@@ -1,8 +1,14 @@
+#include <stdio.h>
+
+#include "lua.hpp"
+
 #include "service.h"
 #include "globalcontext.h"
 #include "globallogger.h"
 #include "utils.h"
 #include "utils_docker.h"
+
+
 
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
@@ -71,9 +77,13 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
 {
    cResult rval = kRNoChange;
 
+   lua_State * L = luaL_newstate();
+   luaL_openlibs(L);
+
    variables v(mServiceCfg.getVariables());
    for (unsigned int i = 0; i < serviceCmd.args.size(); ++i)
       v.setVal(std::to_string(i), serviceCmd.args[i]);
+   v.setVal("#", std::to_string(serviceCmd.args.size()));
 
    // loop through all the operations in the command.
    for (const auto & rawoperation : x.operations)
@@ -94,19 +104,16 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
          clog += " " + arg;
       logmsg(kLDEBUG, "Running command " + clog);
 
+      int ls = luaL_loadstring(L, clog.c_str());
+      if (!ls)
+         ls = lua_pcall(L, 0, LUA_MULTRET, 0);
 
-      bool processed = false;
-      // see if it's a standard command (e.g. link to another command).
-      cResult standres = _handleStandardCommands(operation, processed);
-      if (processed)
-         rval += standres;
-      else
-      {
-         rval += _launchCommandLine(operation);
-         if (rval == kRError)
-            fatal("Result from command " + operation.command + " was non-zero. Aborting.");
-      }
+      if (ls)
+         logmsg(kLERROR, "Error " + std::string(lua_tostring(L, -1)));
    }
+
+   if (L) 
+      lua_close(L);
    return rval;
 }
 
