@@ -63,8 +63,7 @@ function runbuild {
       -e "VSHORT=${VSHORT}" \
       -e "DEBUG=${DEBUG}"   \
       -v "${SRC}:/source" "${IMAGE}" \
-      -w="/source/cmake"
-      /bin/bash -c "cmake . ; make -j4"
+      /bin/bash -c "make -j4"
 
    OUTPUT=source/output/drunner
 
@@ -75,7 +74,7 @@ function runbuild {
 }
 
 function makeclean {
-   docker run --rm -v "${SRC}:/source" "${IMAGE}" make dist-clean
+   docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
    rm -f "${MYDIR}/drunner"
    rm -f "$PERMISSIONSFILE"
 }

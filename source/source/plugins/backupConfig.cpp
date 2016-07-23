@@ -1,4 +1,5 @@
 #include <fstream>
+#include <algorithm>
 
 #include "yaml-cpp/yaml.h"
 
