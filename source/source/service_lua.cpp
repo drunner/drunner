@@ -58,7 +58,8 @@ namespace servicelua
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
-      drunner_assert(utils::fileexists(path),"The expected file does not exist: "+ path.toString()); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
+      if (!utils::fileexists(path))
+         return kRError;
 
       dLuaState L;
       luaL_openlibs(L);

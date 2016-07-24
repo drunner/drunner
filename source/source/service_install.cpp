@@ -29,9 +29,9 @@ service_install::service_install(std::string servicename) : servicePaths(service
    servicelua::luafile sl(*this);
 
    if (sl.loadlua()!=kRSuccess)
-      logmsg(kLWARN,"No imagename specified and unable to read the service config.");
-
-   mImageName = sl.getImageName();
+      logmsg(kLWARN,"No imagename specified and unable to read service.lua.");
+   else
+      mImageName = sl.getImageName();
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -98,6 +98,8 @@ cResult service_install::_recreate(bool updating)
       // create the basic directories.
       _ensureDirectoriesExist();
 
+
+      TODO("Fix this - copies across files which we can not delete later...");
       // copy files to service directory on host.
       CommandLine cl("docker", { "run","--rm","-v",
          getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" ,
