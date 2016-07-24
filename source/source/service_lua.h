@@ -46,9 +46,6 @@ namespace servicelua
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
 
-      // saves the variables.
-      cResult saveServiceVars();
-
       std::string getHelp() const { return mHelp; }
       std::string getImageName() const;
 
@@ -57,8 +54,16 @@ namespace servicelua
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
 
+      // pass through commands for the service variables.
+      cResult saveVariables() const { return mServiceVars.saveconfig(); }
+      const variables & getVariables() const { return mServiceVars.getVariables(); }
+      void setVariable(std::string key, std::string val) { mServiceVars.setVariable(key, val); }
+
+      // for lua
+      void addContainer(std::string cname);
+
    private:
-      cResult safeloadvars();
+      cResult _safeloadvars();
 
       const servicePaths & mServicePaths;
       

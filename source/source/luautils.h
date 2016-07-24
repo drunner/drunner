@@ -45,6 +45,27 @@ private:
 };
 
 
+class dLuaState {
+public:
+   dLuaState() 
+   {
+      L = luaL_newstate();
+      luaL_openlibs(L);
+   }
+
+   ~dLuaState()
+   {
+      if (L) 
+         lua_close(L);
+   }
+
+   operator lua_State *() { return L; }
+
+private:
+   lua_State * L;
+};
+
+
 // -------------------------------------------------------------
 
 

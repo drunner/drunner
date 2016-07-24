@@ -107,26 +107,15 @@ cResult service_install::_recreate(bool updating)
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out service configuration for the dService.
-      serviceVars svccfg(getPathServiceVars());
-      { // use simple file temporarily.
-         servicelua::luafile syf(getPathServiceLua());
-         if (kRSuccess != syf.loadlua())
-            fatal("Corrupt dService - could not load service.lua");
-         svccfg.create(syf);
-      }
-      svccfg.setImageName(mImageName);
-      svccfg.setServiceName(mName);
-      if (kRSuccess != svccfg.saveconfig())
-         fatal("Could not save the service configuration!");
-
-      // now can load full service.yml, using variable substitution via the defaults etc..
-      servicelua::luafile syfull(getPathServiceLua());
-      if (kRSuccess != syfull.loadlua(svccfg.getVariables()))
-         fatal("Corrupt dservice - couldn't read full service.yml");
+      servicelua::luafile syf(*this);
+      if (syf.loadlua()!=kRSuccess)
+         fatal("Corrupt dservice - couldn't read service.lua.");
+      if (syf.saveVariables() != kRSuccess)
+         fatal("Could not write out service variables.");
 
       // make sure we have the latest of all containers.
       bool foundmain = false;
-      for (const auto & entry : syfull.getContainers())
+      for (const auto & entry : syf.getContainers())
       {
          utils_docker::pullImage(entry);
          if (utils::stringisame(entry, mImageName))
@@ -137,7 +126,7 @@ cResult service_install::_recreate(bool updating)
       
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
-      syfull.getManageDockerVolumeNames(vols);
+      syf.getManageDockerVolumeNames(vols);
       _createVolumes(vols);
 
       // create launch script

@@ -23,7 +23,6 @@ public:
    std::string substitute(std::string s) const;
    const Poco::Process::Env & getEnv() const;
 
-protected:
    const tKeyVals & getAll() const { return mVariables; }
 
 private:

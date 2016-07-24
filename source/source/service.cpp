@@ -44,10 +44,8 @@ cResult service::_handleconfigure(const CommandLine & cl)
    if (cl.args.size()==0)
    { // show current variables.
       logmsg(kLINFO, "Current configuration for " + mName + " is:");
-      for (const auto & x : mServiceVars.getVariables().getEnv())
-         for (const auto & y : mServiceLua.getConfigItems())
-            if (utils::stringisame(y.name, x.first))
-               logmsg(kLINFO, " " + x.first + " = " + x.second);
+      for (const auto & y : mServiceLua.getVariables().getAll())
+         logmsg(kLINFO, " " + y.first + " = " + y.second);
       return kRSuccess;
    }
 
@@ -85,9 +83,10 @@ cResult service::_handleconfigure(const CommandLine & cl)
          if (utils::stringisame(key, y.name))
          {
             // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
-            mServiceVars.setSaveVariable(key, val);
+            mServiceLua.setVariable(key, val);
+            mServiceLua.saveVariables();
          }
-      if (!mServiceVars.getVariables().hasKey(key))
+      if (!mServiceLua.getVariables().hasKey(key))
          fatal("Unrecognised setting " + key);
    }
    return kRSuccess;

@@ -35,8 +35,10 @@ namespace servicelua
    extern "C" int l_addcontainer(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
+         return luaL_error(L, "Expected exactly one argument (the name of the container) for addcontainer.");
       std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+
+      sFile.get(L)->addContainer(cname);
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);
@@ -47,14 +49,6 @@ namespace servicelua
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
    }
- 
-
-   //void _setoperation(std::string opline, const variables &v, CommandLine &op)
-   //{
-   //   std::string sopline = v.substitute(opline);
-   //   if (kRError == utils::split_in_args(sopline, op))
-   //      fatal("Empty command line in yaml file");
-   //}
 
    extern "C" static const struct luaL_Reg d_lualib[] = {
       { "addconfig", l_addconfig },
@@ -70,13 +64,13 @@ namespace servicelua
       
    cResult luafile::loadlua()
    {
-      safeloadvars();
+      _safeloadvars(); // set defaults, load real values if we can
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadyml is not a file.");
       drunner_assert(utils::fileexists(path),"The expected file does not exist: "+ path.toString()); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
 
-      lua_State * L = luaL_newstate();
+      dLuaState L;
       luaL_openlibs(L);
 
       staticmonitor<luafile> monitor(L, this, &sFile);
@@ -94,42 +88,15 @@ namespace servicelua
       if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
          fatal("Failed to execute " + path.toString() + " " + lua_tostring(L, -1));
 
-
-      ///* push functions and arguments */
-      //lua_getglobal(L, "f"); /* function to be called */
-      //lua_pushnumber(L, x); /* push 1st argument */
-      //lua_pushnumber(L, y); /* push 2nd argument */
-      //                      /* do the call (2 arguments, 1 result) */
-      //if (lua_pcall(L, 2, 1, 0) != LUA_OK)
-      //   error(L, "error running function 'f': %s",
-      //      lua_tostring(L, -1));
-      ///* retrieve result */
-      //z = lua_tonumberx(L, -1, &isnum);
-      //if (!isnum)
-      //   error(L, "function 'f' must return a number");
-      //lua_pop(L, 1); /* pop returned value */
-      //return z;
-
-
-      //YAML::Node yamlfile = YAML::LoadFile(mPath.toString());
-      //drunner_assert(yamlfile,"Unable to read the yaml file: "+mPath.toString());
-
-      //if (yamlfile["volumes"])
-      //{ // load volumes
-      //   YAML::Node volumes = yamlfile["volumes"];
-      //   for (auto it = volumes.begin(); it != volumes.end(); ++it)
-      //   {
-      //      Volume vol;
-      //      vol.name = v.substitute(it->first.as<std::string>());
-      //      vol.backup = it->second["backup"].as<bool>();
-      //      if (it->second["external"])
-      //         vol.external = it->second["external"].as<bool>();
-      //      mVolumes.push_back(vol);
-      //   }
-      //}
-
-      //drunner_assert(yamlfile["help"], "All service.yml files are required to have a help command.");
-      //mHelp = v.substitute(yamlfile["help"].as<std::string>());
+      // pull out the relevant config items.
+      lua_getglobal(L, "drunner_setup");
+      if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+         fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
+      
+      // update IMAGENAME if not yet set.
+      if (mServiceVars.getVariables().hasKey("IMAGENAME"))
+         drunner_assert(utils::stringisame(mServiceVars.getVariables().getVal("IMAGENAME"), getImageName()), "Service's IMAGENAME has changed.");
+      mServiceVars.setVariable("IMAGENAME", getImageName());
 
       return kRSuccess;
    }
@@ -149,10 +116,20 @@ namespace servicelua
             vols.push_back(v.name);
    }
 
-   cResult luafile::safeloadvars()
+   void luafile::addContainer(std::string cname)
    {
-      // set defaults.
-      mServiceVars.setServiceName(mServicePaths.getName());
+      drunner_assert(cname.size() > 0, "Empty container name passed to addContainer.");
+      drunner_assert(std::find(mContainers.begin(), mContainers.end(), cname) == mContainers.end(), "Container already exists " + cname);
+      mContainers.push_back(cname);
+   }
+
+   cResult luafile::_safeloadvars()
+   {
+      // set standard vars (always present).
+      mServiceVars.setVariable("SERVICENAME", mServicePaths.getName());
+      drunner_assert(mContainers.size() == 0, "_safeloadvars: containers already defined.");
+
+      // set defaults for custom vars.
       for (const auto & ci : mConfigItems)
          mServiceVars.setVariable(ci.name, ci.defaultval);
 
@@ -175,7 +152,8 @@ namespace servicelua
 
    std::string luafile::getImageName() const
    {
-      return mServiceVars.getImageName();
+      drunner_assert(mContainers.size() > 0, "getImageName: no containers defined.");
+      return mContainers[0];
    }
 
 
