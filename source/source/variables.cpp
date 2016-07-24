@@ -1,6 +1,6 @@
 #include <Poco/String.h>
 
-#include "service_variables.h"
+#include "variables.h"
 #include "utils.h"
 #include "globallogger.h"
 

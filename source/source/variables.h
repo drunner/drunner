@@ -32,7 +32,7 @@ private:
    // --- serialisation --
    friend class cereal::access;
    template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mVariables); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVariables); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) { mVariables.clear(); ar(mVariables); }
    // --- serialisation --
 
 };

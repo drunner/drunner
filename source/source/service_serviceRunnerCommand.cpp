@@ -96,60 +96,60 @@ extern "C" int l_run(lua_State *L)
 //   return kRNoChange;
 //}
 
-
-cResult service::_runserviceRunnerCommand(const CommandLine & serviceCmd) const
-{
-   cResult rval = kRNoChange;
-
-   sCurrentService = this;
-   
-   lua_State * L = luaL_newstate();
-   luaL_openlibs(L);
-
-   lua_pushcfunction(L, l_dstop);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
-   lua_setglobal(L, "dstop");
-   lua_pushcfunction(L, l_run);
-   lua_setglobal(L, "run");
-
-   variables v(mServiceCfg.getVariables());
-
-   // $0 is script name (serviceCmd)
-   v.setVal(std::to_string(0), serviceCmd.command);
-
-   // $1, $2, .... $n for individual arguments.
-   for (unsigned int i = 0; i < serviceCmd.args.size(); ++i)
-      v.setVal(std::to_string(i+1), serviceCmd.args[i]);
-
-   // $# is number of args.
-   v.setVal("#", std::to_string(serviceCmd.args.size()));
-   
-   // $@ is all args (but not script command).
-   std::ostringstream allargs;
-   for (const auto & sca : serviceCmd.args)
-      allargs << sca << " ";
-   v.setVal("@", Poco::trim(allargs.str()));
-
-   // loop through all the operations in the command.
-   //for (const auto & rawoperation : x.operations)
-   //{
-   //   // do variable substitution on all the arguments of the operation
-   //   std::string lualine(v.substitute(rawoperation));
-   //   logmsg(kLDEBUG, "Running command " + lualine);
-
-   //   int ls = luaL_loadstring(L, lualine.c_str());
-   //   if (!ls)
-   //      ls = lua_pcall(L, 0, LUA_MULTRET, 0);
-
-   //   if (ls)
-   //      logmsg(kLERROR, "Error " + std::string(lua_tostring(L, -1)));
-   //}
-
-   if (L) 
-      lua_close(L);
-
-   sCurrentService = NULL;
-   return rval;
-}
+//
+//cResult service::_runserviceRunnerCommand(const CommandLine & serviceCmd) const
+//{
+//   cResult rval = kRNoChange;
+//
+//   sCurrentService = this;
+//   
+//   lua_State * L = luaL_newstate();
+//   luaL_openlibs(L);
+//
+//   lua_pushcfunction(L, l_dstop);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
+//   lua_setglobal(L, "dstop");
+//   lua_pushcfunction(L, l_run);
+//   lua_setglobal(L, "run");
+//
+//   variables v(mServiceVars.getVariables());
+//
+//   // $0 is script name (serviceCmd)
+//   v.setVal(std::to_string(0), serviceCmd.command);
+//
+//   // $1, $2, .... $n for individual arguments.
+//   for (unsigned int i = 0; i < serviceCmd.args.size(); ++i)
+//      v.setVal(std::to_string(i+1), serviceCmd.args[i]);
+//
+//   // $# is number of args.
+//   v.setVal("#", std::to_string(serviceCmd.args.size()));
+//   
+//   // $@ is all args (but not script command).
+//   std::ostringstream allargs;
+//   for (const auto & sca : serviceCmd.args)
+//      allargs << sca << " ";
+//   v.setVal("@", Poco::trim(allargs.str()));
+//
+//   // loop through all the operations in the command.
+//   //for (const auto & rawoperation : x.operations)
+//   //{
+//   //   // do variable substitution on all the arguments of the operation
+//   //   std::string lualine(v.substitute(rawoperation));
+//   //   logmsg(kLDEBUG, "Running command " + lualine);
+//
+//   //   int ls = luaL_loadstring(L, lualine.c_str());
+//   //   if (!ls)
+//   //      ls = lua_pcall(L, 0, LUA_MULTRET, 0);
+//
+//   //   if (ls)
+//   //      logmsg(kLERROR, "Error " + std::string(lua_tostring(L, -1)));
+//   //}
+//
+//   if (L) 
+//      lua_close(L);
+//
+//   sCurrentService = NULL;
+//   return rval;
+//}
 
 
 cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const

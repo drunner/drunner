@@ -6,8 +6,7 @@
 #include "cresult.h"
 #include "service_paths.h"
 #include "service_lua.h"
-#include "service_variables.h"
-#include "service_config.h"
+#include "service_vars.h"
 
 // class to manage the dService.
 class service : public servicePaths
@@ -27,9 +26,8 @@ public:
 
    cResult serviceRunnerCommand(const CommandLine & serviceCmd) const;
 
-   const servicelua::file & getServiceLua() const { return mServiceLua; }
-   const serviceConfig & getServiceCfg() const { return mServiceCfg; }
-
+   const servicelua::luafile & getServiceLua() const { return mServiceLua; }
+   //const serviceVars & getServiceVars() const { return mServiceVars; }
    //cServiceEnvironment & getEnvironment();
    //const cServiceEnvironment & getEnvironmentConst() const;
 
@@ -43,8 +41,7 @@ private:
    cResult _dstop(const CommandLine & operation) const;
 
    std::string mImageName;
-   serviceConfig mServiceCfg;
-   servicelua::file mServiceLua;
+   servicelua::luafile mServiceLua;
 };
 
 

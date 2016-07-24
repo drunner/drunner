@@ -106,12 +106,6 @@
     <ClCompile Include="..\source\source\service_paths.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_config.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\service_variables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\service_backupvars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -223,6 +217,12 @@
     <ClCompile Include="..\source\source\service_lua.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_vars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\variables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -330,12 +330,6 @@
     <ClInclude Include="..\source\source\service_paths.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\service_config.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\service_variables.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\service_install.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -427,6 +421,15 @@
       <Filter>Source Files\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_lua.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\luautils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_vars.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\variables.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

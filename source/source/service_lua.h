@@ -5,9 +5,10 @@
 #include <vector>
 
 #include <Poco/Path.h>
-#include "service_variables.h"
 #include "cresult.h"
 #include "utils.h"
+#include "service_vars.h"
+#include "service_paths.h"
 
 namespace servicelua
 {
@@ -36,37 +37,37 @@ namespace servicelua
       bool required;
    };
 
-   class simplefile {
-   public: 
-      simplefile(Poco::Path path);
 
-      const std::vector<std::string> & getContainers() const; 
-      const std::vector<Configuration> & getConfigItems() const;
-      
-      virtual cResult loadlua();
-
-   protected:
-      std::vector<std::string> mContainers;
-      std::vector<Configuration> mConfigItems;
-      const Poco::Path mPath;
-   };
-
-   class file : public simplefile {
+   // lua file.
+   class luafile {
    public:
-      file(Poco::Path path); // reads file, throws if bad. Applies variable substitution using variables.
+      luafile(const servicePaths & p);
       
-      cResult loadlua(const variables & v);
+      // loads the lua file, initialises the variables, loads the variables if able.
+      cResult loadlua();
 
-      //const std::vector<Volume> & getVolumes() const        { return mVolumes; }
-      //const std::vector<CommandDefinition> & getCommands() const  { return mCommands; }
-      std::string getHelp() const                           { return mHelp; }
+      // saves the variables.
+      cResult saveServiceVars();
 
+      std::string getHelp() const { return mHelp; }
+      std::string getImageName() const;
+
+      const std::vector<std::string> & getContainers() const;
+      const std::vector<Configuration> & getConfigItems() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
 
    private:
+      cResult safeloadvars();
+
+      const servicePaths & mServicePaths;
+      
+      serviceVars mServiceVars;
+
+      std::vector<std::string> mContainers;
+      std::vector<Configuration> mConfigItems;
       std::vector<Volume> mVolumes;
-      //std::vector<CommandDefinition> mCommands;
+
       std::string mHelp;
    };
 

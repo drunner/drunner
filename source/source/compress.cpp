@@ -9,7 +9,6 @@
 #include "params.h"
 #include "utils_docker.h"
 #include "drunner_paths.h"
-#include "service_variables.h"
 #include "globalcontext.h"
 
 namespace compress

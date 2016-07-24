@@ -25,12 +25,13 @@
 #include "dassert.h"
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
-{
-   serviceConfig svc(getPathServiceConfig());
-   if (kRSuccess == svc.loadconfig())
-      mImageName = svc.getImageName();
-   else
+{ // no imagename specified. Load from service_lua.
+   servicelua::luafile sl(*this);
+
+   if (sl.loadlua()!=kRSuccess)
       logmsg(kLWARN,"No imagename specified and unable to read the service config.");
+
+   mImageName = sl.getImageName();
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -66,17 +67,17 @@ void service_install::_ensureDirectoriesExist() const
    // create service's drunner and temp directories on host.
    utils::makedirectory(getPath(), S_755);
    utils::makedirectory(getPathdRunner(), S_777);
-   utils::makedirectory(getPathServiceConfig().parent(), S_755);
+   utils::makedirectory(getPathServiceVars().parent(), S_755);
 }
 
 cResult service_install::_recreate(bool updating)
 {
    drunner_assert(mImageName.length() > 0, "Can't recreate service "+mName + " - image name could not be determined.");
 
-   if (updating)
+   if (updating && utils::fileexists(getPathServiceLua()))
    { // pull all containers used by the dService.
-      servicelua::simplefile syf(getPathservicelua());
-      if (kRSuccess!= syf.loadlua())
+      servicelua::luafile syf(*this);
+      if (syf.loadlua()==kRSuccess)
          for (auto c : syf.getContainers())
             utils_docker::pullImage(c);
    }
@@ -106,9 +107,9 @@ cResult service_install::_recreate(bool updating)
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out service configuration for the dService.
-      serviceConfig svccfg(getPathServiceConfig());
+      serviceVars svccfg(getPathServiceVars());
       { // use simple file temporarily.
-         servicelua::simplefile syf(getPathservicelua());
+         servicelua::luafile syf(getPathServiceLua());
          if (kRSuccess != syf.loadlua())
             fatal("Corrupt dService - could not load service.lua");
          svccfg.create(syf);
@@ -119,7 +120,7 @@ cResult service_install::_recreate(bool updating)
          fatal("Could not save the service configuration!");
 
       // now can load full service.yml, using variable substitution via the defaults etc..
-      servicelua::file syfull(getPathservicelua());
+      servicelua::luafile syfull(getPathServiceLua());
       if (kRSuccess != syfull.loadlua(svccfg.getVariables()))
          fatal("Corrupt dservice - couldn't read full service.yml");
 

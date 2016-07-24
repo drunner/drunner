@@ -26,15 +26,11 @@
 
 service::service(std::string servicename) : 
    servicePaths(servicename),
-   mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
-   mServiceLua(servicePaths(servicename).getPathservicelua())
+   mServiceLua(servicePaths(servicename))
 {
-   if (mServiceCfg.loadconfig() != kRSuccess)
-      fatal("Could not load service configuration: " + getPathServiceConfig().toString());
-
-   if (mServiceLua.loadlua(mServiceCfg.getVariables()) != kRSuccess)
-      fatal("Could not load service yml: " + getPathservicelua().toString());
-   mImageName = mServiceCfg.getImageName();
+   if (mServiceLua.loadlua() != kRSuccess)
+      fatal("Could not load service yml: " + getPathServiceLua().toString());
+   mImageName = mServiceLua.getImageName();
    poco_assert(mImageName.length() > 0);
 }
 
@@ -48,7 +44,7 @@ cResult service::_handleconfigure(const CommandLine & cl)
    if (cl.args.size()==0)
    { // show current variables.
       logmsg(kLINFO, "Current configuration for " + mName + " is:");
-      for (const auto & x : mServiceCfg.getVariables().getEnv())
+      for (const auto & x : mServiceVars.getVariables().getEnv())
          for (const auto & y : mServiceLua.getConfigItems())
             if (utils::stringisame(y.name, x.first))
                logmsg(kLINFO, " " + x.first + " = " + x.second);
@@ -89,9 +85,9 @@ cResult service::_handleconfigure(const CommandLine & cl)
          if (utils::stringisame(key, y.name))
          {
             // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
-            mServiceCfg.setSaveVariable(key, val);
+            mServiceVars.setSaveVariable(key, val);
          }
-      if (!mServiceCfg.getVariables().hasKey(key))
+      if (!mServiceVars.getVariables().hasKey(key))
          fatal("Unrecognised setting " + key);
    }
    return kRSuccess;

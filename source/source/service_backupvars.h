@@ -20,7 +20,7 @@ public:
    backupvars(Poco::Path path);
    
    // creates from drunnerCompose.
-   void createFromServiceLua(std::string imagename, const servicelua::file & syf);
+   void createFromServiceLua(std::string imagename, const servicelua::luafile & syf);
 
    const std::vector<std::string> & getDockerVolumeNames() const;
    std::string getImageName() const;

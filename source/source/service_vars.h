@@ -3,13 +3,11 @@
 
 #include "service_paths.h"
 #include "cresult.h"
-#include "service_lua.h"
-#include "service_variables.h"
+#include "variables.h"
 
-class serviceConfig {
+class serviceVars {
 public:
-   serviceConfig(Poco::Path path);
-   cResult create(const servicelua ::simplefile & y);
+   serviceVars(const servicePaths & p);
    cResult loadconfig();
    cResult saveconfig() const;
 
@@ -20,13 +18,16 @@ public:
    void setServiceName(std::string sname);
 
    const variables & getVariables() const { return mVariables; }
-   void setSaveVariable(std::string key, std::string val);
+   cResult setSaveVariable(std::string key, std::string val);
+
+   cResult setVariable(std::string key, std::string val);
 
 private:
    variables mVariables;
-   Poco::Path mServicePath;
+   
+   const servicePaths & mServicePaths;
 };
-CEREAL_CLASS_VERSION(serviceConfig, 1);
+CEREAL_CLASS_VERSION(serviceVars, 1);
 
 
 #endif

@@ -10,7 +10,7 @@ backupvars::backupvars(Poco::Path path) : mPath(path)
    poco_assert(path.isFile());
 }
 
-void backupvars::createFromServiceLua(std::string imagename, const servicelua::file & syf)
+void backupvars::createFromServiceLua(std::string imagename, const servicelua::luafile & syf)
 {
    poco_assert(mVolumes.size() == 0);
    poco_assert(mImageName.length() == 0);
