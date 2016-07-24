@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "service_lua.h"
 #include "utils.h"
 #include "globallogger.h"
@@ -48,18 +50,6 @@ namespace servicelua
    luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
-   }
-
-   extern "C" static const struct luaL_Reg d_lualib[] = {
-      { "addconfig", l_addconfig },
-      { "addcontainer", l_addcontainer },
-      { "addvolume", l_addvolume },
-      { NULL, NULL }  /* sentinel */
-   };
-      
-   extern "C" int luaopen_dlib(lua_State *L) {
-      luaL_newlib(L, d_lualib);
-      return 1;
    }
       
    cResult luafile::loadlua()
