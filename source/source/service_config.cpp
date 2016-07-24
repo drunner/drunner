@@ -4,7 +4,7 @@
 
 #include "service_config.h"
 #include "utils.h"
-#include "service_yml.h"
+#include "service_lua.h"
 #include "globallogger.h"
 
 serviceConfig::serviceConfig(Poco::Path path) :
@@ -12,10 +12,10 @@ serviceConfig::serviceConfig(Poco::Path path) :
 {
 }
 
-cResult create(const serviceyml::file & y)
-{
-   return kRNotImplemented;
-}
+//cResult create(const servicelua::file & y)
+//{
+//   return kRNotImplemented;
+//}
 
 cResult serviceConfig::loadconfig()
 {
@@ -77,9 +77,9 @@ void serviceConfig::setServiceName(std::string sname)
    mVariables.setVal("SERVICENAME", sname);
 }
 
-cResult serviceConfig::create(const serviceyml::simplefile & y)
+cResult serviceConfig::create(const servicelua::simplefile & y)
 {
-   const std::vector<serviceyml::Configuration> & ci(y.getConfigItems());
+   const std::vector<servicelua::Configuration> & ci(y.getConfigItems());
 
    for (const auto & i : ci)
       mVariables.setVal(i.name, i.defaultval);

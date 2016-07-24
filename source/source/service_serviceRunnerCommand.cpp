@@ -76,7 +76,7 @@ extern "C" int l_run(lua_State *L)
 //{
 //   processed = true;
 //
-//   for (const auto & y : mServiceYml.getCommands())
+//   for (const auto & y : mServiceLua.getCommands())
 //      if (utils::stringisame(y.name, operation.command))
 //         return _runserviceRunnerCommand(y, operation);  // link to another command.
 //      
@@ -97,7 +97,7 @@ extern "C" int l_run(lua_State *L)
 //}
 
 
-cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & x, const CommandLine & serviceCmd) const
+cResult service::_runserviceRunnerCommand(const CommandLine & serviceCmd) const
 {
    cResult rval = kRNoChange;
 
@@ -130,19 +130,19 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
    v.setVal("@", Poco::trim(allargs.str()));
 
    // loop through all the operations in the command.
-   for (const auto & rawoperation : x.operations)
-   {
-      // do variable substitution on all the arguments of the operation
-      std::string lualine(v.substitute(rawoperation));
-      logmsg(kLDEBUG, "Running command " + lualine);
+   //for (const auto & rawoperation : x.operations)
+   //{
+   //   // do variable substitution on all the arguments of the operation
+   //   std::string lualine(v.substitute(rawoperation));
+   //   logmsg(kLDEBUG, "Running command " + lualine);
 
-      int ls = luaL_loadstring(L, lualine.c_str());
-      if (!ls)
-         ls = lua_pcall(L, 0, LUA_MULTRET, 0);
+   //   int ls = luaL_loadstring(L, lualine.c_str());
+   //   if (!ls)
+   //      ls = lua_pcall(L, 0, LUA_MULTRET, 0);
 
-      if (ls)
-         logmsg(kLERROR, "Error " + std::string(lua_tostring(L, -1)));
-   }
+   //   if (ls)
+   //      logmsg(kLERROR, "Error " + std::string(lua_tostring(L, -1)));
+   //}
 
    if (L) 
       lua_close(L);
@@ -154,21 +154,21 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
 
 cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
 {
-   if (serviceCmd.command.length()==0 || utils::stringisame(serviceCmd.command, "help"))
-   { // show help
-      std::cout << std::endl << mServiceYml.getHelp() << std::endl;
-      return kRSuccess;
-   }
+   //if (serviceCmd.command.length()==0 || utils::stringisame(serviceCmd.command, "help"))
+   //{ // show help
+   //   std::cout << std::endl << mServiceLua.getHelp() << std::endl;
+   //   return kRSuccess;
+   //}
 
    std::ostringstream oss;
    oss << "[" << serviceCmd.command << "]";
    for (const auto & x : serviceCmd.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
 
-   // find the command in our command list and run it.
-   for (const auto & y : mServiceYml.getCommands())
-      if (utils::stringisame(y.name, serviceCmd.command))
-         return _runserviceRunnerCommand(y, serviceCmd);
+   //// find the command in our command list and run it.
+   //for (const auto & y : mServiceLua.getCommands())
+   //   if (utils::stringisame(y.name, serviceCmd.command))
+   //      return _runserviceRunnerCommand(y, serviceCmd);
 
    return kRNotImplemented;
 }

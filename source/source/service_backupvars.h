@@ -10,7 +10,7 @@
 
 #include <Poco/Path.h>
 
-#include "service_yml.h"
+#include "service_lua.h"
 #include "cresult.h"
 
 class backupvars
@@ -20,7 +20,7 @@ public:
    backupvars(Poco::Path path);
    
    // creates from drunnerCompose.
-   void createFromServiceYml(std::string imagename, const serviceyml::file & syf);
+   void createFromServiceLua(std::string imagename, const servicelua::file & syf);
 
    const std::vector<std::string> & getDockerVolumeNames() const;
    std::string getImageName() const;

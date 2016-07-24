@@ -19,7 +19,7 @@ Poco::Path servicePaths::getPathHostVolume() const
    return drunnerPaths::getPath_HostVolumes().pushDirectory(mName);
 }
 
-Poco::Path servicePaths::getPathServiceYml() const
+Poco::Path servicePaths::getPathservicelua() const
 {
    return getPathdRunner().setFileName("service.yml");
 }

@@ -75,8 +75,8 @@ cResult service_install::_recreate(bool updating)
 
    if (updating)
    { // pull all containers used by the dService.
-      serviceyml::simplefile syf(getPathServiceYml());
-      if (kRSuccess!= syf.loadyml())
+      servicelua::simplefile syf(getPathservicelua());
+      if (kRSuccess!= syf.loadlua())
          for (auto c : syf.getContainers())
             utils_docker::pullImage(c);
    }
@@ -103,14 +103,14 @@ cResult service_install::_recreate(bool updating)
          "cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*" });
       std::string op;
       if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
-         logmsg(kLERROR, "Couldn't copy the service files. You will need to reinstall the service.\nError:\n" + op);
+         logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out service configuration for the dService.
       serviceConfig svccfg(getPathServiceConfig());
       { // use simple file temporarily.
-         serviceyml::simplefile syf(getPathServiceYml());
-         if (kRSuccess != syf.loadyml())
-            fatal("Corrupt dService - missing service.yml");
+         servicelua::simplefile syf(getPathservicelua());
+         if (kRSuccess != syf.loadlua())
+            fatal("Corrupt dService - could not load service.lua");
          svccfg.create(syf);
       }
       svccfg.setImageName(mImageName);
@@ -119,8 +119,8 @@ cResult service_install::_recreate(bool updating)
          fatal("Could not save the service configuration!");
 
       // now can load full service.yml, using variable substitution via the defaults etc..
-      serviceyml::file syfull(getPathServiceYml());
-      if (kRSuccess != syfull.loadyml(svccfg.getVariables()))
+      servicelua::file syfull(getPathservicelua());
+      if (kRSuccess != syfull.loadlua(svccfg.getVariables()))
          fatal("Corrupt dservice - couldn't read full service.yml");
 
       // make sure we have the latest of all containers.
@@ -225,7 +225,7 @@ cResult service_install::obliterate()
          logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
          {// [start] deleting docker volumes.
             std::vector<std::string> vols;
-            svc.getServiceYml().getManageDockerVolumeNames(vols);
+            svc.getServiceLua().getManageDockerVolumeNames(vols);
             for (const auto & entry : vols)
             {
                logmsg(kLINFO, "Obliterating docker volume " + entry);

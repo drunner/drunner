@@ -3,13 +3,13 @@
 
 #include "service_paths.h"
 #include "cresult.h"
-#include "service_yml.h"
+#include "service_lua.h"
 #include "service_variables.h"
 
 class serviceConfig {
 public:
    serviceConfig(Poco::Path path);
-   cResult create(const serviceyml::simplefile & y);
+   cResult create(const servicelua ::simplefile & y);
    cResult loadconfig();
    cResult saveconfig() const;
 

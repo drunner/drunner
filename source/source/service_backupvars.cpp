@@ -10,7 +10,7 @@ backupvars::backupvars(Poco::Path path) : mPath(path)
    poco_assert(path.isFile());
 }
 
-void backupvars::createFromServiceYml(std::string imagename, const serviceyml::file & syf)
+void backupvars::createFromServiceLua(std::string imagename, const servicelua::file & syf)
 {
    poco_assert(mVolumes.size() == 0);
    poco_assert(mImageName.length() == 0);

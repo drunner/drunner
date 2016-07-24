@@ -17,7 +17,7 @@
 #include "sh_servicevars.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
-#include "service_yml.h"
+#include "service_lua.h"
 #include "dassert.h"
 
 // --------------------------------------------------------------------------------------
@@ -27,13 +27,13 @@
 service::service(std::string servicename) : 
    servicePaths(servicename),
    mServiceCfg(servicePaths(servicename).getPathServiceConfig()),
-   mServiceYml(servicePaths(servicename).getPathServiceYml())
+   mServiceLua(servicePaths(servicename).getPathservicelua())
 {
    if (mServiceCfg.loadconfig() != kRSuccess)
       fatal("Could not load service configuration: " + getPathServiceConfig().toString());
 
-   if (mServiceYml.loadyml(mServiceCfg.getVariables()) != kRSuccess)
-      fatal("Could not load service yml: " + getPathServiceYml().toString());
+   if (mServiceLua.loadlua(mServiceCfg.getVariables()) != kRSuccess)
+      fatal("Could not load service yml: " + getPathservicelua().toString());
    mImageName = mServiceCfg.getImageName();
    poco_assert(mImageName.length() > 0);
 }
@@ -49,7 +49,7 @@ cResult service::_handleconfigure(const CommandLine & cl)
    { // show current variables.
       logmsg(kLINFO, "Current configuration for " + mName + " is:");
       for (const auto & x : mServiceCfg.getVariables().getEnv())
-         for (const auto & y : mServiceYml.getConfigItems())
+         for (const auto & y : mServiceLua.getConfigItems())
             if (utils::stringisame(y.name, x.first))
                logmsg(kLINFO, " " + x.first + " = " + x.second);
       return kRSuccess;
@@ -85,7 +85,7 @@ cResult service::_handleconfigure(const CommandLine & cl)
       }
 
       // find the corresponding configuration definition and set the variable.
-      for (const auto & y : mServiceYml.getConfigItems())
+      for (const auto & y : mServiceLua.getConfigItems())
          if (utils::stringisame(key, y.name))
          {
             // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)

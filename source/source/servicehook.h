@@ -7,7 +7,7 @@
 #include "enums.h"
 #include "params.h"
 #include "cresult.h"
-#include "service_yml.h"
+#include "service_lua.h"
 
 class service;
 

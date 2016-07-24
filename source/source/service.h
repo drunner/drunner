@@ -5,7 +5,7 @@
 #include "drunner_settings.h"
 #include "cresult.h"
 #include "service_paths.h"
-#include "service_yml.h"
+#include "service_lua.h"
 #include "service_variables.h"
 #include "service_config.h"
 
@@ -27,7 +27,7 @@ public:
 
    cResult serviceRunnerCommand(const CommandLine & serviceCmd) const;
 
-   const serviceyml::file & getServiceYml() const { return mServiceYml; }
+   const servicelua::file & getServiceLua() const { return mServiceLua; }
    const serviceConfig & getServiceCfg() const { return mServiceCfg; }
 
    //cServiceEnvironment & getEnvironment();
@@ -36,7 +36,7 @@ public:
 private:
    static std::string _loadImageName(const std::string & servicename, std::string imagename);
    cResult _handleconfigure(const CommandLine & operation);
-   cResult _runserviceRunnerCommand(const serviceyml::CommandDefinition & x, const CommandLine & serviceCmd) const;
+   cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _launchCommandLine(const CommandLine & operation) const;
    cResult _handleStandardCommands(const CommandLine & operation, bool & processed) const;
 
@@ -44,7 +44,7 @@ private:
 
    std::string mImageName;
    serviceConfig mServiceCfg;
-   serviceyml::file mServiceYml;
+   servicelua::file mServiceLua;
 };
 
 

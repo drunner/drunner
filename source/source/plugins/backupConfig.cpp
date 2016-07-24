@@ -1,8 +1,6 @@
 #include <fstream>
 #include <algorithm>
 
-#include "yaml-cpp/yaml.h"
-
 #include "backupConfig.h"
 #include "enums.h"
 #include "globalcontext.h"
@@ -22,7 +20,7 @@ bool backupConfig::load()
 {
    if (!utils::fileexists(configfilepath()))
       return false;
-
+/*
    YAML::Node config = YAML::LoadFile(configfilepath().toString());
    if (!config)
       logmsg(kLERROR, "Failed to load " + configfilepath().toString());
@@ -38,25 +36,25 @@ bool backupConfig::load()
       YAML::Node DisabledServices = config[s_DisabledServices];
       for (auto it = DisabledServices.begin(); it != DisabledServices.end(); ++it)
          mDisabledServices.push_back(it->as<std::string>());
-   }
+   }*/
 
    return true;
 }
 
 bool backupConfig::save()
 {
-   YAML::Node config;
-   config[s_BackupPath] = mBackupPath;
-   for (auto s : mDisabledServices)
-      config[s_DisabledServices].push_back(s);
+   //YAML::Node config;
+   //config[s_BackupPath] = mBackupPath;
+   //for (auto s : mDisabledServices)
+   //   config[s_DisabledServices].push_back(s);
 
-   std::ofstream fout(configfilepath().toString());
-   if (!fout.is_open())
-   {
-      logmsg(kLWARN, "Couldn't write " + configfilepath().toString());
-      return false;
-   }
-   fout << config;
+   //std::ofstream fout(configfilepath().toString());
+   //if (!fout.is_open())
+   //{
+   //   logmsg(kLWARN, "Couldn't write " + configfilepath().toString());
+   //   return false;
+   //}
+   //fout << config;
 
    return true;
 }

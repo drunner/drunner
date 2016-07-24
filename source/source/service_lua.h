@@ -5,12 +5,11 @@
 #include <vector>
 
 #include <Poco/Path.h>
-#include "yaml-cpp/yaml.h"
 #include "service_variables.h"
 #include "cresult.h"
 #include "utils.h"
 
-namespace serviceyml
+namespace servicelua
 {
 
    struct Volume 
@@ -37,12 +36,6 @@ namespace serviceyml
       bool required;
    };
 
-   struct CommandDefinition
-   {
-      std::string name;
-      std::vector<std::string> operations;
-   };
-
    class simplefile {
    public: 
       simplefile(Poco::Path path);
@@ -50,24 +43,22 @@ namespace serviceyml
       const std::vector<std::string> & getContainers() const; 
       const std::vector<Configuration> & getConfigItems() const;
       
-      virtual cResult loadyml();
+      virtual cResult loadlua();
 
    protected:
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;
       const Poco::Path mPath;
-
-      virtual cResult _loadyml();
    };
 
    class file : public simplefile {
    public:
       file(Poco::Path path); // reads file, throws if bad. Applies variable substitution using variables.
       
-      cResult loadyml(const variables & v);
+      cResult loadlua(const variables & v);
 
       //const std::vector<Volume> & getVolumes() const        { return mVolumes; }
-      const std::vector<CommandDefinition> & getCommands() const  { return mCommands; }
+      //const std::vector<CommandDefinition> & getCommands() const  { return mCommands; }
       std::string getHelp() const                           { return mHelp; }
 
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
@@ -75,7 +66,7 @@ namespace serviceyml
 
    private:
       std::vector<Volume> mVolumes;
-      std::vector<CommandDefinition> mCommands;
+      //std::vector<CommandDefinition> mCommands;
       std::string mHelp;
    };
 

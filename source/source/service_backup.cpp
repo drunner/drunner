@@ -31,7 +31,7 @@ void service::backup(const std::string & backupfile)
 
    // write out variables that we need to decompress everything.
    backupvars bvars(tempparent.getpath().setFileName(backupvars::filename));
-   bvars.createFromServiceYml(mImageName,mServiceYml);
+   bvars.createFromServiceLua(mImageName,mServiceLua);
    bvars.savevars();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
@@ -56,7 +56,7 @@ void service::backup(const std::string & backupfile)
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
    std::vector<std::string> dockervols;
-   mServiceYml.getBackupDockerVolumeNames(dockervols);
+   mServiceLua.getBackupDockerVolumeNames(dockervols);
 
    for (auto const & entry : dockervols)
    {
@@ -175,7 +175,7 @@ cResult service_install::service_restore(const std::string & backupfile)
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
-   newservice.getServiceYml().getBackupDockerVolumeNames(dockervols);
+   newservice.getServiceLua().getBackupDockerVolumeNames(dockervols);
    if (shb_dockervolumenames.size() != dockervols.size())
       service_restore_fail(mName, "Number of docker volumes stored does not match what we expect.");
    
