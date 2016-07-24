@@ -11,18 +11,19 @@
 #include "utils_docker.h"
 #include "drunner_paths.h"
 #include "service_paths.h"
-
+#include "dassert.h"
 
 
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
 
-
-static std::string sServiceName;
+const service * sCurrentService = NULL;
 
 extern "C" int l_dstop(lua_State *L)
 {
+   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
+
    if (lua_gettop(L) != 1)
       return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
    std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
@@ -47,6 +48,8 @@ extern "C" int l_dstop(lua_State *L)
 
 extern "C" int l_run(lua_State *L)
 {
+   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
+
    if (lua_gettop(L) != 1)
       return luaL_error(L, "Expected exactly one argument (the command to run as a string) for run.");
    std::string command = lua_tostring(L, 1); // first argument. 
@@ -57,11 +60,11 @@ extern "C" int l_run(lua_State *L)
    utils::split_in_args(command, cl);
    cl.logcommand("Run: ");
 
-   servicePaths sp(sServiceName);
+   servicePaths sp(sCurrentService->getName());
    rval += utils::runcommand_stream(
       cl,
       GlobalContext::getParams()->serviceCmdMode(),
-      servicePaths(sServiceName).getPathdRunner()
+      sp.getPathdRunner()
    );
 
    lua_pushinteger(L, rval);
@@ -98,12 +101,12 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
 {
    cResult rval = kRNoChange;
 
-   sServiceName = mName;
-
+   sCurrentService = this;
+   
    lua_State * L = luaL_newstate();
    luaL_openlibs(L);
 
-   lua_pushcfunction(L, l_dstop);
+   lua_pushcfunction(L, l_dstop);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
    lua_setglobal(L, "dstop");
    lua_pushcfunction(L, l_run);
    lua_setglobal(L, "run");
@@ -143,6 +146,8 @@ cResult service::_runserviceRunnerCommand(const serviceyml::CommandDefinition & 
 
    if (L) 
       lua_close(L);
+
+   sCurrentService = NULL;
    return rval;
 }
 
