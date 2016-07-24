@@ -29,7 +29,7 @@ service::service(std::string servicename) :
    mServiceLua(servicePaths(servicename))
 {
    if (mServiceLua.loadlua() != kRSuccess)
-      fatal("Could not load service yml: " + getPathServiceLua().toString());
+      fatal("Could not load service.lua: " + getPathServiceLua().toString());
    mImageName = mServiceLua.getImageName();
    poco_assert(mImageName.length() > 0);
 }

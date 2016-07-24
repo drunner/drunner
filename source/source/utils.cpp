@@ -275,21 +275,6 @@ namespace utils
       }
    }
 
- //  void makesymlink(Poco::Path file, Poco::Path link)
- //  {
-	//if (!utils::fileexists(file))
-	//	logmsg(kLERROR, "Can't link to " + file.toString() + " because it doesn't exist");
- //  if (utils::fileexists(link))
- //     utils::delfile(link);
-	//std::string cmd = "ln -s " + file.toString() + " " + link.toString();
-	//std::string op;
-	//if (utils::bashcommand(cmd, op, false) != 0)
-	//	logmsg(kLERROR, "Failed to create symbolic link for drunner. "+op);
- //  else
- //     logmsg(kLDEBUG, "Created symlink at " + link.toString());
- //  }
-
-
    // recusively delete the path given. we do this manually to set the permissions to writable,
    // so that windows doesn't cause permission denied errors.
    cResult deltree(Poco::Path s)

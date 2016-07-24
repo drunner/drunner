@@ -22,8 +22,8 @@ function die { echo "Not dRunner compatible - $1"; exit 1 ; }
 
 if [ "$UID" -eq 0 ]; then die "the container runs as root." ; fi
 
-# Check mandatory files in image (global var IMAGENAME) before touching host. Is it a valid dService?
-[ -e "/drunner/service.yml" ] || die "does not have service.yml file."
+# Check mandatory files in image before touching host. Is it a valid dService?
+[ -e "/drunner/service.lua" ] || die "does not have service.lua file."
 
 [ ! -e "/drunner/servicecfg.sh" ] || \
    die "Outdated dService with servicecfg.sh (no longer supported)."

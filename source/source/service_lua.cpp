@@ -57,7 +57,7 @@ namespace servicelua
       _safeloadvars(); // set defaults, load real values if we can
 
       Poco::Path path = mServicePaths.getPathServiceLua();
-      drunner_assert(path.isFile(),"Coding error: path provided to loadyml is not a file.");
+      drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       drunner_assert(utils::fileexists(path),"The expected file does not exist: "+ path.toString()); // ctor of simplefile should have set mReadOkay to false if this wasn't true.
 
       dLuaState L;

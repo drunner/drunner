@@ -122,7 +122,7 @@ cResult service_install::_recreate(bool updating)
             foundmain = true;
       }
       if (!foundmain)
-         logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.yml file.");
+         logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.lua file.");
       
       // create volumes, with variables substituted.
       std::vector<std::string> vols;

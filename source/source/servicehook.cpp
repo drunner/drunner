@@ -39,8 +39,8 @@ cResult servicehook::runHook(std::string se)
 {
    if (!utils::fileexists(mService->getPathServiceLua()))
    {
-      logmsg(kLDEBUG, "Failed to find service.yml at " + mService->getPathServiceLua().toString());
-      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's service.yml is not installed.");
+      logmsg(kLDEBUG, "Failed to find service.lua at " + mService->getPathServiceLua().toString());
+      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's service.lua is not installed.");
       return kRError;
    }
 

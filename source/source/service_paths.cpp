@@ -21,7 +21,7 @@ Poco::Path servicePaths::getPathHostVolume() const
 
 Poco::Path servicePaths::getPathServiceLua() const
 {
-   return getPathdRunner().setFileName("service.yml");
+   return getPathdRunner().setFileName("service.lua");
 }
 
 Poco::Path servicePaths::getPathServiceVars() const
