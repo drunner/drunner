@@ -81,6 +81,8 @@ namespace servicelua
 
       mutable luautils::dLuaState mL;
       luautils::staticmonitor<luafile> mMonitor;
+
+      bool mLoaded;
    };
 
 } // namespace

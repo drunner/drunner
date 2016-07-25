@@ -73,15 +73,17 @@ namespace servicelua
       return 1; // one argument to return.
    }
 
-   luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p), mL(), mMonitor(mL.get(),this,&sFile)
+   luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p), mL(), mMonitor(mL.get(),this,&sFile), mLoaded(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
    }
       
    cResult luafile::loadlua()
    {
+      drunner_assert(!mLoaded, "Load called multiple times."); // mainly because I haven't checked this makes sense.
+      mLoaded = true; 
+
       lua_State * L = mL.get();
-      drunner_assert(L==NULL,"Load called on dirty lua state.");
 
       _safeloadvars(); // set defaults, load real values if we can
 
