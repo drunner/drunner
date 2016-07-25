@@ -10,7 +10,7 @@
 
 namespace servicelua
 {
-   static staticLuaStorage<luafile> sFile; // provide access to the calling file C++ object.
+   static staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
    extern "C" int l_addconfig(lua_State *L)
    {

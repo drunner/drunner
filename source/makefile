@@ -1,6 +1,6 @@
 APP=output/drunner
 CPP=g++
-INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/yaml-cpp/include -Ideps/lua
+INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
