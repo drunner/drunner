@@ -116,6 +116,17 @@ namespace servicelua
       return kRSuccess;
    }
 
+
+   cResult luafile::runCommand(const CommandLine & serviceCmd) const
+   {
+      lua_State * L = mL.get();
+      drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
+
+      return kRSuccess;
+   }
+
+
+
    void luafile::getManageDockerVolumeNames(std::vector<std::string> & vols) const
    {
       drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
@@ -130,6 +141,7 @@ namespace servicelua
          if (v.backup)
             vols.push_back(v.name);
    }
+
 
    void luafile::addContainer(std::string cname)
    {

@@ -79,7 +79,7 @@ namespace servicelua
 
       std::string mHelp;
 
-      luautils::dLuaState mL;
+      mutable luautils::dLuaState mL;
       luautils::staticmonitor<luafile> mMonitor;
    };
 
