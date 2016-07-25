@@ -35,19 +35,10 @@ EOF
 }
 
 function runbuild {
-   # if [ ! -f "$PERMISSIONSFILE" ] ; then
-   #    echo "Checking permissions"
-   #    (
-   #    cd ${MYDIR}/source
-   #    mkdir -p objs/plugins objs/tests objs/win output
-   #    find . -type d -exec chmod 0777 {} \;
-   #    find . -type f -exec chmod 0666 {} \;
-   #    chmod 0777 deps/colorgcc/colorgcc.pl
-   #    )
-   #    touch "$PERMISSIONSFILE"
-   # fi
+   OUTPUT="${MYDIR}/source/output/drunner"
+   rm -f ${OUTPUT}
 
-   BUILDOBJ="${MYDIR}/source/objs/buildnum.o"
+   BUILDOBJ="${MYDIR}/source/source/buildnum.o"
    rm -f "${BUILDOBJ}"
 
    SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
@@ -64,8 +55,6 @@ function runbuild {
       -e "DEBUG=${DEBUG}"   \
       -v "${SRC}:/source" "${IMAGE}" \
       /bin/bash -c "make"
-
-   OUTPUT=source/output/drunner
 
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 

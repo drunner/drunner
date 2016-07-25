@@ -14,9 +14,15 @@ namespace servicelua
    
    extern "C" int l_addconfig(lua_State *L)
    {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
-      std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      if (lua_gettop(L) != 5)
+         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addconfig.");
+
+      Configuration c;
+      c.name = lua_tostring(L, 1);
+      c.description = lua_tostring(L, 2);
+      c.defaultval = lua_tostring(L, 3);
+      //c.type = lua_tostring(L, 4);
+      c.required = lua_toboolean(L, 5);
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);
@@ -26,7 +32,7 @@ namespace servicelua
    extern "C" int l_addvolume(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
+         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addvolume.");
       std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
 
       cResult rval = kRSuccess;

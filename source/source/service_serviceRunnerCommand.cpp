@@ -17,59 +17,59 @@
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------
-
-const service * sCurrentService = NULL;
-
-extern "C" int l_dstop(lua_State *L)
-{
-   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
-
-   if (lua_gettop(L) != 1)
-      return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
-   std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-
-   cResult rval; // defaults to kRNoChange.
-   if (utils_docker::dockerContainerExists(cname))
-   {
-      logmsg(kLDEBUG, "Stopping and removing container " + cname);
-      std::string out;
-      CommandLine cl("docker", { "stop",cname });
-      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
-      cl.args[0] = "rm";
-      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
-
-   }
-   else
-      logmsg(kLDEBUG, "Container " + cname + " is not running.");
-
-   lua_pushinteger(L, rval);
-   return 1; // one argument to return.
-}
-
-extern "C" int l_run(lua_State *L)
-{
-   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
-
-   if (lua_gettop(L) != 1)
-      return luaL_error(L, "Expected exactly one argument (the command to run as a string) for run.");
-   std::string command = lua_tostring(L, 1); // first argument. 
-
-   cResult rval; // defaults to kRNoChange.
-
-   CommandLine cl;
-   utils::split_in_args(command, cl);
-   cl.logcommand("Run: ");
-
-   servicePaths sp(sCurrentService->getName());
-   rval += utils::runcommand_stream(
-      cl,
-      GlobalContext::getParams()->serviceCmdMode(),
-      sp.getPathdRunner()
-   );
-
-   lua_pushinteger(L, rval);
-   return 1; // one argument to return.
-}
+//
+//const service * sCurrentService = NULL;
+//
+//extern "C" int l_dstop(lua_State *L)
+//{
+//   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
+//
+//   if (lua_gettop(L) != 1)
+//      return luaL_error(L, "Expected exactly one argument (the docker container to stop) for dstop.");
+//   std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+//
+//   cResult rval; // defaults to kRNoChange.
+//   if (utils_docker::dockerContainerExists(cname))
+//   {
+//      logmsg(kLDEBUG, "Stopping and removing container " + cname);
+//      std::string out;
+//      CommandLine cl("docker", { "stop",cname });
+//      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
+//      cl.args[0] = "rm";
+//      rval += (utils::runcommand(cl, out, utils::kRC_LogCmd) != 0);
+//
+//   }
+//   else
+//      logmsg(kLDEBUG, "Container " + cname + " is not running.");
+//
+//   lua_pushinteger(L, rval);
+//   return 1; // one argument to return.
+//}
+//
+//extern "C" int l_run(lua_State *L)
+//{
+//   drunner_assert(sCurrentService != NULL, "Current Service is NULL - programming error.");
+//
+//   if (lua_gettop(L) != 1)
+//      return luaL_error(L, "Expected exactly one argument (the command to run as a string) for run.");
+//   std::string command = lua_tostring(L, 1); // first argument. 
+//
+//   cResult rval; // defaults to kRNoChange.
+//
+//   CommandLine cl;
+//   utils::split_in_args(command, cl);
+//   cl.logcommand("Run: ");
+//
+//   servicePaths sp(sCurrentService->getName());
+//   rval += utils::runcommand_stream(
+//      cl,
+//      GlobalContext::getParams()->serviceCmdMode(),
+//      sp.getPathdRunner()
+//   );
+//
+//   lua_pushinteger(L, rval);
+//   return 1; // one argument to return.
+//}
 
 
 //cResult service::_handleStandardCommands(const CommandLine & operation, bool & processed) const

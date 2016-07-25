@@ -101,14 +101,7 @@ cResult service_install::_recreate(bool updating)
       // copy files to service directory on host.
       CommandLine cl("docker", { "run","--rm","-v",
          getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" });
-#ifdef _WIN32
-      cl.args.push_back("cp -r /drunner/* /tempcopy/ && chmod a+rx /tempcopy/*");
-#else
-      uid_t uid = getuid();
-      std::ostringstream oss;
-      oss << "cp -r /drunner/* /tempcopy/ && chmod a+rwx -R /tempcopy/* && chown -R " << uid << " /tempcopy/* && chmod og-w -R /tempcopy/*";
-      cl.args.push_back(oss.str());
-#endif
+      cl.args.push_back("cp /drunner/* /tempcopy/ && chmod a+rw /tempcopy/*");
       std::string op;
       if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
