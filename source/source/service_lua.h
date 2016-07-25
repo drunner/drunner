@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "service_vars.h"
 #include "service_paths.h"
+#include "luautils.h"
 
 namespace servicelua
 {
@@ -59,6 +60,9 @@ namespace servicelua
       const variables & getVariables() const { return mServiceVars.getVariables(); }
       void setVariable(std::string key, std::string val) { mServiceVars.setVariable(key, val); }
 
+      // for service::serviceRunnerCommand
+      cResult runCommand(const CommandLine & serviceCmd) const;
+
       // for lua
       void addContainer(std::string cname);
 
@@ -74,6 +78,9 @@ namespace servicelua
       std::vector<Volume> mVolumes;
 
       std::string mHelp;
+
+      luautils::dLuaState mL;
+      luautils::staticmonitor<luafile> mMonitor;
    };
 
 } // namespace

@@ -153,3 +153,24 @@ int service::status()
    hook.endhook();
    return 0;
 }
+
+
+cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
+{
+   if (serviceCmd.command.length() == 0)
+      return serviceRunnerCommand(CommandLine("help"));
+
+   std::ostringstream oss;
+   oss << "[" << serviceCmd.command << "]";
+   for (const auto & x : serviceCmd.args) oss << " " << x;
+   logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
+
+   mServiceLua.runCommand(serviceCmd);
+
+   //// find the command in our command list and run it.
+   //for (const auto & y : mServiceLua.getCommands())
+   //   if (utils::stringisame(y.name, serviceCmd.command))
+   //      return _runserviceRunnerCommand(y, serviceCmd);
+
+   return kRNotImplemented;
+}

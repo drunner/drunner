@@ -150,25 +150,3 @@
 //   sCurrentService = NULL;
 //   return rval;
 //}
-
-
-cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
-{
-   //if (serviceCmd.command.length()==0 || utils::stringisame(serviceCmd.command, "help"))
-   //{ // show help
-   //   std::cout << std::endl << mServiceLua.getHelp() << std::endl;
-   //   return kRSuccess;
-   //}
-
-   std::ostringstream oss;
-   oss << "[" << serviceCmd.command << "]";
-   for (const auto & x : serviceCmd.args) oss << " " << x;
-   logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
-
-   //// find the command in our command list and run it.
-   //for (const auto & y : mServiceLua.getCommands())
-   //   if (utils::stringisame(y.name, serviceCmd.command))
-   //      return _runserviceRunnerCommand(y, serviceCmd);
-
-   return kRNotImplemented;
-}

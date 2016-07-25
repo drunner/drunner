@@ -10,7 +10,7 @@
 
 namespace servicelua
 {
-   static staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
+   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
    extern "C" int l_addconfig(lua_State *L)
    {
@@ -21,8 +21,28 @@ namespace servicelua
       c.name = lua_tostring(L, 1);
       c.description = lua_tostring(L, 2);
       c.defaultval = lua_tostring(L, 3);
-      //c.type = lua_tostring(L, 4);
-      c.required = lua_toboolean(L, 5);
+      c.required = (lua_toboolean(L, 5) == 1);
+
+      {
+         using namespace utils;
+         switch (str2int(lua_tostring(L, 4)))
+         {
+         case str2int("port"):
+            c.type = kCF_port;
+            break;
+         case str2int("path"):
+            c.type = kCF_path;
+            break;
+         case str2int("existingpath"):
+            c.type = kCF_existingpath;
+            break;
+         case str2int("string"):
+            c.type = kCF_string;
+            break;
+         default:
+            fatal("Unknown configuration type: " + std::string(lua_tostring(L, 4)));
+         }
+      }
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);
@@ -53,24 +73,22 @@ namespace servicelua
       return 1; // one argument to return.
    }
 
-   luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p)
+   luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p), mL(), mMonitor(mL.get(),this,&sFile)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
    }
       
    cResult luafile::loadlua()
    {
+      lua_State * L = mL.get();
+      drunner_assert(L==NULL,"Load called on dirty lua state.");
+
       _safeloadvars(); // set defaults, load real values if we can
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))
          return kRError;
-
-      dLuaState L;
-      luaL_openlibs(L);
-
-      staticmonitor<luafile> monitor(L, this, &sFile);
 
       lua_pushcfunction(L, l_addconfig);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
       lua_setglobal(L, "addconfig");
