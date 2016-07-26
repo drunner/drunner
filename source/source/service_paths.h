@@ -9,10 +9,8 @@ class servicePaths
 public:
    servicePaths(const std::string & servicename);
 
-   Poco::Path getPath() const;
-   Poco::Path getPathdRunner() const;
+   Poco::Path getPathdService() const;
    Poco::Path getPathHostVolume() const;
-   //Poco::Path getPathHostVolume_environment() const;
    Poco::Path getPathLaunchScript() const;
    Poco::Path getPathServiceLua() const;
    Poco::Path getPathServiceVars() const;

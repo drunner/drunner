@@ -65,9 +65,8 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
 void service_install::_ensureDirectoriesExist() const
 {
    // create service's drunner and temp directories on host.
-   utils::makedirectory(getPath(), S_755);
-   utils::makedirectory(getPathdRunner(), S_777);
-   utils::makedirectory(getPathServiceVars().parent(), S_755);
+   utils::makedirectory(getPathdService(), S_700);
+   utils::makedirectory(getPathServiceVars().parent(), S_700);
 }
 
 cResult service_install::_recreate(bool updating)
@@ -85,9 +84,9 @@ cResult service_install::_recreate(bool updating)
    try
    {
       // nuke any existing dService files on host (but preserve volume containers!).
-      if (utils::fileexists(getPath()))
+      if (utils::fileexists(getPathdService()))
       {
-         Poco::File spath(getPath());
+         Poco::File spath(getPathdService());
          spath.remove(true); // recursively delete.
       }
 
@@ -99,9 +98,14 @@ cResult service_install::_recreate(bool updating)
       _ensureDirectoriesExist();
 
       // copy files to service directory on host.
-      CommandLine cl("docker", { "run","--rm","-v",
-         getPathdRunner().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" });
+      CommandLine cl("docker", { "run","--rm","-u","root","-v",
+         getPathdService().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" });
+#ifdef _WIN32
       cl.args.push_back("cp /drunner/* /tempcopy/ && chmod a+rw /tempcopy/*");
+#else
+      uid_t uid = getuid();
+      cl.args.push_back("cp /drunner/* /tempcopy/ && chmod u+rw /tempcopy/* && chown -R "+std::to_string(uid)+" /tempcopy/*");
+#endif
       std::string op;
       if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
@@ -135,8 +139,8 @@ cResult service_install::_recreate(bool updating)
 
    catch (const eExit & e) {
       // We failed. tidy up.
-      if (utils::fileexists(getPath()))
-         utils::deltree(getPath());
+      if (utils::fileexists(getPathdService()))
+         utils::deltree(getPathdService());
 
       throw (e);
    }
@@ -148,8 +152,8 @@ cResult service_install::install()
 {
    drunner_assert(mImageName.length() > 0, "Can't install service " + mName + " - image name could not be determined.");
 
-   logmsg(kLDEBUG, "Installing " + mName + " at " + getPath().toString() + ", using image " + mImageName);
-	if (utils::fileexists(getPath()))
+   logmsg(kLDEBUG, "Installing " + mName + " at " + getPathdService().toString() + ", using image " + mImageName);
+	if (utils::fileexists(getPathdService()))
 		logmsg(kLERROR, "Service already exists. Try:\n drunner update " + getName());
 
 	// make sure we have the latest version of the service.
@@ -172,7 +176,7 @@ cResult service_install::uninstall()
 {
    cResult rval = kRNoChange;
 
-   if (!utils::fileexists(getPath()))
+   if (!utils::fileexists(getPathdService()))
       logmsg(kLERROR, "Can't uninstall " + mName + " - it does not exist.");
 
    try
@@ -188,10 +192,10 @@ cResult service_install::uninstall()
 
    // delete the service tree.
    logmsg(kLINFO, "Deleting all of the dService files");
-   rval += utils::deltree(getPath());
+   rval += utils::deltree(getPathdService());
 
-   if (utils::fileexists(getPath()))
-      logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPath().toString());
+   if (utils::fileexists(getPathdService()))
+      logmsg(kLERROR, "Uninstall failed - couldn't delete " + getPathdService().toString());
 
    // delete the launch script
    rval += _removeLaunchScript();
@@ -204,7 +208,7 @@ cResult service_install::obliterate()
 {
    cResult rval = kRNoChange;
 
-   if (utils::fileexists(getPath()))
+   if (utils::fileexists(getPathServiceLua()))
    {
       try
       {
@@ -238,10 +242,10 @@ cResult service_install::obliterate()
       }
    }
 
-   if (utils::fileexists(getPath()))
+   if (utils::fileexists(getPathdService()))
    { // delete the service tree.
       logmsg(kLINFO, "Obliterating all of the dService files.");
-      cResult result = utils::deltree(getPath());
+      cResult result = utils::deltree(getPathdService());
       rval += result;
       if (result != kRSuccess)
          logmsg(kLINFO, "Failed to delete the dService files.");
@@ -273,7 +277,7 @@ cResult service_install::obliterate()
 
 cResult service_install::recover()
 {
-   if (utils::fileexists(getPath()))
+   if (utils::fileexists(getPathdService()))
       uninstall();
 
    return install();

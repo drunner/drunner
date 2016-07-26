@@ -2,16 +2,11 @@
 #include "drunner_paths.h"
 
 
-Poco::Path servicePaths::getPath() const
+Poco::Path servicePaths::getPathdService() const
 {
    Poco::Path p = drunnerPaths::getPath_dServices().pushDirectory(mName);
    poco_assert(p.isDirectory());
    return p;
-}
-
-Poco::Path servicePaths::getPathdRunner() const
-{
-   return getPath().pushDirectory("drunner");
 }
 
 Poco::Path servicePaths::getPathHostVolume() const
@@ -21,7 +16,7 @@ Poco::Path servicePaths::getPathHostVolume() const
 
 Poco::Path servicePaths::getPathServiceLua() const
 {
-   return getPathdRunner().setFileName("service.lua");
+   return getPathdService().setFileName("service.lua");
 }
 
 Poco::Path servicePaths::getPathServiceVars() const

@@ -143,7 +143,7 @@ int service::status()
    servicehook hook(this, "status");
    hook.starthook();
 
-   if (!utils::fileexists(getPath()))
+   if (!utils::fileexists(getPathdService()))
    {
       logmsg(kLINFO, getName() + " is not installed.");
       hook.endhook();
