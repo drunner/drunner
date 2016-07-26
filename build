@@ -35,7 +35,7 @@ EOF
 }
 
 function runbuild {
-   OUTPUT="${MYDIR}/source/output/drunner"
+   OUTPUT="${MYDIR}/source/drunner"
    rm -f ${OUTPUT}
 
    BUILDOBJ="${MYDIR}/source/source/buildnum.o"

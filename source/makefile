@@ -1,4 +1,4 @@
-APP=output/drunner
+APP=drunner
 CPP=g++
 INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/lua
 
@@ -10,8 +10,6 @@ CFLAGS=-MD -MP -fdiagnostics-color=always -Wall -Wno-unknown-pragmas -static-lib
 
 LDFLAGS=-static -pthread
 LDLIBS=-lPocoFoundation -lPocoUtil
-
-APP=output/drunner
 
 OBJECTS_DIR=objs
 SRCS=$(shell find . -name "*.cpp")
