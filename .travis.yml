@@ -17,10 +17,7 @@ before_install:
    - sudo mv docker-compose* /usr/local/bin/docker-compose
 script:
    - bash build
-   - ./drunner unittest
-   - ./drunner install drunner/helloworld
-   - ./drunner install drunner/minecraft
-   - ./drunner install drunner/minimalexample
+   - bash build check
 #   - dtest test
 #   - dtest test drunner/minimalexample
 #   - dtest test drunner/helloworld

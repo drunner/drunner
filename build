@@ -63,6 +63,16 @@ function runbuild {
 #   chmod a+x "${MYDIR}/drunner"
 }
 
+function die { echo "$1"; exit 1 ; }
+
+function runcheck {
+   cd ~/.drunner/bin
+   drunner unittest                          || die "Unit tests failed"
+   drunner install drunner/helloworld        || die "Couldn't install helloworld"
+   drunner install drunner/minecraft         || die "Couldn't install minecraft"
+   drunner install drunner/minimalexample    || die "Couldn't install minimalexample"
+}
+
 function makeclean {
    docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
    rm -f "${MYDIR}/drunner"
@@ -80,6 +90,10 @@ function main {
    case "$COMMAND" in
       build)
          runbuild
+         ;;
+
+      check)
+         runcheck
          ;;
 
       debug)
