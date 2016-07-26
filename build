@@ -65,12 +65,23 @@ function runbuild {
 
 function die { echo "$1"; exit 1 ; }
 
+function obliterate {
+   drunner obliterate "${1}"
+   if [ $? -eq 1 ] ; then die "Couldn't obliterate ${1}" ; fi
+}
+
+function testcontainer {
+   obliterate "${1}"
+   drunner install "${1}" || die "Couldn't install ${1}"
+   obliterate "${1}"
+}
+
 function runcheck {
    cd ~/.drunner/bin
-   drunner unittest                          || die "Unit tests failed"
-   drunner install drunner/helloworld        || die "Couldn't install helloworld"
-   drunner install drunner/minecraft         || die "Couldn't install minecraft"
-   drunner install drunner/minimalexample    || die "Couldn't install minimalexample"
+   drunner unittest || die "Unit tests failed"
+   testcontainer "helloworld"
+   testcontainer "minecraft"
+   testcontainer "minimalexample"
 }
 
 function makeclean {
