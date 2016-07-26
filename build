@@ -71,9 +71,10 @@ function obliterate {
 }
 
 function testcontainer {
-   obliterate "${1}"
-   drunner install "${1}" || die "Couldn't install ${1}"
-   obliterate "${1}"
+   echo " "
+   echo "-- Testing $1 --"
+   drunner install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
+   obliterate "testcontainer-${1}"
 }
 
 function runcheck {
