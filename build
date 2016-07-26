@@ -3,6 +3,8 @@
 MYDIR=$( dirname "$(readlink -f "$0")" )
 PERMISSIONSFILE="${MYDIR}/.permissions"
 
+DRUNNER="${HOME}/.drunner/bin/drunner"
+
 VERSIONSTR="0.7 r"
 VERSIONDATE="2016-07-05"
 VSHORT="NOT SET"
@@ -66,20 +68,20 @@ function runbuild {
 function die { echo "$1"; exit 1 ; }
 
 function obliterate {
-   drunner obliterate "${1}"
+   "${DRUNNER}" obliterate "${1}"
    if [ $? -eq 1 ] ; then die "Couldn't obliterate ${1}" ; fi
 }
 
 function testcontainer {
    echo " "
    echo "-- Testing $1 --"
-   drunner install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
+   "${DRUNNER}" install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
    obliterate "testcontainer-${1}"
 }
 
 function runcheck {
-   cd ~/.drunner/bin
-   drunner unittest || die "Unit tests failed"
+   cd
+   "${DRUNNER}" unittest || die "Unit tests failed"
    testcontainer "helloworld"
    testcontainer "minecraft"
    testcontainer "minimalexample"
