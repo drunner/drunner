@@ -73,7 +73,7 @@ namespace servicelua
       return 1; // one argument to return.
    }
 
-   luafile::luafile(const servicePaths & p) : mServicePaths(p), mServiceVars(p), mL(), mMonitor(mL.get(),this,&sFile), mLoaded(false)
+   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(mServicePaths), mL(), mMonitor(mL.get(),this,&sFile), mLoaded(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
    }

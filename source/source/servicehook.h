@@ -8,6 +8,7 @@
 #include "params.h"
 #include "cresult.h"
 #include "service_lua.h"
+#include "service_paths.h"
 
 class service;
 
@@ -15,19 +16,21 @@ class service;
 class servicehook
 {
 public:
-   servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams);
-   servicehook(const service * const svc, std::string actionname);
+   //servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname, const std::vector<std::string> & hookparams);
+   //servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname);
+   servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams);
+   servicehook(std::string servicename, std::string actionname);
    cResult starthook();
    cResult endhook();
 private:
    void setHookCmds();
    cResult runHook(std::string se);
 
-   const service * const mService;
+   // ----
+   servicePaths mPaths;
+   servicelua::luafile mLua;
    std::string mActionName;
    std::vector<std::string> mHookParams;
-
-   //Poco::Path mServiceRunner;
    std::string mStartCmd;
    std::string mEndCmd;
 };

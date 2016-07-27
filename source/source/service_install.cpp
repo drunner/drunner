@@ -26,12 +26,11 @@
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
 { // no imagename specified. Load from service_lua.
-   servicelua::luafile sl(*this);
-
-   if (sl.loadlua()!=kRSuccess)
+   servicelua::luafile lf(servicename);
+   if (lf.loadlua()!=kRSuccess)
       logmsg(kLWARN,"No imagename specified and unable to read service.lua.");
    else
-      mImageName = sl.getImageName();
+      mImageName = lf.getImageName();
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -75,7 +74,7 @@ cResult service_install::_recreate(bool updating)
 
    if (updating && utils::fileexists(getPathServiceLua()))
    { // pull all containers used by the dService.
-      servicelua::luafile syf(*this);
+      servicelua::luafile syf(mName);
       if (syf.loadlua()==kRSuccess)
          for (auto c : syf.getContainers())
             utils_docker::pullImage(c);
@@ -111,7 +110,7 @@ cResult service_install::_recreate(bool updating)
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
 
       // write out service configuration for the dService.
-      servicelua::luafile syf(*this);
+      servicelua::luafile syf(mName);
       if (syf.loadlua()!=kRSuccess)
          fatal("Corrupt dservice - couldn't read service.lua.");
       if (syf.saveVariables() != kRSuccess)
@@ -164,8 +163,7 @@ cResult service_install::install()
 
    _recreate(false);
 
-   service svc(mName);
-   servicehook hook(&svc, "install");
+   servicehook hook(mName, "install");
    hook.endhook();
 
    logmsg(kLINFO, "Installation complete - try running " + mName+ " now!");
@@ -181,8 +179,7 @@ cResult service_install::uninstall()
 
    try
    {
-      service svc(mName);
-      servicehook hook(&svc, "uninstall");
+      servicehook hook(mName, "uninstall");
       hook.starthook();
    }
    catch (const eExit &)
@@ -212,19 +209,22 @@ cResult service_install::obliterate()
    {
       try
       {
-         service svc(mName);
-         servicehook hook(&svc, "obliterate");
+         servicehook hook(mName, "obliterate");
          hook.starthook();
 
          logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
-         {// [start] deleting docker volumes.
-            std::vector<std::string> vols;
-            svc.getServiceLua().getManageDockerVolumeNames(vols);
+         // [start] deleting docker volumes.
+         std::vector<std::string> vols;
+
+         servicelua::luafile lf(mName);
+         if (lf.loadlua() == kRSuccess)
+         {
+            lf.getManageDockerVolumeNames(vols);
             for (const auto & entry : vols)
             {
                logmsg(kLINFO, "Obliterating docker volume " + entry);
                std::string op;
-               CommandLine cl("docker", { "rm",entry } );
+               CommandLine cl("docker", { "rm",entry });
                if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
@@ -287,8 +287,7 @@ cResult service_install::update()
 { // update the service (recreate it)
    drunner_assert(mImageName.length() > 0, "Can't update service " + mName + " - image name could not be determined.");
 
-   service svc(mName);
-   servicehook hook(&svc, "update");
+   servicehook hook(mName, "update");
    hook.starthook();
 
    _recreate(true);

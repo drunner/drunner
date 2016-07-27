@@ -4,6 +4,7 @@
 #include <string>
 #include "cresult.h"
 #include "service_paths.h"
+#include "service_lua.h"
 
 class service_install : public servicePaths
 {

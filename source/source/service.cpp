@@ -26,7 +26,7 @@
 
 service::service(std::string servicename) : 
    servicePaths(servicename),
-   mServiceLua(servicePaths(servicename))
+   mServiceLua(servicename)
 {
    if (mServiceLua.loadlua() != kRSuccess)
       fatal("Could not load service.lua: " + getPathServiceLua().toString());
@@ -98,20 +98,15 @@ cResult service::servicecmd()
    drunner_assert(p.numArgs() > 0, "servicecmd requires an argument..."); // should never have 0 args to servicecmd!
    drunner_assert(utils::stringisame(p.getArg(0), mName), "First argument should be service name.");
 
-   if (p.getArgs().size() < 2)
-      return serviceRunnerCommand( CommandLine("help") );
-
-   // e.g. minecraft import james.backup
+   // args are e.g. minecraft import james.backup
+   // CommandLine will be  import james.backup
    CommandLine cl;
-   cl.command = p.getArg(1); // import
-   if (p.getArgs().size() > 2)
+   cl.command = (p.numArgs()<2 ? "help" : p.getArg(1)); // import
+   if (p.numArgs() > 2)
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
    if (utils::stringisame(cl.command, "configure"))
-   {
-      _handleconfigure(cl);
-      return kRSuccess;
-   }
+      return _handleconfigure(cl);
 
    cResult rval = kRError;
    if (p.isdrunnerCommand(cl.command))
@@ -122,10 +117,16 @@ cResult service::servicecmd()
    // check all required variables are configured.
 
    // run the command
-   servicehook hook(this, "servicecmd", p.getArgs());
+   servicehook hook(getName(), "servicecmd", p.getArgs());
    hook.starthook();
 
-   rval = serviceRunnerCommand(cl);
+   std::ostringstream oss;
+   oss << "[" << cl.command << "]";
+   for (const auto & x : cl.args) oss << " " << x;
+   logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
+
+   rval = mServiceLua.runCommand(cl);
+
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
 
@@ -140,7 +141,7 @@ const std::string service::getImageName() const
 
 int service::status()
 {
-   servicehook hook(this, "status");
+   servicehook hook(mName, "status");
    hook.starthook();
 
    if (!utils::fileexists(getPathdService()))
@@ -154,23 +155,3 @@ int service::status()
    return 0;
 }
 
-
-cResult service::serviceRunnerCommand(const CommandLine & serviceCmd) const
-{
-   if (serviceCmd.command.length() == 0)
-      return serviceRunnerCommand(CommandLine("help"));
-
-   std::ostringstream oss;
-   oss << "[" << serviceCmd.command << "]";
-   for (const auto & x : serviceCmd.args) oss << " " << x;
-   logmsg(kLDEBUG, "serviceRunner - serviceCmd is: " + oss.str());
-
-   mServiceLua.runCommand(serviceCmd);
-
-   //// find the command in our command list and run it.
-   //for (const auto & y : mServiceLua.getCommands())
-   //   if (utils::stringisame(y.name, serviceCmd.command))
-   //      return _runserviceRunnerCommand(y, serviceCmd);
-
-   return kRNotImplemented;
-}

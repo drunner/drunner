@@ -5,17 +5,29 @@
 #include "utils.h"
 #include "cresult.h"
 
-servicehook::servicehook(const service * const svc, std::string actionname, const std::vector<std::string> & hookparams) :
-   mService(svc), mActionName(actionname), mHookParams(hookparams)
+//servicehook::servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname, const std::vector<std::string> & hookparams) :
+//   mLua(lfile), mPaths(servicename), mActionName(actionname), mHookParams(hookparams)
+//{
+//   setHookCmds();
+//}
+//
+//servicehook::servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname) :
+//   mLua(lfile), mPaths(servicename), mActionName(actionname)
+//{
+//   setHookCmds();
+//}
+
+servicehook::servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams) :
+   mPaths(servicename), mLua(servicename), mActionName(actionname),  mHookParams(hookparams)
 {
-   setHookCmds();
 }
 
-servicehook::servicehook(const service * const svc, std::string actionname) :
-   mService(svc), mActionName(actionname)
+
+servicehook::servicehook(std::string servicename, std::string actionname) :
+   mPaths(servicename), mLua(servicename), mActionName(actionname)
 {
-   setHookCmds();
 }
+
 
 cResult servicehook::starthook()
 {
@@ -37,21 +49,22 @@ cResult servicehook::endhook()
 
 cResult servicehook::runHook(std::string se)
 {
-   if (!utils::fileexists(mService->getPathServiceLua()))
+   if (!utils::fileexists(mPaths.getPathServiceLua()))
    {
-      logmsg(kLDEBUG, "Failed to find service.lua at " + mService->getPathServiceLua().toString());
+      logmsg(kLDEBUG, "Failed to find service.lua at " + mPaths.getPathServiceLua().toString());
       logmsg(kLWARN, "Couldn't run hook " + se + " because dService's service.lua is not installed.");
       return kRError;
    }
 
+   cResult rval = mLua.loadlua();
    CommandLine serviceCmd(se, mHookParams);
-   cResult rval = mService->serviceRunnerCommand(serviceCmd);
+   rval += mLua.runCommand(serviceCmd);
 
    if (rval.isError())
       logmsg(kLWARN, "dService hook " + se + " returned error.");
    else if (rval.isNOIMPL())
    {
-      logmsg(kLDEBUG, "dService hook " + se + " is not implemented by " + mService->getImageName());
+      logmsg(kLDEBUG, "dService hook " + se + " is not implemented by " + mPaths.getName());
       rval = kRNoChange; // fine to be not implemented for hooks.
    }
    else

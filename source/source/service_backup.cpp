@@ -46,7 +46,7 @@ void service::backup(const std::string & backupfile)
    // notify service we're starting our backup.
    tVecStr args;
    args.push_back(tempc.toString());
-   servicehook hook(this, "backup", args);
+   servicehook hook(getName(), "backup", args);
    hook.starthook();
 
    logmsg(kLINFO, "Time for dService to self-backup: " + tstep.getelpased());
@@ -199,7 +199,7 @@ cResult service_install::service_restore(const std::string & backupfile)
    // tell the dService to do its restore_end action.
    tVecStr args;
    args.push_back(tempc.toString());
-   servicehook hook(&newservice, "restore", args);
+   servicehook hook(mName, "restore", args);
    hook.endhook();
 
    logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + mName + ". Try it!");

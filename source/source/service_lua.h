@@ -42,7 +42,7 @@ namespace servicelua
    // lua file.
    class luafile {
    public:
-      luafile(const servicePaths & p);
+      luafile(std::string serviceName);
       
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
@@ -62,6 +62,8 @@ namespace servicelua
 
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd) const;
+
+      bool isLoaded() { return mLoaded; }
 
       // for lua
       void addContainer(std::string cname);
