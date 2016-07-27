@@ -130,14 +130,17 @@ namespace servicelua
       cResult rval;
       lua_getglobal(L, serviceCmd.command.c_str());
       if (lua_isnil(L, -1))
+      {
+         lua_pop(L, 1); // leave stack balanced.
          rval = kRNotImplemented;
+      }
       else
       { // run the command
          if (lua_pcall(L, 0, 0, 0) != LUA_OK)
             fatal("Command " + serviceCmd.command + " failed:\n "+ std::string(lua_tostring(L,-1)));
          rval = kRSuccess;
       }
-      lua_pop(L, 1); // leave stack balanced.
+      drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after runCommand.");
       return rval;
    }
 
