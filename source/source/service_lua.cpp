@@ -107,9 +107,12 @@ namespace servicelua
 
       // pull out the relevant config items.
       lua_getglobal(L, "drunner_setup");
+      if (lua_isnil(L, -1))
+         fatal("Lua file is not drunner compatible - there is no drunner_setup function defined.");
       if (lua_pcall(L, 0, 0, 0) != LUA_OK)
          fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
-      
+      drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
+
       // update IMAGENAME if not yet set.
       if (mServiceVars.getVariables().hasKey("IMAGENAME"))
          drunner_assert(utils::stringisame(mServiceVars.getVariables().getVal("IMAGENAME"), getImageName()), "Service's IMAGENAME has changed.");
@@ -124,7 +127,18 @@ namespace servicelua
       lua_State * L = mL.get();
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
 
-      return kRSuccess;
+      cResult rval;
+      lua_getglobal(L, serviceCmd.command.c_str());
+      if (lua_isnil(L, -1))
+         rval = kRNotImplemented;
+      else
+      { // run the command
+         if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+            fatal("Command " + serviceCmd.command + " failed:\n "+ std::string(lua_tostring(L,-1)));
+         rval = kRSuccess;
+      }
+      lua_pop(L, 1); // leave stack balanced.
+      return rval;
    }
 
 
