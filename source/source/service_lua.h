@@ -13,6 +13,10 @@
 
 namespace servicelua
 {
+   // lua C functions - defined in service_lua_cfuncs
+   extern "C" int l_addconfig(lua_State *L);
+   extern "C" int l_addvolume(lua_State *L);
+   extern "C" int l_addcontainer(lua_State *L);
 
    struct Volume 
    {
@@ -43,6 +47,7 @@ namespace servicelua
    class luafile {
    public:
       luafile(std::string serviceName);
+      ~luafile();
       
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
@@ -71,7 +76,7 @@ namespace servicelua
    private:
       cResult _safeloadvars();
 
-      const servicePaths & mServicePaths;
+      const servicePaths mServicePaths;
       
       serviceVars mServiceVars;
 
@@ -81,12 +86,13 @@ namespace servicelua
 
       std::string mHelp;
 
-      mutable luautils::dLuaState mL;
-      luautils::staticmonitor<luafile> mMonitor;
+      mutable lua_State * L;
 
       bool mLoaded;
    };
 
 } // namespace
+
+
 
 #endif

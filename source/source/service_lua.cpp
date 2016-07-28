@@ -10,80 +10,31 @@
 
 namespace servicelua
 {
-   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
+//   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
-   extern "C" int l_addconfig(lua_State *L)
-   {
-      if (lua_gettop(L) != 5)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addconfig.");
 
-      Configuration c;
-      c.name = lua_tostring(L, 1);
-      c.description = lua_tostring(L, 2);
-      c.defaultval = lua_tostring(L, 3);
-      c.required = (lua_toboolean(L, 5) == 1);
-
-      {
-         using namespace utils;
-         switch (str2int(lua_tostring(L, 4)))
-         {
-         case str2int("port"):
-            c.type = kCF_port;
-            break;
-         case str2int("path"):
-            c.type = kCF_path;
-            break;
-         case str2int("existingpath"):
-            c.type = kCF_existingpath;
-            break;
-         case str2int("string"):
-            c.type = kCF_string;
-            break;
-         default:
-            fatal("Unknown configuration type: " + std::string(lua_tostring(L, 4)));
-         }
-      }
-
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
-   }
-
-   extern "C" int l_addvolume(lua_State *L)
-   {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addvolume.");
-      std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
-   }
-
-   extern "C" int l_addcontainer(lua_State *L)
-   {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the name of the container) for addcontainer.");
-      std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-
-      sFile.get(L)->addContainer(cname);
-
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
-   }
-
-   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(mServicePaths), mL(), mMonitor(mL.get(),this,&sFile), mLoaded(false)
+   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(mServicePaths), mLoaded(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
+
+      L = luaL_newstate();
+      luaL_openlibs(L);
+
+      // add pointer to ourselves, so C functions can access us.
+      lua_pushlightuserdata(L, (void*)this);  // value
+      lua_setglobal(L, "luafile");
    }
       
+   luafile::~luafile()
+   {
+      if (L)
+         lua_close(L);
+   }
+
    cResult luafile::loadlua()
    {
       drunner_assert(!mLoaded, "Load called multiple times."); // mainly because I haven't checked this makes sense.
       mLoaded = true; 
-
-      lua_State * L = mL.get();
 
       _safeloadvars(); // set defaults, load real values if we can
 
@@ -124,7 +75,6 @@ namespace servicelua
 
    cResult luafile::runCommand(const CommandLine & serviceCmd) const
    {
-      lua_State * L = mL.get();
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
 
       cResult rval;
@@ -201,6 +151,5 @@ namespace servicelua
       drunner_assert(mContainers.size() > 0, "getImageName: no containers defined.");
       return mContainers[0];
    }
-
 
 } // namespace

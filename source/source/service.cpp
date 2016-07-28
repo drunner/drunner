@@ -34,11 +34,6 @@ service::service(std::string servicename) :
    poco_assert(mImageName.length() > 0);
 }
 
-servicePaths::servicePaths(const std::string & servicename) :
-   mName(servicename)
-{
-}
-
 cResult service::_handleconfigure(const CommandLine & cl)
 { // configure variable. cargs[0]: key=value
    if (cl.args.size()==0)

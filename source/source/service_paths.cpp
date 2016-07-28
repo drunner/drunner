@@ -2,6 +2,12 @@
 #include "drunner_paths.h"
 
 
+
+servicePaths::servicePaths(const std::string & servicename) :
+   mName(servicename)
+{
+}
+
 Poco::Path servicePaths::getPathdService() const
 {
    Poco::Path p = drunnerPaths::getPath_dServices().pushDirectory(mName);

@@ -52,6 +52,7 @@
     <ClCompile Include="..\source\deps\lua\lutf8lib.c" />
     <ClCompile Include="..\source\deps\lua\lvm.c" />
     <ClCompile Include="..\source\deps\lua\lzio.c" />
+    <ClCompile Include="..\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\buildnum.cpp" />
     <ClCompile Include="..\source\source\checkprerequisits.cpp" />
     <ClCompile Include="..\source\source\command_dev.cpp" />
