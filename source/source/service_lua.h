@@ -74,10 +74,10 @@ namespace servicelua
 
       // for lua
       void addContainer(std::string cname);
+      void addConfiguration(Configuration cf);
       Poco::Path getPathdService();
 
    private:
-      cResult _safeloadvars();
       void _register_lua_cfuncs();
 
       const servicePaths mServicePaths;

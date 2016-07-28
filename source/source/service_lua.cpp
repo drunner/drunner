@@ -35,8 +35,6 @@ namespace servicelua
       drunner_assert(!mLoaded, "Load called multiple times."); // mainly because I haven't checked this makes sense.
       mLoaded = true; 
 
-      _safeloadvars(); // set defaults, load real values if we can
-
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))
@@ -58,10 +56,17 @@ namespace servicelua
          fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
-      // update IMAGENAME if not yet set.
-      if (mServiceVars.getVariables().hasKey("IMAGENAME"))
-         drunner_assert(utils::stringisame(mServiceVars.getVariables().getVal("IMAGENAME"), getImageName()), "Service's IMAGENAME has changed.");
+      // set standard vars (always present).
       mServiceVars.setVariable("IMAGENAME", getImageName());
+      mServiceVars.setVariable("SERVICENAME", mServicePaths.getName());
+
+      // set defaults for custom vars.
+      for (const auto & ci : mConfigItems)
+         mServiceVars.setVariable(ci.name, ci.defaultval);
+
+      // attempt to load config file.
+      if (mServiceVars.loadconfig() != kRSuccess)
+         logmsg(kLDEBUG, "Couldn't load service variables.");
 
       return kRSuccess;
    }
@@ -113,27 +118,15 @@ namespace servicelua
       mContainers.push_back(cname);
    }
 
+   void luafile::addConfiguration(Configuration cf)
+   {
+      mConfigItems.push_back(cf);
+   }
+
+
    Poco::Path luafile::getPathdService()
    {
       return mServicePaths.getPathdService();
-   }
-
-   cResult luafile::_safeloadvars()
-   {
-      // set standard vars (always present).
-      mServiceVars.setVariable("SERVICENAME", mServicePaths.getName());
-      drunner_assert(mContainers.size() == 0, "_safeloadvars: containers already defined.");
-
-      // set defaults for custom vars.
-      for (const auto & ci : mConfigItems)
-         mServiceVars.setVariable(ci.name, ci.defaultval);
-
-      // attempt to load config file.
-      if (mServiceVars.loadconfig() != kRSuccess)
-         logmsg(kLDEBUG, "Couldn't load service variables.");
-
-      // we always succeed.
-      return kRSuccess;
    }
 
    const std::vector<std::string> & luafile::getContainers() const

@@ -65,7 +65,7 @@ namespace servicelua
          }
       }
 
-      //      sFile.get(L)->
+      get_luafile(L)->addConfiguration(c);
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);
