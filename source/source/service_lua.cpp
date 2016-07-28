@@ -71,6 +71,28 @@ namespace servicelua
       return kRSuccess;
    }
 
+   cResult luafile::showHelp()
+   {
+      if (!mLoaded)
+         return kRError;
+
+      lua_getglobal(L, "help");
+      if (lua_isnil(L, -1))
+         fatal("Help not defined in service.lua for " + _servicename());
+      if (lua_pcall(L, 0, 1, 0) != LUA_OK)
+         fatal("Couldn't run help command in service.lua for " + _servicename());
+      if (lua_gettop(L) < 1)
+         fatal("Help function didn't return anything.");
+      if (lua_gettop(L) > 1)
+         fatal("Help function returned too many arguments.");
+      if (lua_isstring(L, 1) != 1)
+         fatal("The argument returned by help was not a string, rather "+std::string(lua_typename(L,1)));
+      std::string help = lua_tostring(L, 1);
+
+      logmsg(kLINFO, mServiceVars.getVariables().substitute(help));
+      return kRSuccess;
+   }
+
 
    cResult luafile::runCommand(const CommandLine & serviceCmd) const
    {

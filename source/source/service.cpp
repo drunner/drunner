@@ -103,6 +103,9 @@ cResult service::servicecmd()
    if (utils::stringisame(cl.command, "configure"))
       return _handleconfigure(cl);
 
+   if (utils::stringisame(cl.command, "help"))
+      return mServiceLua.showHelp();
+
    cResult rval = kRError;
    if (p.isdrunnerCommand(cl.command))
       logmsg(kLERROR, cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);

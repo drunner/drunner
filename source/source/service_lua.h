@@ -53,8 +53,8 @@ namespace servicelua
       
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
+      cResult showHelp();
 
-      std::string getHelp() const { return mHelp; }
       std::string getImageName() const;
 
       const std::vector<std::string> & getContainers() const;
@@ -79,6 +79,7 @@ namespace servicelua
 
    private:
       void _register_lua_cfuncs();
+      std::string _servicename() { return mServicePaths.getName(); }
 
       const servicePaths mServicePaths;
       serviceVars mServiceVars;
@@ -86,7 +87,6 @@ namespace servicelua
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;
       std::vector<Volume> mVolumes;
-      std::string mHelp;
 
       lua_State * L;
 
