@@ -16,7 +16,6 @@
 #include "unittests.h"
 #include "service.h"
 #include "plugins.h"
-#include "checkprerequisits.h"
 #include "validateimage.h"
 #include "service_install.h"
 
@@ -105,7 +104,7 @@ int mainroutines::process()
       case c_setup:
       {
          if (p.numArgs()<1)
-            drunnerSetup::setup(); // defined in command_setup
+            drunnerSetup::check_setup(true); 
          else
          { // first argument is service name.
             service_install svi(p.getArg(0));
