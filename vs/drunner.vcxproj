@@ -77,7 +77,6 @@
     <ClCompile Include="..\source\source\service_backup.cpp" />
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
-    <ClCompile Include="..\source\source\service_serviceRunnerCommand.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
     <ClCompile Include="..\source\source\service_lua.cpp" />
     <ClCompile Include="..\source\source\settingsbash.cpp" />
@@ -130,7 +129,6 @@
     <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
-    <ClInclude Include="..\source\source\luautils.h" />
     <ClInclude Include="..\source\source\service_vars.h" />
     <ClInclude Include="..\source\source\service_install.h" />
     <ClInclude Include="..\source\source\service_log.h" />

@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "globallogger.h"
 #include "dassert.h"
-#include "luautils.h"
 
 #include "lua.hpp"
 
@@ -43,12 +42,7 @@ namespace servicelua
       if (!utils::fileexists(path))
          return kRError;
 
-      lua_pushcfunction(L, l_addconfig);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
-      lua_setglobal(L, "addconfig");
-      lua_pushcfunction(L, l_addvolume);
-      lua_setglobal(L, "addvolume");
-      lua_pushcfunction(L, l_addcontainer);
-      lua_setglobal(L, "addcontainer");
+      _register_lua_cfuncs();
 
       int loadok = luaL_loadfile(L, path.toString().c_str());
       if (loadok != 0)
@@ -117,6 +111,11 @@ namespace servicelua
       drunner_assert(cname.size() > 0, "Empty container name passed to addContainer.");
       drunner_assert(std::find(mContainers.begin(), mContainers.end(), cname) == mContainers.end(), "Container already exists " + cname);
       mContainers.push_back(cname);
+   }
+
+   Poco::Path luafile::getPathdService()
+   {
+      return mServicePaths.getPathdService();
    }
 
    cResult luafile::_safeloadvars()

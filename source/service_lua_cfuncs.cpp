@@ -6,6 +6,21 @@
 namespace servicelua
 {
 
+   void luafile::_register_lua_cfuncs()
+   {
+      lua_pushcfunction(L, l_addconfig);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
+      lua_setglobal(L, "addconfig");
+
+      lua_pushcfunction(L, l_addvolume);
+      lua_setglobal(L, "addvolume");
+
+      lua_pushcfunction(L, l_addcontainer);
+      lua_setglobal(L, "addcontainer");
+
+      lua_pushcfunction(L, l_drun);
+      lua_setglobal(L, "drun");
+   }
+
    luafile * get_luafile(lua_State *L)
    {
       int stacksize = lua_gettop(L);
@@ -83,6 +98,29 @@ namespace servicelua
       std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
 
       get_luafile(L)->addContainer(cname);
+
+      cResult rval = kRSuccess;
+      lua_pushinteger(L, rval);
+      return 1; // one argument to return. Stack auto-balances.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_drun(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the command to run) for drun.");
+      std::string command = lua_tostring(L, 1);
+      
+      luafile * lf = get_luafile(L);
+      std::string subcmd = lf->getVariables().substitute(command);
+
+      CommandLine operation;
+      utils::split_in_args(subcmd, operation);
+
+      Poco::Path runin = lf->getPathdService();
+
+      utils::runcommand_stream(operation, kORaw, runin, lf->getVariables().getEnv());
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);

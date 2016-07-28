@@ -9,7 +9,8 @@
 #include "utils.h"
 #include "service_vars.h"
 #include "service_paths.h"
-#include "luautils.h"
+
+#include "lua.hpp"
 
 namespace servicelua
 {
@@ -17,6 +18,7 @@ namespace servicelua
    extern "C" int l_addconfig(lua_State *L);
    extern "C" int l_addvolume(lua_State *L);
    extern "C" int l_addcontainer(lua_State *L);
+   extern "C" int l_drun(lua_State *L);
 
    struct Volume 
    {
@@ -72,21 +74,21 @@ namespace servicelua
 
       // for lua
       void addContainer(std::string cname);
+      Poco::Path getPathdService();
 
    private:
       cResult _safeloadvars();
+      void _register_lua_cfuncs();
 
       const servicePaths mServicePaths;
-      
       serviceVars mServiceVars;
 
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;
       std::vector<Volume> mVolumes;
-
       std::string mHelp;
 
-      mutable lua_State * L;
+      lua_State * L;
 
       bool mLoaded;
    };

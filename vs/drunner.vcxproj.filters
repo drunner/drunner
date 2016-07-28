@@ -112,9 +112,6 @@
     <ClCompile Include="..\source\source\test_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_serviceRunnerCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\deps\lua\lapi.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
@@ -424,9 +421,6 @@
       <Filter>Source Files\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_lua.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\luautils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_vars.h">
