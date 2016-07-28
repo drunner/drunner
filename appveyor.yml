@@ -1,0 +1,5 @@
+platform:
+  - x86
+
+configuration:
+  - Release
