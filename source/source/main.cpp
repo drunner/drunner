@@ -162,15 +162,6 @@ int mainroutines::process()
          break;
       }
 
-      //case c_enter:
-      //{
-      //   if (p.numArgs() < 1)
-      //      logmsg(kLERROR, "Usage: drunner enter SERVICENAME");
-      //   service svc(p.getArg(0));
-      //   svc.enter();
-      //   break;
-      //}
-
       case c_build:
       {
          if (p.numArgs()<1)
@@ -237,22 +228,10 @@ int mainroutines::process()
 
       case c_help:
       {
+         drunnerSetup::check_setup(false);
          showhelp();
          return kRSuccess;
       }
-
-      //case c_saveenvironment:
-      //{
-      //   if (p.numArgs() < 3)
-      //      logmsg(kLERROR, "Usage: drunner __save-environment SERVICENAME KEY VALUE");
-      //   service svc(p.getArg(0));
-      //   if (!svc.isValid())
-      //      logmsg(kLERROR, "Service " + svc.getName() + " is not valid - try recover.");
-
-      //   svc.getEnvironment().save_environment(p.getArg(1), p.getArg(2));
-      //   logmsg(kLDEBUG, "Save environment variable " + p.getArg(1) + "=" + p.getArg(2));
-      //   return kRSuccess;
-      //}
 
       case c_plugin:
       {

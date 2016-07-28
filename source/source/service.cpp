@@ -78,7 +78,7 @@ cResult service::_handleconfigure(const CommandLine & cl)
          if (utils::stringisame(key, y.name))
          {
             // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
-            mServiceLua.setVariable(key, val);
+            mServiceLua.setVariable(y.name, val); // use the case specified in the configuration item
             mServiceLua.saveVariables();
          }
       if (!mServiceLua.getVariables().hasKey(key))
