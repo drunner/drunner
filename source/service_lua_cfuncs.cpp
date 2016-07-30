@@ -165,8 +165,13 @@ namespace servicelua
       std::string subcontainer = lf->getVariables().substitute(containerraw);
 
       if (utils_docker::dockerContainerExists(subcontainer))
+      {
+         logmsg(kLINFO, "Stopping " + lf->getServiceName());
          utils_docker::stopContainer(subcontainer);
-
+         utils_docker::removeContainer(subcontainer);
+      }
+      else
+         logmsg(kLDEBUG, subcontainer + " is not running.");
       return _luasuccess(L);
    }
 

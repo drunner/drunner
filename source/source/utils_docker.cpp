@@ -33,6 +33,15 @@ namespace utils_docker
       logmsg(kLDEBUG, "Stopped docker container " + name);
    }
 
+   void removeContainer(std::string name)
+   {
+      CommandLine cl("docker", { "rm",name });
+      std::string op;
+      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
+      if (rval != 0)
+         logmsg(kLERROR, "Unable to remove docker container " + name + "\n" + op);
+      logmsg(kLDEBUG, "Removed docker container " + name);
+   }
 
    void pullImage(const std::string & image)
    {

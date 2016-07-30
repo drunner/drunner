@@ -78,9 +78,9 @@ namespace servicelua
 
       lua_getglobal(L, "help");
       if (lua_isnil(L, -1))
-         fatal("Help not defined in service.lua for " + _servicename());
+         fatal("Help not defined in service.lua for " + getServiceName());
       if (lua_pcall(L, 0, 1, 0) != LUA_OK)
-         fatal("Couldn't run help command in service.lua for " + _servicename());
+         fatal("Couldn't run help command in service.lua for " + getServiceName());
       if (lua_gettop(L) < 1)
          fatal("Help function didn't return anything.");
       if (lua_gettop(L) > 1)

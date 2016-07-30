@@ -12,6 +12,7 @@ namespace utils_docker
 
    void createDockerVolume(std::string name);
    void stopContainer(std::string name);
+   void removeContainer(std::string name);
    void pullImage(const std::string & image);
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op);

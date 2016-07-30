@@ -66,6 +66,7 @@ namespace servicelua
       cResult runCommand(const CommandLine & serviceCmd) const;
 
       bool isLoaded() { return mLoaded; }
+      std::string getServiceName() { return mServicePaths.getName(); }
 
       // for lua
       void addContainer(std::string cname);
@@ -74,8 +75,6 @@ namespace servicelua
       Poco::Path getPathdService();
 
    private:
-      std::string _servicename() { return mServicePaths.getName(); }
-
       const servicePaths mServicePaths;
       serviceVars mServiceVars;
 
