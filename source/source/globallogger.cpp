@@ -4,6 +4,10 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef _WIN32
+#include <intrin.h>
+#endif
+
 #include "enums.h"
 #include "params.h"
 #include "globallogger.h"
@@ -58,6 +62,11 @@ void logverbatim(eLogLevel level, std::string s)
 #endif
       case kLERROR: 
          std::cerr << termcolor::red << s << termcolor::reset; 
+#ifdef _WIN32
+         __debugbreak();
+#else
+         __builtin_trap();
+#endif
          throw eExit();
          break;
       default:      std::cerr << termcolor::green <<  s << termcolor::reset; break;

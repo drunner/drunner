@@ -13,6 +13,7 @@
 #include "drunner_paths.h"
 #include "service_install.h"
 #include "utils_docker.h"
+#include "dassert.h"
 
 // Back up this service to backupfile.
 void service::backup(const std::string & backupfile)
@@ -167,8 +168,10 @@ cResult service_install::service_restore(const std::string & backupfile)
    }
 
    // backup seems okay - lets go!
-   service_install(mName, bvars.getImageName());
-
+   std::string imagename = bvars.getImageName();
+   drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
+   service_install si(mName, imagename);
+   si.install();
 
    // load in the new variables.
    service newservice(mName);
