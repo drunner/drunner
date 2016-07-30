@@ -34,15 +34,35 @@ service::service(std::string servicename) :
    poco_assert(mImageName.length() > 0);
 }
 
+std::string _pad(std::string x, int w)
+{
+   while (x.length() < w) x += " ";
+   return x;
+}
+
+cResult service::_showconfiginfo()
+{ // show current variables.
+   logmsg(kLINFO, "Current configuration for " + mName + " is:");
+   
+   int maxkey = 0;   
+   for (const auto & y : mServiceLua.getVariables().getAll())
+      maxkey = max(maxkey, y.first.length());
+   for (const auto & y : mServiceLua.getVariables().getAll())
+      logmsg(kLINFO, " " + _pad(y.first,maxkey) + " = " + y.second);
+
+
+
+   logmsg(kLINFO, " ");
+   logmsg(kLINFO, "Change configuration variables with:");
+   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment variable of same name");
+   logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
+   return kRSuccess;
+}
+
 cResult service::_handleconfigure(const CommandLine & cl)
 { // configure variable. cargs[0]: key=value
-   if (cl.args.size()==0)
-   { // show current variables.
-      logmsg(kLINFO, "Current configuration for " + mName + " is:");
-      for (const auto & y : mServiceLua.getVariables().getAll())
-         logmsg(kLINFO, " " + y.first + " = " + y.second);
-      return kRSuccess;
-   }
+   if (cl.args.size() == 0)
+      return _showconfiginfo();
 
    for (const auto & kv : cl.args)
    {
@@ -54,10 +74,10 @@ cResult service::_handleconfigure(const CommandLine & cl)
             key = kv;
             val = Poco::Environment::get(key);
          }
-         catch (const Poco::Exception & e)
+         catch (const Poco::Exception & )
          {
-            logmsg(kLDEBUG, e.what());
-            logmsg(kLERROR, "Configuration variables must be given in form key=val or set as an environment variable.");
+            logmsg(kLWARN, "Couldn't find environment variable " + key);
+            logmsg(kLERROR, "Configuration variables must be given in form key=val or represent an environment variable.");
          }
          logmsg(kLINFO, "Setting " + key + " to value from environment [not logged].");
       }
@@ -73,6 +93,9 @@ cResult service::_handleconfigure(const CommandLine & cl)
          logmsg(kLINFO, "Setting " + key + " to " + val);
       }
 
+      if (utils::stringisame(key, "IMAGENAME") || utils::stringisame(key, "SERVICENAME"))
+         fatal("You can't override the "+key+" configuration variable.");
+
       // find the corresponding configuration definition and set the variable.
       for (const auto & y : mServiceLua.getConfigItems())
          if (utils::stringisame(key, y.name))
@@ -82,7 +105,7 @@ cResult service::_handleconfigure(const CommandLine & cl)
             mServiceLua.saveVariables();
          }
       if (!mServiceLua.getVariables().hasKey(key))
-         fatal("Unrecognised setting " + key);
+         fatal("Unrecognised configuration variable " + key);
    }
    return kRSuccess;
 }

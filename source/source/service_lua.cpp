@@ -12,7 +12,7 @@ namespace servicelua
 //   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
 
-   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(mServicePaths), mLoaded(false)
+   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(serviceName), mLoaded(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
 

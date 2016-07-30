@@ -98,13 +98,19 @@ namespace servicelua
 
    extern "C" int l_addvolume(lua_State *L)
    {
-      if (lua_gettop(L) != 3)
-         return luaL_error(L, "Expected exactly three arguments: (name, backup, external) for addvolume.");
+      if (lua_gettop(L) < 1 || lua_gettop(L)>3)
+         return luaL_error(L, "Expected one to three arguments: (name, backup, external) for addvolume.");
 
       Volume v;
       v.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-      v.backup = (1==lua_toboolean(L, 2));
-      v.external = (1 == lua_toboolean(L, 3));
+      v.backup = true;
+      v.external = false;
+
+      if (lua_gettop(L)>1)
+         v.backup = (1==lua_toboolean(L, 2));
+
+      if (lua_gettop(L)>2)
+         v.external = (1 == lua_toboolean(L, 3));
 
       get_luafile(L)->addVolume(v);
 

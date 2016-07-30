@@ -7,8 +7,8 @@
 #include "service_lua.h"
 #include "globallogger.h"
 
-serviceVars::serviceVars(const servicePaths & p) :
-   mServicePaths(p)
+serviceVars::serviceVars(std::string serviceName) :
+   mServicePaths(serviceName)
 {
 }
 

@@ -34,6 +34,7 @@ public:
 private:
    static std::string _loadImageName(const std::string & servicename, std::string imagename);
    cResult _handleconfigure(const CommandLine & operation);
+   cResult _showconfiginfo();
    cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _launchCommandLine(const CommandLine & operation) const;
    cResult _handleStandardCommands(const CommandLine & operation, bool & processed) const;

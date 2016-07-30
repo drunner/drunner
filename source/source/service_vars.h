@@ -1,14 +1,13 @@
 #ifndef __SERVICE_CONFIG_H
 #define __SERVICE_CONFIG_H
 
-#include "service_paths.h"
 #include "cresult.h"
 #include "variables.h"
-
+#include "service_paths.h"
 
 class serviceVars {
 public:
-   serviceVars(const servicePaths & p);
+   serviceVars(std::string serviceName);
    cResult loadconfig();
    cResult saveconfig() const;
 
@@ -17,7 +16,7 @@ public:
 
 private:
    variables mVariables;   
-   const servicePaths & mServicePaths;
+   const servicePaths mServicePaths;
 };
 CEREAL_CLASS_VERSION(serviceVars, 1);
 
