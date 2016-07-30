@@ -210,7 +210,7 @@ cResult service_install::service_restore(const std::string & backupfile)
    // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
    serviceVars oldvars(mName);
    if (kRSuccess != oldvars.loadconfig())
-      logmsg(kLWARN, "Old variables file could not be loaded. Resorting to using new defaults.");
+      logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");
    else 
    { // merge.
       for (auto const & x : oldvars.getVariables().getAll())

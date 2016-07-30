@@ -1,10 +1,7 @@
 #include <sstream>
-#include <Poco/Environment.h>
+#include <algorithm>
 
-//#include <Poco/Process.h>
-//#include <Poco/Pipe.h>
-//#include <Poco/StreamCopier.h>
-//#include <Poco/PipeStream.h>
+#include <Poco/Environment.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -34,11 +31,12 @@ service::service(std::string servicename) :
    poco_assert(mImageName.length() > 0);
 }
 
-std::string _pad(std::string x, int w)
+std::string _pad(std::string x, unsigned int w)
 {
    while (x.length() < w) x += " ";
    return x;
 }
+inline int _max(int a, int b) { return (a > b) ? a : b; }
 
 cResult service::_showconfiginfo()
 { // show current variables.
@@ -46,7 +44,7 @@ cResult service::_showconfiginfo()
    
    int maxkey = 0;   
    for (const auto & y : mServiceLua.getVariables().getAll())
-      maxkey = max(maxkey, y.first.length());
+      maxkey = _max(maxkey, y.first.length());
    for (const auto & y : mServiceLua.getVariables().getAll())
       logmsg(kLINFO, " " + _pad(y.first,maxkey) + " = " + y.second);
 
