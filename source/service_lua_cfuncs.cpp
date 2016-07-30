@@ -101,8 +101,10 @@ namespace servicelua
       if (lua_gettop(L) < 1 || lua_gettop(L)>3)
          return luaL_error(L, "Expected one to three arguments: (name, backup, external) for addvolume.");
 
+      luafile * lf = get_luafile(L);
+
       Volume v;
-      v.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      v.name = lf->getVariables().substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
       v.backup = true;
       v.external = false;
 
@@ -112,7 +114,7 @@ namespace servicelua
       if (lua_gettop(L)>2)
          v.external = (1 == lua_toboolean(L, 3));
 
-      get_luafile(L)->addVolume(v);
+      lf->addVolume(v);
 
       return _luasuccess(L);
    }

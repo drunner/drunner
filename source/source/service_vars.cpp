@@ -10,6 +10,7 @@
 serviceVars::serviceVars(std::string serviceName) :
    mServicePaths(serviceName)
 {
+   setVariable("SERVICENAME", serviceName);
 }
 
 cResult serviceVars::loadconfig()

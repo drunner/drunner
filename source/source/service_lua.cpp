@@ -58,7 +58,6 @@ namespace servicelua
 
       // set standard vars (always present).
       mServiceVars.setVariable("IMAGENAME", getImageName());
-      mServiceVars.setVariable("SERVICENAME", mServicePaths.getName());
 
       // set defaults for custom vars.
       for (const auto & ci : mConfigItems)
