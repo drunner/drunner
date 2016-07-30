@@ -39,26 +39,31 @@ service_install::service_install(std::string servicename, std::string imagename)
 
 void service_install::_createVolumes(std::vector<std::string> & volumes)
 {
-   for (const auto & v : volumes)
-   {
-      // each service may be running under a different userid.
-      if (utils_docker::dockerVolExists(v))
-         logmsg(kLINFO, "A docker volume already exists for " + v + ", reusing it.");
-      else
-         utils_docker::createDockerVolume(v);
+   if (volumes.size() == 0)
+      logmsg(kLDEBUG, "[No volumes declared to be managed by drunner]");
+   else
+      for (const auto & v : volumes)
+      {
+         logmsg(kLDEBUG, "Checking status of volume " + v);
 
-      // set permissions on volume.
-      CommandLine cl("docker", { "run", "--rm", "-v",
-         v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
-         "chmod","0777","/tempmount" } );
+         // each service may be running under a different userid.
+         if (utils_docker::dockerVolExists(v))
+            logmsg(kLINFO, "A docker volume already exists for " + v + ", reusing it.");
+         else
+            utils_docker::createDockerVolume(v);
+
+         // set permissions on volume.
+         CommandLine cl("docker", { "run", "--rm", "-v",
+            v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
+            "chmod","0777","/tempmount" } );
       
-      int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
-      if (rval != 0)
-         fatal("Failed to set permissions on docker volume " + v);
+         int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
+         if (rval != 0)
+            fatal("Failed to set permissions on docker volume " + v);
 
-      logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
-   }
-
+         logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
+      }
+   logmsg(kLDEBUG, "Finished checking volumes.");
 }
 
 void service_install::_ensureDirectoriesExist() const

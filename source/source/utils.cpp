@@ -395,13 +395,11 @@ namespace utils
    {   // http://stackoverflow.com/a/10232761
       Poco::File f(d);
 
-      if (!f.exists())
-      {
-         f.createDirectories();
-         logmsg(kLDEBUG, "Created " + d.toString());
-      }
-      else
-         die(d.toString() + " already exists. Can't use as temp folder. Aborting.");
+      if (f.exists() && kRSuccess != utils::deltree(d))
+         die("Couldn't delete old stuff in temp directory: " + d.toString());
+
+      f.createDirectories();
+      logmsg(kLDEBUG, "Created " + d.toString());
 
       if (xchmod(d.toString().c_str(), S_777) != 0)
          die("Unable to change permissions on " + d.toString());
@@ -426,9 +424,9 @@ namespace utils
 
    void tempfolder::tidy()
    {
-      Poco::File f(mPath);
-      if (f.exists())
-         f.remove(true);
+      if (utils::fileexists(mPath))
+         if (kRSuccess!=utils::deltree(mPath))
+            logmsg(kLWARN,"Couldn't delete temporary directory "+mPath.toString());
       logmsg(kLDEBUG, "Recursively deleted " + mPath.toString());
    }
 

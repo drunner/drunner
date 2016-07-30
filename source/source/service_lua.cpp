@@ -120,7 +120,7 @@ namespace servicelua
    {
       drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
       for (const auto & v : mVolumes)
-         if (v.external)
+         if (!v.external)
             vols.push_back(v.name);
    }
    void luafile::getBackupDockerVolumeNames(std::vector<std::string> & vols) const

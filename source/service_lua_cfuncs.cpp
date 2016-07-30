@@ -109,12 +109,13 @@ namespace servicelua
       v.external = false;
 
       if (lua_gettop(L)>1)
-         v.backup = (1==lua_toboolean(L, 2));
+         v.backup = (1 == lua_toboolean(L, 2));
 
       if (lua_gettop(L)>2)
          v.external = (1 == lua_toboolean(L, 3));
 
       lf->addVolume(v);
+      logmsg(kLDEBUG, "Added volume " + v.name);
 
       return _luasuccess(L);
    }
