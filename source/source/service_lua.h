@@ -65,7 +65,9 @@ namespace servicelua
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd) const;
 
-      bool isLoaded() { return mLoaded; }
+      bool isLoaded() { return mLuaLoaded; }
+      bool isVariablesLoaded() { return mVarsLoaded; }
+
       std::string getServiceName() { return mServicePaths.getName(); }
 
       // for lua
@@ -84,7 +86,9 @@ namespace servicelua
 
       lua_State * L;
 
-      bool mLoaded;
+      bool mLuaLoaded;
+      bool mVarsLoaded;
+      bool mLoadAttempt;
    };
 
    void _register_lua_cfuncs(lua_State *L);

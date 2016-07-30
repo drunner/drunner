@@ -116,6 +116,10 @@ void service::backup(const std::string & backupfile)
 }
 
 
+// -------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------
+
 void service_restore_fail(std::string servicename, std::string message)
 {
    logmsg(kLWARN, message);
@@ -145,7 +149,6 @@ cResult service_install::service_restore(const std::string & backupfile)
    Poco::Path bigarchive(archivefolder.getpath());
    bigarchive.setFileName("backup.tar.enc");
    bff.copyTo(bigarchive.toString());
-//      logmsg(kLERROR, "Couldn't copy archive to temp folder.");
 
    std::string password = utils::getenv("PASS");
    compress::decompress_folder(password, tempparent.getpath(), bigarchive);
@@ -174,11 +177,16 @@ cResult service_install::service_restore(const std::string & backupfile)
    si.install();
 
    // load in the new variables.
-   service newservice(mName);
+   servicePaths paths(mName);
+   servicelua::luafile newluafile(mName);
+   if (kRSuccess != newluafile.loadlua())
+      service_restore_fail(mName,"Installation did not correctly create the service.lua file.");
+   if (!newluafile.isVariablesLoaded())
+      service_restore_fail(mName,"Installation did not correctly create the serviceconfig.json file.");
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
-   newservice.getServiceLua().getBackupDockerVolumeNames(dockervols);
+   newluafile.getBackupDockerVolumeNames(dockervols);
    if (shb_dockervolumenames.size() != dockervols.size())
       service_restore_fail(mName, "Number of docker volumes stored does not match what we expect.");
    
@@ -197,7 +205,20 @@ cResult service_install::service_restore(const std::string & backupfile)
    logmsg(kLDEBUG, "Restoring host volume.");
    Poco::Path hostvolp(tempf);
    hostvolp.setFileName("drunner_hostvol.tar");
-   compress::decompress_folder(password, newservice.getPathHostVolume(), hostvolp);
+   compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
+
+   // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
+   serviceVars oldvars(mName);
+   if (kRSuccess != oldvars.loadconfig())
+      logmsg(kLWARN, "Old variables file could not be loaded. Resorting to using new defaults.");
+   else 
+   { // merge.
+      for (auto const & x : oldvars.getVariables().getAll())
+         if (newluafile.getVariables().hasKey(x.first) && !utils::stringisame("SERVICENAME",x.first))
+            newluafile.setVariable(x.first, x.second);
+   }
+   if (kRSuccess != newluafile.saveVariables())
+      service_restore_fail(mName, "Failed to save new variables.");
 
    // tell the dService to do its restore_end action.
    tVecStr args;

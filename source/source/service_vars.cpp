@@ -34,8 +34,9 @@ cResult serviceVars::loadconfig()
    // update serviceName if needed.
    if (mVariables.getVal("SERVICENAME") != mServicePaths.getName())
    {
-      logmsg(kLWARN, "SERVICENAME in " + mServicePaths.getPathServiceVars().toString() + " is incorrect.");
-      logmsg(kLWARN, "(it is " + mVariables.getVal("SERVICENAME") + " but was expecting " + mServicePaths.getName() + ")");
+      logmsg(kLDEBUG, "SERVICENAME in " + mServicePaths.getPathServiceVars().toString() + " is incorrect.");
+      logmsg(kLDEBUG, "(it is " + mVariables.getVal("SERVICENAME") + " but was expecting " + mServicePaths.getName() + ")");
+      logmsg(kLDEBUG, "This is okay if we're restoring from a backup.");
       setVariable("SERVICENAME", mServicePaths.getName());
    }
 

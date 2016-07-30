@@ -62,10 +62,12 @@ void logverbatim(eLogLevel level, std::string s)
 #endif
       case kLERROR: 
          std::cerr << termcolor::red << s << termcolor::reset; 
+#ifdef _DEBUG
 #ifdef _WIN32
          __debugbreak();
 #else
          __builtin_trap();
+#endif
 #endif
          throw eExit();
          break;

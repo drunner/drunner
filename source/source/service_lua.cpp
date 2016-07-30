@@ -12,7 +12,7 @@ namespace servicelua
 //   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
 
-   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(serviceName), mLoaded(false)
+   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(serviceName), mLuaLoaded(false), mVarsLoaded(false), mLoadAttempt(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
 
@@ -32,8 +32,8 @@ namespace servicelua
 
    cResult luafile::loadlua()
    {
-      drunner_assert(!mLoaded, "Load called multiple times."); // mainly because I haven't checked this makes sense.
-      mLoaded = true; 
+      drunner_assert(!mLoadAttempt, "Load called multiple times."); // mainly because I haven't checked this makes sense.
+      mLoadAttempt = true;
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
@@ -64,16 +64,22 @@ namespace servicelua
          mServiceVars.setVariable(ci.name, ci.defaultval);
 
       // attempt to load config file.
-      if (mServiceVars.loadconfig() != kRSuccess)
+      if (mServiceVars.loadconfig() == kRSuccess)
+         mVarsLoaded = true;
+      else
          logmsg(kLDEBUG, "Couldn't load service variables.");
 
+      mLuaLoaded = true;
       return kRSuccess;
    }
 
    cResult luafile::showHelp()
    {
-      if (!mLoaded)
+      if (!mLuaLoaded)
+      {
+         logmsg(kLWARN, "Can't show help because we weren't able to load the service.lua file.");
          return kRError;
+      }
 
       lua_getglobal(L, "help");
       if (lua_isnil(L, -1))
