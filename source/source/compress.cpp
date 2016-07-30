@@ -42,9 +42,14 @@ namespace compress
       if (utils::fileexists(archivefolder+archivename))
          fatal("Can't compress to already existing " + archivename);
 
-      _rundocker(volumename, archivefolder, password,
-         "/usr/local/bin/dr_compress_fast " + archivename + " && chmod 0666 /dst/" + archivename );
+      std::string cmd = "/usr/local/bin/dr_compress_fast " + archivename;
+#ifdef _WIN32
+#else
+      std::string uid = std::to_string(getuid());
+      cmd += " && chown "+uid+" /dst/" + archivename;
+#endif
 
+      _rundocker(volumename, archivefolder, password, cmd);
       return true;
    }
 

@@ -52,7 +52,7 @@ cResult service::_showconfiginfo()
 
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Change configuration variables with:");
-   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment variable of same name");
+   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment var");
    logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
    return kRSuccess;
 }

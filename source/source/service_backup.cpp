@@ -69,7 +69,7 @@ void service::backup(const std::string & backupfile)
          logmsg(kLDEBUG, "Backed up docker volume " + entry);
       }
       else
-         logmsg(kLINFO, "Couldn't find docker volume " + entry + " ... skipping.");
+         fatal("Couldn't find docker volume " + entry + ".");
    }
 
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
