@@ -14,11 +14,6 @@
 
 namespace servicelua
 {
-   // lua C functions - defined in service_lua_cfuncs
-   extern "C" int l_addconfig(lua_State *L);
-   extern "C" int l_addvolume(lua_State *L);
-   extern "C" int l_addcontainer(lua_State *L);
-   extern "C" int l_drun(lua_State *L);
 
    struct Volume 
    {
@@ -75,10 +70,10 @@ namespace servicelua
       // for lua
       void addContainer(std::string cname);
       void addConfiguration(Configuration cf);
+      void addVolume(Volume v);
       Poco::Path getPathdService();
 
    private:
-      void _register_lua_cfuncs();
       std::string _servicename() { return mServicePaths.getName(); }
 
       const servicePaths mServicePaths;
@@ -92,6 +87,8 @@ namespace servicelua
 
       bool mLoaded;
    };
+
+   void _register_lua_cfuncs(lua_State *L);
 
 } // namespace
 

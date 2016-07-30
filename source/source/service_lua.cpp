@@ -40,7 +40,7 @@ namespace servicelua
       if (!utils::fileexists(path))
          return kRError;
 
-      _register_lua_cfuncs();
+      _register_lua_cfuncs(L);
 
       int loadok = luaL_loadfile(L, path.toString().c_str());
       if (loadok != 0)
@@ -143,6 +143,11 @@ namespace servicelua
    void luafile::addConfiguration(Configuration cf)
    {
       mConfigItems.push_back(cf);
+   }
+
+   void luafile::addVolume(Volume v)
+   {
+      mVolumes.push_back(v);
    }
 
 

@@ -1,25 +1,35 @@
 #include "service_lua.h"
 #include "dassert.h"
+#include "utils_docker.h"
 
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
+
+// lua C functions - defined in service_lua_cfuncs
+extern "C" int l_addconfig(lua_State *L);
+extern "C" int l_addvolume(lua_State *L);
+extern "C" int l_addcontainer(lua_State *L);
+extern "C" int l_drun(lua_State *L);
+extern "C" int l_dstop(lua_State *L);
+
+#define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
+
 namespace servicelua
 {
 
-   void luafile::_register_lua_cfuncs()
-   {
-      lua_pushcfunction(L, l_addconfig);   // see also http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
-      lua_setglobal(L, "addconfig");
+   // -----------------------------------------------------------------------------------------------------------------------
 
-      lua_pushcfunction(L, l_addvolume);
-      lua_setglobal(L, "addvolume");
-
-      lua_pushcfunction(L, l_addcontainer);
-      lua_setglobal(L, "addcontainer");
-
-      lua_pushcfunction(L, l_drun);
-      lua_setglobal(L, "drun");
+   void _register_lua_cfuncs(lua_State *L)
+   { // define all our C functions that we want available from service.lua
+      REGISTERLUAC(l_addconfig, "addconfig")
+      REGISTERLUAC(l_addvolume, "addvolume")
+      REGISTERLUAC(l_addcontainer, "addcontainer")
+      REGISTERLUAC(l_drun, "drun")
+      REGISTERLUAC(l_dstop, "dstop")
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
 
    luafile * get_luafile(lua_State *L)
    {
@@ -32,6 +42,8 @@ namespace servicelua
       drunner_assert(stacksize == lua_gettop(L), "Stack unbalanced : "+std::to_string(stacksize)+" != "+std::to_string(lua_gettop(L)));
       return (luafile *)luafilevoid;
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_addconfig(lua_State *L)
    {
@@ -72,19 +84,31 @@ namespace servicelua
       return 1; // one argument to return.
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   int _luasuccess(lua_State *L)
+   {
+      cResult rval = kRSuccess;
+      lua_pushinteger(L, rval);
+      return 1; // one argument to return.
+   }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
 
    extern "C" int l_addvolume(lua_State *L)
    {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addvolume.");
-      std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      if (lua_gettop(L) != 3)
+         return luaL_error(L, "Expected exactly three arguments: (name, backup, external) for addvolume.");
 
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
+      Volume v;
+      v.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      v.backup = (1==lua_toboolean(L, 2));
+      v.external = (1 == lua_toboolean(L, 3));
+
+      get_luafile(L)->addVolume(v);
+
+      return _luasuccess(L);
    }
 
 
@@ -99,9 +123,7 @@ namespace servicelua
 
       get_luafile(L)->addContainer(cname);
 
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return. Stack auto-balances.
+      return _luasuccess(L);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -122,9 +144,24 @@ namespace servicelua
 
       utils::runcommand_stream(operation, kORaw, runin, lf->getVariables().getEnv());
 
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return. Stack auto-balances.
+      return _luasuccess(L);
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dstop(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dstop.");
+      std::string containerraw = lua_tostring(L, 1);
+
+      luafile *lf = get_luafile(L);
+      std::string subcontainer = lf->getVariables().substitute(containerraw);
+
+      if (utils_docker::dockerContainerExists(subcontainer))
+         utils_docker::stopContainer(subcontainer);
+
+      return _luasuccess(L);
    }
 
 }

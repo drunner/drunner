@@ -23,6 +23,16 @@ namespace utils_docker
       logmsg(kLDEBUG, "Created docker volume " + name);
    }
 
+   void stopContainer(std::string name)
+   {
+      CommandLine cl("docker", { "stop",name });
+      std::string op;
+      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
+      if (rval != 0)
+         logmsg(kLERROR, "Unable to stop docker container " + name+"\n"+op);
+      logmsg(kLDEBUG, "Stopped docker container " + name);
+   }
+
 
    void pullImage(const std::string & image)
    {

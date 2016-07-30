@@ -244,9 +244,9 @@ int mainroutines::process()
          {
             logmsg(kLERROR,R"EOF(
 
-          /-------------------------------------------------------------\
-          |   That command has not been implemented and I am sad. :,(   |
-          \-------------------------------------------------------------/
+          /----------------------------------\
+          |   That command does not exist.   |
+          \----------------------------------/
 )EOF");
             return 1;
       }
