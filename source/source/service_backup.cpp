@@ -4,7 +4,7 @@
 
 #include "service.h"
 #include "utils.h"
-#include "service_backupvars.h"
+#include "service_backupinfo.h"
 #include "compress.h"
 #include "servicehook.h"
 #include "globallogger.h"
@@ -31,7 +31,7 @@ void service::backup(const std::string & backupfile)
    utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
 
    // write out variables that we need to decompress everything.
-   backupvars bvars(tempparent.getpath().setFileName(backupvars::filename));
+   backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
    bvars.createFromServiceLua(mImageName,mServiceLua);
    bvars.savevars();
 
@@ -151,9 +151,9 @@ cResult service_install::service_restore(const std::string & backupfile)
    compress::decompress_folder(password, tempparent.getpath(), bigarchive);
 
    // read in old variables, just need imagename and olddockervols from them.
-   backupvars bvars(tempparent.getpath().setFileName(backupvars::filename));
+   backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
    if (kRSuccess!=bvars.loadvars())
-      logmsg(kLERROR, "Backup corrupt - "+backupvars::filename+" couldn't be read.");
+      logmsg(kLERROR, "Backup corrupt - "+backupinfo::filename+" couldn't be read.");
 
    if (!utils::fileexists(tempc))
       logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());

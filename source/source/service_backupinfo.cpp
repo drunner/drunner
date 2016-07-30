@@ -1,17 +1,17 @@
 #include <cereal/archives/json.hpp>
 #include <fstream>
 
-#include "service_backupvars.h"
+#include "service_backupinfo.h"
 #include "dassert.h"
 
-const std::string backupvars::filename("backupvars.json");
+const std::string backupinfo::filename("backupinfo.json");
 
-backupvars::backupvars(Poco::Path path) : mPath(path)
+backupinfo::backupinfo(Poco::Path path) : mPath(path)
 {
-   drunner_assert(path.isFile(),"The backupvars file is not a Poco file.");
+   drunner_assert(path.isFile(),"The backupinfo file is not a Poco file.");
 }
 
-void backupvars::createFromServiceLua(std::string imagename, const servicelua::luafile & syf)
+void backupinfo::createFromServiceLua(std::string imagename, const servicelua::luafile & syf)
 {
    drunner_assert(mVolumes.size() == 0, "Dirty volumes.");
    drunner_assert(mImageName.length() == 0,"Dirty imagename.");
@@ -20,7 +20,7 @@ void backupvars::createFromServiceLua(std::string imagename, const servicelua::l
    syf.getBackupDockerVolumeNames(mVolumes);
 }
 
-cResult backupvars::loadvars()
+cResult backupinfo::loadvars()
 {
    std::ifstream ifs(mPath.toString());
    if (ifs.bad())
@@ -33,7 +33,7 @@ cResult backupvars::loadvars()
    return kRSuccess;
 }
 
-cResult backupvars::savevars() const
+cResult backupinfo::savevars() const
 {
    drunner_assert(mImageName.length() > 0, "Empty imagename.");
 
@@ -46,12 +46,12 @@ cResult backupvars::savevars() const
 }
 
 
-const std::vector<std::string> & backupvars::getDockerVolumeNames() const
+const std::vector<std::string> & backupinfo::getDockerVolumeNames() const
 {
    return mVolumes;
 }
 
-std::string backupvars::getImageName() const
+std::string backupinfo::getImageName() const
 {
    return mImageName;
 }

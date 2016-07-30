@@ -13,11 +13,11 @@
 #include "service_lua.h"
 #include "cresult.h"
 
-class backupvars
+class backupinfo
 {
 public:
    // reading ctor
-   backupvars(Poco::Path path);
+   backupinfo(Poco::Path path);
    
    // creates from drunnerCompose.
    void createFromServiceLua(std::string imagename, const servicelua::luafile & syf);
@@ -41,6 +41,6 @@ private:
    template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVolumes, mImageName); }
    // --- serialisation --
 };
-CEREAL_CLASS_VERSION(backupvars, 1);
+CEREAL_CLASS_VERSION(backupinfo, 1);
 
 #endif

@@ -103,9 +103,6 @@
     <ClCompile Include="..\source\source\service_paths.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_backupvars.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\test_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -220,6 +217,9 @@
     <ClCompile Include="..\source\service_lua_cfuncs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_backupinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -327,9 +327,6 @@
     <ClInclude Include="..\source\source\service_install.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\service_backupvars.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\basen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -421,6 +418,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\variables.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_backupinfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
