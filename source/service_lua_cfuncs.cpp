@@ -130,15 +130,15 @@ namespace servicelua
 
    extern "C" int l_drun(lua_State *L)
    {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the command to run) for drun.");
-      std::string command = lua_tostring(L, 1);
-      
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
+
       luafile * lf = get_luafile(L);
-      std::string subcmd = lf->getVariables().substitute(command);
 
       CommandLine operation;
-      utils::split_in_args(subcmd, operation);
+      operation.command = lua_tostring(L, 1);
+      for (int i = 2; i <= lua_gettop(L); ++i)
+         operation.args.push_back(lf->getVariables().substitute(lua_tostring(L, i)));
 
       Poco::Path runin = lf->getPathdService();
 
