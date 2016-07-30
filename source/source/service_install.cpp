@@ -229,7 +229,7 @@ cResult service_install::obliterate()
             {
                logmsg(kLINFO, "Obliterating docker volume " + entry);
                std::string op;
-               CommandLine cl("docker", { "rm",entry });
+               CommandLine cl("docker", { "volume", "rm",entry });
                if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
