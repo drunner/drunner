@@ -1,4 +1,5 @@
 #include <sstream>
+#include <string>
 
 #include "drunner_setup.h"
 #include "utils.h"
@@ -18,10 +19,19 @@ namespace drunnerSetup
 
    void _check_prereqs_xplatform()
    {
-      CommandLine cl("docker", { "--version" });
+      CommandLine cl("docker", { "version","--format","{{.Server.Version}}"});
       std::string op;
       if (utils::runcommand(cl, op, utils::kRC_Defaults) != 0)
          fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n" + op);
+      std::string major, minor;
+      unsigned int i;
+      for (i=0; i < op.length() && op[i] != '.'; ++i)
+         major += op[i];
+      for (++i; i < op.length() && op[i] != '.'; ++i)
+         minor += op[i];
+      logdbg("Docker major version = " + major + " and minor = " + minor);
+      if (std::strtol(major.c_str(),0,10) == 1 && std::stoi(minor.c_str(),0,10) < 12)
+         fatal("dRunner requires docker version 1.12 or newer. Please update!");
    }
 
    // ---------------------------------------------------------------------------------------------------------------------------------------------

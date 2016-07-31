@@ -96,6 +96,11 @@ void logmsg(eLogLevel level, std::string s)
    logverbatim(level,info+s2+"\n");
 }
 
+void logdbg(std::string s)
+{
+   logmsg(kLDEBUG, s);
+}
+
 
 void fatal(std::string s)
 {

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
    {
       GlobalContext::init(argc, argv);
 
-      logmsg(kLDEBUG,"dRunner C++, version "+GlobalContext::getParams()->getVersion());
+      logmsg(kLDEBUG,"dRunner C++ "+GlobalContext::getParams()->getVersion());
 
       int rval = mainroutines::process();
       waitforreturn();
