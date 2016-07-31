@@ -34,6 +34,7 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
       int rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
       if (rval != 0)
          return cError("Build failed.");
+      logmsg(kLINFO, "Built " + v.getVal("TAG"));
       return kRSuccess;
    }
    default:
