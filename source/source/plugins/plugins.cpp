@@ -49,9 +49,6 @@ pluginhelper::~pluginhelper()
 cResult pluginhelper::runCommand() const
 {
    CommandLine cl;
-   Poco::Path spath = configurationFilePath();
-   persistvariables pv(mName, spath);
-   pv.setConfiguration(mConfiguration);
 
    if (GlobalContext::getParams()->numArgs() == 0)
       cl.command = "help";
@@ -64,13 +61,16 @@ cResult pluginhelper::runCommand() const
 
    if (cl.command == "help")
       return showHelp();
-   else if (cl.command == "configure")
+   
+   Poco::Path spath = configurationFilePath();
+   persistvariables pv(mName, spath);
+   pv.setConfiguration(mConfiguration);
+   cResult r = pv.loadvariables();
+   
+   if (cl.command == "configure")
       return pv.handleConfigureCommand(cl);
    else
-   {
-      cResult r = pv.loadvariables();
       return runCommand(cl, pv.getVariables());
-   }
 }
 
 cResult pluginhelper::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required)

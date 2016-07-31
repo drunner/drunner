@@ -59,11 +59,6 @@ Poco::Path drunnerPaths::getPath_dServices()
    return getPath_Root().pushDirectory("dServices");
 }
 
-Poco::Path drunnerPaths::getPath_Support()
-{
-   return getPath_Root().pushDirectory("support");
-}
-
 Poco::Path drunnerPaths::getPath_Temp()
 {
    return getPath_Root().pushDirectory("temp");
@@ -77,11 +72,6 @@ Poco::Path drunnerPaths::getPath_HostVolumes()
 Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {
    return getPath_Root().setFileName("drunnerSettings.json");
-}
-
-Poco::Path drunnerPaths::getPath_empty()
-{
-   return getPath_Root().pushDirectory(".empty");
 }
 
 std::string drunnerPaths::getdrunnerUtilsImage()

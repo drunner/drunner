@@ -91,7 +91,7 @@ int mainroutines::process()
       cl.command = "configure";
       cl.args = p.getArgs();
       drunnerSettings newSettings;
-      newSettings.handleConfigureCommand(cl);
+      newSettings.handleConfigureCommand(cl); // needs to be read/write settings.
       return 0;
    }
 
@@ -236,7 +236,10 @@ int mainroutines::process()
       case c_plugin:
       {
          plugins p;
-         return p.runcommand();
+         cResult r=p.runcommand();
+         if (r == kRError)
+            fatal(r.what());
+         return r;
       }
 
 

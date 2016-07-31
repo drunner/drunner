@@ -156,10 +156,8 @@ namespace drunnerSetup
       _copyexe();
 
       _makedirectory(drunnerPaths::getPath_dServices(), S_755);
-      _makedirectory(drunnerPaths::getPath_Support(), S_755);
       _makedirectory(drunnerPaths::getPath_Temp(), S_755);
       _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
-      _makedirectory(drunnerPaths::getPath_empty(), S_755);
 
       // -----------------------------------------------------------------------------
       // generate plugin scripts
