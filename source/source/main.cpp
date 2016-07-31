@@ -85,6 +85,20 @@ int mainroutines::process()
    if (!GlobalContext::hasSettings())
       fatal("Settings global object not created.");
 
+   if (p.getCommand()==c_configure)
+   {
+      CommandLine cl;
+      cl.command = "configure";
+      cl.args = p.getArgs();
+      drunnerSettings newSettings;
+      newSettings.handleConfigureCommand(cl);
+      return 0;
+   }
+
+   cResult rval = GlobalContext::getSettings()->checkRequired();
+   if (!rval.success())
+      fatal("Please configure dRunner:\n " + rval.what());
+
    // ----------------
    // command handling
    switch (p.getCommand())
@@ -159,16 +173,6 @@ int mainroutines::process()
             logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE");
          service svc(p.getArg(0));
          svc.backup(p.getArg(1));
-         break;
-      }
-
-      case c_configure:
-      {
-         CommandLine cl;
-         cl.command = "configure";
-         cl.args = p.getArgs();
-         drunnerSettings newSettings;
-         newSettings.handleConfigureCommand(cl);
          break;
       }
 

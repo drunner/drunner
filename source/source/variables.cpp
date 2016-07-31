@@ -78,9 +78,12 @@ persistvariables::persistvariables(std::string name, Poco::Path path) : mName(na
 
 void persistvariables::setConfiguration(const std::vector<Configuration> & config) // limit to configuration
 {
+   // store the configuration.
+   mConfig = config;
+
    // set default values for settings if they don't already have a setting.
    for (const auto & x : mConfig)
-      if (!hasKey(x.name) || getVal(x.name).length()==0)
+      if (!hasKey(x.name) || getVal(x.name).length() == 0)
          mVariables.setVal(x.name, x.defaultval);
 }
 
@@ -90,13 +93,14 @@ cResult persistvariables::loadvariables()
       return cError("The settings file does not exist: " + mPath.toString());
 
    // read the settings.
+   variables storedvars;
    std::ifstream is(mPath.toString());
    if (is.bad())
       return cError("Unable to open " + mPath.toString() + " for reading.");
    try
    {
       cereal::JSONInputArchive archive(is);
-      archive(mVariables);
+      archive(storedvars);
    }
    catch (const cereal::Exception & e)
    {
@@ -104,20 +108,9 @@ cResult persistvariables::loadvariables()
    }
 
    // check all items are (1) listed in config, and (2) valid.
-   for (const auto & x : mVariables.getAll())
-   {
-      cResult rval = cError("Setting "+x.first+" is not a valid setting.");
-      for (const auto & y : mConfig)
-         if (0 == Poco::icompare(y.name, x.first))
-            rval = _checkvalid(x.first, x.second, y);
-
-      if (!rval.success())
-      {
-         logmsg(kLDEBUG, "Dropped config item " + x.first + " because it's invalid: "+rval.what());
-         mVariables.delKey(x.first);
-      }
-   }
-
+   for (auto x : storedvars.getAll())
+      setVal(x.first, x.second);
+      
    return kRSuccess;
 }
 
@@ -153,9 +146,11 @@ cResult persistvariables::setVal(std::string key, std::string val)
    for (const auto & x : mConfig)
       if (Poco::icompare(x.name, key) == 0)
       { // check valid given type!
-         cResult r = _checkvalid(key, val, x);
+         cResult r = _checkvalid(x.name, val, x);
          if (r.success())
-            mVariables.setVal(key, val);
+            mVariables.setVal(x.name, val);
+         else
+            logdbg("Invalid setting: " + key + "=" + val + "\n" + r.what());
          return r;
       }
    return cError("Setting '" + key + "' is not recognised.");
@@ -172,13 +167,18 @@ inline int _max(int a, int b) { return (a > b) ? a : b; }
 
 cResult persistvariables::_showconfiginfo() const
 { // show current variables.
-   logmsg(kLINFO, "Current configuration is:");
+   logmsg(kLINFO, "Current configuration is:\n ");
 
    int maxkey = 0;
    for (const auto & y : mVariables.getAll())
       maxkey = _max(maxkey, y.first.length());
    for (const auto & y : mVariables.getAll())
+   {
       logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+      for (const auto & z : mConfig)
+         if (Poco::icompare(z.name, y.first) == 0)
+            logmsg(kLINFO, " "+_pad(" ",maxkey)+"   "+ z.description + "\n");
+   }
 
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Change configuration variables with:");
