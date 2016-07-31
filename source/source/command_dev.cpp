@@ -12,7 +12,7 @@ using namespace utils;
    bool isrepo(const std::string & d,std::string & branch)
    {
       CommandLine cl("git", { "rev-parse", "--abbrev-ref","HEAD",d });
-      int r = runcommand(cl, branch, kRC_Defaults);
+      int r = runcommand(cl, branch);
       // drop everything after branch name
       branch.erase( branch.find_first_of("\r\n ") );
       logmsg(kLDEBUG,"Branch:           "+branch);

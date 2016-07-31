@@ -71,17 +71,10 @@ void service_install::_ensureDirectoriesExist() const
    utils::makedirectory(getPathServiceVars().parent(), S_700);
 }
 
-cResult service_install::_recreate(bool updating)
+cResult service_install::_recreate()
 {
    drunner_assert(mImageName.length() > 0, "Can't recreate service "+mName + " - image name could not be determined.");
-
-   if (updating && utils::fileexists(getPathServiceLua()))
-   { // pull all containers used by the dService.
-      servicelua::luafile syf(mName);
-      if (syf.loadlua()==kRSuccess)
-         for (auto c : syf.getContainers())
-            utils_docker::pullImage(c);
-   }
+   utils_docker::pullImage(mImageName);
    
    try
    {
@@ -100,6 +93,7 @@ cResult service_install::_recreate(bool updating)
       _ensureDirectoriesExist();
 
       // copy files to service directory on host.
+      logdbg("Copying across drunner files from " + mImageName);
       CommandLine cl("docker", { "run","--rm","-u","root","-v",
          getPathdService().toString() + ":/tempcopy", mImageName, "/bin/bash", "-c" });
 #ifdef _WIN32
@@ -109,8 +103,9 @@ cResult service_install::_recreate(bool updating)
       cl.args.push_back("cp /drunner/* /tempcopy/ && chmod u+rw /tempcopy/* && chown -R "+std::to_string(uid)+" /tempcopy/*");
 #endif
       std::string op;
-      if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
+      if (0 != utils::runcommand(cl, op))
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
+      drunner_assert(utils::fileexists(getPathServiceLua()), "The dService service.lua file was not copied across.");
 
       // write out service configuration for the dService.
       servicelua::luafile syf(mName);
@@ -119,12 +114,12 @@ cResult service_install::_recreate(bool updating)
       if (syf.saveVariables() != kRSuccess)
          fatal("Could not write out service variables.");
 
-      // make sure we have the latest of all containers.
+      // pull all containers.
       bool foundmain = false;
       for (const auto & entry : syf.getContainers())
       {
          utils_docker::pullImage(entry);
-         if (utils::stringisame(entry, mImageName))
+         if (0==Poco::icompare(entry, mImageName))
             foundmain = true;
       }
       if (!foundmain)
@@ -164,7 +159,7 @@ cResult service_install::install()
 	logmsg(kLDEBUG, "Attempting to validate " + mImageName);
    validateImage::validate(mImageName);
 
-   _recreate(false);
+   _recreate();
 
    servicehook hook(mName, "install");
    hook.endhook();
@@ -228,7 +223,7 @@ cResult service_install::obliterate()
                logmsg(kLINFO, "Obliterating docker volume " + entry);
                std::string op;
                CommandLine cl("docker", { "volume", "rm",entry });
-               if (0 != utils::runcommand(cl, op, utils::kRC_Defaults))
+               if (0 != utils::runcommand(cl, op))
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
                   logmsg(kLWARN, op);
@@ -293,7 +288,7 @@ cResult service_install::update()
    servicehook hook(mName, "update");
    hook.starthook();
 
-   _recreate(true);
+   _recreate();
 
    hook.endhook();
 

@@ -13,6 +13,7 @@
 #include <Poco/Process.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
+#include <Poco/String.h>
 
 namespace drunnerSetup
 {
@@ -21,7 +22,7 @@ namespace drunnerSetup
    {
       CommandLine cl("docker", { "version","--format","{{.Server.Version}}"});
       std::string op;
-      if (utils::runcommand(cl, op, utils::kRC_Defaults) != 0)
+      if (utils::runcommand(cl, op) != 0)
          fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n" + op);
       std::string major, minor;
       unsigned int i;
@@ -50,7 +51,10 @@ namespace drunnerSetup
    int bashcommand(std::string bashline, std::string & op, bool trim)
    {
       CommandLine cl("/bin/bash", { "-c", bashline });
-      return utils::runcommand(cl, op, utils::kRC_Trim);
+      int r=utils::runcommand(cl, op);
+      if (trim)
+         Poco::trimInPlace(op);
+      return r;
    }
    int bashcommand(std::string bashline)
    {

@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include <Poco/File.h>
+#include <Poco/String.h>
 
 #include "service.h"
 #include "utils.h"
@@ -214,8 +215,9 @@ cResult service_install::service_restore(const std::string & backupfile)
    else 
    { // merge.
       for (auto const & x : oldvars.getVariables().getAll())
-         if (newluafile.getVariables().hasKey(x.first) && !utils::stringisame("SERVICENAME",x.first))
-            newluafile.setVariable(x.first, x.second);
+         if (newluafile.getVariables().hasKey(x.first)) // is a known variable.
+               newluafile.setVariable(x.first, x.second);
+      newluafile.setVariable("SERVICENAME", mName); // ensure servicename is correct (we don't want the old one from the backup!)
    }
    if (kRSuccess != newluafile.saveVariables())
       service_restore_fail(mName, "Failed to save new variables.");

@@ -5,6 +5,8 @@
 #include <map>
 #include <sstream>
 
+#include <Poco/String.h>
+
 #include "getopt.h"
 #include "params.h"
 #include "utils.h"
@@ -63,7 +65,7 @@ bool params::isHook(std::string c) const
    tag.erase(0, pos+1);
    c.erase(pos);
 
-   if (utils::stringisame(tag, "start") || utils::stringisame(tag, "end"))
+   if (0==Poco::icompare(tag, "start") || 0==Poco::icompare(tag, "end"))
       return isdrunnerCommand(c);
    else
       return false; // tag is not start or end.
@@ -74,7 +76,7 @@ eCommand params::getdrunnerCommand(std::string c) const
    auto it = mCommandList.find(c);
    if (it == mCommandList.end())
       return c_UNDEFINED;
-   if (utils::stringisame(it->first, c))
+   if (0 == Poco::icompare(it->first, c))
       return it->second;
    else
       return c_UNDEFINED;

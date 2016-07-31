@@ -10,6 +10,7 @@ void logmsg(eLogLevel level, std::string s);
 void logverbatim(eLogLevel level, std::string s);
 
 void logdbg(std::string s);
+void logdbg_trim(std::string s);
 void fatal(std::string s);
 
 std::string getheader(eLogLevel level);

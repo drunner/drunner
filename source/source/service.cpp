@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include <Poco/Environment.h>
+#include <Poco/String.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -90,12 +91,12 @@ cResult service::_handleconfigure(const CommandLine & cl)
          logmsg(kLINFO, "Setting " + key + " to " + val);
       }
 
-      if (utils::stringisame(key, "IMAGENAME") || utils::stringisame(key, "SERVICENAME"))
+      if (0==Poco::icompare(key, "IMAGENAME") || 0==Poco::icompare(key, "SERVICENAME"))
          fatal("You can't override the "+key+" configuration variable.");
 
       // find the corresponding configuration definition and set the variable.
       for (const auto & y : mServiceLua.getConfigItems())
-         if (utils::stringisame(key, y.name))
+         if (0==Poco::icompare(key, y.name))
          {
             // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
             mServiceLua.setVariable(y.name, val); // use the case specified in the configuration item
@@ -111,7 +112,7 @@ cResult service::servicecmd()
 {
    const params & p(*GlobalContext::getParams());
    drunner_assert(p.numArgs() > 0, "servicecmd requires an argument..."); // should never have 0 args to servicecmd!
-   drunner_assert(utils::stringisame(p.getArg(0), mName), "First argument should be service name.");
+   drunner_assert(0==Poco::icompare(p.getArg(0), mName), "First argument should be service name.");
 
    // args are e.g. minecraft import james.backup
    // CommandLine will be  import james.backup
@@ -120,10 +121,10 @@ cResult service::servicecmd()
    if (p.numArgs() > 2)
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
-   if (utils::stringisame(cl.command, "configure"))
+   if (0==Poco::icompare(cl.command, "configure"))
       return _handleconfigure(cl);
 
-   if (utils::stringisame(cl.command, "help"))
+   if (0==Poco::icompare(cl.command, "help"))
       return mServiceLua.showHelp();
 
    cResult rval = kRError;

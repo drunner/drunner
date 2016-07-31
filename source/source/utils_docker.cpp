@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <Poco/String.h>
+
 #include "basen.h"
 #include "utils.h"
 #include "utils_docker.h"
@@ -17,7 +19,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "volume","create","--name=" + name });
       std::string op;
-      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
+      int rval = utils::runcommand(cl, op);
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
       logmsg(kLDEBUG, "Created docker volume " + name);
@@ -27,7 +29,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "stop",name });
       std::string op;
-      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
+      int rval = utils::runcommand(cl, op);
       if (rval != 0)
          logmsg(kLERROR, "Unable to stop docker container " + name+"\n"+op);
       logmsg(kLDEBUG, "Stopped docker container " + name);
@@ -37,7 +39,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "rm",name });
       std::string op;
-      int rval = utils::runcommand(cl, op, utils::kRC_Defaults);
+      int rval = utils::runcommand(cl, op);
       if (rval != 0)
          logmsg(kLERROR, "Unable to remove docker container " + name + "\n" + op);
       logmsg(kLDEBUG, "Removed docker container " + name);
@@ -105,7 +107,7 @@ namespace utils_docker
       CommandLine cl("docker", {"run","--rm",imagename,"/bin/bash","-c",
          "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
 
-      int rval=utils::runcommand(cl, op, utils::kRC_Defaults);
+      int rval=utils::runcommand(cl, op);
       return (rval == 0 ? kRSuccess : kRError);
    }
 
@@ -113,7 +115,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "volume","ls","-f","name=" + vol });
       std::string out;
-      int rval = utils::runcommand(cl,out, utils::kRC_Defaults);
+      int rval = utils::runcommand(cl,out);
       return (rval != 0 ? false : utils::wordmatch(out, vol));
    }
 
@@ -122,7 +124,7 @@ namespace utils_docker
    {
       CommandLine cl("docker", { "ps","-f","name=" + container });
       std::string out;
-      int rval = utils::runcommand(cl, out, utils::kRC_Defaults);
+      int rval = utils::runcommand(cl, out);
       return (rval != 0 ? false : utils::wordmatch(out, container));
    }
 

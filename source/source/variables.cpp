@@ -21,7 +21,7 @@ variables::variables(const variables & other1, const variables & other2)
 bool variables::hasKey(std::string key) const
 {
    for (const auto & x : mVariables)
-      if (utils::stringisame(key, x.first))
+      if (0==Poco::icompare(key, x.first))
          return true;
    return false;
 }
@@ -29,7 +29,7 @@ bool variables::hasKey(std::string key) const
 std::string variables::getVal(std::string key) const
 {
    for (const auto & x : mVariables)
-      if (utils::stringisame(key, x.first))
+      if (0==Poco::icompare(key, x.first))
          return x.second;
    return "";
 }

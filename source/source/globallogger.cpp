@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <Poco/String.h>
 
 #ifdef _WIN32
 #include <intrin.h>
@@ -101,6 +102,12 @@ void logdbg(std::string s)
    logmsg(kLDEBUG, s);
 }
 
+void logdbg_trim(std::string s)
+{
+   Poco::trimInPlace(s);
+   if (s.length() > 0)
+      logdbg(s);
+}
 
 void fatal(std::string s)
 {

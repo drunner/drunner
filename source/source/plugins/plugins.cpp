@@ -1,3 +1,5 @@
+#include <Poco/String.h>
+
 #include "plugins.h"
 #include "generate_plugin_script.h"
 #include "globalcontext.h"
@@ -22,7 +24,7 @@ eResult plugins::runcommand() const
    std::string pluginname = GlobalContext::getParams()->getCommandStr();
 
    for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
-      if (utils::stringisame(p->get()->getName(), pluginname))
+      if (0==Poco::icompare(p->get()->getName(), pluginname))
         return p->get()->runCommand();
 
    logmsg(kLERROR, "Unknown plugin '" + pluginname+"'");

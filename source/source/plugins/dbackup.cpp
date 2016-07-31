@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <Poco/File.h>
+#include <Poco/String.h>
 
 #include "utils.h"
 #include "globallogger.h"
@@ -140,14 +141,18 @@ eResult dbackup::configure(std::string path) const
    // TODO: check path exists and make canonical.
    if (!utils::fileexists(path))
       logmsg(kLERROR, "The path " + path + " does not exist.");
-   path = utils::getabsolutepath(path);
+
+   Poco::Path p(path);
+   if (!p.isAbsolute())
+      p.makeAbsolute();
+   path = p.toString(Poco::Path::PATH_NATIVE);
 
    // create folders.
    utils::makedirectory(path + "/daily", S_700);
    utils::makedirectory(path + "/weekly", S_700);
    utils::makedirectory(path + "/monthly", S_700);
 
-   if (utils::stringisame(config.getBackupPath(), path))
+   if (0==Poco::icompare(config.getBackupPath(), path))
    {
       logmsg(kLINFO, "Path unchanged.");
       return kRNoChange;

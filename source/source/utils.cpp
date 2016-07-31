@@ -45,42 +45,20 @@ namespace utils
       return (stat (name.toString().c_str(), &buffer) == 0);
    }
 
-   bool stringisame(const std::string & s1, const std::string &s2 )
-   {
-      return (0 == Poco::icompare(s1, s2)); // http://pocoproject.org/slides/040-StringsAndFormatting.pdf
-      //return boost::iequals(s1,s2);
-   }
+   //bool stringisame(const std::string & s1, const std::string &s2 )
+   //{
+   //   return (0 == Poco::icompare(s1, s2)); // http://pocoproject.org/slides/040-StringsAndFormatting.pdf
+   //}
 
-   // trim from left
-   inline std::string& ltrim(std::string& s, const char* t = " \t\n\r\f\v")
-   {
-       s.erase(0, s.find_first_not_of(t));
-       return s;
-   }
-
-   // trim from right
-   inline std::string& rtrim(std::string& s, const char* t = " \t\n\r\f\v")
-   {
-       s.erase(s.find_last_not_of(t) + 1);
-       return s;
-   }
-
-   // trim from left & right
-   void trim(std::string& s, const char* t)
-   {
-      ltrim(rtrim(s, t), t);
-   }
-
-   int runcommand(const CommandLine & operation, std::string &out, tFlags rcf)
+   int runcommand(const CommandLine & operation, std::string &out)
    {
       int rval;
 
-      if (rcf & kRC_LogCmd)
       { // log the command
          std::ostringstream oss;
          oss << "Runcommand: " << operation.command;
          for (auto x : operation.args) oss << " " << x;
-         logmsg(kLDEBUG, oss.str());
+         logdbg(oss.str());
       }
 
       try
@@ -97,8 +75,6 @@ namespace utils
          fatal(se.displayText());
       }
 
-      if (rcf & kRC_Trim)
-         Poco::trimInPlace(out);
       return rval;
    }
 
@@ -134,14 +110,6 @@ namespace utils
       return rval;
    }
 
-   std::string getabsolutepath(std::string path)
-   {
-      Poco::Path p(path);
-      if (!p.isAbsolute())
-         p.makeAbsolute();
-      return p.toString(Poco::Path::PATH_NATIVE);
-   }
-
 
    std::string replacestring(std::string subject, const std::string& search,
         const std::string& replace)
@@ -173,8 +141,8 @@ namespace utils
          return false;
 
       std::string branchname=imagename.substr(pos+1);
-      if (stringisame(branchname,"master"))
-         return false;
+      if (0==Poco::icompare(branchname,"master"))
+         return false; // master, so not a branch!
 
       return true;
    }
@@ -316,7 +284,7 @@ namespace utils
    {
       std::time_t rtime = std::time(nullptr);
       std::string timestr = std::asctime(std::localtime(&rtime));
-      utils::trim(timestr);
+      Poco::trimInPlace(timestr);
       return timestr;
    }
 

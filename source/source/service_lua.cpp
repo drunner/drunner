@@ -38,13 +38,16 @@ namespace servicelua
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))
+      {
+         logdbg("loadlua: the service.lua file does not exist: " + path.toString());
          return kRError;
+      }
 
       _register_lua_cfuncs(L);
 
       int loadok = luaL_loadfile(L, path.toString().c_str());
       if (loadok != 0)
-         fatal("Failed to load " + path.toString());
+         fatal("Failed to load " + path.toString() + "\n"+ lua_tostring(L, -1));
       if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
          fatal("Failed to execute " + path.toString() + " " + lua_tostring(L, -1));
 

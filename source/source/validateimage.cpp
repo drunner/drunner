@@ -40,10 +40,9 @@ exit 0
          if (utils::findStringIC(op, "Unable to find image"))
             logmsg(kLERROR, "Couldn't find image " + imagename);
          else
-            logmsg(kLERROR, op);
+            logmsg(kLERROR, "Failed to launch bash script in container:\n"+op);
       }
-
-      logmsg(kLDEBUG, op);
+      logdbg_trim(op);
 
 #ifdef _WIN32
       logmsg(kLINFO, imagename + " is dRunner compatible.");

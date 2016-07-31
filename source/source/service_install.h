@@ -24,7 +24,7 @@ private:
    void _createVolumes(std::vector<std::string> & volumes);
    void _ensureDirectoriesExist() const;
    cResult _removeLaunchScript() const;
-   cResult _recreate(bool updating);
+   cResult _recreate();
 
    std::string mImageName;
 };
