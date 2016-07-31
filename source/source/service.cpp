@@ -11,7 +11,6 @@
 #include "globallogger.h"
 #include "utils.h"
 #include "servicehook.h"
-#include "sh_servicevars.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "service_lua.h"

@@ -18,6 +18,7 @@ public:
 
    bool hasKey(std::string key) const;
    std::string getVal(std::string key) const;
+   bool getBool(std::string key) const;
    void setVal(std::string key, std::string val);
 
    std::string substitute(std::string s) const;

@@ -66,31 +66,9 @@ namespace utils
    }
 
    // trim from left & right
-   std::string& trim(std::string& s, const char* t)
+   void trim(std::string& s, const char* t)
    {
-       return ltrim(rtrim(s, t), t);
-   }
-
-   std::string doquote(std::string s)
-   {
-      return "\""+s+"\"";
-   }
-
-   // copying versions
-
-   inline std::string ltrim_copy(std::string s, const char* t = " \t\n\r\f\v")
-   {
-       return ltrim(s, t);
-   }
-
-   inline std::string rtrim_copy(std::string s, const char* t = " \t\n\r\f\v")
-   {
-       return rtrim(s, t);
-   }
-
-   std::string trim_copy(std::string s, const char* t)
-   {
-       return utils::trim(s, t);
+      ltrim(rtrim(s, t), t);
    }
 
    int runcommand(const CommandLine & operation, std::string &out, tFlags rcf)
@@ -337,7 +315,9 @@ namespace utils
    std::string getTime()
    {
       std::time_t rtime = std::time(nullptr);
-      return utils::trim_copy(std::asctime(std::localtime(&rtime)));
+      std::string timestr = std::asctime(std::localtime(&rtime));
+      utils::trim(timestr);
+      return timestr;
    }
 
    std::string getPWD()

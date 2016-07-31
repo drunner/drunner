@@ -58,18 +58,18 @@ namespace servicelua
 
       {
          using namespace utils;
-         switch (str2int(lua_tostring(L, 4)))
+         switch (s2i(lua_tostring(L, 4)))
          {
-         case str2int("port"):
+         case s2i("port"):
             c.type = kCF_port;
             break;
-         case str2int("path"):
+         case s2i("path"):
             c.type = kCF_path;
             break;
-         case str2int("existingpath"):
+         case s2i("existingpath"):
             c.type = kCF_existingpath;
             break;
-         case str2int("string"):
+         case s2i("string"):
             c.type = kCF_string;
             break;
          default:

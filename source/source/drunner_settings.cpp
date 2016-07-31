@@ -1,40 +1,75 @@
+#include <fstream>
+#include <Poco/Path.h>
+#include <cereal/archives/json.hpp>
+
 #include "drunner_settings.h"
 #include "utils.h"
 #include "globallogger.h"
 #include "drunner_setup.h"
 #include "drunner_paths.h"
-#include <Poco/Path.h>
 
 
 // can't put this in header because circular
 // dependency then with utils::getTime.
-drunnerSettings::drunnerSettings() :
-   settingsbash(false)
+drunnerSettings::drunnerSettings() 
 {
-   setString("DRUNNERINSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF");
-   setString("DRUNNERINSTALLTIME", utils::getTime());
-   setBool("PULLIMAGES", true);
+   mVariables.setVal("DRUNNERINSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF");
+   mVariables.setVal("DRUNNERINSTALLTIME", utils::getTime());
+   mVariables.setVal("PULLIMAGES", "true");
 
    mReadOkay = false;   
-   readSettings();
-}
-
-bool drunnerSettings::readSettings()
-{
-   mReadOkay = settingsbash::readSettings(drunnerPaths::getPath_drunnerSettings_sh());
-   if (!mReadOkay)
-   {
-      logmsg(kLDEBUG, "Couldn't find settings at " + drunnerPaths::getPath_drunnerSettings_sh().toString());
-      return false;
+   cResult r = readSettings();
+   switch (r) {
+   case kRSuccess:
+      mReadOkay = true;
+      logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
+      break;
+   case kRError:
+      fatal("The settings file is corrupt and could not be read: " + drunnerPaths::getPath_drunnerSettings_json().toString() + "\nSuggest deleting it.");
+   default:
+      logdbg("Couldn't read settings file from " + drunnerPaths::getPath_drunnerSettings_json().toString());
    }
-
-   logmsg(kLDEBUG, "Read settings from " + drunnerPaths::getPath_drunnerSettings_sh().toString());
-   return mReadOkay;
 }
 
-bool drunnerSettings::writeSettings() const
+cResult drunnerSettings::readSettings()
 {
-   return settingsbash::writeSettings(drunnerPaths::getPath_drunnerSettings_sh());
+   Poco::Path spath = drunnerPaths::getPath_drunnerSettings_json();
+   if (!utils::fileexists(spath))
+      return kRNoChange;
+
+   std::ifstream is(spath.toString());
+   if (is.bad())
+      return kRError;
+      
+   try
+   {
+      cereal::JSONInputArchive archive(is);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception &)
+   {
+      return kRError;
+   }
+   return kRSuccess;
+}
+
+cResult drunnerSettings::writeSettings() const
+{
+   Poco::Path spath = drunnerPaths::getPath_drunnerSettings_json();
+   std::ofstream os(spath.toString());
+   if (os.bad() || !os.is_open())
+      return kRError;
+
+   try
+   {
+      cereal::JSONOutputArchive archive(os);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception &)
+   {
+      return kRError;
+   }
+   return kRSuccess;
 }
 
 

@@ -24,6 +24,11 @@ public:
    std::vector<std::string> args;
 };
 
+constexpr unsigned int s2i(const char* str, int h = 0)
+{
+   return !str[h] ? 5381 : (s2i(str, h + 1) * 33) ^ str[h];
+}
+
 // Shell utilities
 namespace utils
 {
@@ -42,11 +47,6 @@ namespace utils
    const std::string kCODE_S="\e[32m";
    const std::string kCODE_E="\e[0m";
 #endif
-
-   constexpr unsigned int str2int(const char* str, int h = 0)
-   {
-      return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
-   }
 
    std::string getabsolutepath(std::string path);
 
@@ -67,9 +67,8 @@ namespace utils
    int runcommand(const CommandLine & operation, std::string &out, tFlags rcf);
    int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory = "", const Poco::Process::Env & env = {});
 
-   std::string trim_copy(std::string s, const char* t = " \t\n\r\f\v");
-   std::string& trim(std::string& s, const char* t = " \t\n\r\f\v");
-   std::string doquote(std::string s);
+   void trim(std::string& s, const char* t = " \t\n\r\f\v");
+
    bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
    // case insensitive comparison.
    bool stringisame(const std::string & s1, const std::string &s2);

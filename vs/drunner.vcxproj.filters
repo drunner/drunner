@@ -8,6 +8,12 @@
     <Filter Include="Source Files\lua">
       <UniqueIdentifier>{f9a48029-1aee-4b5c-8df3-a211edfcfa99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\plugins">
+      <UniqueIdentifier>{6b7f0c25-18b8-41cc-8c71-c78a05c3c4c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\win">
+      <UniqueIdentifier>{98fd1ce8-fbea-426c-be93-ebf507ce8c65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp">
@@ -52,9 +58,6 @@
     <ClCompile Include="..\source\source\servicehook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\settingsbash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\showhelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,19 +73,7 @@
     <ClCompile Include="..\source\source\utils_docker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\tests\test_settingsbash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\tests\unittests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\plugins\backupConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\plugins\dbackup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\plugins\plugins.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\drunner_setup.cpp">
@@ -220,6 +211,15 @@
     <ClCompile Include="..\source\source\service_backupinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\plugins\backupConfig.cpp">
+      <Filter>Source Files\plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\dbackup.cpp">
+      <Filter>Source Files\plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\plugins.cpp">
+      <Filter>Source Files\plugins</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -267,12 +267,6 @@
     <ClInclude Include="..\source\source\servicehook.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\settingsbash.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\sh_ddev.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\showhelp.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -288,22 +282,7 @@
     <ClInclude Include="..\source\source\utils_docker.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\win\getopt.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\tests\unittests.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\backupConfig.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\dbackup.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\generate_plugin_script.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\plugins.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\drunner_setup.h">
@@ -422,6 +401,21 @@
     </ClInclude>
     <ClInclude Include="..\source\source\service_backupinfo.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\backupConfig.h">
+      <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\dbackup.h">
+      <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\generate_plugin_script.h">
+      <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\plugins.h">
+      <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\win\getopt.h">
+      <Filter>Source Files\win</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,6 +34,13 @@ std::string variables::getVal(std::string key) const
    return "";
 }
 
+bool variables::getBool(std::string key) const
+{
+   std::string s = getVal(key);
+   if (s.length() == 0) return false;
+   return (tolower(s[0]) == 'y' || tolower(s[0]) == 't');
+}
+
 void variables::setVal(std::string key, std::string val) 
 {
    mVariables[key] = val;

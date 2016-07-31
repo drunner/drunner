@@ -36,32 +36,32 @@ eResult dbackup::runCommand() const
 
    logmsg(kLDEBUG, "Running command " + cmd);
 
-   switch (utils::str2int(cmd.c_str()))
+   switch (s2i(cmd.c_str()))
    {
-   case utils::str2int("help") :
+   case s2i("help") :
       return showhelp();
 
-   case utils::str2int("config") :
-   case utils::str2int("configure") :
+   case s2i("config") :
+   case s2i("configure") :
       if (args.size() == 0)
          fatal("Usage:  dbackup configure BACKUPPATH");
       return configure(args[0]);
 
-   case utils::str2int("exclude") :
+   case s2i("exclude") :
       if (args.size() == 0)
          fatal("Usage:  dbackup exclude SERVICENAME");
       return exclude(args[0]);
 
-   case utils::str2int("include"):
+   case s2i("include"):
       if (args.size() == 0)
          fatal("Usage:  dbackup include SERVICENAME");
       return include(args[0]);
 
-   case utils::str2int("run"):
+   case s2i("run"):
       return run();
 
-   case utils::str2int("info"):
-   case utils::str2int("list"):
+   case s2i("info"):
+   case s2i("list"):
       return info();
 
    default:

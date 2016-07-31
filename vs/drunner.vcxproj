@@ -78,11 +78,9 @@
     <ClCompile Include="..\source\source\service_paths.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
     <ClCompile Include="..\source\source\service_lua.cpp" />
-    <ClCompile Include="..\source\source\settingsbash.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
     <ClCompile Include="..\source\source\drunner_settings.cpp" />
     <ClCompile Include="..\source\source\termcolor.cpp" />
-    <ClCompile Include="..\source\source\tests\test_settingsbash.cpp" />
     <ClCompile Include="..\source\source\tests\unittests.cpp" />
     <ClCompile Include="..\source\source\test_utils.cpp" />
     <ClCompile Include="..\source\source\timez.cpp" />
@@ -146,10 +144,8 @@
     <ClInclude Include="..\source\source\service_paths.h" />
     <ClInclude Include="..\source\source\variables.h" />
     <ClInclude Include="..\source\source\service_lua.h" />
-    <ClInclude Include="..\source\source\settingsbash.h" />
     <ClInclude Include="..\source\source\showhelp.h" />
     <ClInclude Include="..\source\source\service_backupinfo.h" />
-    <ClInclude Include="..\source\source\sh_ddev.h" />
     <ClInclude Include="..\source\source\drunner_settings.h" />
     <ClInclude Include="..\source\source\termcolor.h" />
     <ClInclude Include="..\source\source\tests\unittests.h" />

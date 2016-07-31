@@ -74,9 +74,9 @@ Poco::Path drunnerPaths::getPath_HostVolumes()
    return getPath_Root().pushDirectory("hostVolumes");
 }
 
-Poco::Path drunnerPaths::getPath_drunnerSettings_sh()
+Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {
-   return getPath_Root().setFileName("drunnerSettings.sh");
+   return getPath_Root().setFileName("drunnerSettings.json");
 }
 
 Poco::Path drunnerPaths::getPath_drunnerbackups_cfg()

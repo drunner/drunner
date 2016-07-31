@@ -1,9 +1,7 @@
 #include "command_dev.h"
 #include "globallogger.h"
 #include "globalcontext.h"
-#include "settingsbash.h"
 #include "utils.h"
-#include "sh_ddev.h"
 
 namespace command_dev
 {
@@ -29,27 +27,27 @@ using namespace utils;
       if (!fileexists(dfile)) logmsg(kLERROR,"No Dockerfile in "+pwd+", it's not a valid dService.");
 
       // read in service settings.
-      sh_ddev dd;
-      if (!dd.readSettings(dd.getPathFromParent(pwd)))
-         logmsg(kLERROR,"No dService found at "+pwd);
+      //sh_ddev dd;
+      //if (!dd.readSettings(dd.getPathFromParent(pwd)))
+      //   logmsg(kLERROR,"No dService found at "+pwd);
 
-      std::string baseimagename=dd.buildname;
-      std::string branchedimagename=dd.buildname;
+      //std::string baseimagename=dd.buildname;
+      //std::string branchedimagename=dd.buildname;
 
-      std::string branch;
-      if (isrepo(pwd,branch))
-         {
-         if (!stringisame(branch,"master")) {
-         logmsg(kLDEBUG,"Branch is "+branch);
-            branchedimagename+=":"+branch;}
-         logmsg(kLDEBUG, "Full name:        "+branchedimagename);
-         }
+      //std::string branch;
+      //if (isrepo(pwd,branch))
+      //   {
+      //   if (!stringisame(branch,"master")) {
+      //   logmsg(kLDEBUG,"Branch is "+branch);
+      //      branchedimagename+=":"+branch;}
+      //   logmsg(kLDEBUG, "Full name:        "+branchedimagename);
+      //   }
 
-      // build it
-      CommandLine cl("docker", { "build", "-t",branchedimagename,pwd });
-      std::string oout;
-      int r = runcommand(cl, oout, kRC_Defaults);
-      if (r!=0) logmsg(kLERROR,"docker build faild.\n"+ oout);
+      //// build it
+      //CommandLine cl("docker", { "build", "-t",branchedimagename,pwd });
+      //std::string oout;
+      //int r = runcommand(cl, oout, kRC_Defaults);
+      //if (r!=0) logmsg(kLERROR,"docker build faild.\n"+ oout);
    }
 
 

@@ -4,24 +4,27 @@
 #include <map>
 #include <Poco/Path.h>
 
-#include "settingsbash.h"
 #include "params.h"
+#include "variables.h"
+#include "cresult.h"
 
-class drunnerSettings : protected settingsbash
+class drunnerSettings
 {
 public:
    drunnerSettings(); // sets defaults, loads if able.
 
+   std::string getdrunnerInstallURL() const { return mVariables.getVal("DRUNNERINSTALLURL"); }
+   std::string getdrunnerInstallTime()const { return mVariables.getVal("DRUNNERINSTALLTIME"); }
+   bool getPullImages() const               { return mVariables.getBool("PULLIMAGES"); }
 
-   std::string getdrunnerInstallURL() const { return getString("DRUNNERINSTALLURL"); }
-   std::string getdrunnerInstallTime()const { return getString("DRUNNERINSTALLTIME"); }
-   bool getPullImages() const               { return getBool("PULLIMAGES"); }
+   cResult readSettings();
+   cResult writeSettings() const;
 
+   bool mReadOkay;
 
-   bool readSettings();
-   bool writeSettings() const;
-
-   mutable bool mReadOkay;
+private:
+   variables mVariables;
 };
+CEREAL_CLASS_VERSION(drunnerSettings, 1);
 
 #endif
