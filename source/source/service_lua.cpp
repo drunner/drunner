@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <Poco/String.h>
 
 #include "service_lua.h"
 #include "utils.h"
@@ -6,6 +7,25 @@
 #include "dassert.h"
 
 #include "lua.hpp"
+
+/*
+
+The luafile class is a combination of:
+
+A) the interpreted service.lua, which defines:
+    i)   the commands the dService can run
+    ii)  the docker containers to be used
+    iii) the docker volumes to manage/back up
+    iv)  the user-configurable variables for the dService (e.g. port)
+
+and
+
+B) the service configuration variables, which includes:
+    i)   the variables set by the user (as per (iv) above)
+    ii)  the in-memory SERVICENAME and IMAGENAME variables
+
+*/
+
 
 namespace servicelua
 {
@@ -21,6 +41,7 @@ namespace servicelua
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
 
+      // we always know the servicename.
       mServiceVars.setVal_mem("SERVICENAME", mServicePaths.getName());
 
       L = luaL_newstate();
@@ -74,7 +95,7 @@ namespace servicelua
 
       // set standard vars (always present), clobbering anything in the file.
       mServiceVars.setVal_mem("IMAGENAME", getImageName());
-      mServiceVars.setVal_mem("SERVICENAME", mServicePaths.getName());
+      drunner_assert(mServiceVars.getVal("SERVICENAME") == mServicePaths.getName(), "Servicename inconsistency!");
 
       mLuaLoaded = true;
       return kRSuccess;
@@ -103,9 +124,12 @@ namespace servicelua
    }
 
 
-   cResult luafile::runCommand(const CommandLine & serviceCmd) const
+   cResult luafile::runCommand(const CommandLine & serviceCmd) 
    {
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
+
+      if (Poco::icompare(serviceCmd.command, "configure") == 0 || Poco::icompare(serviceCmd.command, "config") == 0)
+         return mServiceVars.handleConfigureCommand(serviceCmd);
 
       cResult rval;
       lua_getglobal(L, serviceCmd.command.c_str());

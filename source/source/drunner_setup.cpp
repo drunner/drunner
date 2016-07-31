@@ -170,7 +170,7 @@ namespace drunnerSetup
       utils_docker::pullImage(drunnerPaths::getdrunnerUtilsImage());
 
       // write settings.
-      GlobalContext::getSettings()->writeSettings();
+      GlobalContext::getSettings()->savevariables();
 
       // -----------------------------------------------------------------------------
       // Finished!

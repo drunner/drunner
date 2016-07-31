@@ -21,6 +21,7 @@ enum configtype
    kCF_existingpath,
    kCF_string,
    kCF_bool,
+   kCF_URL,
 };
 
 struct Configuration

@@ -12,12 +12,16 @@
 #include "utils.h"
 #include "variables.h"
 
+// ----------------------------------------------------------------------------------------
+
 class plugin
 {
 public:
    virtual std::string getName() const = 0;
    virtual cResult runCommand() const = 0;
 };
+
+// ----------------------------------------------------------------------------------------
 
 class pluginhelper : public plugin
 {
@@ -38,6 +42,7 @@ protected:
    std::vector<Configuration> mConfiguration;
 };
 
+// ----------------------------------------------------------------------------------------
 
 class plugins
 {

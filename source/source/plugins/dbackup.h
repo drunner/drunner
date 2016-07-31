@@ -3,16 +3,13 @@
 
 #include <string>
 #include "plugins.h"
-#include "backupConfig.h"
 
-class dbackup : public pluginhelper
+class dbackup : public plugin
 {
 public:
    dbackup();
    std::string getName() const;
-   cResult runCommand(const CommandLine & cl, const variables & v) const;
-   Poco::Path configurationFilePath() const;
-
+   cResult runCommand() const;
    cResult showHelp() const;
 
 private:
@@ -22,7 +19,7 @@ private:
    cResult info() const;
    cResult configure(std::string path) const;
 
-   cResult purgeOldBackups(backupConfig & config) const;
+   cResult purgeOldBackups() const;
 };
 
 #endif

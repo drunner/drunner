@@ -17,6 +17,7 @@
 #include "plugins.h"
 #include "validateimage.h"
 #include "service_install.h"
+#include "drunner_settings.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -163,7 +164,12 @@ int mainroutines::process()
 
       case c_configure:
       {
-
+         CommandLine cl;
+         cl.command = "configure";
+         cl.args = p.getArgs();
+         drunnerSettings newSettings;
+         newSettings.handleConfigureCommand(cl);
+         break;
       }
 
       case c_servicecmd:

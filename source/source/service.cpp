@@ -45,7 +45,7 @@ cResult service::servicecmd()
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
    if (0==Poco::icompare(cl.command, "configure"))
-      return _handleconfigure(cl);
+      return mServiceLua.runCommand(cl); // no hooks.
 
    if (0==Poco::icompare(cl.command, "help"))
       return mServiceLua.showHelp();

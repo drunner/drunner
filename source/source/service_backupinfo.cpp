@@ -45,7 +45,6 @@ cResult backupinfo::savevars() const
    return kRSuccess;
 }
 
-
 const std::vector<std::string> & backupinfo::getDockerVolumeNames() const
 {
    return mVolumes;

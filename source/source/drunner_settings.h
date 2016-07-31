@@ -8,17 +8,14 @@
 #include "variables.h"
 #include "cresult.h"
 
-class drunnerSettings
+class drunnerSettings : public persistvariables
 {
 public:
    drunnerSettings(); // sets defaults, loads if able.
 
-   std::string getdrunnerInstallURL() const { return mVariables.getVal("DRUNNERINSTALLURL"); }
-   std::string getdrunnerInstallTime()const { return mVariables.getVal("DRUNNERINSTALLTIME"); }
+   std::string getdrunnerInstallURL() const { return mVariables.getVal("INSTALLURL"); }
+   std::string getdrunnerInstallTime()const { return mVariables.getVal("INSTALLTIME"); }
    bool getPullImages() const               { return mVariables.getBool("PULLIMAGES"); }
-
-   cResult readSettings();
-   cResult writeSettings() const;
 
    bool mReadOkay;
 

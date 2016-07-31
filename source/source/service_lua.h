@@ -44,7 +44,7 @@ namespace servicelua
       void setVariable(std::string key, std::string val) { mServiceVars.setVal(key, val); }
 
       // for service::serviceRunnerCommand
-      cResult runCommand(const CommandLine & serviceCmd) const;
+      cResult runCommand(const CommandLine & serviceCmd);
 
       bool isLoaded() { return mLuaLoaded; }
       bool isVariablesLoaded() { return mVarsLoaded; }
