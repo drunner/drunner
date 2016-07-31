@@ -152,7 +152,7 @@ namespace utils
       std::string op;
       CommandLine cl("docker", { "pull",imagename });
       int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
-      return (rval==0) ? kRSuccess : cError("Failed to pull "+imagename);
+      return (rval==0) ? cResult(kRSuccess) : cError("Failed to pull "+imagename);
    }
 
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)
@@ -202,7 +202,7 @@ namespace utils
          return kRNoChange;
 
       f.createDirectories();
-      return (f.exists() ? kRSuccess : cError("Failed to create directory "+path.toString()));
+      return (f.exists() ? cResult(kRSuccess) : cError("Failed to create directory "+path.toString()));
    }
 
    cResult makedirectories(Poco::Path path, mode_t mode)

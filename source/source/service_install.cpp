@@ -255,7 +255,7 @@ cResult service_install::obliterate()
    // delete the host volumes
    if (utils::fileexists(getPathHostVolume()))
    {
-      logmsg(kLINFO, "Obliterating the hostVolume (includes configuration).");
+      logdbg("Obliterating the hostVolume (includes configuration).");
       cResult result = utils::deltree(getPathHostVolume());
       rval += result;
       if (result != kRSuccess)
