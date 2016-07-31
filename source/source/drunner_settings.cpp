@@ -25,16 +25,22 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
    setConfiguration(config);
 
    mReadOkay = false;   
-   cResult r = loadvariables();
 
-   if (r.success())
-   {
-      mReadOkay = true;
-      logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
-   } 
-   else if (r.error())
-      fatal("The settings file is corrupt and could not be read: " + drunnerPaths::getPath_drunnerSettings_json().toString() + "\n" + r.what()+"\nSuggest deleting it.");
+   if (!utils::fileexists(mPath))
+      logdbg("The dRunner settings file does not exist: " + mPath.toString());
    else
-      logdbg("Couldn't read settings file from " + drunnerPaths::getPath_drunnerSettings_json().toString());
+   {
+      cResult r = loadvariables();
+
+      if (r.success())
+      {
+         mReadOkay = true;
+         logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
+      }
+      else if (r.error())
+         fatal("The settings file is corrupt and could not be read: " + drunnerPaths::getPath_drunnerSettings_json().toString() + "\n" + r.what() + "\nSuggest deleting it.");
+      else
+         logdbg("Couldn't read settings file from " + drunnerPaths::getPath_drunnerSettings_json().toString());
+   }
 }
 

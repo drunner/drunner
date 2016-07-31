@@ -82,7 +82,7 @@ public:
    
    cResult handleConfigureCommand(CommandLine cl);
 
-private:
+protected:
    cResult _showconfiginfo() const;
    cResult _checkvalid(std::string key, std::string val, Configuration config);
    

@@ -104,6 +104,7 @@ namespace utils_docker
          "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
 
       int rval=utils::runcommand(cl, op);
+      Poco::trimInPlace(op);
       return (rval == 0 ? cResult(kRSuccess) : cError("Command failed: " + op));
    }
 

@@ -40,7 +40,7 @@ exit 0
          if (utils::findStringIC(op, "Unable to find image"))
             logmsg(kLERROR, "Couldn't find image " + imagename);
          else
-            logmsg(kLERROR, "Failed to launch bash script in container:\n"+op);
+            logmsg(kLERROR, "Bash script failed in container:\n"+op);
       }
       logdbg_trim(op);
 
