@@ -6,13 +6,13 @@
 #include <string>
 #include <memory>
 
-#include "enums.h"
+#include "cresult.h"
 
 class plugin
 {
 public:
    virtual std::string getName() const = 0;
-   virtual eResult runCommand() const = 0;
+   virtual cResult runCommand() const = 0;
 };
 
 
@@ -22,7 +22,7 @@ public:
    plugins();
 
    void generate_plugin_scripts() const;
-   eResult runcommand() const;
+   cResult runcommand() const;
 
 private:
    std::deque< std::unique_ptr<plugin> > mPlugins;

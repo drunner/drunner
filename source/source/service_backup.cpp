@@ -39,8 +39,8 @@ void service::backup(const std::string & backupfile)
    // path for docker volumes and for container custom backups (e.g. mysqldump)
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
    const Poco::Path tempc = tempparent.getpath().pushDirectory("containerbackup");
-   utils::makedirectory(tempf, S_777); // random UID in container needs access.
-   utils::makedirectory(tempc, S_777);
+   if (!utils::makedirectory(tempf, S_777).success()) fatal("Failed to create temp dir."); // random UID in container needs access.
+   if (!utils::makedirectory(tempc, S_777).success()) fatal("Failed to create temp dir.");
 
    logmsg(kLINFO, "Time for preliminaries:           " + tstep.getelpased());
    tstep.restart();

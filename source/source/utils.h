@@ -24,6 +24,7 @@ public:
    std::vector<std::string> args;
 };
 
+// A very simple hasing of strings, useful for switch statements. Case sensitive.
 constexpr unsigned int s2i(const char* str, int h = 0)
 {
    return !str[h] ? 5381 : (s2i(str, h + 1) * 33) ^ str[h];
@@ -41,9 +42,9 @@ namespace utils
    const std::string kCODE_E="\e[0m";
 #endif
 
-   eResult _makedirectories(Poco::Path path);
-   void makedirectories(Poco::Path path,mode_t mode);
-   void makedirectory(Poco::Path d, mode_t mode);
+   cResult _makedirectories(Poco::Path path);
+   cResult makedirectories(Poco::Path path,mode_t mode);
+   cResult makedirectory(Poco::Path d, mode_t mode);
 //   void makesymlink(Poco::Path file, Poco::Path link);
 
    cResult deltree(Poco::Path s);
@@ -64,7 +65,7 @@ namespace utils
    bool wordmatch(std::string s, std::string word);
 
    bool imageisbranch(const std::string & imagename);
-   eResult pullimage(const std::string & imagename);
+   cResult pullimage(const std::string & imagename);
 
    std::string getTime();
    std::string getPWD();

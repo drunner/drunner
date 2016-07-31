@@ -127,13 +127,16 @@ cResult service::servicecmd()
    if (0==Poco::icompare(cl.command, "help"))
       return mServiceLua.showHelp();
 
-   cResult rval = kRError;
    if (p.isdrunnerCommand(cl.command))
-      logmsg(kLERROR, cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
+      fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
    if (p.isHook(cl.command))
-      logmsg(kLERROR, cl.command + " is a reserved word and not available from the comamnd line for " + mName);
+      fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
       
    // check all required variables are configured.
+   for (const auto & var : mServiceLua.getConfigItems())
+      if (var.required)
+         if (!mServiceLua.getVariables().hasKey(var.name))
+            fatal("A required configuration variable " + var.name + " has not yet been set.");
 
    // run the command
    servicehook hook(getName(), "servicecmd", p.getArgs());
@@ -144,7 +147,7 @@ cResult service::servicecmd()
    for (const auto & x : cl.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
 
-   rval = mServiceLua.runCommand(cl);
+   cResult rval = mServiceLua.runCommand(cl);
 
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);

@@ -24,7 +24,7 @@ cResult backupinfo::loadvars()
 {
    std::ifstream ifs(mPath.toString());
    if (ifs.bad())
-      return kRError;
+      return cError("Bad input stream to backupinfo::loadvars. :/");
    cereal::JSONInputArchive archive(ifs);
    archive(*this);
 
@@ -39,7 +39,7 @@ cResult backupinfo::savevars() const
 
    std::ofstream os(mPath.toString());
    if (os.bad())
-      return kRError;
+      return cError("Bad output stream.");
    cereal::JSONOutputArchive archive(os);
    archive(*this);
    return kRSuccess;

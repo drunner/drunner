@@ -78,20 +78,16 @@ namespace utils_docker
 
 
       logmsg(kLINFO, "Pulling Docker image " + image + ".\n This may take some time...");
-      eResult rslt = utils::pullimage(image);
+      cResult rslt = utils::pullimage(image);
 
-      switch (rslt) 
-      {
-      case kRError:
+      if (rslt.error())
          logmsg(kLERROR, "Couldn't pull " + image);
-         break;
-      case kRNoChange:
+      else if (rslt.noChange())
          logmsg(kLDEBUG, "No change to Docker image (it's already up to date).");
-         break;
-      default:
+      else
+      {
          S_PullList.push_back(image);
          logmsg(kLDEBUG, "Successfully pulled " + image);
-         break;
       }
    }
 
@@ -108,7 +104,7 @@ namespace utils_docker
          "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
 
       int rval=utils::runcommand(cl, op);
-      return (rval == 0 ? kRSuccess : kRError);
+      return (rval == 0 ? kRSuccess : cError("Command failed: " + op));
    }
 
    bool dockerVolExists(const std::string & vol)

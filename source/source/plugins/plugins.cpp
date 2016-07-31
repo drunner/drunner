@@ -19,7 +19,7 @@ void plugins::generate_plugin_scripts() const
       generate_plugin_script(p->get()->getName());
 }
 
-eResult plugins::runcommand() const
+cResult plugins::runcommand() const
 {
    std::string pluginname = GlobalContext::getParams()->getCommandStr();
 
@@ -27,8 +27,7 @@ eResult plugins::runcommand() const
       if (0==Poco::icompare(p->get()->getName(), pluginname))
         return p->get()->runCommand();
 
-   logmsg(kLERROR, "Unknown plugin '" + pluginname+"'");
-   return kRError;
+   return cError("Unknown plugin '" + pluginname + "'");
 }
 
 // -----------------------------------

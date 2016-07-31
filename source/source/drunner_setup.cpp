@@ -112,6 +112,13 @@ namespace drunnerSetup
 
    static bool s_setup_fully_checked = false;
 
+   void _makedirectory(Poco::Path d, mode_t mode)
+   {
+      cResult r = utils::makedirectory(d, mode);
+      if (!r.success())
+         fatal("Couldn't create directory " + d.toString() + "\nError: " + r.what());
+   }
+
    cResult check_setup(bool forceUpdate)
    {
       if (s_setup_fully_checked)
@@ -145,14 +152,14 @@ namespace drunnerSetup
          SetFileAttributes(drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN);
 #endif
 
-      utils::makedirectory(drunnerPaths::getPath_Bin(), S_700);
+      _makedirectory(drunnerPaths::getPath_Bin(), S_700);
       _copyexe();
 
-      utils::makedirectory(drunnerPaths::getPath_dServices(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_Support(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_Temp(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
-      utils::makedirectory(drunnerPaths::getPath_empty(), S_755);
+      _makedirectory(drunnerPaths::getPath_dServices(), S_755);
+      _makedirectory(drunnerPaths::getPath_Support(), S_755);
+      _makedirectory(drunnerPaths::getPath_Temp(), S_755);
+      _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
+      _makedirectory(drunnerPaths::getPath_empty(), S_755);
 
       // -----------------------------------------------------------------------------
       // generate plugin scripts

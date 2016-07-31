@@ -3,7 +3,17 @@
 
 #include <Poco/Foundation.h>
 
-#include "enums.h"
+#include "globallogger.h"
+
+enum _eResult
+{
+   kRSuccess = 0,
+   kRError = 1,
+   kRNoChange = 3,
+   kRNotImplemented = 127,
+};
+
+#define cError(MESSAGE) (cResult(kRError, MESSAGE, __func__)) 
 
 class cResult
 {
@@ -14,37 +24,50 @@ public:
       mResult = kRNoChange;
    }
 
-   cResult(eResult x) : mResult(x)
+   cResult(_eResult x) : mResult(x)
    {
+   }
+
+   cResult(_eResult x, std::string msg, std::string f) : mResult(x), mMessage(f+": "+msg)
+   {
+      logdbg(mMessage);
    }
 
    cResult(int x)
    {
       mResult = kRError;
       if (x == 0 || x == 3 || x == 127)
-         mResult = (eResult)x;
+         mResult = (_eResult)x;
    }
 
    cResult & operator += (const cResult & rhs)
    {
-      if (isError() || rhs.isError())
-         mResult = kRError;
-      else if (isNOIMPL() || rhs.isNOIMPL())
-         mResult = kRNotImplemented;
-      else if (isNoChange() && rhs.isNoChange())
-         mResult = kRNoChange;
-      else
-         mResult = kRSuccess;
+      if (error())
+         return *this;
+      if (rhs.error())
+         return *this = rhs;
+
+      if (notImpl())
+         return *this;
+      if (rhs.notImpl())
+         return *this = rhs;
+
+      if (noChange() && !rhs.noChange())
+         return *this = rhs;
 
       return *this;
    }
 
-   operator eResult() const { return mResult; }
-   bool isError() const { return mResult == kRError; }
-   bool isNoChange() const { return mResult == kRNoChange; }
-   bool isNOIMPL() const { return mResult == kRNotImplemented; }
+   std::string what() { return mMessage; }
+
+   operator _eResult() const { return mResult; }
+   bool error() const { return mResult == kRError; }
+   bool noChange() const { return mResult == kRNoChange; }
+   bool notImpl() const { return mResult == kRNotImplemented; }
+   bool success() const { return mResult == kRSuccess;  }
 private:
-   eResult mResult;
+   _eResult mResult;
+   std::string mMessage;
 };
 
 

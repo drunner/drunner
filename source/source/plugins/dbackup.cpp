@@ -26,7 +26,7 @@ std::string dbackup::getName() const
    return std::string("dbackup");
 }
 
-eResult dbackup::runCommand() const
+cResult dbackup::runCommand() const
 {
    if (GlobalContext::getParams()->numArgs() == 0)
       return showhelp();
@@ -66,14 +66,13 @@ eResult dbackup::runCommand() const
       return info();
 
    default:
-      fatal("Unrecognised command " + cmd);
-      return kRError;
+      return cError("Unrecognised command " + cmd);
    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 
-eResult dbackup::include(std::string servicename) const
+cResult dbackup::include(std::string servicename) const
 {
    backupConfig config;
    if (!config.load())
@@ -88,7 +87,7 @@ eResult dbackup::include(std::string servicename) const
    return kRSuccess;
 }
 
-eResult dbackup::exclude(std::string servicename) const
+cResult dbackup::exclude(std::string servicename) const
 {
    backupConfig config;
    if (!config.load())
@@ -103,14 +102,11 @@ eResult dbackup::exclude(std::string servicename) const
    return kRSuccess;
 }
 
-eResult dbackup::run() const
+cResult dbackup::run() const
 {
    backupConfig config;
    if (!config.load())
-   {
-      logmsg(kLINFO, "Backups are not yet configured.  Run dbackup configure first.");
-      return kRError;
-   }
+      return cError("Backups are not yet configured.  Run dbackup configure first.");
 
    std::vector<std::string> services;
    utils::getAllServices(services);
@@ -133,7 +129,7 @@ eResult dbackup::run() const
    return purgeOldBackups(config);
 }
 
-eResult dbackup::configure(std::string path) const
+cResult dbackup::configure(std::string path) const
 {
    backupConfig config;
    config.load();
@@ -167,7 +163,7 @@ eResult dbackup::configure(std::string path) const
    return kRSuccess;
 }
 
-eResult dbackup::info() const
+cResult dbackup::info() const
 {
    backupConfig config;
    if (!config.load())
@@ -198,7 +194,7 @@ eResult dbackup::info() const
    return kRNoChange;
 }
 
-eResult dbackup::showhelp() const
+cResult dbackup::showhelp() const
 {
    std::string help = R"EOF(
 NAME
@@ -220,7 +216,7 @@ COMMANDS
 
    logmsg(kLINFO, help);
 
-   return kRError;
+   return cError("Displayed help.");
 }
 
 void shifty(std::string src, std::string dst, int interval, unsigned int numtokeep)
@@ -280,7 +276,7 @@ void shifty(std::string src, std::string dst, int interval, unsigned int numtoke
 
 }
 
-eResult dbackup::purgeOldBackups(backupConfig & config) const
+cResult dbackup::purgeOldBackups(backupConfig & config) const
 {
    logmsg(kLINFO, "--------------------------------------------------");
    logmsg(kLINFO, "Managing older backups");

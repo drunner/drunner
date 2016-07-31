@@ -50,25 +50,22 @@ cResult servicehook::endhook()
 cResult servicehook::runHook(std::string se)
 {
    if (!utils::fileexists(mPaths.getPathServiceLua()))
-   {
-      logmsg(kLDEBUG, "Failed to find service.lua at " + mPaths.getPathServiceLua().toString());
-      logmsg(kLWARN, "Couldn't run hook " + se + " because dService's service.lua is not installed.");
-      return kRError;
-   }
+      return cError("Failed to find service.lua at " + mPaths.getPathServiceLua().toString());
 
    cResult rval = mLua.loadlua();
    CommandLine serviceCmd(se, mHookParams);
    rval += mLua.runCommand(serviceCmd);
 
-   if (rval.isError())
-      logmsg(kLWARN, "dService hook " + se + " returned error.");
-   else if (rval.isNOIMPL())
+   if (rval.error())
+      return cError("dService hook " + se + " returned error: "+rval.what());
+
+   if (rval.notImpl())
    {
-      logmsg(kLDEBUG, "dService hook " + se + " is not implemented by " + mPaths.getName());
+      logdbg("dService hook " + se + " is not implemented by " + mPaths.getName());
       rval = kRNoChange; // fine to be not implemented for hooks.
    }
    else
-      logmsg(kLDEBUG, "dService hook for " + se + " complete");
+      logdbg("dService hook for " + se + " complete");
 
    return rval;
 }

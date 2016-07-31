@@ -11,18 +11,18 @@ class dbackup : public plugin
 public:
    dbackup();
    virtual std::string getName() const;
-   virtual eResult runCommand() const;
+   virtual cResult runCommand() const;
 
 private:
-   eResult include(std::string servicename) const;
-   eResult exclude(std::string servicename) const;
-   eResult run() const;
-   eResult info() const;
-   eResult configure(std::string path) const;
+   cResult include(std::string servicename) const;
+   cResult exclude(std::string servicename) const;
+   cResult run() const;
+   cResult info() const;
+   cResult configure(std::string path) const;
 
-   eResult purgeOldBackups(backupConfig & config) const;
+   cResult purgeOldBackups(backupConfig & config) const;
 
-   eResult showhelp() const;
+   cResult showhelp() const;
 };
 
 #endif

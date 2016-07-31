@@ -19,16 +19,16 @@ drunnerSettings::drunnerSettings()
 
    mReadOkay = false;   
    cResult r = readSettings();
-   switch (r) {
-   case kRSuccess:
+
+   if (r.success())
+   {
       mReadOkay = true;
       logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
-      break;
-   case kRError:
+   } 
+   else if (r.error())
       fatal("The settings file is corrupt and could not be read: " + drunnerPaths::getPath_drunnerSettings_json().toString() + "\nSuggest deleting it.");
-   default:
+   else
       logdbg("Couldn't read settings file from " + drunnerPaths::getPath_drunnerSettings_json().toString());
-   }
 }
 
 cResult drunnerSettings::readSettings()
@@ -39,16 +39,16 @@ cResult drunnerSettings::readSettings()
 
    std::ifstream is(spath.toString());
    if (is.bad())
-      return kRError;
+      return cError("Unable to open " + spath.toString() + " for reading.");
       
    try
    {
       cereal::JSONInputArchive archive(is);
       archive(mVariables);
    }
-   catch (const cereal::Exception &)
+   catch (const cereal::Exception & e)
    {
-      return kRError;
+      return cError("Cereal exception on reading settings: " + std::string(e.what()));
    }
    return kRSuccess;
 }
@@ -58,16 +58,16 @@ cResult drunnerSettings::writeSettings() const
    Poco::Path spath = drunnerPaths::getPath_drunnerSettings_json();
    std::ofstream os(spath.toString());
    if (os.bad() || !os.is_open())
-      return kRError;
+      return cError("Unable to open "+spath.toString()+" for writing.");
 
    try
    {
       cereal::JSONOutputArchive archive(os);
       archive(mVariables);
    }
-   catch (const cereal::Exception &)
+   catch (const cereal::Exception & e)
    {
-      return kRError;
+      return cError("Cereal exception on writing settings: "+std::string(e.what()));
    }
    return kRSuccess;
 }

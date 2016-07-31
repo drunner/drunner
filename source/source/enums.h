@@ -21,14 +21,6 @@ static const mode_t S_755 = S_700 | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 static const mode_t S_777 = S_755 | S_IWGRP | S_IWOTH;
 // enumerators used often.
 
-enum eResult
-{
-   kRSuccess=0,
-   kRError=1,
-   kRNoChange=3,
-   kRNotImplemented=127,
-};
-
 
 enum eLogLevel
 {

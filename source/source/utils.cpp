@@ -147,12 +147,12 @@ namespace utils
       return true;
    }
 
-   eResult pullimage(const std::string & imagename)
+   cResult pullimage(const std::string & imagename)
    {
       std::string op;
       CommandLine cl("docker", { "pull",imagename });
       int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
-      return (rval==0) ? kRSuccess : kRError;
+      return (rval==0) ? kRSuccess : cError("Failed to pull "+imagename);
    }
 
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)
@@ -177,22 +177,24 @@ namespace utils
       return (it != strHaystack.end() );
    }
 
-   void makedirectory(Poco::Path d, mode_t mode)
+   cResult makedirectory(Poco::Path d, mode_t mode)
    {
       Poco::File f(d);
       if (!f.exists())
       {
          if (!utils::fileexists(d.parent()))
-            fatal("Parent directoy doesn't exist: " + d.parent().toString());
+            return cError("Parent directoy doesn't exist: " + d.parent().toString());
          f.createDirectory();
-         logmsg(kLDEBUG, "Created " + d.toString());
+         logdbg("Created " + d.toString());
       }
 
-      if (xchmod(d.toString().c_str(), mode)!=0)
-         logmsg(kLERROR, "Unable to change permissions on "+d.toString());
+      if (xchmod(d.toString().c_str(), mode) != 0)
+         return cError("Unable to change permissions on " + d.toString());
+
+      return kRSuccess;
    }
 
-   eResult _makedirectories(Poco::Path path)
+   cResult _makedirectories(Poco::Path path)
    {
       Poco::File f(path);
 
@@ -200,25 +202,20 @@ namespace utils
          return kRNoChange;
 
       f.createDirectories();
-      return (f.exists() ? kRSuccess : kRError);
+      return (f.exists() ? kRSuccess : cError("Failed to create directory "+path.toString()));
    }
-   void makedirectories(Poco::Path path, mode_t mode)
+
+   cResult makedirectories(Poco::Path path, mode_t mode)
    {
-      eResult r = _makedirectories(path);
-      switch (r)
+      cResult r = _makedirectories(path);
+      if (r.success())
       {
-      case kRSuccess:
-         logmsg(kLDEBUG, "Created " + path.toString());
-
+         logdbg("Created " + path.toString());
          if (xchmod(path.toString().c_str(), mode) != 0)
-            logmsg(kLERROR, "Unable to change permissions on " + path.toString());
-
-         return;
-      case kRNoChange:
-         return;
-      default:
-         fatal("Unable to create " + path.toString());
+            return cError("Unable to change permissions on " + path.toString());
       }
+
+      return r;
    }
 
    // recusively delete the path given. we do this manually to set the permissions to writable,
@@ -247,8 +244,7 @@ namespace utils
          logmsg(kLDEBUG, "Deleted " + f.path());
       }
       catch (const Poco::Exception & e) {
-         logmsg(kLDEBUG, "Couldn't delete " + s.toString() + " - " + e.what());
-         return kRError;
+         return cError("Couldn't delete " + s.toString() + " - " + e.what());
       }
       return kRSuccess;
    }
@@ -274,8 +270,7 @@ namespace utils
          }
       }
       catch (const Poco::Exception & e) {
-         logmsg(kLDEBUG, "Couldn't delete "+fullpath.toString()+" - "+e.what());
-         return kRError;
+         return cError("Couldn't delete "+fullpath.toString()+" - "+e.what());
       }
       return kRSuccess;
    }
@@ -418,17 +413,17 @@ namespace utils
 
       std::string nw = _nextword(command, startpos);
       if (nw.length() == 0)
-         return kRError; // no command.
+         return cError("No command?!");
       cl.command = nw;
 
       while (true)
       {
          nw = _nextword(command, startpos);
          if (nw.length() == 0)
-            return kRSuccess;
+            break;
          cl.args.push_back(nw);
       }
-      return kRError;
+      return kRSuccess;
    }
 
 } // namespace utils

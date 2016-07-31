@@ -5,7 +5,7 @@
 #include <vector>
 #include <Poco/Path.h>
 
-#include "enums.h"
+#include "cresult.h"
 
 class backupConfig
 {
@@ -15,8 +15,8 @@ public:
    bool save();
    Poco::Path configfilepath();
    bool isEnabled(std::string servicename);
-   eResult enable(std::string servicename);
-   eResult disable(std::string servicename);
+   cResult enable(std::string servicename);
+   cResult disable(std::string servicename);
    void update(std::string backuppath);
    std::string getBackupPath();
 

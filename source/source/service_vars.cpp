@@ -16,19 +16,19 @@ serviceVars::serviceVars(std::string serviceName) :
 cResult serviceVars::loadconfig()
 {
    if (!utils::fileexists(mServicePaths.getPathServiceVars()))
-      return kRError;
+      return cError("Service vars file doesn't exist.");
    std::ifstream is(mServicePaths.getPathServiceVars().toString());
    if (is.bad())
-      return kRError;
+      return cError("Service vars file couldn't be opened for reading.");
 
    try
    {
       cereal::JSONInputArchive archive(is);
       archive(mVariables);
    }
-   catch (const cereal::Exception &)
+   catch (const cereal::Exception &e)
    {
-      return kRError;
+      return cError("Failed to read service vars file: "+std::string(e.what()));
    }
 
    // update serviceName if needed.
@@ -47,16 +47,16 @@ cResult serviceVars::saveconfig() const
 {
    std::ofstream os(mServicePaths.getPathServiceVars().toString());
    if (os.bad() || !os.is_open())
-      return kRError;
+      return cError("Service vars file couldn't be opened for writing.");
 
    try
    {
       cereal::JSONOutputArchive archive(os);
       archive(mVariables);
    }
-   catch (const cereal::Exception &)
+   catch (const cereal::Exception & e)
    {
-      return kRError;
+      return cError("Failed to write service vars file: " + std::string(e.what()));
    }
    return kRSuccess;
 }

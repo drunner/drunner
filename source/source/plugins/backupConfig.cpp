@@ -70,7 +70,7 @@ bool backupConfig::isEnabled(std::string servicename)
    return (result == mDisabledServices.end());
 }
 
-eResult backupConfig::enable(std::string servicename)
+cResult backupConfig::enable(std::string servicename)
 {
    if (isEnabled(servicename))
       return kRNoChange;
@@ -80,7 +80,7 @@ eResult backupConfig::enable(std::string servicename)
    mDisabledServices.erase(result);
    return kRSuccess;
 }
-eResult backupConfig::disable(std::string servicename)
+cResult backupConfig::disable(std::string servicename)
 {
    if (!isEnabled(servicename))
       return kRNoChange;

@@ -67,8 +67,11 @@ void service_install::_createVolumes(std::vector<std::string> & volumes)
 void service_install::_ensureDirectoriesExist() const
 {
    // create service's drunner and temp directories on host.
-   utils::makedirectory(getPathdService(), S_700);
-   utils::makedirectory(getPathServiceVars().parent(), S_700);
+   cResult r1 = utils::makedirectory(getPathdService(), S_700);
+   if (!r1.success()) fatal("Couldn't create directory.\nError: " + r1.what());
+
+   cResult r2 = utils::makedirectory(getPathServiceVars().parent(), S_700);
+   if (!r2.success()) fatal("Couldn't create directory.\nError: " + r2.what());
 }
 
 cResult service_install::_recreate()
@@ -227,7 +230,7 @@ cResult service_install::obliterate()
                {
                   logmsg(kLWARN, "Failed to remove " + entry + ":");
                   logmsg(kLWARN, op);
-                  rval += kRError;
+                  rval += cError("Failed to remove " + entry + ":" + op);
                }
                else
                   rval += kRSuccess;
@@ -264,8 +267,8 @@ cResult service_install::obliterate()
 
    if (rval == kRNoChange)
       logmsg(kLWARN, "Couldn't find any trace of dService " + getName() + " - no changes made.");
-   else if (rval == kRError)
-      logmsg(kLWARN, "Obliterated what we could, but system is not clean.");
+   else if (rval.error())
+      logmsg(kLWARN, "Obliterated what we could, but system is not clean:\n "+rval.what());
    else
       logmsg(kLINFO, "Obliterated " + getName());
    return rval;

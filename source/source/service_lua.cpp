@@ -38,10 +38,7 @@ namespace servicelua
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))
-      {
-         logdbg("loadlua: the service.lua file does not exist: " + path.toString());
-         return kRError;
-      }
+         return cError("loadlua: the service.lua file does not exist: " + path.toString());
 
       _register_lua_cfuncs(L);
 
@@ -79,10 +76,7 @@ namespace servicelua
    cResult luafile::showHelp()
    {
       if (!mLuaLoaded)
-      {
-         logmsg(kLWARN, "Can't show help because we weren't able to load the service.lua file.");
-         return kRError;
-      }
+         return cError("Can't show help because we weren't able to load the service.lua file.");
 
       lua_getglobal(L, "help");
       if (lua_isnil(L, -1))
