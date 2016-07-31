@@ -19,7 +19,23 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
 {
    switch (s2i(cl.command.c_str()))
    {
-   case 123: fatal("123");
+   case (s2i("build")):
+   {
+      Poco::Path dockerfile(Poco::Path::current());
+      dockerfile.makeDirectory().setFileName("Dockerfile");
+      if (!utils::fileexists(dockerfile))
+         dockerfile.setFileName("dockerfile");
+      if (!utils::fileexists(dockerfile))
+         return cError("Couldn't find a dockerfile in the current directory.");
+
+      CommandLine operation;
+      operation.command = "docker";
+      operation.args = { "build","-t",v.getVal("TAG"),"." };
+      int rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+      if (rval != 0)
+         return cError("Build failed.");
+      return kRSuccess;
+   }
    default:
       return cError("Unrecognised command " + cl.command);
    }
