@@ -1,21 +1,24 @@
 #include <Poco/String.h>
+#include <Poco/Environment.h>
+#include <fstream>
+#include <cereal/archives/json.hpp>
 
 #include "variables.h"
 #include "utils.h"
 #include "globallogger.h"
+#include "dassert.h"
 
 
-variables::variables(const variables & other)
-{
-   const tKeyVals & otherkvs(other.getAll());
-   mVariables.insert(otherkvs.begin(), otherkvs.end());
-}
+//variables::variables(const variables & other)
+//{
+//   const tKeyVals & otherkvs(other.getAll());
+//   mVariables.insert(otherkvs.begin(), otherkvs.end());
+//}
 variables::variables(const variables & other1, const variables & other2)
 {
-   const tKeyVals & otherkvs1(other1.getAll());
-   const tKeyVals & otherkvs2(other2.getAll());
-   mVariables.insert(otherkvs1.begin(), otherkvs1.end());
-   mVariables.insert(otherkvs2.begin(), otherkvs2.end());
+   mVariables = other1.getAll();
+   for (const auto & x : other2.getAll())
+      mVariables[x.first] = x.second;
 }
 
 bool variables::hasKey(std::string key) const
@@ -46,6 +49,12 @@ void variables::setVal(std::string key, std::string val)
    mVariables[key] = val;
 }
 
+void variables::delKey(std::string key)
+{
+   mVariables.erase(key);
+}
+
+
 std::string variables::substitute(std::string s) const
 {
    std::string os(s);
@@ -57,7 +66,210 @@ std::string variables::substitute(std::string s) const
    return os;
 }
 
-const Poco::Process::Env & variables::getEnv() const
+
+// -----------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------
+
+
+persistvariables::persistvariables(std::string name, Poco::Path path) : mName(name), mPath(path)
 {
-   return mVariables;
 }
+
+void persistvariables::setConfiguration(const std::vector<Configuration> & config) // limit to configuration
+{
+   // set default values for settings if they don't already have a setting.
+   for (const auto & x : mConfig)
+      if (!hasKey(x.name) || getVal(x.name).length()==0)
+         mVariables.setVal(x.name, x.defaultval);
+}
+
+cResult persistvariables::loadvariables()
+{
+   if (!utils::fileexists(mPath))
+      return cError("The settings file does not exist: " + mPath.toString());
+
+   // read the settings.
+   std::ifstream is(mPath.toString());
+   if (is.bad())
+      return cError("Unable to open " + mPath.toString() + " for reading.");
+   try
+   {
+      cereal::JSONInputArchive archive(is);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception & e)
+   {
+      return cError("Cereal exception on reading settings: " + std::string(e.what()));
+   }
+
+   // check all items are (1) listed in config, and (2) valid.
+   for (const auto & x : mVariables.getAll())
+   {
+      cResult rval = cError("Setting "+x.first+" is not a valid setting.");
+      for (const auto & y : mConfig)
+         if (0 == Poco::icompare(y.name, x.first))
+            rval = _checkvalid(x.first, x.second, y);
+
+      if (!rval.success())
+      {
+         logmsg(kLDEBUG, "Dropped config item " + x.first + " because it's invalid: "+rval.what());
+         mVariables.delKey(x.first);
+      }
+   }
+
+   return kRSuccess;
+}
+
+cResult persistvariables::savevariables() const
+{
+   logdbg("Creating " + mPath.toString());
+   std::ofstream os(mPath.toString());
+   if (os.bad() || !os.is_open())
+      return cError("Unable to open " + mPath.toString() + " for writing.");
+   try
+   {
+      cereal::JSONOutputArchive archive(os);
+      archive(mVariables);
+   }
+   catch (const cereal::Exception & e)
+   {
+      return cError("Cereal exception on writing settings: " + std::string(e.what()));
+   }
+   drunner_assert(utils::fileexists(mPath), "Failed to create blank settings at " + mPath.toString());
+   return kRSuccess;
+}
+
+cResult persistvariables::checkRequired() const
+{
+   for (const auto & x : mConfig)
+      if (x.required && !hasKey(x.name))
+         return cError("Required setting " + x.name + " is not defined.");
+   return kRSuccess;
+}
+
+cResult persistvariables::setVal(std::string key, std::string val)
+{
+   for (const auto & x : mConfig)
+      if (Poco::icompare(x.name, key) == 0)
+      { // check valid given type!
+         cResult r = _checkvalid(key, val, x);
+         if (r.success())
+            mVariables.setVal(key, val);
+         return r;
+      }
+   return cError("Setting '" + key + "' is not recognised.");
+}
+
+
+
+std::string _pad(std::string x, unsigned int w)
+{
+   while (x.length() < w) x += " ";
+   return x;
+}
+inline int _max(int a, int b) { return (a > b) ? a : b; }
+
+cResult persistvariables::_showconfiginfo() const
+{ // show current variables.
+   logmsg(kLINFO, "Current configuration is:");
+
+   int maxkey = 0;
+   for (const auto & y : mVariables.getAll())
+      maxkey = _max(maxkey, y.first.length());
+   for (const auto & y : mVariables.getAll())
+      logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+
+   logmsg(kLINFO, " ");
+   logmsg(kLINFO, "Change configuration variables with:");
+   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment var");
+   logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
+   return kRSuccess;
+}
+
+cResult persistvariables::handleConfigureCommand(CommandLine cl) 
+{
+   if (cl.args.size() == 0)
+      return _showconfiginfo();
+
+   cResult rval;
+   for (const auto & kv : cl.args)
+   {
+      std::string key, val;
+      size_t epos = kv.find('=');
+      if (epos == std::string::npos)
+      { // env variable
+         try {
+            key = kv;
+            val = Poco::Environment::get(key);
+         }
+         catch (const Poco::Exception &)
+         {
+            logmsg(kLWARN, "Couldn't find environment variable " + key);
+            logmsg(kLERROR, "Configuration variables must be given in form key=val or represent an environment variable.");
+         }
+         logmsg(kLINFO, "Setting " + key + " to value from environment [not logged].");
+      }
+      else
+      { // form key=val.
+         if (epos == 0)
+            logmsg(kLERROR, "Missing key.");
+         if (epos == kv.length() - 1)
+            logmsg(kLERROR, "Missing value.");
+
+         key = kv.substr(0, epos);
+         val = kv.substr(epos + 1);
+         logmsg(kLINFO, "Setting " + key + " to " + val);
+      }
+
+      if (0 == Poco::icompare(key, "IMAGENAME") || 0 == Poco::icompare(key, "SERVICENAME"))
+         fatal("You can't override the " + key + " configuration variable.");
+
+      // find the corresponding configuration definition and set the variable.
+      rval += setVal(key, val);
+   }
+   if (!rval.noChange())
+      rval += savevariables();
+   return rval;
+}
+
+void persistvariables::setVal_mem(std::string key, std::string val)
+{// ignore configuration, memory only (not persisted).
+   return mVariables_Mem.setVal(key, val); 
+}
+
+bool persistvariables::hasKey(std::string key) const { 
+   return mVariables.hasKey(key) || mVariables_Mem.hasKey(key); 
+}
+
+std::string persistvariables::getVal(std::string key) const 
+{ 
+   return mVariables.hasKey(key) ? mVariables.getVal(key) : mVariables_Mem.getVal(key); 
+}
+
+bool persistvariables::getBool(std::string key) const 
+{ 
+   return mVariables.hasKey(key) ? mVariables.getBool(key) : mVariables_Mem.getBool(key);
+}
+
+std::string persistvariables::substitute(std::string s) const
+{ 
+   return mVariables.substitute(mVariables_Mem.substitute(s)); 
+}
+
+const tKeyVals persistvariables::getAll() const 
+{ 
+   return getVariables().getAll();
+}
+
+const variables persistvariables::getVariables() const 
+{ 
+   return variables(mVariables, mVariables_Mem);
+}
+
+cResult persistvariables::_checkvalid(std::string key, std::string val, Configuration config)
+{
+   return kRSuccess;
+}
+
+

@@ -12,9 +12,16 @@ namespace servicelua
 //   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
    
 
-   luafile::luafile(std::string serviceName) : mServicePaths(serviceName), mServiceVars(serviceName), mLuaLoaded(false), mVarsLoaded(false), mLoadAttempt(false)
+   luafile::luafile(std::string serviceName) : 
+      mServicePaths(serviceName), 
+      mServiceVars(serviceName, mServicePaths.getPathServiceVars()),
+      mLuaLoaded(false), 
+      mVarsLoaded(false), 
+      mLoadAttempt(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
+
+      mServiceVars.setVal_mem("SERVICENAME", mServicePaths.getName());
 
       L = luaL_newstate();
       luaL_openlibs(L);
@@ -56,18 +63,18 @@ namespace servicelua
          fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
-      // set standard vars (always present).
-      mServiceVars.setVariable("IMAGENAME", getImageName());
-
-      // set defaults for custom vars.
-      for (const auto & ci : mConfigItems)
-         mServiceVars.setVariable(ci.name, ci.defaultval);
+      // associate the ConfigItems
+      mServiceVars.setConfiguration(mConfigItems);
 
       // attempt to load config file.
-      if (mServiceVars.loadconfig() == kRSuccess)
+      if (mServiceVars.loadvariables() == kRSuccess)
          mVarsLoaded = true;
       else
          logmsg(kLDEBUG, "Couldn't load service variables.");
+
+      // set standard vars (always present), clobbering anything in the file.
+      mServiceVars.setVal_mem("IMAGENAME", getImageName());
+      mServiceVars.setVal_mem("SERVICENAME", mServicePaths.getName());
 
       mLuaLoaded = true;
       return kRSuccess;

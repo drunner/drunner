@@ -9,7 +9,6 @@
 #include "utils.h"
 #include "drunner_setup.h"
 #include "command_general.h"
-#include "command_dev.h"
 #include "drunner_settings.h"
 #include "showhelp.h"
 #include "main.h"
@@ -159,15 +158,6 @@ int mainroutines::process()
             logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE");
          service svc(p.getArg(0));
          svc.backup(p.getArg(1));
-         break;
-      }
-
-      case c_build:
-      {
-         if (p.numArgs()<1)
-            command_dev::build();
-         else
-            command_dev::build(p.getArg(0));
          break;
       }
 

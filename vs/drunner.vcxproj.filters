@@ -19,9 +19,6 @@
     <ClCompile Include="..\source\source\buildnum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\command_dev.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\command_general.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,9 +196,6 @@
     <ClCompile Include="..\source\source\service_lua.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_vars.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -211,13 +205,13 @@
     <ClCompile Include="..\source\source\service_backupinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\plugins\backupConfig.cpp">
-      <Filter>Source Files\plugins</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\plugins\dbackup.cpp">
       <Filter>Source Files\plugins</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\plugins\plugins.cpp">
+      <Filter>Source Files\plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\plugins\ddev.cpp">
       <Filter>Source Files\plugins</Filter>
     </ClCompile>
   </ItemGroup>
@@ -226,9 +220,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\chmod.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\command_dev.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\command_general.h">
@@ -393,17 +384,11 @@
     <ClInclude Include="..\source\source\service_lua.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\service_vars.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\variables.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_backupinfo.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\backupConfig.h">
-      <Filter>Source Files\plugins</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\plugins\dbackup.h">
       <Filter>Source Files\plugins</Filter>
@@ -416,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="..\source\source\win\getopt.h">
       <Filter>Source Files\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\ddev.h">
+      <Filter>Source Files\plugins</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

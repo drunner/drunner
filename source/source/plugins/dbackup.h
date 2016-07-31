@@ -2,16 +2,18 @@
 #define __DBACKUP_H
 
 #include <string>
-#include "enums.h"
 #include "plugins.h"
 #include "backupConfig.h"
 
-class dbackup : public plugin
+class dbackup : public pluginhelper
 {
 public:
    dbackup();
-   virtual std::string getName() const;
-   virtual cResult runCommand() const;
+   std::string getName() const;
+   cResult runCommand(const CommandLine & cl, const variables & v) const;
+   Poco::Path configurationFilePath() const;
+
+   cResult showHelp() const;
 
 private:
    cResult include(std::string servicename) const;
@@ -21,8 +23,6 @@ private:
    cResult configure(std::string path) const;
 
    cResult purgeOldBackups(backupConfig & config) const;
-
-   cResult showhelp() const;
 };
 
 #endif

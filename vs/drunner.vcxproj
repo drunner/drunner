@@ -54,13 +54,12 @@
     <ClCompile Include="..\source\deps\lua\lzio.c" />
     <ClCompile Include="..\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\buildnum.cpp" />
-    <ClCompile Include="..\source\source\command_dev.cpp" />
     <ClCompile Include="..\source\source\command_general.cpp" />
     <ClCompile Include="..\source\source\drunner_paths.cpp" />
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
+    <ClCompile Include="..\source\source\plugins\ddev.cpp" />
     <ClCompile Include="..\source\source\service_backupinfo.cpp" />
-    <ClCompile Include="..\source\source\service_vars.cpp" />
     <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
     <ClCompile Include="..\source\source\generate.cpp" />
@@ -68,7 +67,6 @@
     <ClCompile Include="..\source\source\globallogger.cpp" />
     <ClCompile Include="..\source\source\main.cpp" />
     <ClCompile Include="..\source\source\params.cpp" />
-    <ClCompile Include="..\source\source\plugins\backupConfig.cpp" />
     <ClCompile Include="..\source\source\plugins\dbackup.cpp" />
     <ClCompile Include="..\source\source\plugins\plugins.cpp" />
     <ClCompile Include="..\source\source\service.cpp" />
@@ -118,14 +116,13 @@
     <ClInclude Include="..\source\source\basen.h" />
     <ClInclude Include="..\source\source\buildnum.h" />
     <ClInclude Include="..\source\source\chmod.h" />
-    <ClInclude Include="..\source\source\command_dev.h" />
     <ClInclude Include="..\source\source\command_general.h" />
     <ClInclude Include="..\source\source\dassert.h" />
     <ClInclude Include="..\source\source\drunner_paths.h" />
     <ClInclude Include="..\source\source\drunner_setup.h" />
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
-    <ClInclude Include="..\source\source\service_vars.h" />
+    <ClInclude Include="..\source\source\plugins\ddev.h" />
     <ClInclude Include="..\source\source\service_install.h" />
     <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
@@ -135,7 +132,6 @@
     <ClInclude Include="..\source\source\globallogger.h" />
     <ClInclude Include="..\source\source\main.h" />
     <ClInclude Include="..\source\source\params.h" />
-    <ClInclude Include="..\source\source\plugins\backupConfig.h" />
     <ClInclude Include="..\source\source\plugins\dbackup.h" />
     <ClInclude Include="..\source\source\plugins\generate_plugin_script.h" />
     <ClInclude Include="..\source\source\plugins\plugins.h" />

@@ -7,9 +7,8 @@
 #include <Poco/Path.h>
 #include "cresult.h"
 #include "utils.h"
-#include "service_vars.h"
 #include "service_paths.h"
-
+#include "variables.h"
 #include "lua.hpp"
 
 namespace servicelua
@@ -21,24 +20,6 @@ namespace servicelua
       bool external;
       std::string name;
    };
-
-   enum configtype
-   {
-      kCF_port,
-      kCF_path,
-      kCF_existingpath,
-      kCF_string,
-   };
-
-   struct Configuration 
-   {
-      std::string name;
-      std::string defaultval;
-      std::string description;
-      configtype type;
-      bool required;
-   };
-
 
    // lua file.
    class luafile {
@@ -58,9 +39,9 @@ namespace servicelua
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
 
       // pass through commands for the service variables.
-      cResult saveVariables() const { return mServiceVars.saveconfig(); }
-      const variables & getVariables() const { return mServiceVars.getVariables(); }
-      void setVariable(std::string key, std::string val) { mServiceVars.setVariable(key, val); }
+      cResult saveVariables() const { return mServiceVars.savevariables(); }
+      const variables getVariables() const { return mServiceVars.getVariables(); }
+      void setVariable(std::string key, std::string val) { mServiceVars.setVal(key, val); }
 
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd) const;
@@ -78,7 +59,7 @@ namespace servicelua
 
    private:
       const servicePaths mServicePaths;
-      serviceVars mServiceVars;
+      persistvariables mServiceVars;
 
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;

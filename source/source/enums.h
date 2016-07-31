@@ -51,7 +51,6 @@ enum eCommand {
    c_uninstall,
    c_obliterate,
    c_status,
-   c_build,
    c_unittest,
    c_servicecmd,
    c_help,

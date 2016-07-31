@@ -28,7 +28,7 @@ public:
    {
    }
 
-   cResult(_eResult x, std::string msg, std::string f) : mResult(x), mMessage(f+": "+msg)
+   cResult(_eResult x, std::string msg, std::string f) : mResult(x), mMessage(f+" Err: "+msg)
    {
       logdbg(mMessage);
    }

@@ -13,12 +13,13 @@
 
 #include "dbackup.h"
 #include "backupConfig.h"
-
+#include "drunner_paths.h"
 
 // -----------------------------------------------------------------------------------------------------------
 
-dbackup::dbackup()
+dbackup::dbackup() : pluginhelper("dbackup")
 {
+   addConfig("BACKUPPATH", "The path to back up to.", "", kCF_path, true);
 }
 
 std::string dbackup::getName() const
@@ -26,37 +27,25 @@ std::string dbackup::getName() const
    return std::string("dbackup");
 }
 
-cResult dbackup::runCommand() const
+cResult dbackup::runCommand(const CommandLine & cl, const variables & v) const
 {
-   if (GlobalContext::getParams()->numArgs() == 0)
-      return showhelp();
-
-   std::vector<std::string> args = GlobalContext::getParams()->getArgs();
-   std::string cmd = args[0];
-   args.erase( args.begin() );
-
-   logmsg(kLDEBUG, "Running command " + cmd);
-
-   switch (s2i(cmd.c_str()))
+   switch (s2i(cl.command.c_str()))
    {
-   case s2i("help") :
-      return showhelp();
-
    case s2i("config") :
    case s2i("configure") :
-      if (args.size() == 0)
+      if (cl.args.size() == 0)
          fatal("Usage:  dbackup configure BACKUPPATH");
-      return configure(args[0]);
+      return configure(cl.args[0]);
 
    case s2i("exclude") :
-      if (args.size() == 0)
+      if (cl.args.size() == 0)
          fatal("Usage:  dbackup exclude SERVICENAME");
-      return exclude(args[0]);
+      return exclude(cl.args[0]);
 
    case s2i("include"):
-      if (args.size() == 0)
+      if (cl.args.size() == 0)
          fatal("Usage:  dbackup include SERVICENAME");
-      return include(args[0]);
+      return include(cl.args[0]);
 
    case s2i("run"):
       return run();
@@ -66,7 +55,7 @@ cResult dbackup::runCommand() const
       return info();
 
    default:
-      return cError("Unrecognised command " + cmd);
+      return cError("Unrecognised command " + cl.command);
    }
 }
 
@@ -194,7 +183,7 @@ cResult dbackup::info() const
    return kRNoChange;
 }
 
-cResult dbackup::showhelp() const
+cResult dbackup::showHelp() const
 {
    std::string help = R"EOF(
 NAME
@@ -207,7 +196,9 @@ SYNOPSIS
    dbackup [COMMAND] [ARGS] ...
 
 COMMANDS
-   dbackup configure BACKUPPATH
+   dbackup help
+   dbackup configure [OPTION=[VALUE]]
+
    dbackup include SERVICENAME
    dbackup exclude SERVICENAME
    dbackup list
@@ -216,7 +207,7 @@ COMMANDS
 
    logmsg(kLINFO, help);
 
-   return cError("Displayed help.");
+   return kRSuccess;
 }
 
 void shifty(std::string src, std::string dst, int interval, unsigned int numtokeep)
@@ -293,4 +284,9 @@ cResult dbackup::purgeOldBackups(backupConfig & config) const
    logmsg(kLINFO, "Done");
 
    return kRSuccess;
+}
+
+Poco::Path dbackup::configurationFilePath() const
+{
+   return drunnerPaths::getPath_Root().setFileName("dbackup.json");
 }

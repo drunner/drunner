@@ -151,7 +151,7 @@ namespace servicelua
 
       Poco::Path runin = lf->getPathdService();
 
-      utils::runcommand_stream(operation, kORaw, runin, lf->getVariables().getEnv());
+      utils::runcommand_stream(operation, kORaw, runin, lf->getVariables().getAll());
 
       return _luasuccess(L);
    }

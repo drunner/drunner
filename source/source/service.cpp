@@ -1,7 +1,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include <Poco/Environment.h>
+
 #include <Poco/String.h>
 
 #ifndef _WIN32
@@ -29,83 +29,6 @@ service::service(std::string servicename) :
       fatal("Could not load service.lua: " + getPathServiceLua().toString());
    mImageName = mServiceLua.getImageName();
    poco_assert(mImageName.length() > 0);
-}
-
-std::string _pad(std::string x, unsigned int w)
-{
-   while (x.length() < w) x += " ";
-   return x;
-}
-inline int _max(int a, int b) { return (a > b) ? a : b; }
-
-cResult service::_showconfiginfo()
-{ // show current variables.
-   logmsg(kLINFO, "Current configuration for " + mName + " is:");
-   
-   int maxkey = 0;   
-   for (const auto & y : mServiceLua.getVariables().getAll())
-      maxkey = _max(maxkey, y.first.length());
-   for (const auto & y : mServiceLua.getVariables().getAll())
-      logmsg(kLINFO, " " + _pad(y.first,maxkey) + " = " + y.second);
-
-
-
-   logmsg(kLINFO, " ");
-   logmsg(kLINFO, "Change configuration variables with:");
-   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment var");
-   logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
-   return kRSuccess;
-}
-
-cResult service::_handleconfigure(const CommandLine & cl)
-{ // configure variable. cargs[0]: key=value
-   if (cl.args.size() == 0)
-      return _showconfiginfo();
-
-   for (const auto & kv : cl.args)
-   {
-      std::string key, val;
-      size_t epos = kv.find('=');
-      if (epos == std::string::npos)
-      { // env variable
-         try {
-            key = kv;
-            val = Poco::Environment::get(key);
-         }
-         catch (const Poco::Exception & )
-         {
-            logmsg(kLWARN, "Couldn't find environment variable " + key);
-            logmsg(kLERROR, "Configuration variables must be given in form key=val or represent an environment variable.");
-         }
-         logmsg(kLINFO, "Setting " + key + " to value from environment [not logged].");
-      }
-      else
-      { // form key=val.
-         if (epos == 0)
-            logmsg(kLERROR, "Missing key.");
-         if (epos == kv.length() - 1)
-            logmsg(kLERROR, "Missing value.");
-
-         key = kv.substr(0, epos);
-         val = kv.substr(epos + 1);
-         logmsg(kLINFO, "Setting " + key + " to " + val);
-      }
-
-      if (0==Poco::icompare(key, "IMAGENAME") || 0==Poco::icompare(key, "SERVICENAME"))
-         fatal("You can't override the "+key+" configuration variable.");
-
-      // find the corresponding configuration definition and set the variable.
-      for (const auto & y : mServiceLua.getConfigItems())
-         if (0==Poco::icompare(key, y.name))
-         {
-            // TODO: validate the value to be set against hte configuration definition! (e.g. if a port, is it valid?)
-            mServiceLua.setVariable(y.name, val); // use the case specified in the configuration item
-            mServiceLua.saveVariables();
-         }
-      if (!mServiceLua.getVariables().hasKey(key))
-         fatal("Unrecognised configuration variable " + key);
-   }
-   return kRSuccess;
 }
 
 cResult service::servicecmd()

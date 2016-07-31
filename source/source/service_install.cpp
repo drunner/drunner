@@ -4,7 +4,6 @@
 #include <Poco/String.h>
 #include <Poco/File.h>
 
-#include "command_dev.h"
 #include "utils.h"
 #include "utils_docker.h"
 #include "globallogger.h"

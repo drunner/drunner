@@ -6,7 +6,6 @@
 #include "cresult.h"
 #include "service_paths.h"
 #include "service_lua.h"
-#include "service_vars.h"
 
 // class to manage the dService.
 class service : public servicePaths
@@ -33,7 +32,6 @@ public:
 
 private:
    static std::string _loadImageName(const std::string & servicename, std::string imagename);
-   cResult _handleconfigure(const CommandLine & operation);
    cResult _showconfiginfo();
    cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _launchCommandLine(const CommandLine & operation) const;
