@@ -15,7 +15,7 @@ namespace compress
       args.push_back(cmd);
       args.push_back("run");
       args.push_back("-i");
-      args.push_back("--name=\"dr_compress\"");
+      args.push_back("--name=dr_compress");
       if (passwd.length() > 0)
       {
          logmsg(kLDEBUG, "Using password supplied.");
