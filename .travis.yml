@@ -15,13 +15,10 @@ before_install:
    - docker run hello-world
    - wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
    - sudo mv docker-compose* /usr/local/bin/docker-compose
-script: 
+script:
    - make
    - make install
    - drunner unittest
    - drunner install drunner/dtest
    - dtest test
-   - dtest test drunner/minimalexample
    - dtest test drunner/helloworld
-   - dtest test drunner/minecraft
-
