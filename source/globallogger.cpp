@@ -52,8 +52,8 @@ void logverbatim(eLogLevel level, std::string s)
       case kLDEBUG: std::cout << termcolor::cyan << s << termcolor::reset; break;
       case kLINFO:  std::cout << termcolor::blue << s << termcolor::reset; break;
       case kLWARN:  std::cerr << termcolor::yellow <<  s << termcolor::reset; break;
-      case kLERROR: 
-         std::cerr << termcolor::red << s << termcolor::reset; 
+      case kLERROR:
+         std::cerr << termcolor::red << s << termcolor::reset;
          throw eExit();
          break;
       default:      std::cerr << termcolor::green <<  s << termcolor::reset; break;
@@ -69,7 +69,12 @@ std::string getheader(eLogLevel level)
 
 
 void logmsg(eLogLevel level, std::string s)
-{   
+{
+   if (!GlobalContext::hasParams())
+   {
+      std::cerr << termcolor::red << "Issue during initialisation: " << s << "\n" << termcolor::reset;
+      throw eExit();
+   }
    if (level < GlobalContext::getParams()->getLogLevel())
       return;
 
@@ -87,4 +92,3 @@ void fatal(std::string s)
 }
 
 // ----------------------------------------------------------------------------------------------------
-
