@@ -199,6 +199,9 @@
     <ClCompile Include="..\source\source\variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\service_lua_cfuncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\source\service_backupinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +213,6 @@
     </ClCompile>
     <ClCompile Include="..\source\source\plugins\ddev.cpp">
       <Filter>Source Files\plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\service_lua_cfuncs.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
