@@ -10,5 +10,5 @@ shallow_clone: true
 install:
      - echo Installing POCO
      - ps: pushd pocowin
-     - ps: pocowin.ps1
+     - ps: .\\pocowin.ps1
      - ps: popd
