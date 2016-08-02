@@ -43,7 +43,7 @@ wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
 sudo bash install_docker.sh
 ```
 
-Then give the user you'll run dServices with (e.g. testuser) permissions to run docker with:
+Then give yourself permissions to run docker with:
 ```
 sudo adduser ${USER} docker
 ```
