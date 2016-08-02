@@ -16,6 +16,8 @@ services that consist of multiple Docker containers.
 
 ## Features
 
+* Cross-platform - available for Linux, Windows and OS X.
+* dRunner is a single executable with no dependencies.
 * dRunner compatible Docker Images (dServices) are self contained - everything dRunner needs is inside.
 * Simple discoverable commands make it easy to use dServices (no manual needed).
 * Flexible configuration for each dService, stored in Docker Volume containers that are managed for you.
@@ -25,8 +27,10 @@ services that consist of multiple Docker containers.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
 * Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
-* Supports Docker Compose files for describing a dService's containers and basic settings.
+* Scripts to control docker containers are in Lua.
+* You can use Docker Compose files to define services.
 * Some useful tools to build dServices and test them.
+
 
 
 ## Install notes
