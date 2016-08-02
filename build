@@ -3,14 +3,21 @@
 MYDIR=$( dirname "$(readlink -f "$0")" )
 PERMISSIONSFILE="${MYDIR}/.permissions"
 
-DRUNNER="${HOME}/.drunner/bin/drunner"
+DRUNNER="/usr/local/bin/drunner"
 
-VERSIONSTR="0.8 r"
+VERSION="0.8"
+VERSIONSTR="${VERSION} r"
 VERSIONDATE="2016-07-31"
 VSHORT="NOT SET"
 VCOMBO="NOT SET"
 DEBUG=""
+
+# VTAG set by travis.
 [ -v VTAG ] || VTAG="Dev"
+
+SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
+DAYS=$(( 1+${SECONDS}/(60*60*24) ))
+DATE=`date`
 
 IMAGE=drunner/drunner_build
 
@@ -43,10 +50,7 @@ function runbuild {
    BUILDOBJ="${MYDIR}/source/source/buildnum.o"
    rm -f "${BUILDOBJ}"
 
-   SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
-   DAYS=$(( 1+${SECONDS}/(60*60*24) ))
-   DATE=`date`
-   VSHORT="${VERSIONSTR}${DAYS}"
+   VSHORT="${VERSION} r${DAYS}"
    VCOMBO="${VSHORT} - ${DATE} [${VTAG}]"
 
    echo "Building ${VCOMBO}"
@@ -89,10 +93,31 @@ function runcheck {
 
 function makeclean {
    docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
-   rm -f "${MYDIR}/drunner"
-   rm -f "$PERMISSIONSFILE"
+   rm -f "${MYDIR}/source/drunner"
 }
 
+function putS3
+{
+  [ -v S3KEY ] || die "Undefined: S3KEY";
+  [ -v S3SECRET ] ||  die "Underfined: S3SECRET";
+
+  path=$1
+  aws_path=$2
+  BUCKET='drunner'
+
+  date="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+  md5="$(openssl md5 -binary < "${path}" | base64)"
+  content_type='application/x-compressed-tar'
+  string="PUT\n\n${content_type}\n${date}\n/${BUCKET}${aws_path}"
+  signature=$(echo -en "${string}" | openssl sha1 -hmac "${S3SECRET}" -binary | base64)
+  curl -X PUT -T "${path}" \
+   -H "Host: ${BUCKET}.s3.amazonaws.com" \
+   -H "Date: ${date}" \
+   -H "Content-Type: ${content_type}" \
+   -H "Authorization: AWS ${S3KEY}:${signature}" \
+    "https://drunner.s3-ap-southeast-2.amazonaws.com${aws_path}"
+  #    "https://${BUCKET}.s3.amazonaws.com${aws_path}"
+}
 
 function main {
    SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
@@ -106,6 +131,11 @@ function main {
          runbuild
          ;;
 
+      install)
+         runbuild
+         sudo cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         ;;
+
       check)
          runcheck
          ;;
@@ -117,6 +147,14 @@ function main {
 
       clean)
          makeclean
+         ;;
+
+      upload)
+      # relies on S3KEY and S3SECRET environ vars
+         putS3 "${MYDIR}/source/drunner" "/lin/drunner"
+         putS3 "${MYDIR}/source/prereqs/install_docker.sh" "/lin/install_docker.sh"
+         putS3 "${MYDIR}/source/prereqs/install_drunner_travis.sh" "/lin/install_drunner_travis.sh"
+         putS3 "${MYDIR}/source/prereqs/ssdownload" "/lin/ssdownload"
          ;;
 
       *)

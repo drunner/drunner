@@ -20,36 +20,12 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
 {
    switch (s2i(cl.command.c_str()))
    {
-   case (s2i("build")):
-   {
-      Poco::Path dockerfile(Poco::Path::current());
-      dockerfile.makeDirectory().setFileName("Dockerfile");
-      if (!utils::fileexists(dockerfile))
-         dockerfile.setFileName("dockerfile");
-      if (!utils::fileexists(dockerfile))
-         return cError("Couldn't find a dockerfile in the current directory.");
-
-      CommandLine operation;
-      operation.command = "docker";
-      operation.args = { "build","-t",v.getVal("TAG"),"." };
-      int rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
-      if (rval != 0)
-         return cError("Build failed.");
-      logmsg(kLINFO, "Built " + v.getVal("TAG"));
-
-      std::string dservicename = v.getVal("DSERVICENAME");
-      if (dservicename.length() > 0)
+      case (s2i("build")):
       {
-         logmsg(kLINFO,"Installing " + v.getVal("TAG") + " as " + dservicename);
-         operation.command = drunnerPaths::getPath_Bin().setFileName("drunner").toString();
-         operation.args = { "recreate","-d",dservicename, v.getVal("TAG")};
-         rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+         return _build(cl, v);
       }
-
-      return kRSuccess;
-   }
-   default:
-      return cError("Unrecognised command " + cl.command);
+      default:
+         return cError("Unrecognised command " + cl.command);
    }
 }
 
@@ -94,6 +70,39 @@ Poco::Path ddev::configurationFilePath() const
    drunner_assert(cfp.isDirectory(), "Current directory is a file.");
    cfp.setFileName("ddev.json");
    return cfp;
+}
+
+cResult ddev::_build(const CommandLine & cl, const variables & v) const
+{
+   if (v.getVal("TAG").length() == 0)
+      return cError("You need to configure ddev with a tag first.");
+
+   Poco::Path dockerfile(Poco::Path::current());
+   dockerfile.makeDirectory().setFileName("Dockerfile");
+   if (!utils::fileexists(dockerfile))
+      dockerfile.setFileName("dockerfile");
+   if (!utils::fileexists(dockerfile))
+      return cError("Couldn't find a dockerfile in the current directory.");
+
+   CommandLine operation;
+   operation.command = "docker";
+   operation.args = { "build","-t",v.getVal("TAG"),"." };
+   int rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+   if (rval != 0)
+      return cError("Build failed.");
+   logmsg(kLINFO, "Built " + v.getVal("TAG"));
+
+   std::string dservicename = v.getVal("DSERVICENAME");
+   if (dservicename.length() > 0)
+   {
+      logmsg(kLINFO, "Installing " + v.getVal("TAG") + " as " + dservicename);
+      operation.command = drunnerPaths::getPath_Bin().setFileName("drunner").toString();
+      operation.args = { "recreate","-d",dservicename, v.getVal("TAG") };
+      rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+   }
+
+   return kRSuccess;
+
 }
 
 

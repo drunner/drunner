@@ -95,20 +95,20 @@ namespace drunnerSetup
    }
 #endif
 
-   void _copyexe()
-   {
-      Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
+   //void _copyexe()
+   //{
+   //   Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
 
-      try 
-      {
-         if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
-            Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
-      }
-      catch (const Poco::FileException & e)
-      {
-         logmsg(kLWARN, std::string("Couldn't copy exe to bin directory: ") + e.what());
-      }
-   }
+   //   try 
+   //   {
+   //      if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
+   //         Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
+   //   }
+   //   catch (const Poco::FileException & e)
+   //   {
+   //      logmsg(kLWARN, std::string("Couldn't copy exe to bin directory: ") + e.what());
+   //   }
+   //}
 
    static bool s_setup_fully_checked = false;
 
@@ -153,8 +153,6 @@ namespace drunnerSetup
 #endif
 
       _makedirectory(drunnerPaths::getPath_Bin(), S_700);
-      _copyexe();
-
       _makedirectory(drunnerPaths::getPath_dServices(), S_755);
       _makedirectory(drunnerPaths::getPath_Temp(), S_755);
       _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);

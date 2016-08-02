@@ -54,7 +54,7 @@ function die { echo "$1"; exit 1 ; }
 CMD="help"
 [ "$#" -eq 0 ] || { CMD=$1 ; shift ; }
 
-"${MYDIR}/drunner" "__plugin__${PLUGINNAME}" "${CMD}" "$@"
+drunner "__plugin__${PLUGINNAME}" "${CMD}" "$@"
 
 )EOF";
 

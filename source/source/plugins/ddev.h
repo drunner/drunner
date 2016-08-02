@@ -14,6 +14,7 @@ public:
    Poco::Path configurationFilePath() const;
 
 private:
+   cResult _build(const CommandLine & cl, const variables & v) const;
 };
 
 
