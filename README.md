@@ -33,17 +33,13 @@ services that consist of multiple Docker containers.
 
 
 
-## Install notes
-
-### First time installation
-
-We assume here you have a standard user account called testuser which you'll use for drunner.
+## Install notes (Linux)
 
 #### Dependencies
 
 dRunner needs docker. You can install it with:
 ```
-wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
+wget -nv http://drunner.s3.amazonaws.com/lin/install_docker.sh
 sudo bash install_docker.sh
 ```
 
