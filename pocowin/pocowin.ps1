@@ -7,6 +7,3 @@ Expand-Archive "poco.zip" -DestinationPath ".\\"
 pushd poco-1.7.3
 .\\buildwin.cmd 140 build static_mt both Win32 nosamples notests
 popd
-
-Write-Host "Press any key to continue ..."
-$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
