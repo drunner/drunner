@@ -55,7 +55,7 @@ sudo chmod a+x drunner ; mv drunner /usr/local/bin
 drunner setup
 ```
 
-Log out then in again to pick up the ~/bin directory in your path. Now you're ready to go!
+If this is the first time you've installed dRunner, log out then in again to update your profile (dRunner adds its bin directory to your path in ~/.profile).
 
 ### Trying it out
 
