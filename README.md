@@ -2,7 +2,7 @@
 
 ## Status
 
-In light production use, no known major issues.
+The previous version of dRunner has proven reliable in light production use. This version is a major rewrite and has limited testing.
 
 ## Overview
 
