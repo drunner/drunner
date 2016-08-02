@@ -20,7 +20,3 @@ script:
    - bash build
    - bash build check
    - if [ $TRAVIS_BRANCH == 'master' ]; then bash build upload; fi
-#   - dtest test
-#   - dtest test drunner/minimalexample
-#   - dtest test drunner/helloworld
-#   - dtest test drunner/minecraft
