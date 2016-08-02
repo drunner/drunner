@@ -12,3 +12,6 @@ install:
      - ps: pushd pocowin
      - ps: .\\pocowin.ps1
      - ps: popd
+
+-build:
+   project: vs\\drunner.sln
