@@ -125,15 +125,14 @@ PASS=? drunner restore BACKUPFILE SERVICENAME  -- restore container, configurati
 
 ## Flags
 
-dRunner provides several flags to control the output mode:
+dRunner provides several flags to control the output to stdout:
 
-| Flag    |      Mode      |  dRunner Output | dService Hooks | dService servicecmd |
+| Flag    |      Mode      |  dRunner output | Support calls  | dService output |
 |:-------:|:--------------:|:---------------:|:--------------:|:-------------------:|
-| -n      | normal         | info and above  | logged         | raw                 |
-| -v      | verbose        | debug and above | logged         | raw                 |
-| -l      | logged         | errors only     | logged         | logged              |
-| -o      | capture output | errors only     | raw            | raw                 |
-| -s      | silent         | errors only     | suppressed     | suppressed          |
+|         | default        | info and above  |                | yes           |
+| -v      | verbose        | debug and above | yes      | yes           |
+| -o      | capture output | errors only     |                | yes           |
+| -s      | silent         | errors only     |                |                     |
 
 In addition, you can specify -d for 'development mode', which currently just skips any explicit docker pulls.
 
@@ -152,7 +151,7 @@ This is to aid Ansible use.
 
 ## Backups
 
-dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try 
+dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try
 ```
 dbackup help
 ```
@@ -169,16 +168,4 @@ To see how to make a dService [read the documentation](https://github.com/drunne
 
 ## Developing dRunner itself
 
-As root:
-```
-wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
-bash install_docker.sh
-apt-get install build-essential g++-multilib libboost-all-dev libyaml-cpp-dev
-adduser devuser docker
-```
-
-As devuser:
-```
-git clone git@github.com:drunner/drunner.git
-make
-```
+[Read the documentation](https://github.com/drunner/drunner/blob/master/DRUNNERDEV.md).

@@ -1,0 +1,168 @@
+#!/bin/bash
+
+MYDIR=$( dirname "$(readlink -f "$0")" )
+PERMISSIONSFILE="${MYDIR}/.permissions"
+
+DRUNNER="/usr/local/bin/drunner"
+
+VERSION="0.8"
+VERSIONSTR="${VERSION} r"
+VERSIONDATE="2016-07-31"
+VSHORT="NOT SET"
+VCOMBO="NOT SET"
+DEBUG=""
+
+# VTAG set by travis.
+[ -v VTAG ] || VTAG="Dev"
+
+SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
+DAYS=$(( 1+${SECONDS}/(60*60*24) ))
+DATE=`date`
+
+IMAGE=drunner/drunner_build
+
+function showhelp {
+cat <<EOF >&2
+
+NAME
+   build
+
+SYNOPSIS
+   build
+      Build drunner using docker container for compilation and linking.
+
+   build clean
+      Remove intermediate files then build.
+
+   build install
+      Build then install for testing (to ~/test).
+
+DESCRIPTION
+   dRunner's test harness. Built from ${IMAGENAME}.
+
+EOF
+}
+
+function runbuild {
+   OUTPUT="${MYDIR}/source/drunner"
+   rm -f ${OUTPUT}
+
+   BUILDOBJ="${MYDIR}/source/source/buildnum.o"
+   rm -f "${BUILDOBJ}"
+
+   VSHORT="${VERSION} r${DAYS}"
+   VCOMBO="${VSHORT} - ${DATE} [${VTAG}]"
+
+   echo "Building ${VCOMBO}"
+   echo "Mapping ${SRC} to /source"
+   docker run --rm \
+      -e "VCOMBO=${VCOMBO}" \
+      -e "VSHORT=${VSHORT}" \
+      -e "DEBUG=${DEBUG}"   \
+      -v "${SRC}:/source" "${IMAGE}" \
+      /bin/bash -c "make"
+
+   [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
+
+#   cp ${OUTPUT} ${MYDIR}
+#   chmod a+x "${MYDIR}/drunner"
+}
+
+function die { echo "$1"; exit 1 ; }
+
+function obliterate {
+   "${DRUNNER}" obliterate "${1}"
+   if [ $? -eq 1 ] ; then die "Couldn't obliterate ${1}" ; fi
+}
+
+function testcontainer {
+   echo " "
+   echo "-- Testing $1 --"
+   "${DRUNNER}" install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
+   obliterate "testcontainer-${1}"
+}
+
+function runcheck {
+   cd
+   "${DRUNNER}" unittest || die "Unit tests failed"
+   testcontainer "helloworld"
+   testcontainer "minecraft"
+   testcontainer "minimalexample"
+}
+
+function makeclean {
+   docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
+   rm -f "${MYDIR}/source/drunner"
+}
+
+function putS3
+{
+  [ -v S3KEY ] || die "Undefined: S3KEY";
+  [ -v S3SECRET ] ||  die "Underfined: S3SECRET";
+
+  path=$1
+  aws_path=$2
+  BUCKET='drunner'
+
+  date="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+  md5="$(openssl md5 -binary < "${path}" | base64)"
+  content_type='application/x-compressed-tar'
+  string="PUT\n\n${content_type}\n${date}\n/${BUCKET}${aws_path}"
+  signature=$(echo -en "${string}" | openssl sha1 -hmac "${S3SECRET}" -binary | base64)
+  curl -X PUT -T "${path}" \
+   -H "Host: ${BUCKET}.s3.amazonaws.com" \
+   -H "Date: ${date}" \
+   -H "Content-Type: ${content_type}" \
+   -H "Authorization: AWS ${S3KEY}:${signature}" \
+    "https://drunner.s3-ap-southeast-2.amazonaws.com${aws_path}"
+  #    "https://${BUCKET}.s3.amazonaws.com${aws_path}"
+}
+
+function main {
+   SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
+   SRC="${SRC}/source"
+
+   COMMAND="build"
+   [ $# -eq 0 ] || COMMAND="$1"
+
+   case "$COMMAND" in
+      build)
+         runbuild
+         ;;
+
+      install)
+         runbuild
+         sudo cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         drunner -d -v setup
+         ;;
+
+      check)
+         runcheck
+         ;;
+
+      debug)
+         DEBUG="-g -D _DEBUG -D POCO_ENABLE_DEBUGGER"
+         runbuild
+         ;;
+
+      clean)
+         makeclean
+         ;;
+
+      upload)
+      # relies on S3KEY and S3SECRET environ vars
+         putS3 "${MYDIR}/source/drunner" "/lin/drunner"
+
+         s3supportpath="${MYDIR}/.s3supportfiles"
+         for file in "$s3supportpath"/*; do
+            putS3 "$s3supportpath/${file##*/}" "/lin/${file##*/}"
+         done
+         ;;
+
+      *)
+         showhelp
+         ;;
+   esac
+}
+
+main "$@"

@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.d
 
 # Precompiled Headers
 *.gch
@@ -36,11 +37,9 @@ drunner
 *.app
 
 .depend
-drunnerc
+drunner
 drunner-install
-build_number.h
-version.number
-permissions
+.permissions
 
 # Visual Studio
 *.suo
@@ -62,3 +61,16 @@ ipch/
 *.cachefile
 *.VC.db
 *.VC.VC.opendb
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
