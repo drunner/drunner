@@ -52,7 +52,6 @@
     <ClCompile Include="..\source\deps\lua\lutf8lib.c" />
     <ClCompile Include="..\source\deps\lua\lvm.c" />
     <ClCompile Include="..\source\deps\lua\lzio.c" />
-    <ClCompile Include="..\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\buildnum.cpp" />
     <ClCompile Include="..\source\source\command_general.cpp" />
     <ClCompile Include="..\source\source\drunner_paths.cpp" />
@@ -73,6 +72,7 @@
     <ClCompile Include="..\source\source\servicehook.cpp" />
     <ClCompile Include="..\source\source\service_backup.cpp" />
     <ClCompile Include="..\source\source\service_install.cpp" />
+    <ClCompile Include="..\source\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
     <ClCompile Include="..\source\source\service_lua.cpp" />
