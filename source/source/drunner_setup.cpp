@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <fstream>
 
 #include "drunner_setup.h"
 #include "utils.h"
@@ -39,6 +40,41 @@ namespace drunnerSetup
    // ---------------------------------------------------------------------------------------------------------------------------------------------
    // ---------------------------------------------------------------------------------------------------------------------------------------------
 
+   bool _file_has_line(std::string file, std::string line)
+   {
+      bool hasLine = false;
+      std::ifstream mf(file);
+      std::string l;
+
+      if (!mf.is_open())
+         return false;
+
+      while (!mf.eof())
+      {
+         getline(mf, l);
+         Poco::trimInPlace(l);
+         if (l.compare(line) == 0)
+         {
+            mf.close();
+            hasLine = true;
+            break;
+         }
+      }
+      mf.close();
+      return hasLine;
+   }
+
+   void _ensure_line(std::string file, std::string line)
+   {
+      if (_file_has_line(file, line))
+      {
+         logdbg(file + " is configured.");
+         return;
+      }
+      logdbg("Appending to " + file + " :\n " + line);
+      std::ofstream f(file, std::ios_base::app | std::ios_base::out);
+      f << line << "\n";
+   }
 
 #ifdef _WIN32
    void _check_prerequisits() 
@@ -74,6 +110,8 @@ namespace drunnerSetup
 
    void _check_prerequisits()
    {
+      _check_prereqs_xplatform();
+
       uid_t euid = geteuid();
       if (euid == 0)
          fatal("Please run as a standard user, not as root.");
@@ -91,7 +129,8 @@ namespace drunnerSetup
       if (!commandexists("curl"))
          fatal("Please install curl before using dRunner.");
 
-      _check_prereqs_xplatform();
+      // check ~/.drunner/bin is in ~/.profile.
+      _ensure_line(Poco::Path::home() + ".profile", "PATH=\"$HOME/.drunner/bin:$PATH\"");
    }
 #endif
 

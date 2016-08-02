@@ -64,7 +64,6 @@ function runbuild {
 
    [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
 
-   ${OUTPUT} -d setup
 #   cp ${OUTPUT} ${MYDIR}
 #   chmod a+x "${MYDIR}/drunner"
 }
@@ -134,6 +133,7 @@ function main {
       install)
          runbuild
          sudo cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         drunner -d -v setup
          ;;
 
       check)
