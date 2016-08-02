@@ -9,6 +9,14 @@
 *.gch
 *.pch
 
+
+# backported
+*.d
+*.tlog
+*.idb
+*.exp
+drunner
+
 # Compiled Dynamic libraries
 *.so
 *.dylib

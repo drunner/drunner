@@ -27,7 +27,7 @@ eLogLevel getMinLevel()
       if (!hasWarned)
       {
          hasWarned = true;
-         logmsg(kLWARN, "Logging not yet initialised, but being asked to log.");
+         logmsg(kLWARN, "Logging not yet initialised, issue during initialisation.");
       }
       return kLINFO;
    }
@@ -56,20 +56,24 @@ void logverbatim(eLogLevel level, std::string s)
    {
       case kLDEBUG: std::cout << termcolor::cyan << s << termcolor::reset; break;
       case kLINFO:  std::cout << termcolor::blue << s << termcolor::reset; break;
+
 #ifdef _WIN32
       case kLWARN:  std::cerr << termcolor::red <<  s << termcolor::reset; break;
 #else
       case kLWARN:  std::cerr << termcolor::yellow << s << termcolor::reset; break;
 #endif
-      case kLERROR: 
-         std::cerr << termcolor::red << s << termcolor::reset; 
+
+         case kLERROR:
+            std::cerr << termcolor::red << s << termcolor::reset;
+
 #ifdef _DEBUG
-#ifdef _WIN32
-         __debugbreak();
-#else
-         __builtin_trap();
+   #ifdef _WIN32
+            __debugbreak();
+   #else
+            __builtin_trap();
+   #endif
 #endif
-#endif
+
          throw eExit();
          break;
       default:      std::cerr << termcolor::green <<  s << termcolor::reset; break;
@@ -85,7 +89,7 @@ std::string getheader(eLogLevel level)
 
 
 void logmsg(eLogLevel level, std::string s)
-{   
+{
    if (level < getMinLevel())
       return;
 
@@ -115,4 +119,3 @@ void fatal(std::string s)
 }
 
 // ----------------------------------------------------------------------------------------------------
-

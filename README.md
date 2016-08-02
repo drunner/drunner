@@ -2,7 +2,7 @@
 
 ## Status
 
-In light production use, no known major issues.
+The previous version of dRunner has proven reliable in light production use. This version is a major rewrite and has limited testing.
 
 ## Overview
 
@@ -16,6 +16,8 @@ services that consist of multiple Docker containers.
 
 ## Features
 
+* Cross-platform - available for Linux, Windows and OS X.
+* dRunner is a single executable with no dependencies.
 * dRunner compatible Docker Images (dServices) are self contained - everything dRunner needs is inside.
 * Simple discoverable commands make it easy to use dServices (no manual needed).
 * Flexible configuration for each dService, stored in Docker Volume containers that are managed for you.
@@ -25,8 +27,10 @@ services that consist of multiple Docker containers.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
 * Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
-* Supports Docker Compose files for describing a dService's containers and basic settings.
+* Scripts to control docker containers are in Lua.
+* You can use Docker Compose files to define services.
 * Some useful tools to build dServices and test them.
+
 
 
 ## Install notes
@@ -37,29 +41,31 @@ We assume here you have a standard user account called testuser which you'll use
 
 #### Dependencies
 
-dRunner needs docker. You can install it as root with:
+dRunner needs docker. You can install it with:
 ```
 wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
-bash install_docker.sh
+sudo bash install_docker.sh
 ```
 
-Then give the user you'll run dServices with (e.g. testuser) permissions to run docker with:
+Then give yourself permissions to run docker with:
 ```
-adduser testuser docker
+sudo adduser ${USER} docker
 ```
 
 ### Installing dRunner
+```
+wget http://drunner.s3.amazonaws.com/lin/drunner
+chmod a+x drunner
+sudo mv drunner /usr/local/bin
+drunner setup
+```
 
-Logged in as the non-root user, download the installer and run it:
-```
-wget http://drunner.s3.amazonaws.com/drunner-install
-chmod a+x drunner-install
-./drunner-install -v ~/drunner
-```
+If this is the first time you've installed dRunner, log out then in again to update your profile (dRunner adds its bin directory to your path in ~/.profile).
 
-Log out then in again to pick up the ~/bin directory in your path, then you can run drunner. E.g. try
+### Trying it out
+
 ```
- drunner install drunner/helloworld
+ drunner install helloworld
  helloworld run
 ```
 helloworld is now in your path, you can run it directly, e.g. with no arguments
@@ -81,7 +87,6 @@ hi run
 
 dRunner can test containers for compatibility and functionality. Try it out with:
 ```
-drunner install drunner/dtest
 dtest test drunner/helloworld
 ```
 
