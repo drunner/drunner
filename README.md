@@ -55,7 +55,7 @@ sudo adduser ${USER} docker
 ### Installing dRunner
 ```
 wget http://drunner.s3.amazonaws.com/lin/drunner
-sudo chmod a+x drunner
+chmod a+x drunner
 sudo mv drunner /usr/local/bin
 drunner setup
 ```
