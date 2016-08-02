@@ -37,6 +37,11 @@ We assume here you have a standard user account called testuser which you'll use
 
 #### Dependencies
 
+Check you have the prerequisits installed. As root:
+```
+apt-get install libstdc++6 wget
+```
+
 dRunner needs docker. You can install it as root with:
 ```
 wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
@@ -48,13 +53,14 @@ Then give the user you'll run dServices with (e.g. testuser) permissions to run 
 adduser testuser docker
 ```
 
+
 ### Installing dRunner
 
 Logged in as the non-root user, download the installer and run it:
 ```
-wget http://drunner.s3.amazonaws.com/drunner-install
+wget http://drunner.s3.amazonaws.com/lin/drunner-install
 chmod a+x drunner-install
-./drunner-install -v ~/drunner
+sudo ./drunner-install
 ```
 
 Log out then in again to pick up the ~/bin directory in your path, then you can run drunner. E.g. try
