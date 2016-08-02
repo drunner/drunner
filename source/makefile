@@ -4,11 +4,11 @@ INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
- -Wall -Wno-unknown-pragmas -static-libgcc -std=c++11 $(INC)
+ -Wall -Wno-unknown-pragmas -std=c++11 $(INC)
 
-CFLAGS=-MD -MP -fdiagnostics-color=always -Wall -Wno-unknown-pragmas -static-libgcc $(INC)
+CFLAGS=-D LUA_USE_POSIX -MD -MP -fdiagnostics-color=always -Wall -Wno-unknown-pragmas $(INC)
 
-LDFLAGS=-static -pthread
+LDFLAGS=-pthread
 LDLIBS=-lPocoFoundation -lPocoUtil
 
 OBJECTS_DIR=objs
