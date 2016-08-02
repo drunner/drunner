@@ -12,7 +12,6 @@ This uses a docker container to build drunner. Works fine compiling for Linux fr
 
 ## Windows Native
 * Install docker for windows ([from here](https://docs.docker.com/docker-for-windows/))
-* Create a root folder (e.g. dev).
 * Checkout drunner/drunner from github
 * Right click on pocowin/pocowin.ps1 and select 'Run with PowerShell'
 * Open vs/drunner.sln, build and run (Release, x86)
