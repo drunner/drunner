@@ -2,7 +2,7 @@
 
 ## Status
 
-The previous stable version of dRunner has proven reliable in light production use. Instructions are still available for it in the (https://github.com/drunner/drunner/blob/Version_0_6/README.md)(Version 0.6 branch).
+The previous stable version of dRunner has proven reliable in light production use. Instructions are still available for it in the [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md).
 
 This version is a major rewrite to be cross-platform. While key functionality works it's not yet complete and has had minimal testing.
 
