@@ -7,6 +7,9 @@
 
 #ifdef _WIN32
 #include <ShlObj.h>
+#elif defined(__APPLE__)
+#include <limits.h>
+#include <unistd.h>
 #else
 #include <linux/limits.h>
 #include <unistd.h>
@@ -52,7 +55,7 @@ Poco::Path drunnerPaths::getPath_Exe()
 Poco::Path drunnerPaths::getPath_Bin()
 {
    return getPath_Root().pushDirectory("bin");
-} // bin subfolder 
+} // bin subfolder
 
 Poco::Path drunnerPaths::getPath_dServices()
 {
