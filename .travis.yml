@@ -1,6 +1,12 @@
 language: cpp
 sudo: required
-dist: trusty
+
+
+os:
+  - linux
+    dist: trusty
+  - osx
+
 before_install:
    - sudo apt-get -qq update
    - sudo apt-get install -qq libboost-all-dev libyaml-cpp-dev libpoco-dev
