@@ -15,7 +15,8 @@ wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Li
 sudo mv docker-compose* /usr/local/bin/docker-compose
 sudo chmod a+x /usr/local/bin/docker-compose
 
-wget https://drunner.s3.amazonaws.com/lin/drunner
-chmod a+x drunner
-sudo mv drunner /usr/local/bin
+mkdir temp
+wget https://drunner.s3.amazonaws.com/lin/drunner -O temp/drunner
+chmod a+x temp/drunner
+sudo mv temp/drunner /usr/local/bin
 drunner setup
