@@ -27,7 +27,7 @@ services that consist of multiple Docker containers.
 * Destroying a service leaves the machine in a clean state, no cruft left.
 * Everything in containers is run as a non-root user, drunner on the host also runs as non-root.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
-* Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
+* Ansible friendly for automation (see [Exit Codes](https://github.com/drunner/drunner/blob/master/README.md#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
 * Scripts to control docker containers are in Lua.
 * You can use Docker Compose files to define services.
@@ -35,7 +35,9 @@ services that consist of multiple Docker containers.
 
 
 
-## Install notes (Linux)
+## Installation
+
+[Installation Notes](INSTALL.md)
 
 #### Dependencies
 
