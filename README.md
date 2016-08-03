@@ -1,6 +1,6 @@
 # dRunner [![Build Status](https://travis-ci.org/drunner/drunner.svg?branch=master)](https://travis-ci.org/drunner/drunner)
 
-## Status
+## Status - EXPERIMENTAL (Stable is [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md)).
 
 The previous stable version of dRunner has proven reliable in light production use. Instructions are still available for it in the [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md).
 
