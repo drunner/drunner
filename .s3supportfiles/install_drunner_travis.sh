@@ -1,4 +1,4 @@
-#!/bin/bash   
+#!/bin/bash
 
 sudo apt-get -qq update
 sudo apt-get install -qq apt-transport-https ca-certificates
@@ -15,9 +15,7 @@ wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Li
 sudo mv docker-compose* /usr/local/bin/docker-compose
 sudo chmod a+x /usr/local/bin/docker-compose
 
-wget https://drunner.s3.amazonaws.com/drunner-install
-chmod a+x drunner-install
-./drunner-install -v ~/drunner
-
-drunner install drunner/ddev
-drunner install drunner/dtest
+wget https://drunner.s3.amazonaws.com/lin/drunner
+chmod a+x drunner
+sudo mv drunner /usr/local/bin
+drunner setup

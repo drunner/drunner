@@ -27,7 +27,7 @@ services that consist of multiple Docker containers.
 * Destroying a service leaves the machine in a clean state, no cruft left.
 * Everything in containers is run as a non-root user, drunner on the host also runs as non-root.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
-* Ansible friendly for automation (see [Exit Codes](https://github.com/j842/dr#exit-codes) below).
+* Ansible friendly for automation (see [Exit Codes](README.md#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
 * Scripts to control docker containers are in Lua.
 * You can use Docker Compose files to define services.
@@ -35,30 +35,9 @@ services that consist of multiple Docker containers.
 
 
 
-## Install notes (Linux)
+## Installation
 
-#### Dependencies
-
-dRunner needs docker. You can install it with:
-```
-wget -nv http://drunner.s3.amazonaws.com/lin/install_docker.sh
-sudo bash install_docker.sh
-```
-
-Then give yourself permissions to run docker with:
-```
-sudo adduser ${USER} docker
-```
-
-### Installing dRunner
-```
-wget http://drunner.s3.amazonaws.com/lin/drunner
-chmod a+x drunner
-sudo mv drunner /usr/local/bin
-drunner setup
-```
-
-If this is the first time you've installed dRunner, log out then in again to update your profile (dRunner adds its bin directory to your path in ~/.profile).
+[Installation Notes](INSTALL.md)
 
 ### Trying it out
 
@@ -160,10 +139,10 @@ See [Docker's Security Statement](https://docs.docker.com/engine/security/securi
 
 ## Creating your own dService
 
-To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/DSERVICE.md).
+To see how to make a dService [read the documentation](DSERVICE.md).
 
 
 
 ## Developing dRunner itself
 
-[Read the documentation](https://github.com/drunner/drunner/blob/master/DRUNNERDEV.md).
+[Read the documentation](DRUNNERDEV.md).

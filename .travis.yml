@@ -1,11 +1,12 @@
 language: cpp
 sudo: required
 
-
-os:
-  - linux
-    dist: trusty
-  - osx
+matrix:
+   include:
+     - os: linux
+       dist: trusty
+       sudo: required
+#     - os: osx
 
 before_install:
    - sudo apt-get -qq update
