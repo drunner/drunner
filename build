@@ -116,6 +116,8 @@ function putS3
    -H "Authorization: AWS ${S3KEY}:${signature}" \
     "https://drunner.s3-ap-southeast-2.amazonaws.com${aws_path}"
   #    "https://${BUCKET}.s3.amazonaws.com${aws_path}"
+
+  echo "Uploaded ${PATH} to S3."
 }
 
 function main {
