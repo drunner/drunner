@@ -16,16 +16,16 @@ LDLIBS=-lPocoFoundation -lPocoUtil
 # On Linux we statically link runtime libs.
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	CXXFLAGS += -static-libstdc++ -static-libgcc
-	CCFLAGS += -static-libgcc
-	LDFLAGS += -static-libstdc++ -static-libgcc -pthread
+   CXXFLAGS += -static-libstdc++ -static-libgcc
+   CCFLAGS += -static-libgcc
+   LDFLAGS += -static-libstdc++ -static-libgcc -pthread
 endif
 
 # The default search paths on OS X are unlikely to include where Poco has been installed.
 # Add the default location used by Brew, at least. 
 ifeq ($(UNAME_S),Darwin)
-	CXXFLAGS += -I/usr/local/include
-	LDFLAGS += -L/usr/local/lib
+   CXXFLAGS += -I/usr/local/include
+   LDFLAGS += -L/usr/local/lib
 endif
 
 CXXFLAGS += $(INC)
