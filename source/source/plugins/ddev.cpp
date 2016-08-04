@@ -1,3 +1,6 @@
+#include <Poco/DirectoryIterator.h>
+#include <Poco/String.h>
+
 #include "ddev.h"
 #include "globalcontext.h"
 #include "utils.h"
@@ -23,7 +26,11 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
    {
       case (s2i("build")):
       {
-         return _build(cl, v);
+         return _build(cl, v, Poco::Path::current());
+      }
+      case (s2i("buildtree")):
+      {
+         return _buildtree(cl, v, Poco::Path::current());
       }
       case (s2i("test")):
       {
@@ -77,22 +84,21 @@ Poco::Path ddev::configurationFilePath() const
    return cfp;
 }
 
-cResult ddev::_build(const CommandLine & cl, const variables & v) const
+cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) const
 {
    if (v.getVal("TAG").length() == 0)
       return cError("You need to configure ddev with a tag first.");
 
-   Poco::Path dockerfile(Poco::Path::current());
-   dockerfile.makeDirectory().setFileName("Dockerfile");
-   if (!utils::fileexists(dockerfile))
-      dockerfile.setFileName("dockerfile");
-   if (!utils::fileexists(dockerfile))
+   d.makeDirectory().setFileName("Dockerfile");
+   if (!utils::fileexists(d))
+      d.setFileName("dockerfile");
+   if (!utils::fileexists(d))
       return cError("Couldn't find a dockerfile in the current directory.");
 
    CommandLine operation;
    operation.command = "docker";
    operation.args = { "build","-t",v.getVal("TAG"),"." };
-   int rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+   int rval = utils::runcommand_stream(operation, kORaw, d.parent());
    if (rval != 0)
       return cError("Build failed.");
    logmsg(kLINFO, "Built " + v.getVal("TAG"));
@@ -107,6 +113,48 @@ cResult ddev::_build(const CommandLine & cl, const variables & v) const
    }
    else
       return cError("Could not determine service name.");
+}
+
+cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path d) const
+{
+   cResult rval;
+   Poco::DirectoryIterator di(d), end;
+   Poco::Path ddevjson;
+   bool foundjson = false;
+
+   //logdbg("Checking " + d.toString());
+
+   // process all subdirectories
+   while (di != end)
+   {
+      if (di->isDirectory())
+         rval += _buildtree(cl,v,di->path());
+      else
+         if (di->isFile())
+            if (0 == Poco::icompare(Poco::Path(di->path()).getFileName(), "ddev.json"))
+            {
+               foundjson = true;
+               ddevjson = di->path();
+            }
+      ++di;
+   }
+
+   // then process this directory
+   if (foundjson)
+   {
+      logmsg(kLINFO,"Building " + ddevjson.toString());
+      persistvariables pv(mName, ddevjson);
+      pv.setConfiguration(mConfiguration);
+      cResult r = pv.loadvariables();
+      if (!r.success())
+         return r;
+      r = _build(cl, pv.getVariables(),ddevjson.parent());
+      if (r.success())
+         logmsg(kLINFO, "Successfully built " + ddevjson.toString());
+      rval += r;
+   }
+
+   return rval;
 }
 
 cResult _testcommand(CommandLine operation)
