@@ -1,6 +1,5 @@
 #include <fstream>
 #include <Poco/Path.h>
-#include <cereal/archives/json.hpp>
 
 #include "drunner_settings.h"
 #include "utils.h"

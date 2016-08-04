@@ -1,12 +1,7 @@
 #ifndef __drunnerSettings_H
 #define __drunnerSettings_H
 
-#include <map>
-#include <Poco/Path.h>
-
-#include "params.h"
 #include "variables.h"
-#include "cresult.h"
 
 class drunnerSettings : public persistvariables
 {
@@ -18,10 +13,6 @@ public:
    bool getPullImages() const               { return mVariables.getBool("PULLIMAGES"); }
 
    bool mReadOkay;
-
-private:
-   variables mVariables;
 };
-CEREAL_CLASS_VERSION(drunnerSettings, 1);
 
 #endif
