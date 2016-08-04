@@ -58,7 +58,15 @@ public:
       return *this;
    }
 
-   std::string what() { return mMessage; }
+   std::string what() 
+   {
+      if (mMessage.length()>0)
+         return mMessage; 
+      if (noChange()) return "No Change";
+      if (error()) return "Error";
+      if (notImpl()) return "Not Implemented";
+      return "Success";
+   }
 
    operator _eResult() const { return mResult; }
    bool error() const { return mResult == kRError; }

@@ -15,6 +15,7 @@ public:
 
 private:
    cResult _build(const CommandLine & cl, const variables & v) const;
+   cResult _test(const CommandLine & cl, const variables & v) const;
 };
 
 

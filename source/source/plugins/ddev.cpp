@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "dassert.h"
 #include "drunner_paths.h"
+#include "service_install.h"
 
 ddev::ddev() : pluginhelper("ddev")
 {
@@ -23,6 +24,10 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
       case (s2i("build")):
       {
          return _build(cl, v);
+      }
+      case (s2i("test")):
+      {
+         return _test(cl, v);
       }
       default:
          return cError("Unrecognised command " + cl.command);
@@ -96,13 +101,45 @@ cResult ddev::_build(const CommandLine & cl, const variables & v) const
    if (dservicename.length() > 0)
    {
       logmsg(kLINFO, "Installing " + v.getVal("TAG") + " as " + dservicename);
-      operation.command = drunnerPaths::getPath_Bin().setFileName("drunner").toString();
-      operation.args = { "recreate","-d",dservicename, v.getVal("TAG") };
-      rval = utils::runcommand_stream(operation, kORaw, dockerfile.parent());
+
+      service_install si(dservicename, v.getVal("TAG"));
+      return si.recover();
    }
+   else
+      return cError("Could not determine service name.");
+}
 
-   return kRSuccess;
+cResult _testcommand(CommandLine operation)
+{
+   std::string out;
+   cResult r = kRSuccess;
+   int rci = utils::runcommand(operation, out);
+   if (0 != rci && 127 != rci)
+      r = cError(out);
+   return r;
+}
 
+cResult ddev::_test(const CommandLine & cl, const variables & v) const
+{
+   std::string dservicename;
+   if (cl.args.size() == 0)
+   {
+      dservicename = v.getVal("DSERVICENAME");
+      if (dservicename.length() == 0)
+         return cError("You need to configure ddev with a tag first.");
+   }
+   else
+      dservicename = cl.args[0];
+
+   cResult r;
+   r+=_testcommand(CommandLine(dservicename, { "help" }));
+
+   if (r.success())
+      logmsg(kLINFO, "Tests completed successfully.");
+   else
+      logmsg(kLERROR, "Tests failed: " + r.what());
+
+   return r;
 }
 
 
