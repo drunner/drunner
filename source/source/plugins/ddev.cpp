@@ -112,7 +112,8 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
       return si.recover();
    }
    else
-      return cError("Could not determine service name.");
+      logmsg(kLINFO,"Not a dService so not installing.");
+   return rval;
 }
 
 cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path d) const
@@ -150,7 +151,9 @@ cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path
          return r;
       r = _build(cl, pv.getVariables(),ddevjson.parent());
       if (r.success())
-         logmsg(kLINFO, "Successfully built " + ddevjson.toString());
+         logmsg(kLINFO, "Successfully built " + ddevjson.toString()+"\n----------------------------------------------------------");
+      else
+         logmsg(kLERROR, "Build failed for " + ddevjson.toString() + ":\n " + r.what());
       rval += r;
    }
 
