@@ -100,16 +100,16 @@ function putS3
   [ -v S3KEY ] || die "Undefined: S3KEY";
   [ -v S3SECRET ] ||  die "Underfined: S3SECRET";
 
-  path=$1
+  souce_path=$1
   aws_path=$2
   BUCKET='drunner'
 
   date="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
-  md5="$(openssl md5 -binary < "${path}" | base64)"
+  md5="$(openssl md5 -binary < "${souce_path}" | base64)"
   content_type='application/x-compressed-tar'
   string="PUT\n\n${content_type}\n${date}\n/${BUCKET}${aws_path}"
   signature=$(echo -en "${string}" | openssl sha1 -hmac "${S3SECRET}" -binary | base64)
-  curl -X PUT -T "${path}" \
+  curl -X PUT -T "${souce_path}" \
    -H "Host: ${BUCKET}.s3.amazonaws.com" \
    -H "Date: ${date}" \
    -H "Content-Type: ${content_type}" \
@@ -117,7 +117,7 @@ function putS3
     "https://drunner.s3-ap-southeast-2.amazonaws.com${aws_path}"
   #    "https://${BUCKET}.s3.amazonaws.com${aws_path}"
 
-  echo "Uploaded ${PATH} to S3."
+  echo "Uploaded ${souce_path} to S3."
 }
 
 function main {
