@@ -240,7 +240,10 @@ namespace drunnerSetup
          fatal("Couldn't download drunner-install.");
 
       // exec to switch to that process.
+      const char    *my_argv[64] = { "/tmp/drunner/drunner-install",NULL};
+      execve(my_argv[0], (char **)my_argv, NULL);
 
+      fatal("Execution failed");
 #endif
 
       return kRSuccess;
