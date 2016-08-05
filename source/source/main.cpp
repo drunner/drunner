@@ -129,12 +129,9 @@ int mainroutines::process()
       case c_setup:
       {
          if (p.numArgs() < 1)
-            drunnerSetup::check_setup(true);
+            return drunnerSetup::check_setup(true);
          else
-         { // first argument is service name.
-            service_install svi(p.getArg(0));
-            return svi.update();
-         }
+            fatal("Setup not available for dServices.");
          break;
       }
 
