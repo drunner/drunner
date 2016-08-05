@@ -217,4 +217,20 @@ namespace drunnerSetup
       // Finished!
       return kRSuccess;
    }
+
+
+   cResult update_drunner()
+   {
+      // download and install the latest drunner.
+
+#ifdef _WIN32
+      fatal("Update not yet supported on Windows.");
+#endif
+
+      CommandLine cl("docker", { "run","--rm","-v","/usr/local/bin:/ulb","drunner/drunner_utils","updatedrunner" });
+      int r = utils::runcommand_stream(cl, kORaw);
+      if (r != 0)
+         fatal("Update script failed.");
+      return kRSuccess;
+   }
 }

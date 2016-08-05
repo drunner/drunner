@@ -115,10 +115,21 @@ int mainroutines::process()
          break;
       }
 
+      case c_update:
+      {
+         if (p.numArgs() < 1)
+            return drunnerSetup::update_drunner();
+         else
+         {
+            service_install svi(p.getArg(0));
+            return svi.update();
+         }
+      }
+
       case c_setup:
       {
-         if (p.numArgs()<1)
-            drunnerSetup::check_setup(true); 
+         if (p.numArgs() < 1)
+            drunnerSetup::check_setup(true);
          else
          { // first argument is service name.
             service_install svi(p.getArg(0));
