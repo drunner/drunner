@@ -225,12 +225,24 @@ namespace drunnerSetup
 
 #ifdef _WIN32
       fatal("Update not yet supported on Windows.");
-#endif
+#else
 
-      CommandLine cl("docker", { "run","--rm","-v","/usr/local/bin:/ulb","drunner/drunner_utils","updatedrunner" });
+      std::string targetdir = "/tmp/drunner";
+      std::string target = targetdir + "/drunner-install";
+
+      utils::makedirectory(targetdir, S_700);
+      CommandLine cl("docker", { "run","--rm","-v",targetdir+":/dtemp","drunner/drunner_utils","download_drunner_install" });
       int r = utils::runcommand_stream(cl, kORaw);
       if (r != 0)
          fatal("Update script failed.");
+   
+      if (!utils::fileexists(target))
+         fatal("Couldn't download drunner-install.");
+
+      // exec to switch to that process.
+
+#endif
+
       return kRSuccess;
    }
 }
