@@ -27,7 +27,7 @@ params::params(int argc, char **argv) :
    {"install",c_install},
    {"uninstall",c_uninstall},
    {"obliterate",c_obliterate},
-   {"update",c_setup},
+   {"update",c_update},
    {"setup",c_setup},
    {"backup",c_backup},
    {"restore",c_restore},

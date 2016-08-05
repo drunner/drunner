@@ -8,6 +8,7 @@
 namespace drunnerSetup
 {
    cResult check_setup(bool forceUpdate);
+   cResult update_drunner();
    //cResult setup();
 
 }

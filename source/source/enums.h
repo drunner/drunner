@@ -43,6 +43,7 @@ enum eCommand {
    c_clean,
    c_list,
    c_setup,
+   c_update,
    c_checkimage,
    c_backup,
    c_restore,
