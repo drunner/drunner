@@ -80,6 +80,12 @@ cResult mainroutines::process()
 {
    const params & p(*GlobalContext::getParams());
 
+   // do this last - expects settings global object to be available.
+   bool forceUpdate = (p.getCommand() == c_setup && p.numArgs() < 1);
+   cResult csr = drunnerSetup::check_setup(forceUpdate);
+   if (forceUpdate)
+      return csr;
+
    // allow unit tests to be run directly from installer.
    if (p.getCommand()==c_unittest)
    {
@@ -136,12 +142,8 @@ cResult mainroutines::process()
       }
 
       case c_setup:
-      {
-         if (p.numArgs() < 1)
-            return drunnerSetup::check_setup(true);
-         else
-            fatal("Setup not available for dServices.");
-         break;
+      { // dRunner case handled above.
+         fatal("Setup not available for dServices.");
       }
 
       case c_checkimage:
