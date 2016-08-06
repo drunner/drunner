@@ -17,7 +17,7 @@ public:
    cResult servicecmd();
 
    int status();
-   void backup(const std::string & backupfile);
+   cResult backup(const std::string & backupfile);
    //void enter(); // uses execl, so never returns.
 
    const std::string getImageName() const;

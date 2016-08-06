@@ -2,6 +2,7 @@
 #define __C_RESULT_H
 
 #include <Poco/Foundation.h>
+#include <string>
 
 #include "globallogger.h"
 
@@ -13,7 +14,7 @@ enum _eResult
    kRNotImplemented = 127,
 };
 
-#define cError(MESSAGE) (cResult(kRError, MESSAGE, __func__)) 
+#define cError(MESSAGE) (cResult(kRError, MESSAGE, std::string(__FILE__) + " (" + std::string( __func__ )+ "), line " + std::to_string(__LINE__))) 
 
 class cResult
 {
@@ -28,9 +29,8 @@ public:
    {
    }
 
-   cResult(_eResult x, std::string msg, std::string f) : mResult(x), mMessage(f+": "+msg)
+   cResult(_eResult x, std::string msg, std::string context) : mResult(x), mMessage(msg), mContext(context)
    {
-      logdbg(mMessage);
    }
 
    cResult(int x)
@@ -67,6 +67,12 @@ public:
       if (notImpl()) return "Not Implemented";
       return "Success";
    }
+   std::string context()
+   {
+      if (mContext.length()>0)
+         return mContext;
+      return "No Context Provided";
+   }
 
    operator _eResult() const { return mResult; }
    bool error() const { return mResult == kRError; }
@@ -76,6 +82,7 @@ public:
 private:
    _eResult mResult;
    std::string mMessage;
+   std::string mContext;
 };
 
 

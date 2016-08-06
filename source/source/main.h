@@ -1,10 +1,12 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "cresult.h"
+
 namespace mainroutines
 {
 
-   int process();
+   cResult process();
 
 } // namespace
 

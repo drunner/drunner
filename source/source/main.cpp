@@ -36,6 +36,11 @@ void waitforreturn()
       }
 }
 
+void _handleexception()
+{
+
+}
+
 int main(int argc, char **argv)
 {
    try
@@ -44,7 +49,12 @@ int main(int argc, char **argv)
 
       logmsg(kLDEBUG,"dRunner C++ "+GlobalContext::getParams()->getVersion());
 
-      int rval = mainroutines::process();
+      cResult rval = mainroutines::process();
+      if (rval.error())
+      {
+         logdbg("Error context: "+rval.context());
+         fatal(rval.what());
+      }
       waitforreturn();
       return rval;
    }
@@ -66,7 +76,7 @@ std::string _imageparse(std::string imagename)
 
 // ----------------------------------------------------------------------------------------------------------------------
 
-int mainroutines::process()
+cResult mainroutines::process()
 {
    const params & p(*GlobalContext::getParams());
 
@@ -79,7 +89,7 @@ int mainroutines::process()
       if (result!=0)
          logmsg(kLERROR,"Unit tests failed.");
       logmsg(kLINFO,"All unit tests passed.");
-      return 0;
+      return kRSuccess;
    }
 
    if (!GlobalContext::hasSettings())
@@ -91,8 +101,7 @@ int mainroutines::process()
       cl.command = "configure";
       cl.args = p.getArgs();
       drunnerSettings newSettings;
-      newSettings.handleConfigureCommand(cl); // needs to be read/write settings.
-      return 0;
+      return newSettings.handleConfigureCommand(cl); // needs to be read/write settings.
    }
 
    cResult rval = GlobalContext::getSettings()->checkRequired();
@@ -180,8 +189,7 @@ int mainroutines::process()
          if (p.numArgs() < 2)
             logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE");
          service svc(p.getArg(0));
-         svc.backup(p.getArg(1));
-         break;
+         return svc.backup(p.getArg(1));
       }
 
       case c_servicecmd:
@@ -244,22 +252,13 @@ int mainroutines::process()
       case c_plugin:
       {
          plugins p;
-         cResult r=p.runcommand();
-         if (r == kRError)
-            fatal(r.what());
-         return r;
+         return p.runcommand();
       }
 
 
       default:
-         {
-            logmsg(kLERROR,R"EOF(
-
-          /----------------------------------\
-          |   That command does not exist.   |
-          \----------------------------------/
-)EOF");
-            return 1;
+      {
+         return cError("The command '"+p.getCommandStr()+"' is not recognised.");
       }
    }
    return 0;

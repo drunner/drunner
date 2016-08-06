@@ -17,7 +17,7 @@
 #include "dassert.h"
 
 // Back up this service to backupfile.
-void service::backup(const std::string & backupfile)
+cResult service::backup(const std::string & backupfile)
 {
    timez ttotal, tstep;
 
@@ -26,7 +26,7 @@ void service::backup(const std::string & backupfile)
    Poco::Path bf(backupfile);
    bf.makeAbsolute();
    if (utils::fileexists(bf))
-      logmsg(kLERROR, "Backup file " + bf.toString() + " already exists. Aborting.");
+      return cError("Backup file " + bf.toString() + " already exists. Aborting.");
 
    utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + getName()));
    utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
@@ -114,6 +114,8 @@ void service::backup(const std::string & backupfile)
 
    logmsg(kLINFO, "Archive of service " + getName() + " created at " + bf.toString());
    logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
+
+   return kRSuccess;
 }
 
 
