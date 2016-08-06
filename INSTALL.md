@@ -17,10 +17,8 @@ sudo adduser ${USER} docker
 
 ### Installing dRunner
 ```
-wget http://drunner.s3.amazonaws.com/lin/drunner
-chmod a+x drunner
-sudo mv drunner /usr/local/bin
-drunner setup
+wget http://drunner.s3.amazonaws.com/lin/drunner-install
+bash drunner-install
 ```
 
 If this is the first time you've installed dRunner, log out then in again to update your profile (dRunner adds its bin directory to your path in ~/.profile).
