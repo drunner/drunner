@@ -11,8 +11,13 @@
 RVAL=3
 
 if [ $(uname -rv | grep -c "Debian") -eq 0 ]; then
-  echo "This script is only for Debian hosts."
+  echo "This script is only for Debian hosts." 1>&2
   exit 1
+fi
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root." 1>&2
+   exit 1
 fi
 
 # install package if it doesn't exist, updating cache
