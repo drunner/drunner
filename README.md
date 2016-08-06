@@ -43,7 +43,7 @@ We assume here you have a standard user account called testuser which you'll use
 
 dRunner needs docker. You can install it with:
 ```
-wget -nv http://drunner.s3.amazonaws.com/install_docker.sh
+wget -nv http://drunner.s3.amazonaws.com/06/install_docker.sh
 sudo bash install_docker.sh
 ```
 
@@ -54,10 +54,9 @@ sudo adduser ${USER} docker
 
 ### Installing dRunner
 ```
-wget http://drunner.s3.amazonaws.com/lin/drunner
-chmod a+x drunner
-sudo mv drunner /usr/local/bin
-drunner setup
+wget http://drunner.s3.amazonaws.com/06/drunner-install
+chmod a+x drunner-install
+./drunner-install
 ```
 
 If this is the first time you've installed dRunner, log out then in again to update your profile (dRunner adds its bin directory to your path in ~/.profile).
@@ -89,13 +88,6 @@ dRunner can test containers for compatibility and functionality. Try it out with
 ```
 dtest test drunner/helloworld
 ```
-
-### dRunner Images to play with
-
-Other images to try:
-* [minecraft](https://github.com/j842/drunner-minecraft) - really easy minecraft server.
-* [simplesecrets](https://github.com/j842/drunner-simplesecrets) - store low security secrets in S3.
-
 
 ## General Use
 
@@ -164,21 +156,3 @@ See [Docker's Security Statement](https://docs.docker.com/engine/security/securi
 ## Creating your own dService
 
 To see how to make a dService [read the documentation](https://github.com/drunner/drunner/blob/master/DSERVICE.md).
-
-
-
-## Developing dRunner itself
-
-As root:
-```
-wget -nv https://drunner.s3.amazonaws.com/install_docker.sh
-bash install_docker.sh
-apt-get install build-essential g++-multilib libboost-all-dev libyaml-cpp-dev
-adduser devuser docker
-```
-
-As devuser:
-```
-git clone git@github.com:drunner/drunner.git
-make
-```
