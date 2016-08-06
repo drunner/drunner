@@ -6,8 +6,8 @@
 
 dRunner needs docker. You can install it with:
 ```
-wget -nv http://drunner.s3.amazonaws.com/lin/install_docker.sh
-sudo bash install_docker.sh
+wget -nv http://drunner.s3.amazonaws.com/lin/docker-install
+sudo bash docker-install
 ```
 
 Then give yourself permissions to run docker with:
