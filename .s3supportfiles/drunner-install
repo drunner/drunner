@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $EUID -eq 0 ]]; then
+   echo "This script should be run as a normal user, not root." 1>&2
+   exit 1
+fi
+
 echo "Updating dRunner..."
 docker run --rm -v "/usr/local/bin:/ulb" "drunner/drunner_utils" bash -c \
    "wget http://drunner.s3.amazonaws.com/lin/drunner && chmod a+x drunner && cp drunner /ulb"
