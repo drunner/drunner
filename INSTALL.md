@@ -1,4 +1,4 @@
-# Installation Notes
+# Installation Instructions
 
 ## Linux
 
