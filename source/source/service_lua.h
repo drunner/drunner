@@ -41,7 +41,7 @@ namespace servicelua
       // pass through commands for the service variables.
       cResult saveVariables() const { return mServiceVars.savevariables(); }
       const variables getVariables() const { return mServiceVars.getVariables(); }
-      void setVariable(std::string key, std::string val) { mServiceVars.setVal(key, val); }
+      cResult setVariable(std::string key, std::string val) { return mServiceVars.setVal(key, val); }
 
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd);

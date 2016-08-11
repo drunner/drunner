@@ -22,7 +22,8 @@ and
 
 B) the service configuration variables, which includes:
     i)   the variables set by the user (as per (iv) above)
-    ii)  the in-memory SERVICENAME and IMAGENAME variables
+    ii)  the variable IMAGENAME set to the installed image name
+    iii) the in-memory SERVICENAME variable
 
 */
 
@@ -50,6 +51,11 @@ namespace servicelua
       // add pointer to ourselves, so C functions can access us.
       lua_pushlightuserdata(L, (void*)this);  // value
       lua_setglobal(L, "luafile");
+
+      Configuration v;
+      v.name = "IMAGENAME"; v.required = true; v.type = kCF_string;
+      mConfigItems.push_back(v);
+      mServiceVars.setConfiguration(mConfigItems);
    }
       
    luafile::~luafile()
@@ -91,11 +97,13 @@ namespace servicelua
       if (mServiceVars.loadvariables() == kRSuccess)
          mVarsLoaded = true;
       else
+      {
+         drunner_assert(mServiceVars.getVal("IMAGENAME").length() == 0, "IMAGENAME has not been set.");
          logmsg(kLDEBUG, "Couldn't load service variables.");
-
+      }
       // set standard vars (always present), clobbering anything in the file.
-      mServiceVars.setVal_mem("IMAGENAME", getImageName());
-      drunner_assert(mServiceVars.getVal("SERVICENAME") == mServicePaths.getName(), "Servicename inconsistency!");
+      //mServiceVars.setVal_mem("IMAGENAME", getImageName());
+      //drunner_assert(mServiceVars.getVal("SERVICENAME") == mServicePaths.getName(), "Servicename inconsistency!");
 
       mLuaLoaded = true;
       return kRSuccess;
@@ -200,8 +208,9 @@ namespace servicelua
 
    std::string luafile::getImageName() const
    {
-      drunner_assert(mContainers.size() > 0, "getImageName: no containers defined.");
-      return mContainers[0];
+      std::string iname = mServiceVars.getVal("IMAGENAME");
+      drunner_assert(iname.length() > 0, "IMAGENAME not defined.");
+      return iname;
    }
 
 } // namespace

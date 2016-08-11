@@ -106,6 +106,7 @@ cResult service::backup(const std::string & backupfile)
    if (!bigafile.exists())
       logmsg(kLERROR, "Expected archive not found at " + bigarchive.toString());
 
+   logdbg("Moving " + bigarchive.toString() + " to " + bf.toString());
    bigafile.renameTo(bf.toString());
 //      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
 

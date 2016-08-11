@@ -111,21 +111,18 @@ cResult service_install::_recreate()
 
       // write out service configuration for the dService.
       servicelua::luafile syf(mName);
+      if (kRSuccess != syf.setVariable("IMAGENAME", mImageName))
+         fatal("Could not set IMAGENAME.");
       if (syf.loadlua()!=kRSuccess)
          fatal("Corrupt dservice - couldn't read service.lua.");
+      drunner_assert(syf.getImageName() == mImageName, "IMAGENAME mismatch");
       if (syf.saveVariables() != kRSuccess)
          fatal("Could not write out service variables.");
+      drunner_assert(syf.getImageName() == mImageName, "IMAGENAME mismatch");
 
       // pull all containers.
-      bool foundmain = false;
       for (const auto & entry : syf.getContainers())
-      {
          utils_docker::pullImage(entry);
-         if (0==Poco::icompare(entry, mImageName))
-            foundmain = true;
-      }
-      if (!foundmain)
-         logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.lua file.");
       
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
