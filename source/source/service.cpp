@@ -1,7 +1,6 @@
 #include <sstream>
 #include <algorithm>
 
-
 #include <Poco/String.h>
 
 #ifndef _WIN32
@@ -28,7 +27,9 @@ service::service(std::string servicename) :
    if (mServiceLua.loadlua() != kRSuccess)
       fatal("Could not load service.lua: " + getPathServiceLua().toString());
 
-   mServiceVarsPtr = std::make_unique<serviceVars>(servicename, mServiceLua.getConfigItems());
+   // make_unique is C++14.
+   mServiceVarsPtr = std::unique_ptr<serviceVars>(new serviceVars(servicename, mServiceLua.getConfigItems()));
+
    if (mServiceVarsPtr->loadvariables() != kRSuccess)
       fatal("Could not load service varialbes.");
    mImageName = mServiceVarsPtr->getImageName();

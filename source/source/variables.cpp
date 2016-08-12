@@ -167,12 +167,12 @@ cResult persistvariables::_showconfiginfo() const
    for (const auto & y : mVariables.getAll())
       maxkey = _max(maxkey, y.first.length());
    for (const auto & y : mVariables.getAll())
-   {
-      logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
       for (const auto & z : mConfig)
-         if (Poco::icompare(z.name, y.first) == 0)
-            logmsg(kLINFO, " "+_pad(" ",maxkey)+"   "+ z.description + "\n");
-   }
+         if (Poco::icompare(z.name, y.first) == 0 && z.usersettable)
+         {
+            logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+            logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
+         }
 
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Change configuration variables with:");

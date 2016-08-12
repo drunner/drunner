@@ -1,6 +1,8 @@
 #ifndef __SERVICECLASS_H
 #define __SERVICECLASS_H
 
+#include <memory>
+
 #include "params.h"
 #include "drunner_settings.h"
 #include "cresult.h"
