@@ -20,14 +20,21 @@
 #include "drunner_paths.h"
 #include "generate.h"
 #include "dassert.h"
+#include "service_vars.h"
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
-{ // no imagename specified. Load from service_lua.
+{ // no imagename specified. Load from service variables if we can.
+
    servicelua::luafile lf(servicename);
-   if (lf.loadlua()!=kRSuccess)
-      logmsg(kLWARN,"No imagename specified and unable to read service.lua.");
-   else
-      mImageName = lf.getImageName();
+   if (kRSuccess == lf.loadlua())
+   {
+      serviceVars v(servicename, lf.getConfigItems());
+      v.loadvariables();
+      mImageName = v.getImageName();
+   }
+
+   if (mImageName.length()==0)
+      logmsg(kLWARN,"No imagename specified and unable to read it from the service configuration.");
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -109,16 +116,18 @@ cResult service_install::_recreate()
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
       drunner_assert(utils::fileexists(getPathServiceLua()), "The dService service.lua file was not copied across.");
 
-      // write out service configuration for the dService.
+
+      // load the lua file
       servicelua::luafile syf(mName);
-      if (kRSuccess != syf.setVariable("IMAGENAME", mImageName))
-         fatal("Could not set IMAGENAME.");
-      if (syf.loadlua()!=kRSuccess)
+      if (syf.loadlua() != kRSuccess)
          fatal("Corrupt dservice - couldn't read service.lua.");
-      drunner_assert(syf.getImageName() == mImageName, "IMAGENAME mismatch");
-      if (syf.saveVariables() != kRSuccess)
-         fatal("Could not write out service variables.");
-      drunner_assert(syf.getImageName() == mImageName, "IMAGENAME mismatch");
+
+      // write out service configuration for the dService.
+      serviceVars sv(mName, mImageName, syf.getConfigItems());
+      if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
+         logdbg("Loaded existing service variables.");
+      sv.savevariables();
+      drunner_assert(sv.getImageName() == mImageName, "IMAGENAME mismatch");
 
       // pull all containers.
       for (const auto & entry : syf.getContainers())

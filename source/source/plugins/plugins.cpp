@@ -63,8 +63,7 @@ cResult pluginhelper::runCommand() const
       return showHelp();
    
    Poco::Path spath = configurationFilePath();
-   persistvariables pv(mName, spath);
-   pv.setConfiguration(mConfiguration);
+   persistvariables pv(mName, spath, mConfiguration);
    cResult r = pv.loadvariables();
    
    if (cl.command == "configure")

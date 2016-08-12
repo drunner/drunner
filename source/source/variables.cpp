@@ -72,15 +72,9 @@ std::string variables::substitute(std::string s) const
 // -----------------------------------------------------------------------------------------------------------------------------
 
 
-persistvariables::persistvariables(std::string name, Poco::Path path) : mName(name), mPath(path)
+persistvariables::persistvariables(std::string name, Poco::Path path, const std::vector<Configuration> config) : 
+   mName(name), mPath(path), mConfig(config)
 {
-}
-
-void persistvariables::setConfiguration(const std::vector<Configuration> & config) // limit to configuration
-{
-   // store the configuration.
-   mConfig = config;
-
    // set default values for settings if they don't already have a setting.
    for (const auto & x : mConfig)
       if (!hasKey(x.name) || getVal(x.name).length() == 0)
@@ -231,6 +225,11 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
    if (!rval.noChange())
       rval += savevariables();
    return rval;
+}
+
+void persistvariables::_addConfig(const Configuration & c)
+{
+   mConfig.push_back(c);
 }
 
 void persistvariables::setVal_mem(std::string key, std::string val)

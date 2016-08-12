@@ -6,6 +6,7 @@
 #include "cresult.h"
 #include "service_paths.h"
 #include "service_lua.h"
+#include "service_vars.h"
 
 // class to manage the dService.
 class service : public servicePaths
@@ -41,6 +42,7 @@ private:
 
    std::string mImageName;
    servicelua::luafile mServiceLua;
+   std::unique_ptr<serviceVars> mServiceVarsPtr;
 };
 
 

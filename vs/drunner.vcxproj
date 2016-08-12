@@ -74,6 +74,7 @@
     <ClCompile Include="..\source\source\service_install.cpp" />
     <ClCompile Include="..\source\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
+    <ClCompile Include="..\source\source\service_vars.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
     <ClCompile Include="..\source\source\service_lua.cpp" />
     <ClCompile Include="..\source\source\showhelp.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\source\source\service.h" />
     <ClInclude Include="..\source\source\servicehook.h" />
     <ClInclude Include="..\source\source\service_paths.h" />
+    <ClInclude Include="..\source\source\service_vars.h" />
     <ClInclude Include="..\source\source\variables.h" />
     <ClInclude Include="..\source\source\service_lua.h" />
     <ClInclude Include="..\source\source\showhelp.h" />

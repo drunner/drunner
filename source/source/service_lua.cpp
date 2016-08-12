@@ -35,15 +35,10 @@ namespace servicelua
 
    luafile::luafile(std::string serviceName) : 
       mServicePaths(serviceName), 
-      mServiceVars(serviceName, mServicePaths.getPathServiceVars()),
       mLuaLoaded(false), 
-      mVarsLoaded(false), 
       mLoadAttempt(false)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
-
-      // we always know the servicename.
-      mServiceVars.setVal_mem("SERVICENAME", mServicePaths.getName());
 
       L = luaL_newstate();
       luaL_openlibs(L);
@@ -52,10 +47,7 @@ namespace servicelua
       lua_pushlightuserdata(L, (void*)this);  // value
       lua_setglobal(L, "luafile");
 
-      Configuration v;
-      v.name = "IMAGENAME"; v.required = true; v.type = kCF_string;
-      mConfigItems.push_back(v);
-      mServiceVars.setConfiguration(mConfigItems);
+      mSVptr = NULL;
    }
       
    luafile::~luafile()
@@ -91,25 +83,23 @@ namespace servicelua
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
       // associate the ConfigItems
-      mServiceVars.setConfiguration(mConfigItems);
+      //mServiceVars.setConfiguration(mConfigItems);
 
       // attempt to load config file.
-      if (mServiceVars.loadvariables() == kRSuccess)
-         mVarsLoaded = true;
-      else
-      {
-         drunner_assert(mServiceVars.getVal("IMAGENAME").length() == 0, "IMAGENAME has not been set.");
-         logmsg(kLDEBUG, "Couldn't load service variables.");
-      }
-      // set standard vars (always present), clobbering anything in the file.
-      //mServiceVars.setVal_mem("IMAGENAME", getImageName());
-      //drunner_assert(mServiceVars.getVal("SERVICENAME") == mServicePaths.getName(), "Servicename inconsistency!");
+      //if (mServiceVars.loadvariables() == kRSuccess)
+      //   mVarsLoaded = true;
+      //else
+      //{
+      //   if (mServiceVars.getVal("IMAGENAME").length() == 0) 
+      //      logdbg("IMAGENAME has not been set.");
+      //   logmsg(kLDEBUG, "Couldn't load service variables.");
+      //}
 
       mLuaLoaded = true;
       return kRSuccess;
    }
 
-   cResult luafile::showHelp()
+   cResult luafile::_showHelp(serviceVars * sVars)
    {
       if (!mLuaLoaded)
          return cError("Can't show help because we weren't able to load the service.lua file.");
@@ -127,17 +117,21 @@ namespace servicelua
          fatal("The argument returned by help was not a string, rather "+std::string(lua_typename(L,1)));
       std::string help = lua_tostring(L, 1);
 
-      logmsg(kLINFO, mServiceVars.getVariables().substitute(help));
+      logmsg(kLINFO, sVars->getVariables().substitute(help));
       return kRSuccess;
    }
 
 
-   cResult luafile::runCommand(const CommandLine & serviceCmd) 
+   cResult luafile::runCommand(const CommandLine & serviceCmd, serviceVars * sVars)
    {
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
+      drunner_assert(sVars != NULL, "sVars has not been set.");
 
       if (Poco::icompare(serviceCmd.command, "configure") == 0 || Poco::icompare(serviceCmd.command, "config") == 0)
-         return mServiceVars.handleConfigureCommand(serviceCmd);
+         return sVars->handleConfigureCommand(serviceCmd);
+
+      if (Poco::icompare(serviceCmd.command, "help") == 0)
+         return _showHelp(sVars);
 
       cResult rval;
       lua_getglobal(L, serviceCmd.command.c_str());
@@ -148,8 +142,11 @@ namespace servicelua
       }
       else
       { // run the command
+         mSVptr = sVars;
          if (lua_pcall(L, 0, 0, 0) != LUA_OK)
             fatal("Command " + serviceCmd.command + " failed:\n "+ std::string(lua_tostring(L,-1)));
+         mSVptr = NULL;
+
          rval = kRSuccess;
       }
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after runCommand.");
@@ -197,6 +194,12 @@ namespace servicelua
       return mServicePaths.getPathdService();
    }
 
+   serviceVars * luafile::getServiceVars()
+   {
+      drunner_assert(mSVptr != NULL,"Service Variables pointer has not been set.");
+      return mSVptr;
+   }
+
    const std::vector<std::string> & luafile::getContainers() const
    {
       return mContainers;
@@ -204,13 +207,6 @@ namespace servicelua
    const std::vector<Configuration> & luafile::getConfigItems() const
    {
       return mConfigItems;
-   }
-
-   std::string luafile::getImageName() const
-   {
-      std::string iname = mServiceVars.getVal("IMAGENAME");
-      drunner_assert(iname.length() > 0, "IMAGENAME not defined.");
-      return iname;
    }
 
 } // namespace

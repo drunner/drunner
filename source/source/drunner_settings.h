@@ -13,6 +13,9 @@ public:
    bool getPullImages() const               { return mVariables.getBool("PULLIMAGES"); }
 
    bool mReadOkay;
+
+private:
+   static const std::vector<Configuration> _getConfig();
 };
 
 #endif

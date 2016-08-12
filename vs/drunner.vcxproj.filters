@@ -214,6 +214,9 @@
     <ClCompile Include="..\source\source\service_lua_cfuncs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_vars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -404,6 +407,9 @@
     </ClInclude>
     <ClInclude Include="..\source\source\plugins\ddev.h">
       <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_vars.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

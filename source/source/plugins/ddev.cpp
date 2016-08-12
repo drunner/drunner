@@ -144,8 +144,7 @@ cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path
    if (foundjson)
    {
       logmsg(kLINFO,"Building " + ddevjson.toString());
-      persistvariables pv(mName, ddevjson);
-      pv.setConfiguration(mConfiguration);
+      persistvariables pv(mName, ddevjson, mConfiguration);
       cResult r = pv.loadvariables();
       if (!r.success())
          return r;

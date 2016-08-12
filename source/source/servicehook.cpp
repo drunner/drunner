@@ -4,27 +4,16 @@
 #include "globallogger.h"
 #include "utils.h"
 #include "cresult.h"
-
-//servicehook::servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname, const std::vector<std::string> & hookparams) :
-//   mLua(lfile), mPaths(servicename), mActionName(actionname), mHookParams(hookparams)
-//{
-//   setHookCmds();
-//}
-//
-//servicehook::servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname) :
-//   mLua(lfile), mPaths(servicename), mActionName(actionname)
-//{
-//   setHookCmds();
-//}
+#include "service_vars.h"
 
 servicehook::servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams) :
-   mPaths(servicename), mLua(servicename), mActionName(actionname),  mHookParams(hookparams)
+   mPaths(servicename), mActionName(actionname),  mHookParams(hookparams)
 {
 }
 
 
 servicehook::servicehook(std::string servicename, std::string actionname) :
-   mPaths(servicename), mLua(servicename), mActionName(actionname)
+   mPaths(servicename), mActionName(actionname)
 {
 }
 
@@ -52,9 +41,21 @@ cResult servicehook::runHook(std::string se)
    if (!utils::fileexists(mPaths.getPathServiceLua()))
       return cError("Failed to find service.lua at " + mPaths.getPathServiceLua().toString());
 
-   cResult rval = mLua.loadlua();
+   servicelua::luafile lf(mPaths.getName());
+
+   cResult rval = lf.loadlua();
+   if (rval != kRSuccess)
+      return rval;
+
+   serviceVars sv(mPaths.getName(),lf.getConfigItems());
+   rval += sv.loadvariables();
+   if (rval != kRSuccess)
+      return rval;
+   if (sv.getImageName().length() == 0)
+      return cError("IMAGENAME was not set in service variables (servicehook::runHook).");
+
    CommandLine serviceCmd(se, mHookParams);
-   rval += mLua.runCommand(serviceCmd);
+   rval += lf.runCommand(serviceCmd, &sv);
 
    if (rval.error())
       return cError("dService hook " + se + " returned error: "+rval.what());
