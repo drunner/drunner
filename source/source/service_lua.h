@@ -10,6 +10,7 @@
 #include "service_paths.h"
 #include "variables.h"
 #include "lua.hpp"
+#include "service_vars.h"
 
 namespace servicelua
 {
@@ -29,25 +30,16 @@ namespace servicelua
       
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
-      cResult showHelp();
-
-      std::string getImageName() const;
 
       const std::vector<std::string> & getContainers() const;
       const std::vector<Configuration> & getConfigItems() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
 
-      // pass through commands for the service variables.
-      cResult saveVariables() const { return mServiceVars.savevariables(); }
-      const variables getVariables() const { return mServiceVars.getVariables(); }
-      void setVariable(std::string key, std::string val) { mServiceVars.setVal(key, val); }
-
       // for service::serviceRunnerCommand
-      cResult runCommand(const CommandLine & serviceCmd);
+      cResult runCommand(const CommandLine & serviceCmd, serviceVars * sVars);
 
       bool isLoaded() { return mLuaLoaded; }
-      bool isVariablesLoaded() { return mVarsLoaded; }
 
       std::string getServiceName() { return mServicePaths.getName(); }
 
@@ -56,16 +48,19 @@ namespace servicelua
       void addConfiguration(Configuration cf);
       void addVolume(Volume v);
       Poco::Path getPathdService();
+      serviceVars * getServiceVars();
 
    private:
+      cResult _showHelp(serviceVars * sVars);
+
       const servicePaths mServicePaths;
-      persistvariables mServiceVars;
 
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;
       std::vector<Volume> mVolumes;
 
       lua_State * L;
+      serviceVars * mSVptr;
 
       bool mLuaLoaded;
       bool mVarsLoaded;

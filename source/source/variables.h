@@ -24,13 +24,17 @@ enum configtype
    kCF_URL,
 };
 
-struct Configuration
+class Configuration
 {
+public:
+   Configuration(std::string n, std::string dflt, std::string desc, configtype t, bool rqd, bool user) : name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
+   
    std::string name;
    std::string defaultval;
    std::string description;
    configtype type;
    bool required;
+   bool usersettable;
 };
 
 
@@ -63,14 +67,12 @@ CEREAL_CLASS_VERSION(variables, 1);
 
 class persistvariables {
 public:
-   persistvariables(std::string name, Poco::Path path); // no configuration (freeform)
+   persistvariables(std::string name, Poco::Path path, const std::vector<Configuration> config);
    cResult loadvariables();
    cResult savevariables() const;
    cResult checkRequired() const;
    cResult setVal(std::string key, std::string val);
    void setVal_mem(std::string key, std::string val);
-
-   void setConfiguration(const std::vector<Configuration> & config); // limit to configuration
    
    // expose other methods.
    bool hasKey(std::string key) const;
@@ -82,10 +84,12 @@ public:
    
    cResult handleConfigureCommand(CommandLine cl);
 
+
 protected:
    cResult _showconfiginfo() const;
    cResult _checkvalid(std::string key, std::string val, Configuration config);
-   
+   void _addConfig(const Configuration & c);
+
    std::string mName; // name of service (or whatever) to print nice messages.
    Poco::Path mPath;
    std::vector<Configuration> mConfig;

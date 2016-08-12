@@ -50,33 +50,29 @@ namespace servicelua
       if (lua_gettop(L) != 5)
          return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addconfig.");
 
-      Configuration c;
-      c.name = lua_tostring(L, 1);
-      c.description = lua_tostring(L, 2);
-      c.defaultval = lua_tostring(L, 3);
-      c.required = (lua_toboolean(L, 5) == 1);
-
+      configtype t;
       {
          using namespace utils;
          switch (s2i(lua_tostring(L, 4)))
          {
          case s2i("port"):
-            c.type = kCF_port;
+            t = kCF_port;
             break;
          case s2i("path"):
-            c.type = kCF_path;
+            t = kCF_path;
             break;
          case s2i("existingpath"):
-            c.type = kCF_existingpath;
+            t = kCF_existingpath;
             break;
          case s2i("string"):
-            c.type = kCF_string;
+            t = kCF_string;
             break;
          default:
             fatal("Unknown configuration type: " + std::string(lua_tostring(L, 4)));
          }
       }
 
+      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), t, (lua_toboolean(L, 5) == 1), true);
       get_luafile(L)->addConfiguration(c);
 
       cResult rval = kRSuccess;
@@ -104,7 +100,7 @@ namespace servicelua
       luafile * lf = get_luafile(L);
 
       Volume v;
-      v.name = lf->getVariables().substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      v.name = lua_tostring(L, 1); // lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
       v.backup = true;
       v.external = false;
 
@@ -120,9 +116,7 @@ namespace servicelua
       return _luasuccess(L);
    }
 
-
    // -----------------------------------------------------------------------------------------------------------------------
-
 
    extern "C" int l_addcontainer(lua_State *L)
    {
@@ -147,11 +141,11 @@ namespace servicelua
       CommandLine operation;
       operation.command = lua_tostring(L, 1);
       for (int i = 2; i <= lua_gettop(L); ++i)
-         operation.args.push_back(lf->getVariables().substitute(lua_tostring(L, i)));
+         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
 
       Poco::Path runin = lf->getPathdService();
 
-      utils::runcommand_stream(operation, kORaw, runin, lf->getVariables().getAll());
+      utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll());
 
       return _luasuccess(L);
    }
@@ -165,7 +159,7 @@ namespace servicelua
       std::string containerraw = lua_tostring(L, 1);
 
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getVariables().substitute(containerraw);
+      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
 
       if (utils_docker::dockerContainerExists(subcontainer))
       {

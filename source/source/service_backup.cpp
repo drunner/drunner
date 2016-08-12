@@ -106,6 +106,7 @@ cResult service::backup(const std::string & backupfile)
    if (!bigafile.exists())
       logmsg(kLERROR, "Expected archive not found at " + bigarchive.toString());
 
+   logdbg("Moving " + bigarchive.toString() + " to " + bf.toString());
    bigafile.renameTo(bf.toString());
 //      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
 
@@ -179,13 +180,11 @@ cResult service_install::service_restore(const std::string & backupfile)
    service_install si(mName, imagename);
    si.install();
 
-   // load in the new variables.
+   // load in the new lua file.
    servicePaths paths(mName);
    servicelua::luafile newluafile(mName);
    if (kRSuccess != newluafile.loadlua())
       service_restore_fail(mName,"Installation did not correctly create the service.lua file.");
-   if (!newluafile.isVariablesLoaded())
-      service_restore_fail(mName,"Installation did not correctly create the serviceconfig.json file.");
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
@@ -211,20 +210,17 @@ cResult service_install::service_restore(const std::string & backupfile)
    compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
 
    // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
-   persistvariables oldvars(mName, paths.getPathServiceVars());
-   oldvars.setConfiguration(newluafile.getConfigItems());
+   serviceVars oldvars(mName, imagename, newluafile.getConfigItems());
 
-   if (kRSuccess != oldvars.loadvariables())
+   if (kRSuccess != oldvars.loadvariables()) // loads with new schema (updates).
       logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");
-   else 
-   { // merge.
-      for (auto const & x : oldvars.getVariables().getAll())
-         if (newluafile.getVariables().hasKey(x.first)) // is a known variable.
-               newluafile.setVariable(x.first, x.second);
-      newluafile.setVariable("SERVICENAME", mName); // ensure servicename is correct (we don't want the old one from the backup!)
-   }
-   if (kRSuccess != newluafile.saveVariables())
-      service_restore_fail(mName, "Failed to save new variables.");
+
+   // clobber SERVICENAME and IMAGENAME, ensuring they are the latest.
+   oldvars.setVal("SERVICENAME", mName);
+   oldvars.setVal("IMAGENAME", imagename);
+
+   if (kRSuccess != oldvars.savevariables())
+      logmsg(kLWARN, "Failed to save variables.");
 
    // tell the dService to do its restore_end action.
    tVecStr args;

@@ -1,7 +1,6 @@
 #include <sstream>
 #include <algorithm>
 
-
 #include <Poco/String.h>
 
 #ifndef _WIN32
@@ -27,8 +26,14 @@ service::service(std::string servicename) :
 {
    if (mServiceLua.loadlua() != kRSuccess)
       fatal("Could not load service.lua: " + getPathServiceLua().toString());
-   mImageName = mServiceLua.getImageName();
-   poco_assert(mImageName.length() > 0);
+
+   // make_unique is C++14.
+   mServiceVarsPtr = std::unique_ptr<serviceVars>(new serviceVars(servicename, mServiceLua.getConfigItems()));
+
+   if (mServiceVarsPtr->loadvariables() != kRSuccess)
+      fatal("Could not load service varialbes.");
+   mImageName = mServiceVarsPtr->getImageName();
+   drunner_assert(mImageName.length() > 0,"IMAGENAME not set in service variables.");
 }
 
 cResult service::servicecmd()
@@ -45,10 +50,10 @@ cResult service::servicecmd()
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
    if (0==Poco::icompare(cl.command, "configure"))
-      return mServiceLua.runCommand(cl); // no hooks.
+      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
 
    if (0==Poco::icompare(cl.command, "help"))
-      return mServiceLua.showHelp();
+      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
 
    if (p.isdrunnerCommand(cl.command))
       fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
@@ -58,7 +63,7 @@ cResult service::servicecmd()
    // check all required variables are configured.
    for (const auto & var : mServiceLua.getConfigItems())
       if (var.required)
-         if (!mServiceLua.getVariables().hasKey(var.name))
+         if (!mServiceVarsPtr->hasKey(var.name))
             fatal("A required configuration variable " + var.name + " has not yet been set.");
 
    // run the command
@@ -70,7 +75,7 @@ cResult service::servicecmd()
    for (const auto & x : cl.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
 
-   cResult rval = mServiceLua.runCommand(cl);
+   cResult rval = mServiceLua.runCommand(cl,mServiceVarsPtr.get());
 
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);

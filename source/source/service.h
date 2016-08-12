@@ -1,11 +1,14 @@
 #ifndef __SERVICECLASS_H
 #define __SERVICECLASS_H
 
+#include <memory>
+
 #include "params.h"
 #include "drunner_settings.h"
 #include "cresult.h"
 #include "service_paths.h"
 #include "service_lua.h"
+#include "service_vars.h"
 
 // class to manage the dService.
 class service : public servicePaths
@@ -41,6 +44,7 @@ private:
 
    std::string mImageName;
    servicelua::luafile mServiceLua;
+   std::unique_ptr<serviceVars> mServiceVarsPtr;
 };
 
 

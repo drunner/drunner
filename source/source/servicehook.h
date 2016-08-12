@@ -28,7 +28,6 @@ private:
 
    // ----
    servicePaths mPaths;
-   servicelua::luafile mLua;
    std::string mActionName;
    std::vector<std::string> mHookParams;
    std::string mStartCmd;

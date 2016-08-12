@@ -63,8 +63,7 @@ cResult pluginhelper::runCommand() const
       return showHelp();
    
    Poco::Path spath = configurationFilePath();
-   persistvariables pv(mName, spath);
-   pv.setConfiguration(mConfiguration);
+   persistvariables pv(mName, spath, mConfiguration);
    cResult r = pv.loadvariables();
    
    if (cl.command == "configure")
@@ -75,13 +74,7 @@ cResult pluginhelper::runCommand() const
 
 cResult pluginhelper::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required)
 {
-   Configuration c;
-   c.name = name;
-   c.description = description;
-   c.defaultval = defaultval;
-   c.type = type;
-   c.required = required;
-
+   Configuration c(name, defaultval, description, type, required, true);
    mConfiguration.push_back(c);
    return kRSuccess;
 }

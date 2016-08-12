@@ -20,14 +20,21 @@
 #include "drunner_paths.h"
 #include "generate.h"
 #include "dassert.h"
+#include "service_vars.h"
 
 service_install::service_install(std::string servicename) : servicePaths(servicename)
-{ // no imagename specified. Load from service_lua.
+{ // no imagename specified. Load from service variables if we can.
+
    servicelua::luafile lf(servicename);
-   if (lf.loadlua()!=kRSuccess)
-      logmsg(kLWARN,"No imagename specified and unable to read service.lua.");
-   else
-      mImageName = lf.getImageName();
+   if (kRSuccess == lf.loadlua())
+   {
+      serviceVars v(servicename, lf.getConfigItems());
+      v.loadvariables();
+      mImageName = v.getImageName();
+   }
+
+   if (mImageName.length()==0)
+      logdbg("No imagename specified and unable to read it from the service configuration. Okay if restoring from backup.");
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -109,23 +116,25 @@ cResult service_install::_recreate()
          logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
       drunner_assert(utils::fileexists(getPathServiceLua()), "The dService service.lua file was not copied across.");
 
-      // write out service configuration for the dService.
+
+      // load the lua file
       servicelua::luafile syf(mName);
-      if (syf.loadlua()!=kRSuccess)
+      if (syf.loadlua() != kRSuccess)
          fatal("Corrupt dservice - couldn't read service.lua.");
-      if (syf.saveVariables() != kRSuccess)
-         fatal("Could not write out service variables.");
+
+      // write out service configuration for the dService.
+      serviceVars sv(mName, mImageName, syf.getConfigItems());
+      if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
+         logdbg("Loaded existing service variables.");
+
+      // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
+      sv.setVal("IMAGENAME", mImageName);
+      drunner_assert(sv.getServiceName() == mName,"Service name mismatch: "+sv.getServiceName()+" vs "+mName);
+      sv.savevariables();
 
       // pull all containers.
-      bool foundmain = false;
       for (const auto & entry : syf.getContainers())
-      {
          utils_docker::pullImage(entry);
-         if (0==Poco::icompare(entry, mImageName))
-            foundmain = true;
-      }
-      if (!foundmain)
-         logmsg(kLWARN, "The main dService container " + mImageName + " was not present in the containers list in the service.lua file.");
       
       // create volumes, with variables substituted.
       std::vector<std::string> vols;
@@ -166,7 +175,7 @@ cResult service_install::install()
    servicehook hook(mName, "install");
    hook.endhook();
 
-   logmsg(kLINFO, "Installation complete - try running " + mName+ " now!");
+   logdbg("Installation of " + mName + " complete.");
    return kRSuccess;
 }
 

@@ -72,15 +72,9 @@ std::string variables::substitute(std::string s) const
 // -----------------------------------------------------------------------------------------------------------------------------
 
 
-persistvariables::persistvariables(std::string name, Poco::Path path) : mName(name), mPath(path)
+persistvariables::persistvariables(std::string name, Poco::Path path, const std::vector<Configuration> config) : 
+   mName(name), mPath(path), mConfig(config)
 {
-}
-
-void persistvariables::setConfiguration(const std::vector<Configuration> & config) // limit to configuration
-{
-   // store the configuration.
-   mConfig = config;
-
    // set default values for settings if they don't already have a setting.
    for (const auto & x : mConfig)
       if (!hasKey(x.name) || getVal(x.name).length() == 0)
@@ -173,12 +167,12 @@ cResult persistvariables::_showconfiginfo() const
    for (const auto & y : mVariables.getAll())
       maxkey = _max(maxkey, y.first.length());
    for (const auto & y : mVariables.getAll())
-   {
-      logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
       for (const auto & z : mConfig)
-         if (Poco::icompare(z.name, y.first) == 0)
-            logmsg(kLINFO, " "+_pad(" ",maxkey)+"   "+ z.description + "\n");
-   }
+         if (Poco::icompare(z.name, y.first) == 0 && z.usersettable)
+         {
+            logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+            logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
+         }
 
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Change configuration variables with:");
@@ -222,8 +216,10 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
          logmsg(kLINFO, "Setting " + key + " to " + val);
       }
 
-      if (0 == Poco::icompare(key, "IMAGENAME") || 0 == Poco::icompare(key, "SERVICENAME"))
-         fatal("You can't override the " + key + " configuration variable.");
+      for (const auto & x : mConfig)
+         if (Poco::icompare(x.name, key) == 0)
+            if (!x.usersettable)
+               return cError("You can't override " + x.name);
 
       // find the corresponding configuration definition and set the variable.
       rval += setVal(key, val);
@@ -231,6 +227,11 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
    if (!rval.noChange())
       rval += savevariables();
    return rval;
+}
+
+void persistvariables::_addConfig(const Configuration & c)
+{
+   mConfig.push_back(c);
 }
 
 void persistvariables::setVal_mem(std::string key, std::string val)
