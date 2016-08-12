@@ -100,7 +100,7 @@ namespace servicelua
       luafile * lf = get_luafile(L);
 
       Volume v;
-      v.name = lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      v.name = lua_tostring(L, 1); // lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
       v.backup = true;
       v.external = false;
 
