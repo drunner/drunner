@@ -10,6 +10,7 @@
 #elif defined(__APPLE__)
 #include <limits.h>
 #include <unistd.h>
+#include <mach-o/dyld.h>
 #else
 #include <linux/limits.h>
 #include <unistd.h>
@@ -37,6 +38,12 @@ Poco::Path drunnerPaths::getPath_Exe()
 
    std::string path(pathBuf.begin(), pathBuf.end());
    p=Poco::Path(path);
+#elif __APPLE__
+   char pathBuf[PATH_MAX]; // Note: may not be long enough for pathological cases!
+   uint32_t bufsize = sizeof(pathBuf);
+   if (_NSGetExecutablePath(pathBuf, &bufsize) != 0)
+      logmsg(kLERROR, "Couldn't get path to drunner executable!");
+   p=Poco::Path(pathBuf);
 #else
    char buff[PATH_MAX];
    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
