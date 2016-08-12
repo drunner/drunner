@@ -127,14 +127,10 @@ cResult service_install::_recreate()
       if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
          logdbg("Loaded existing service variables.");
 
-      // force the new imagename and servicename. (Imagename could be different on recreate - e.g. overridden at command line)
+      // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
       sv.setVal("IMAGENAME", mImageName);
-
-      // servicename should be the same.
       drunner_assert(sv.getServiceName() == mName,"Service name mismatch: "+sv.getServiceName()+" vs "+mName);
-
       sv.savevariables();
-      drunner_assert(sv.getImageName() == mImageName, "IMAGENAME mismatch : "+sv.getImageName()+" vs "+mImageName);
 
       // pull all containers.
       for (const auto & entry : syf.getContainers())

@@ -31,8 +31,6 @@ void serviceVars::_setconfig()
 {
    // we always know the servicename.
    setVal_mem("SERVICENAME", mName);
-
-   Configuration v;
-   v.name = "IMAGENAME"; v.required = true; v.type = kCF_string;
-   _addConfig(v);
+   
+   _addConfig(Configuration("IMAGENAME", "", "Image name", kCF_string, true, false));
 }

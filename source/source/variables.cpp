@@ -216,8 +216,10 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
          logmsg(kLINFO, "Setting " + key + " to " + val);
       }
 
-      if (0 == Poco::icompare(key, "IMAGENAME") || 0 == Poco::icompare(key, "SERVICENAME"))
-         fatal("You can't override the " + key + " configuration variable.");
+      for (const auto & x : mConfig)
+         if (Poco::icompare(x.name, key) == 0)
+            if (!x.usersettable)
+               return cError("You can't override " + x.name);
 
       // find the corresponding configuration definition and set the variable.
       rval += setVal(key, val);

@@ -50,33 +50,29 @@ namespace servicelua
       if (lua_gettop(L) != 5)
          return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addconfig.");
 
-      Configuration c;
-      c.name = lua_tostring(L, 1);
-      c.description = lua_tostring(L, 2);
-      c.defaultval = lua_tostring(L, 3);
-      c.required = (lua_toboolean(L, 5) == 1);
-
+      configtype t;
       {
          using namespace utils;
          switch (s2i(lua_tostring(L, 4)))
          {
          case s2i("port"):
-            c.type = kCF_port;
+            t = kCF_port;
             break;
          case s2i("path"):
-            c.type = kCF_path;
+            t = kCF_path;
             break;
          case s2i("existingpath"):
-            c.type = kCF_existingpath;
+            t = kCF_existingpath;
             break;
          case s2i("string"):
-            c.type = kCF_string;
+            t = kCF_string;
             break;
          default:
             fatal("Unknown configuration type: " + std::string(lua_tostring(L, 4)));
          }
       }
 
+      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), t, (lua_toboolean(L, 5) == 1), true);
       get_luafile(L)->addConfiguration(c);
 
       cResult rval = kRSuccess;

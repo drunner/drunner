@@ -24,13 +24,17 @@ enum configtype
    kCF_URL,
 };
 
-struct Configuration
+class Configuration
 {
+public:
+   Configuration(std::string n, std::string dflt, std::string desc, configtype t, bool rqd, bool user) : name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
+   
    std::string name;
    std::string defaultval;
    std::string description;
    configtype type;
    bool required;
+   bool usersettable;
 };
 
 
