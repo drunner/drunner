@@ -174,7 +174,9 @@ cResult mainroutines::process()
          }
 
          service_install svc(servicename, imagename);
-         return svc.install();
+         cResult r = svc.install();
+         if (r==kRSuccess)
+            logmsg(kLINFO, "Installation complete - try running " + servicename + " now!");
       }
 
       case c_restore:

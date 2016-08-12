@@ -34,7 +34,7 @@ service_install::service_install(std::string servicename) : servicePaths(service
    }
 
    if (mImageName.length()==0)
-      logmsg(kLWARN,"No imagename specified and unable to read it from the service configuration.");
+      logdbg("No imagename specified and unable to read it from the service configuration. Okay if restoring from backup.");
 }
 
 service_install::service_install(std::string servicename, std::string imagename) : servicePaths(servicename), mImageName(imagename)
@@ -175,7 +175,7 @@ cResult service_install::install()
    servicehook hook(mName, "install");
    hook.endhook();
 
-   logmsg(kLINFO, "Installation complete - try running " + mName+ " now!");
+   logdbg("Installation of " + mName + " complete.");
    return kRSuccess;
 }
 
