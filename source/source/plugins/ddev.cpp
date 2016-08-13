@@ -163,10 +163,22 @@ cResult _testcommand(CommandLine operation)
 {
    std::string out;
    cResult r = kRSuccess;
+
+   operation.logcommand("Running: ",kLINFO);
+
    int rci = utils::runcommand(operation, out);
    if (0 != rci && 127 != rci)
       r = cError(out);
    return r;
+}
+
+cResult _testcommand(std::string dservicename, std::vector<std::string> args)
+{
+   CommandLine cl;
+   cl.command = "drunner";
+   cl.args = { "servicecmd",dservicename };
+   cl.args.insert(cl.args.end(),args.begin(),args.end());
+   return _testcommand(cl);
 }
 
 cResult ddev::_test(const CommandLine & cl, const variables & v) const
@@ -182,7 +194,18 @@ cResult ddev::_test(const CommandLine & cl, const variables & v) const
       dservicename = cl.args[0];
 
    cResult r;
-   r+=_testcommand(CommandLine(dservicename, { "help" }));
+   r += _testcommand(dservicename, { "help" });
+   r += _testcommand(dservicename, { "configure" });
+
+   utils::tempfolder scratch(drunnerPaths::getPath_Temp().pushDirectory("test-" + dservicename));
+   Poco::Path bfile = scratch.getpath().setFileName("backupfile.bak");
+   std::string tempservice = dservicename + "__TEMP_TEST";
+
+   r += _testcommand(CommandLine("drunner", { "backup",dservicename,bfile.toString() }));
+   r += _testcommand(CommandLine("drunner", { "restore",bfile.toString(),tempservice }));
+   r += _testcommand(tempservice, { "help" });
+   r += _testcommand(tempservice, { "configure" });
+   r += _testcommand(CommandLine("drunner", { "obliterate", tempservice }));
 
    if (r.success())
       logmsg(kLINFO, "Tests completed successfully.");

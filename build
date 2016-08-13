@@ -79,6 +79,7 @@ function testcontainer {
    echo " "
    echo "-- Testing $1 --"
    "${DRUNNER}" install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
+   "${DRUNNER}" "__plugin__ddev" "test" "testcontainer-${1}"
    obliterate "testcontainer-${1}"
 }
 

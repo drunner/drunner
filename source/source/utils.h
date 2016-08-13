@@ -19,7 +19,7 @@ public:
    CommandLine() {}
    CommandLine(std::string c) : command(c) {}
    CommandLine(std::string c, const std::vector<std::string> & a) : command(c), args(a) { }
-   void logcommand(std::string prefix) const;
+   void logcommand(std::string prefix, eLogLevel ll=kLDEBUG) const;
    std::string command;
    std::vector<std::string> args;
 };
