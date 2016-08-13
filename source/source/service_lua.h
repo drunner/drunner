@@ -21,6 +21,12 @@ namespace servicelua
       bool external;
       std::string name;
    };
+   struct Proxy
+   {
+      std::string vhost;
+      std::string vport;
+      std::string dport;
+   };
 
    // lua file.
    class luafile {
@@ -35,6 +41,7 @@ namespace servicelua
       const std::vector<Configuration> & getConfigItems() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
+      const std::vector<Proxy> & getProxies() const;
 
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd, serviceVars * sVars);
@@ -47,6 +54,8 @@ namespace servicelua
       void addContainer(std::string cname);
       void addConfiguration(Configuration cf);
       void addVolume(Volume v);
+      void addProxy(Proxy p);
+
       Poco::Path getPathdService();
       serviceVars * getServiceVars();
 
@@ -58,6 +67,7 @@ namespace servicelua
       std::vector<std::string> mContainers;
       std::vector<Configuration> mConfigItems;
       std::vector<Volume> mVolumes;
+      std::vector<Proxy> mProxies;
 
       lua_State * L;
       serviceVars * mSVptr;

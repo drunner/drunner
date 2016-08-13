@@ -176,6 +176,11 @@ namespace servicelua
          }
    }
 
+   const std::vector<Proxy>& luafile::getProxies() const
+   {
+      return mProxies;
+   }
+
    void luafile::addContainer(std::string cname)
    {
       drunner_assert(cname.size() > 0, "Empty container name passed to addContainer.");
@@ -191,6 +196,11 @@ namespace servicelua
    void luafile::addVolume(Volume v)
    {
       mVolumes.push_back(v);
+   }
+
+   void luafile::addProxy(Proxy p)
+   {
+      mProxies.push_back(p);
    }
 
 
