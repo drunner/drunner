@@ -7,15 +7,17 @@
 #include "globalcontext.h"
 #include "globallogger.h"
 #include "enums.h"
+#include "dassert.h"
 
 #include "dbackup.h"
 #include "ddev.h"
-#include "dassert.h"
+#include "dproxy.h"
 
 plugins::plugins()
 {
    mPlugins.push_back(std::unique_ptr<plugin>(new dbackup()));
    mPlugins.push_back(std::unique_ptr<plugin>(new ddev()));
+   mPlugins.push_back(std::unique_ptr<plugin>(new dproxy()));
 }
 
 void plugins::generate_plugin_scripts() const

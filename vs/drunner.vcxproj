@@ -58,6 +58,7 @@
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\plugins\ddev.cpp" />
+    <ClCompile Include="..\source\source\plugins\dproxy.cpp" />
     <ClCompile Include="..\source\source\service_backupinfo.cpp" />
     <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\plugins\ddev.h" />
+    <ClInclude Include="..\source\source\plugins\dproxy.h" />
     <ClInclude Include="..\source\source\service_install.h" />
     <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
