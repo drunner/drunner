@@ -103,6 +103,7 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
       return cError("Build failed.");
    logmsg(kLINFO, "Built " + v.getVal("TAG"));
 
+   // install
    std::string dservicename = v.getVal("DSERVICENAME");
    if (dservicename.length() > 0)
    {

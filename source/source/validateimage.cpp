@@ -8,10 +8,8 @@ namespace validateImage
 {
    void validate(std::string imagename)
    {
-      if (utils::imageisbranch(imagename))
-         logmsg(kLDEBUG, imagename + " looks like a development branch (won't be pulled).");
-      else
-         logmsg(kLDEBUG, imagename + " looks like a production image.");
+      if (utils::imageislocal(imagename))
+         logmsg(kLDEBUG, imagename + " is tagged local, so won't be pulled.");
 
       std::string data = R"EOF(#!/bin/bash
 set -o nounset

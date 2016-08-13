@@ -134,17 +134,17 @@ namespace utils
       return h;
    }
 
-   bool imageisbranch(const std::string & imagename)
+   bool imageislocal(const std::string & imagename)
    {
       std::size_t pos = imagename.find_last_of("/:");
       if (pos == std::string::npos || imagename[pos] != ':')
          return false;
 
       std::string branchname=imagename.substr(pos+1);
-      if (0==Poco::icompare(branchname,"master"))
-         return false; // master, so not a branch!
+      if (0 == Poco::icompare(branchname, "local"))
+         return true;
 
-      return true;
+      return false;
    }
 
    cResult pullimage(const std::string & imagename)
