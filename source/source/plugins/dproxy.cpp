@@ -33,8 +33,23 @@ cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
 
 cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
 {
+   logmsg(kLWARN, "runHook - " + hook);
    if (lf.getProxies().size()==0) // no proxy, so changes to this dService don't matter for us.
       return kRNoChange;
+
+   switch (s2i(hook.c_str()))
+   {
+   case (s2i("install_end")):
+   case (s2i("update_end")):
+   case (s2i("configure_end")):
+   {
+      logmsg(kLWARN, "Reconfiguring dproxy.");
+      return update();
+   }
+
+   default:
+      return kRNoChange;
+   }
 
    return kRNotImplemented;
 }

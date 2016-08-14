@@ -10,12 +10,14 @@
 servicehook::servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams) :
    mPaths(servicename), mActionName(actionname),  mHookParams(hookparams)
 {
+   setHookCmds();
 }
 
 
 servicehook::servicehook(std::string servicename, std::string actionname) :
    mPaths(servicename), mActionName(actionname)
 {
+   setHookCmds();
 }
 
 
@@ -24,7 +26,7 @@ cResult servicehook::starthook()
    if (mStartCmd.length() > 0)
       return runHook(mStartCmd);
 
-   logmsg(kLDEBUG, "dService doesn't require hook for " + mActionName + " start");
+   logmsg(kLDEBUG, "dService doesn't require hook for " + mActionName + "_start");
    return kRNoChange;
 }
 
@@ -33,7 +35,7 @@ cResult servicehook::endhook()
    if (mEndCmd.length()>0)
       return runHook(mEndCmd);
 
-   logmsg(kLDEBUG, "dService doesn't require hook for " + mActionName + " end");
+   logmsg(kLDEBUG, "dService doesn't require hook for " + mActionName + "_end");
    return kRNoChange;
 }
 
@@ -92,9 +94,9 @@ void servicehook::setHookCmds()
 
    // some hooks don't make sense because the dService won't exist at that point.
    // spaces are to ensure whole word match.
-   if (utils::findStringIC(" install_start "," "+mStartCmd+" "))
+   if (utils::findStringIC("|install_start|","|"+mStartCmd+"|"))
       mStartCmd = "";
-   if (utils::findStringIC(" uninstall_end obliterate_end "," "+mEndCmd+" "))
+   if (utils::findStringIC("|uninstall_end|obliterate_end|","|"+mEndCmd+"|"))
       mEndCmd = "";
 }
 

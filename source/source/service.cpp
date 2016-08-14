@@ -49,26 +49,29 @@ cResult service::servicecmd()
    if (p.numArgs() > 2)
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
-   if (0==Poco::icompare(cl.command, "configure"))
-      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
 
-   if (0==Poco::icompare(cl.command, "help"))
-      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
-
+   // check reserved commands
    if (p.isdrunnerCommand(cl.command))
       fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
    if (p.isHook(cl.command))
       fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
-      
+
+
+   // handle configure
+   if (0 == Poco::icompare(cl.command, "configure"))
+   {
+      servicehook hook(getName(), "configure", cl.args);
+      hook.starthook();
+      cResult rval= mServiceLua.runCommand(cl, mServiceVarsPtr.get()); // no hooks.
+      hook.endhook();
+      return rval;
+   }
+
    // check all required variables are configured.
    for (const auto & var : mServiceLua.getConfigItems())
       if (var.required)
          if (!mServiceVarsPtr->hasKey(var.name))
             fatal("A required configuration variable " + var.name + " has not yet been set.");
-
-   // run the command
-   servicehook hook(getName(), "servicecmd", p.getArgs());
-   hook.starthook();
 
    std::ostringstream oss;
    oss << "[" << cl.command << "]";
@@ -80,7 +83,6 @@ cResult service::servicecmd()
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
 
-   hook.endhook();
    return rval;
 }
 
