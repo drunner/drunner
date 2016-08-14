@@ -21,7 +21,7 @@ class plugin
 public:
    virtual std::string getName() const = 0;
    virtual cResult runCommand() const = 0;
-   virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const = 0;
+   virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const = 0;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ public:
 
    void generate_plugin_scripts() const;
    cResult runcommand() const;
-   cResult runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const;
+   cResult runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf=NULL, const serviceVars * sv=NULL) const;
 
 private:
    std::deque< std::unique_ptr<plugin> > mPlugins;

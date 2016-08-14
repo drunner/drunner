@@ -72,7 +72,7 @@
     <ClCompile Include="..\source\source\service.cpp" />
     <ClCompile Include="..\source\source\servicehook.cpp" />
     <ClCompile Include="..\source\source\service_backup.cpp" />
-    <ClCompile Include="..\source\source\service_install.cpp" />
+    <ClCompile Include="..\source\source\service_manage.cpp" />
     <ClCompile Include="..\source\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
     <ClCompile Include="..\source\source\service_vars.cpp" />
@@ -126,7 +126,7 @@
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\plugins\ddev.h" />
     <ClInclude Include="..\source\source\plugins\dproxy.h" />
-    <ClInclude Include="..\source\source\service_install.h" />
+    <ClInclude Include="..\source\source\service_manage.h" />
     <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
     <ClInclude Include="..\source\source\exceptions.h" />

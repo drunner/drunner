@@ -148,7 +148,7 @@ cResult dbackup::runCommand() const
    }
 }
 
-cResult dbackup::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+cResult dbackup::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
 {
    return kRNoChange;
 }

@@ -37,7 +37,7 @@ cResult plugins::runcommand() const
    return cError("Unknown plugin '" + pluginname + "'");
 }
 
-cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
 {
    cResult rval;
    for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)

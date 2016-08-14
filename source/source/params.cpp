@@ -31,8 +31,6 @@ params::params(int argc, char **argv) :
    {"setup",c_setup},
    {"backup",c_backup},
    {"restore",c_restore},
-   {"recreate",c_recreate},
-   {"status",c_status},
    {"configure",c_configure},
    {"servicecmd",c_servicecmd}
    })

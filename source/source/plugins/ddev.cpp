@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "dassert.h"
 #include "drunner_paths.h"
-#include "service_install.h"
+#include "service_manage.h"
 
 ddev::ddev() : configuredplugin("ddev")
 {
@@ -41,7 +41,7 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
    }
 }
 
-cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
 {
    return kRNoChange;
 }
@@ -113,9 +113,8 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    if (dservicename.length() > 0)
    {
       logmsg(kLINFO, "Installing " + v.getVal("TAG") + " as " + dservicename);
-
-      service_install si(dservicename, v.getVal("TAG"));
-      return si.recover();
+      service_manage::uninstall(dservicename);
+      rval+=service_manage::install(dservicename, v.getVal("TAG"));
    }
    else
       logmsg(kLINFO,"Not a dService so not installing.");

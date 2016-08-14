@@ -16,7 +16,7 @@
 #include "service.h"
 #include "plugins.h"
 #include "validateimage.h"
-#include "service_install.h"
+#include "service_manage.h"
 #include "drunner_settings.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
@@ -135,10 +135,7 @@ cResult mainroutines::process()
          if (p.numArgs() < 1)
             return drunnerSetup::update_drunner();
          else
-         {
-            service_install svi(p.getArg(0));
-            return svi.update();
-         }
+            return service_manage::update(p.getArg(0));
       }
 
       case c_setup:
@@ -173,8 +170,7 @@ cResult mainroutines::process()
                servicename.erase(found);
          }
 
-         service_install svc(servicename, imagename);
-         cResult r = svc.install();
+         cResult r = service_manage::install(servicename, imagename);
          if (r==kRSuccess)
             logmsg(kLINFO, "Installation complete - try running " + servicename + " now!");
          return r;
@@ -185,8 +181,7 @@ cResult mainroutines::process()
          if (p.numArgs() < 2)
             logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME");
 
-         service_install svc(p.getArg(1));
-         return svc.service_restore(p.getArg(0));
+         return service_manage::service_restore(p.getArg(0), p.getArg(1));
       }
 
       case c_backup:
@@ -206,36 +201,11 @@ cResult mainroutines::process()
          return svc.servicecmd();
       }
 
-      case c_status:
-      {
-         if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner status SERVICENAME");
-         service svc(p.getArg(0));
-         return svc.status();
-      }
-
-      case c_recreate:
-      {
-         if (p.numArgs() < 1)
-            logmsg(kLERROR, "Usage: drunner recover SERVICENAME [IMAGENAME]");
-         std::string servicename = p.getArg(0);
-         if (p.numArgs() == 2)
-         {
-            service_install svc(servicename, _imageparse(p.getArg(1)));
-            return svc.recover();
-         }
-         else {
-            service_install svc(servicename);
-            return svc.recover();
-         }
-      }
-
       case c_uninstall:
       {
          if (p.numArgs()<1)
             logmsg(kLERROR, "Usage: drunner uninstall SERVICENAME");
-         service_install svc(p.getArg(0));
-         return svc.uninstall();
+         return service_manage::uninstall(p.getArg(0));
       }
 
       case c_obliterate:
@@ -243,8 +213,7 @@ cResult mainroutines::process()
          if (p.numArgs() < 1)
             logmsg(kLERROR, "Usage: drunner obliterate SERVICENAME");
 
-         service_install svc(p.getArg(0));
-         return svc.obliterate();
+         return service_manage::obliterate(p.getArg(0));
       }
 
       case c_help:

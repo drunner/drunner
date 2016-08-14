@@ -32,8 +32,6 @@ service::service(std::string servicename) :
 
    if (mServiceVarsPtr->loadvariables() != kRSuccess)
       fatal("Could not load service varialbes.");
-   mImageName = mServiceVarsPtr->getImageName();
-   drunner_assert(mImageName.length() > 0,"IMAGENAME not set in service variables.");
 }
 
 cResult service::servicecmd()
@@ -90,22 +88,5 @@ cResult service::servicecmd()
 
 const std::string service::getImageName() const
 {
-   return mImageName;
+   return mServiceVarsPtr->getImageName();
 }
-
-int service::status()
-{
-   servicehook hook(mName, "status");
-   hook.starthook();
-
-   if (!utils::fileexists(getPathdService()))
-   {
-      logmsg(kLINFO, getName() + " is not installed.");
-      hook.endhook();
-      return 1;
-   }
-   logmsg(kLINFO, getName() + " is installed and valid.");
-   hook.endhook();
-   return 0;
-}
-

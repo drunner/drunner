@@ -9,7 +9,7 @@ public:
    ddev();
    virtual std::string getName() const;
    virtual cResult runCommand(const CommandLine & cl, const variables & v) const;
-   virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const;
+   virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
    cResult showHelp() const;
 
    Poco::Path configurationFilePath() const;

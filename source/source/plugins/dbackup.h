@@ -10,7 +10,7 @@ public:
    dbackup();
    std::string getName() const;
    cResult runCommand() const;
-   cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const;
+   cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
    
    cResult showHelp() const;
 

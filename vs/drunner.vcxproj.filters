@@ -49,9 +49,6 @@
     <ClCompile Include="..\source\source\service_backup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_install.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\servicehook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -220,6 +217,9 @@
     <ClCompile Include="..\source\source\plugins\dproxy.cpp">
       <Filter>Source Files\plugins</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\service_manage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -298,9 +298,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_paths.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\service_install.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\basen.h">
@@ -416,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="..\source\source\plugins\dproxy.h">
       <Filter>Source Files\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\service_manage.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
