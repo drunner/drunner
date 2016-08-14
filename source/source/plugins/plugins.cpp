@@ -37,18 +37,27 @@ cResult plugins::runcommand() const
    return cError("Unknown plugin '" + pluginname + "'");
 }
 
+cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+{
+   cResult rval;
+   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
+      rval += p->get()->runHook(hook, hookparams, lf, sv);
+
+   return rval;
+}
+
 // -----------------------------------
 
 
-pluginhelper::pluginhelper(std::string name) : mName(name)
+configuredplugin::configuredplugin(std::string name) : mName(name)
 {
 }
 
-pluginhelper::~pluginhelper()
+configuredplugin::~configuredplugin()
 {
 }
 
-cResult pluginhelper::runCommand() const
+cResult configuredplugin::runCommand() const
 {
    CommandLine cl;
 
@@ -74,7 +83,7 @@ cResult pluginhelper::runCommand() const
       return runCommand(cl, pv.getVariables());
 }
 
-cResult pluginhelper::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required)
+cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required)
 {
    Configuration c(name, defaultval, description, type, required, true);
    mConfiguration.push_back(c);

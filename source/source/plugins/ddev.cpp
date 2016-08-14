@@ -8,7 +8,7 @@
 #include "drunner_paths.h"
 #include "service_install.h"
 
-ddev::ddev() : pluginhelper("ddev")
+ddev::ddev() : configuredplugin("ddev")
 {
    addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true);
    addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true);
@@ -39,6 +39,11 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
       default:
          return cError("Unrecognised command " + cl.command);
    }
+}
+
+cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+{
+   return kRNoChange;
 }
 
 cResult ddev::showHelp() const

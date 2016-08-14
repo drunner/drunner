@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "cresult.h"
 #include "service_vars.h"
+#include "globalcontext.h"
 
 servicehook::servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams) :
    mPaths(servicename), mActionName(actionname),  mHookParams(hookparams)
@@ -54,19 +55,27 @@ cResult servicehook::runHook(std::string se)
    if (sv.getImageName().length() == 0)
       return cError("IMAGENAME was not set in service variables (servicehook::runHook).");
 
-   CommandLine serviceCmd(se, mHookParams);
-   rval += lf.runCommand(serviceCmd, &sv);
+   { // services
+      CommandLine serviceCmd(se, mHookParams);
+      rval += lf.runCommand(serviceCmd, &sv);
 
-   if (rval.error())
-      return cError("dService hook " + se + " returned error: "+rval.what());
+      if (rval.error())
+         return cError("dService hook " + se + " returned error:\n " + rval.what());
 
-   if (rval.notImpl())
-   {
-      logdbg("dService hook " + se + " is not implemented by " + mPaths.getName());
-      rval = kRNoChange; // fine to be not implemented for hooks.
+      if (rval.notImpl())
+      {
+         logdbg("dService hook " + se + " is not implemented by " + mPaths.getName());
+         rval = kRNoChange; // fine to be not implemented for hooks.
+      }
+      else
+         logdbg("dService hook for " + se + " complete");
    }
-   else
-      logdbg("dService hook for " + se + " complete");
+
+   { // plugins
+      rval += GlobalContext::getPlugins()->runhook(se, mHookParams, lf, sv);
+      if (rval.error())
+         return cError("Plugin hook "+se+" returned error:\n "+rval.what());
+   }
 
    return rval;
 }

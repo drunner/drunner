@@ -1,9 +1,8 @@
 #include "dproxy.h"
 #include "drunner_paths.h"
 
-dproxy::dproxy() : pluginhelper("dproxy")
+dproxy::dproxy() : configuredplugin("dproxy")
 {
-   addConfig("ENABLED", "Whether the proxy service (HAProxy) is enabled.", "false", kCF_bool, true);
 }
 
 std::string dproxy::getName() const
@@ -13,8 +12,33 @@ std::string dproxy::getName() const
 
 cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
 {
-   return cResult();
+   switch (s2i(cl.command.c_str()))
+   {
+   case (s2i("update")):
+   {
+      return update();
+   }
+   case (s2i("start")):
+   {
+      return start();
+   }
+   case (s2i("stop")):
+   {
+      return stop();
+   }
+   default:
+      return cError("Unrecognised command " + cl.command);
+   }
 }
+
+cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
+{
+   if (lf.getProxies().size()==0) // no proxy, so changes to this dService don't matter for us.
+      return kRNoChange;
+
+   return kRNotImplemented;
+}
+
 
 cResult dproxy::showHelp() const
 {
@@ -26,8 +50,9 @@ DESCRIPTION
    A dRunner plugin which makes it easy to map virtual hosts to services.
 
 COMMANDS
-   dproxy configure enabled=[true/false]
-
+   dproxy start
+   dproxy stop
+   dproxy update
 )EOF";
 
    logmsg(kLINFO, help);
@@ -38,4 +63,19 @@ COMMANDS
 Poco::Path dproxy::configurationFilePath() const
 {
    return drunnerPaths::getPath_Root().setFileName("dproxy.json");
+}
+
+cResult dproxy::update() const
+{
+   return cResult();
+}
+
+cResult dproxy::start() const
+{
+   return cResult();
+}
+
+cResult dproxy::stop() const
+{
+   return cResult();
 }
