@@ -46,15 +46,10 @@ cResult service::servicecmd()
    // CommandLine will be  import james.backup
    CommandLine cl;
    cl.command = (p.numArgs()<2 ? "help" : p.getArg(1)); // import
+   std::transform(cl.command.begin(), cl.command.end(), cl.command.begin(), ::tolower); // convert to lower case.
+
    if (p.numArgs() > 2)
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
-
-
-   // check reserved commands
-   if (p.isdrunnerCommand(cl.command))
-      fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
-   if (p.isHook(cl.command))
-      fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
 
 
    // handle configure
@@ -67,12 +62,19 @@ cResult service::servicecmd()
       return rval;
    }
 
+   // check reserved commands
+   if (p.isdrunnerCommand(cl.command) && cl.command != "help")
+      fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
+   if (p.isHook(cl.command))
+      fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
+
    // check all required variables are configured.
    for (const auto & var : mServiceLua.getConfigItems())
       if (var.required)
          if (!mServiceVarsPtr->hasKey(var.name))
             fatal("A required configuration variable " + var.name + " has not yet been set.");
 
+   // handle the command.
    std::ostringstream oss;
    oss << "[" << cl.command << "]";
    for (const auto & x : cl.args) oss << " " << x;

@@ -33,7 +33,6 @@ cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
 
 cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile & lf, const serviceVars &sv) const
 {
-   logmsg(kLWARN, "runHook - " + hook);
    if (lf.getProxies().size()==0) // no proxy, so changes to this dService don't matter for us.
       return kRNoChange;
 
