@@ -47,7 +47,7 @@ cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, c
    case (s2i("uninstall_end")):
    case (s2i("obliterate_end")):
    {
-      logmsg(kLWARN, "Reconfiguring dproxy.");
+      logmsg(kLINFO, "Reconfiguring dproxy.");
       return update();
    }
 
@@ -72,6 +72,7 @@ COMMANDS
    dproxy start
    dproxy stop
    dproxy update
+   dproxy addcert SERVICENAME CERTIFICATE.PEM
 )EOF";
 
    logmsg(kLINFO, help);
