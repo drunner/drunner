@@ -1,5 +1,9 @@
 #include "dproxy.h"
 #include "drunner_paths.h"
+#include "generate.h"
+#include "enums.h"
+#include "service.h"
+#include "dassert.h"
 
 dproxy::dproxy() : configuredplugin("dproxy")
 {
@@ -85,8 +89,44 @@ Poco::Path dproxy::configurationFilePath() const
    return drunnerPaths::getPath_Root().setFileName("dproxy.json");
 }
 
+Poco::Path dproxy::haproxyCfgPath()
+{
+   Poco::Path target = drunnerPaths::getPath_Root().setFileName("dproxy_haproxy.cfg");
+   return target;
+}
+
 cResult dproxy::update() const
 {
+   Poco::Path tempfile = haproxyCfgPath();
+   tempfile.setFileName(tempfile.getFileName() + "_temp");
+   
+   std::string vdata;
+
+   vdata = R"(EOF
+defaults
+   mode http
+EOF)";
+
+   // loop over all dServices.
+   std::vector<std::string> services;
+   utils::getAllServices(services);
+   for (auto x : services)
+   {
+      // check if service x needs autoproxy
+      service s(x);
+      std::vector<servicelua::Proxy> pl = s.getServiceLua().getProxies();
+      if (pl.size() > 0)
+      { // handle the proxy list.
+         for (auto p : pl)
+         {
+            drunner_assert(p.vhost.size() > 0, "Virtual host not specified.");
+            int port = 
+         }
+      }
+   }
+
+   generate(tempfile, S_755, vdata);
+
    return cResult();
 }
 

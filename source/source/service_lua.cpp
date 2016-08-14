@@ -29,9 +29,8 @@ B) the service configuration variables, which includes:
 
 
 namespace servicelua
-{
-//   static luautils::staticLuaStorage<luafile> sFile; // provide access back to the calling luafile C++ object.
-   
+{   
+// -------------------------------------------------------------------------------
 
    luafile::luafile(std::string serviceName) : 
       mServicePaths(serviceName), 
@@ -50,11 +49,15 @@ namespace servicelua
       mSVptr = NULL;
    }
       
+   // -------------------------------------------------------------------------------
+
    luafile::~luafile()
    {
       if (L)
          lua_close(L);
    }
+
+   // -------------------------------------------------------------------------------
 
    cResult luafile::loadlua()
    {
@@ -82,22 +85,11 @@ namespace servicelua
          fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
-      // associate the ConfigItems
-      //mServiceVars.setConfiguration(mConfigItems);
-
-      // attempt to load config file.
-      //if (mServiceVars.loadvariables() == kRSuccess)
-      //   mVarsLoaded = true;
-      //else
-      //{
-      //   if (mServiceVars.getVal("IMAGENAME").length() == 0) 
-      //      logdbg("IMAGENAME has not been set.");
-      //   logmsg(kLDEBUG, "Couldn't load service variables.");
-      //}
-
       mLuaLoaded = true;
       return kRSuccess;
    }
+
+   // -------------------------------------------------------------------------------
 
    cResult luafile::_showHelp(serviceVars * sVars)
    {
@@ -121,6 +113,7 @@ namespace servicelua
       return kRSuccess;
    }
 
+   // -------------------------------------------------------------------------------
 
    cResult luafile::runCommand(const CommandLine & serviceCmd, serviceVars * sVars)
    {
@@ -153,7 +146,7 @@ namespace servicelua
       return rval;
    }
 
-
+   // -------------------------------------------------------------------------------
 
    void luafile::getManageDockerVolumeNames(std::vector<std::string> & vols) const
    {
@@ -165,6 +158,9 @@ namespace servicelua
             vols.push_back(volname);
          }
    }
+
+   // -------------------------------------------------------------------------------
+
    void luafile::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
    {
       drunner_assert(vols.size() == 0, "Coding error: passing dirty volume vector to getBackupDockerVolumeNames");
@@ -175,6 +171,8 @@ namespace servicelua
             vols.push_back(volname);
          }
    }
+
+   // -------------------------------------------------------------------------------
 
    const std::vector<Proxy>& luafile::getProxies() const
    {

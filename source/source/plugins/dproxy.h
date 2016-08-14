@@ -14,7 +14,7 @@ public:
    cResult showHelp() const;
 
    Poco::Path configurationFilePath() const;
-
+   static Poco::Path haproxyCfgPath();
 private:
    cResult update() const;
    cResult start() const;

@@ -14,7 +14,6 @@
 
 namespace servicelua
 {
-
    struct Volume 
    {
       bool backup;
@@ -26,6 +25,7 @@ namespace servicelua
       std::string vhost;
       std::string vport;
       std::string dport;
+      bool sslterminate; // false = passthrough.
    };
 
    // lua file.

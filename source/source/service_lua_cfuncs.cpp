@@ -137,12 +137,13 @@ namespace servicelua
 
    extern "C" int l_addproxy(lua_State *L)
    {
-      if (lua_gettop(L) != 3)
-         return luaL_error(L, "Expected exactly three arguments (VIRTUAL_HOST,SOURCEPORT,DESTPORT) for addproxy.");
+      if (lua_gettop(L) != 4)
+         return luaL_error(L, "Expected exactly four arguments (VIRTUAL_HOST,SOURCEPORT,DESTPORT,SSLTERMINATE) for addproxy.");
       Proxy p;
       p.vhost = lua_tostring(L, 1);
       p.vport = lua_tostring(L, 2);
       p.dport = lua_tostring(L, 3);
+      p.sslterminate = (1==lua_toboolean(L, 4));
 
       get_luafile(L)->addProxy(p);
 
