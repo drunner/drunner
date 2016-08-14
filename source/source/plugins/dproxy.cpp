@@ -38,9 +38,12 @@ cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, c
 
    switch (s2i(hook.c_str()))
    {
+   case (s2i("configure_end")):
+      if (hookparams.size() == 0)
+         return kRNoChange;
+      // fall through
    case (s2i("install_end")):
    case (s2i("update_end")):
-   case (s2i("configure_end")):
    {
       logmsg(kLWARN, "Reconfiguring dproxy.");
       return update();
