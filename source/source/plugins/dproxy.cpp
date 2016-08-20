@@ -124,7 +124,7 @@ cResult dproxy::update() const
                http_in += "    acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
                http_in += "    use_backend " + x + "_http if is_" + x + "\n";
                http_backends += "backend " + x + "_http\n";
-               http_backends += "    server " + x + " 127.0.0.1:" + dport_http + "\n";
+               http_backends += "    server " + x + +" " + vhost + ":" + dport_http + "\n";
                http_backends += "    mode http\n";
 
                http = true;
@@ -134,7 +134,7 @@ cResult dproxy::update() const
                https_in += "    acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
                https_in += "    use_backend " + x + "_https if is_" + x + "\n";
                https_backends += "backend " + x + "_https\n";
-               https_backends += "    server " + x + " 127.0.0.1:" + dport_https + "\n";
+               https_backends += "    server " + x + " "+vhost+":" + dport_https + "\n";
                https_backends += "    mode tcp\n";
 
                https = true;
