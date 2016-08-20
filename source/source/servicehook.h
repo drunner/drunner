@@ -10,8 +10,6 @@
 #include "service_lua.h"
 #include "service_paths.h"
 
-class service;
-
 // class to allow dService to hook into any supported action.
 class servicehook
 {

@@ -76,7 +76,6 @@ COMMANDS
    dproxy start
    dproxy stop
    dproxy update
-   dproxy addcert SERVICENAME CERTIFICATE.PEM
 )EOF";
 
    logmsg(kLINFO, help);
@@ -100,12 +99,7 @@ cResult dproxy::update() const
    Poco::Path tempfile = haproxyCfgPath();
    tempfile.setFileName(tempfile.getFileName() + "_temp");
    
-   std::string vdata;
-
-   vdata = R"(EOF
-defaults
-   mode http
-EOF)";
+   std::string vdata, http_in, https_in, http_backends, https_backends;
 
    // loop over all dServices.
    std::vector<std::string> services;
@@ -119,11 +113,63 @@ EOF)";
       { // handle the proxy list.
          for (auto p : pl)
          {
-            drunner_assert(p.vhost.size() > 0, "Virtual host not specified.");
-            int port = 
+            std::string vhost = s.getServiceVars().substitute(p.vhost);
+            std::string dport_http = s.getServiceVars().substitute(p.dport_http);
+            std::string dport_https = s.getServiceVars().substitute(p.dport_https);
+
+            drunner_assert(vhost.size() > 0, "Virtual host not specified.");
+            if (dport_http.length() > 0)
+            {
+               http_in += "acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
+               http_in += "use_backend " + x + "_http if is_" + x + "\n";
+               http_backends += "backend " + x + "_http\n";
+               http_backends += " server " + x + " 127.0.0.1:" + dport_http;
+            }
+            if (dport_https.length() > 0)
+            {
+               https_in += "acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
+               https_in += "use_backend " + x + "_https if is_" + x + "\n";
+               https_backends += "backend " + x + "_https\n";
+               https_backends += " server " + x + " 127.0.0.1:" + dport_https;
+            }
+            //int port = p.dport_http;
          }
       }
    }
+
+
+   vdata = R"EOF(
+defaults
+    retries 3
+    timeout connect 5s
+    timeout client 1m
+    timeout server 1m
+
+
+frontend http-in
+    bind *:80
+    option http-server-close
+    option forwardfor
+    mode http
+
+)EOF";
+   vdata += http_in;
+
+   vdata += R"EOF( 
+
+frontend https-in
+    bind *:443
+    mode tcp
+
+)EOF";
+
+   vdata += https_in;
+
+   vdata += "\n\n";
+   vdata += http_backends;
+
+   vdata += "\n\n";
+   vdata += https_backends;
 
    generate(tempfile, S_755, vdata);
 

@@ -23,9 +23,8 @@ namespace servicelua
    struct Proxy
    {
       std::string vhost;
-      std::string vport;
-      std::string dport;
-      bool sslterminate; // false = passthrough.
+      std::string dport_http;
+      std::string dport_https;
    };
 
    // lua file.
