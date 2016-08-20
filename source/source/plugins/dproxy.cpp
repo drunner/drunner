@@ -213,7 +213,7 @@ cResult dproxy::start() const
    }
 
    c.command = "docker";
-   c.args = { "run","-d","--name",s_dproxycontainer,"-p","80:80","-p","443:443",
+   c.args = { "run","-d","--name",s_dproxycontainer,"--restart=always","-p","80:80","-p","443:443",
       "-v",haproxyCfgPath().toString() + ":/usr/local/etc/haproxy/haproxy.cfg:ro","haproxy:alpine" };
    int r = utils::runcommand(c, out);
 
