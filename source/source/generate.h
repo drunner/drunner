@@ -8,8 +8,9 @@
 
 #include "enums.h"
 #include "params.h"
+#include "cresult.h"
 
-void generate(
+cResult generate(
    Poco::Path fullpath,
    const mode_t mode,
    const std::string & content

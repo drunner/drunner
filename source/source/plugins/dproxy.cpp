@@ -4,6 +4,9 @@
 #include "enums.h"
 #include "service.h"
 #include "dassert.h"
+#include "utils_docker.h"
+
+static std::string s_dproxycontainer = "drunner_dproxy";
 
 dproxy::dproxy() : configuredplugin("dproxy")
 {
@@ -20,7 +23,12 @@ cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
    {
    case (s2i("update")):
    {
-      return update();
+      cResult r = update();
+      if (r == kRNoChange)
+         logmsg(kLINFO, "dproxy configuration unchanged.");
+      else
+         logmsg(kLINFO, "dproxy configuration updated.");
+      return r;
    }
    case (s2i("start")):
    {
@@ -95,10 +103,7 @@ Poco::Path dproxy::haproxyCfgPath()
 }
 
 cResult dproxy::update() const
-{
-   Poco::Path tempfile = haproxyCfgPath();
-   tempfile.setFileName(tempfile.getFileName() + "_temp");
-   
+{   
    std::string vdata, http_in, https_in, http_backends, https_backends;
    bool http = false, https = false;
 
@@ -192,17 +197,54 @@ frontend https-in
       vdata += https_backends;
    }
 
-   generate(tempfile, S_755, vdata);
-
-   return cResult();
+   cResult r = generate(haproxyCfgPath(), S_755, vdata);
+   return r;
 }
 
 cResult dproxy::start() const
 {
-   return cResult();
+   CommandLine c;
+   std::string out;
+
+   if (utils_docker::dockerContainerExists(s_dproxycontainer))
+   {
+      logdbg("dproxy is already running.");
+      return kRNoChange;
+   }
+
+   c.command = "docker";
+   c.args = { "run","-d","--name",s_dproxycontainer,"-p","80:80","-p","443:443",
+      "-v",haproxyCfgPath().toString() + ":/usr/local/etc/haproxy/haproxy.cfg:ro","haproxy:alpine" };
+   int r = utils::runcommand(c, out);
+
+   logmsg(kLDEBUG, out);
+
+   if (r != 0)
+      return cError(out);
+
+   return kRSuccess;
 }
 
 cResult dproxy::stop() const
 {
+   CommandLine c;
+   std::string out;
+   c.command = "docker";
+
+   if (!utils_docker::dockerContainerExists(s_dproxycontainer))
+   {
+      logdbg("dproxy is not running.");
+      return kRNoChange;
+   }
+
+   c.args = { "stop",s_dproxycontainer };
+   utils::runcommand(c, out);
+
+   c.args = { "rm",s_dproxycontainer };
+   int r = utils::runcommand(c, out);
+   if (r != 0) return cError(out);
+   logmsg(kLDEBUG, out);
+
+
    return cResult();
 }
