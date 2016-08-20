@@ -100,6 +100,7 @@ cResult dproxy::update() const
    tempfile.setFileName(tempfile.getFileName() + "_temp");
    
    std::string vdata, http_in, https_in, http_backends, https_backends;
+   bool http = false, https = false;
 
    // loop over all dServices.
    std::vector<std::string> services;
@@ -120,17 +121,23 @@ cResult dproxy::update() const
             drunner_assert(vhost.size() > 0, "Virtual host not specified.");
             if (dport_http.length() > 0)
             {
-               http_in += "acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
-               http_in += "use_backend " + x + "_http if is_" + x + "\n";
+               http_in += "    acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
+               http_in += "    use_backend " + x + "_http if is_" + x + "\n";
                http_backends += "backend " + x + "_http\n";
-               http_backends += " server " + x + " 127.0.0.1:" + dport_http;
+               http_backends += "    server " + x + " 127.0.0.1:" + dport_http + "\n";
+               http_backends += "    mode http\n";
+
+               http = true;
             }
             if (dport_https.length() > 0)
             {
-               https_in += "acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
-               https_in += "use_backend " + x + "_https if is_" + x + "\n";
+               https_in += "    acl is_" + x + " hdr_end(host) -i " + vhost + "\n";
+               https_in += "    use_backend " + x + "_https if is_" + x + "\n";
                https_backends += "backend " + x + "_https\n";
-               https_backends += " server " + x + " 127.0.0.1:" + dport_https;
+               https_backends += "    server " + x + " 127.0.0.1:" + dport_https + "\n";
+               https_backends += "    mode tcp\n";
+
+               https = true;
             }
             //int port = p.dport_http;
          }
@@ -144,18 +151,25 @@ defaults
     timeout connect 5s
     timeout client 1m
     timeout server 1m
+)EOF";
 
+   if (http)
+   {
+      vdata += R"EOF(
 
 frontend http-in
     bind *:80
+    mode http
     option http-server-close
     option forwardfor
-    mode http
 
 )EOF";
-   vdata += http_in;
+      vdata += http_in;
+   }
 
-   vdata += R"EOF( 
+   if (https)
+   {
+      vdata += R"EOF( 
 
 frontend https-in
     bind *:443
@@ -163,13 +177,20 @@ frontend https-in
 
 )EOF";
 
-   vdata += https_in;
+      vdata += https_in;
+   }
 
-   vdata += "\n\n";
-   vdata += http_backends;
+   if (http)
+   {
+      vdata += "\n\n";
+      vdata += http_backends;
+   }
 
-   vdata += "\n\n";
-   vdata += https_backends;
+   if (https)
+   {
+      vdata += "\n\n";
+      vdata += https_backends;
+   }
 
    generate(tempfile, S_755, vdata);
 
