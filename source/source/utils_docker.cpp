@@ -64,9 +64,9 @@ namespace utils_docker
          return;
       }
 
-      if (utils::imageisbranch(image))
+      if (utils::imageislocal(image))
       {
-         logmsg(kLDEBUG, image+" is not on the master branch, so assuming dev environment and not pulling.");
+         logmsg(kLDEBUG, image+" is tagged local, so assuming dev environment and not pulling.");
          return;
       }
 

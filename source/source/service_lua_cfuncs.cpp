@@ -9,6 +9,8 @@
 extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_addvolume(lua_State *L);
 extern "C" int l_addcontainer(lua_State *L);
+extern "C" int l_addproxy(lua_State *L);
+
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
 
@@ -24,8 +26,10 @@ namespace servicelua
       REGISTERLUAC(l_addconfig, "addconfig")
       REGISTERLUAC(l_addvolume, "addvolume")
       REGISTERLUAC(l_addcontainer, "addcontainer")
+      REGISTERLUAC(l_addproxy,"addproxy")
+
       REGISTERLUAC(l_drun, "drun")
-      REGISTERLUAC(l_dstop, "dstop")
+      REGISTERLUAC(l_dstop, "dstop")  
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -111,8 +115,7 @@ namespace servicelua
          v.external = (1 == lua_toboolean(L, 3));
 
       lf->addVolume(v);
-      logmsg(kLDEBUG, "Added volume " + v.name);
-
+      
       return _luasuccess(L);
    }
 
@@ -128,6 +131,24 @@ namespace servicelua
 
       return _luasuccess(L);
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_addproxy(lua_State *L)
+   {
+      if (lua_gettop(L) != 3)
+         return luaL_error(L, "Expected exactly three arguments (VIRTUAL_HOST,HTTP_PORT,HTTPS_PORT) for addproxy.");
+      Proxy p;
+      p.vhost = lua_tostring(L, 1);
+      p.dport_http = lua_tostring(L, 2);
+      p.dport_https = lua_tostring(L, 3);
+
+      get_luafile(L)->addProxy(p);
+
+      return _luasuccess(L);
+   }
+   
+
 
    // -----------------------------------------------------------------------------------------------------------------------
 

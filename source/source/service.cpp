@@ -32,8 +32,6 @@ service::service(std::string servicename) :
 
    if (mServiceVarsPtr->loadvariables() != kRSuccess)
       fatal("Could not load service varialbes.");
-   mImageName = mServiceVarsPtr->getImageName();
-   drunner_assert(mImageName.length() > 0,"IMAGENAME not set in service variables.");
 }
 
 cResult service::servicecmd()
@@ -46,30 +44,35 @@ cResult service::servicecmd()
    // CommandLine will be  import james.backup
    CommandLine cl;
    cl.command = (p.numArgs()<2 ? "help" : p.getArg(1)); // import
+   std::transform(cl.command.begin(), cl.command.end(), cl.command.begin(), ::tolower); // convert to lower case.
+
    if (p.numArgs() > 2)
       cl.args = std::vector<std::string>(p.getArgs().begin() + 2, p.getArgs().end());
 
-   if (0==Poco::icompare(cl.command, "configure"))
-      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
 
-   if (0==Poco::icompare(cl.command, "help"))
-      return mServiceLua.runCommand(cl,mServiceVarsPtr.get()); // no hooks.
+   // handle configure
+   if (0 == Poco::icompare(cl.command, "configure"))
+   {
+      servicehook hook(getName(), "configure", cl.args);
+      hook.starthook();
+      cResult rval= mServiceLua.runCommand(cl, mServiceVarsPtr.get()); // no hooks.
+      hook.endhook();
+      return rval;
+   }
 
-   if (p.isdrunnerCommand(cl.command))
+   // check reserved commands
+   if (p.isdrunnerCommand(cl.command) && cl.command != "help")
       fatal(cl.command + " is a reserved word.\nTry:\n drunner " + cl.command + " " + mName);
    if (p.isHook(cl.command))
       fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
-      
+
    // check all required variables are configured.
    for (const auto & var : mServiceLua.getConfigItems())
       if (var.required)
          if (!mServiceVarsPtr->hasKey(var.name))
             fatal("A required configuration variable " + var.name + " has not yet been set.");
 
-   // run the command
-   servicehook hook(getName(), "servicecmd", p.getArgs());
-   hook.starthook();
-
+   // handle the command.
    std::ostringstream oss;
    oss << "[" << cl.command << "]";
    for (const auto & x : cl.args) oss << " " << x;
@@ -80,28 +83,10 @@ cResult service::servicecmd()
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
 
-   hook.endhook();
    return rval;
 }
 
 const std::string service::getImageName() const
 {
-   return mImageName;
+   return mServiceVarsPtr->getImageName();
 }
-
-int service::status()
-{
-   servicehook hook(mName, "status");
-   hook.starthook();
-
-   if (!utils::fileexists(getPathdService()))
-   {
-      logmsg(kLINFO, getName() + " is not installed.");
-      hook.endhook();
-      return 1;
-   }
-   logmsg(kLINFO, getName() + " is installed and valid.");
-   hook.endhook();
-   return 0;
-}
-

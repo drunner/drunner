@@ -12,7 +12,7 @@
 #include "globalcontext.h"
 #include "timez.h"
 #include "drunner_paths.h"
-#include "service_install.h"
+#include "service_manage.h"
 #include "utils_docker.h"
 #include "dassert.h"
 
@@ -33,7 +33,7 @@ cResult service::backup(const std::string & backupfile)
 
    // write out variables that we need to decompress everything.
    backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
-   bvars.createFromServiceLua(mImageName,mServiceLua);
+   bvars.createFromServiceLua(getImageName(),mServiceLua);
    bvars.savevars();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
@@ -127,12 +127,11 @@ cResult service::backup(const std::string & backupfile)
 void service_restore_fail(std::string servicename, std::string message)
 {
    logmsg(kLWARN, message);
-   service_install sinst(servicename);
-   sinst.uninstall();
+   service_manage::uninstall(servicename);
    logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
 }
 
-cResult service_install::service_restore(const std::string & backupfile)
+cResult service_manage::service_restore(const std::string & backupfile, std::string servicename)
 { // restore from backup.
    Poco::Path bf(backupfile);
    bf.makeAbsolute();
@@ -140,8 +139,8 @@ cResult service_install::service_restore(const std::string & backupfile)
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
    logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+mName));
-   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + mName));
+   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+ servicename));
+   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + servicename));
 
    // for docker volumes
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
@@ -177,26 +176,25 @@ cResult service_install::service_restore(const std::string & backupfile)
    // backup seems okay - lets go!
    std::string imagename = bvars.getImageName();
    drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
-   service_install si(mName, imagename);
-   si.install();
+   service_manage::install(servicename, imagename);
 
    // load in the new lua file.
-   servicePaths paths(mName);
-   servicelua::luafile newluafile(mName);
+   servicePaths paths(servicename);
+   servicelua::luafile newluafile(servicename);
    if (kRSuccess != newluafile.loadlua())
-      service_restore_fail(mName,"Installation did not correctly create the service.lua file.");
+      service_restore_fail(servicename,"Installation did not correctly create the service.lua file.");
 
    // check that nothing about the volumes has changed in the dService.
    tVecStr dockervols;
    newluafile.getBackupDockerVolumeNames(dockervols);
    if (shb_dockervolumenames.size() != dockervols.size())
-      service_restore_fail(mName, "Number of docker volumes stored does not match what we expect.");
+      service_restore_fail(servicename, "Number of docker volumes stored does not match what we expect.");
    
    // restore all the volumes.
    for (unsigned int i = 0; i < dockervols.size(); ++i)
    {
       if (!utils_docker::dockerVolExists(dockervols[i]))
-         service_restore_fail(mName, "Installation should have created " + dockervols[i] + " but didn't!");
+         service_restore_fail(servicename, "Installation should have created " + dockervols[i] + " but didn't!");
 
       Poco::Path volarchive(tempf);
       volarchive.setFileName(shb_dockervolumenames[i] + ".tar");
@@ -210,13 +208,13 @@ cResult service_install::service_restore(const std::string & backupfile)
    compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
 
    // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
-   serviceVars oldvars(mName, imagename, newluafile.getConfigItems());
+   serviceVars oldvars(servicename, imagename, newluafile.getConfigItems());
 
    if (kRSuccess != oldvars.loadvariables()) // loads with new schema (updates).
       logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");
 
    // clobber SERVICENAME and IMAGENAME, ensuring they are the latest.
-   oldvars.setVal("SERVICENAME", mName);
+   oldvars.setVal("SERVICENAME", servicename);
    oldvars.setVal("IMAGENAME", imagename);
 
    if (kRSuccess != oldvars.savevariables())
@@ -225,10 +223,10 @@ cResult service_install::service_restore(const std::string & backupfile)
    // tell the dService to do its restore_end action.
    tVecStr args;
    args.push_back(tempc.toString());
-   servicehook hook(mName, "restore", args);
+   servicehook hook(servicename, "restore", args);
    hook.endhook();
 
-   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + mName + ". Try it!");
+   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
    return kRSuccess;
 }
 

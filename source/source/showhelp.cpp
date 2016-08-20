@@ -45,13 +45,9 @@ COMMANDS
    [PASS=?] ${EXENAME} restore BACKUPFILE  SERVICENAME
 
    ${EXENAME} install    IMAGENAME [SERVICENAME]
+   ${EXENAME} update     SERVICENAME
    ${EXENAME} uninstall  SERVICENAME
    ${EXENAME} obliterate SERVICENAME
-
-   ${EXENAME} update     SERVICENAME
-   ${EXENAME} recreate   SERVICENAME [IMAGENAME]
-
-   ${EXENAME} status     SERVICENAME
 
 EXIT CODE
    0   - success

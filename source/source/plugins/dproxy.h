@@ -1,23 +1,24 @@
-#ifndef __DDEV_H
-#define __DDEV_H
+#ifndef __DPROXY_H
+#define __DPROXY_H
 
 #include "plugins.h"
 
-class ddev : public configuredplugin
+class dproxy : public configuredplugin
 {
 public:
-   ddev();
+   dproxy();
    virtual std::string getName() const;
    virtual cResult runCommand(const CommandLine & cl, const variables & v) const;
    virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
+
    cResult showHelp() const;
 
    Poco::Path configurationFilePath() const;
-
+   static Poco::Path haproxyCfgPath();
 private:
-   cResult _build(const CommandLine & cl, const variables & v, Poco::Path d) const;
-   cResult _buildtree(const CommandLine & cl, const variables & v, Poco::Path d) const;
-   cResult _test(const CommandLine & cl, const variables & v) const;
+   cResult update() const;
+   cResult start() const;
+   cResult stop() const;
 };
 
 

@@ -31,8 +31,6 @@ params::params(int argc, char **argv) :
    {"setup",c_setup},
    {"backup",c_backup},
    {"restore",c_restore},
-   {"recreate",c_recreate},
-   {"status",c_status},
    {"configure",c_configure},
    {"servicecmd",c_servicecmd}
    })
@@ -65,7 +63,7 @@ bool params::isHook(std::string c) const
    c.erase(pos);
 
    if (0==Poco::icompare(tag, "start") || 0==Poco::icompare(tag, "end"))
-      return isdrunnerCommand(c);
+      return (getdrunnerCommand(c) != c_UNDEFINED);
    else
       return false; // tag is not start or end.
 }

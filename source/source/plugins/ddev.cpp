@@ -6,9 +6,9 @@
 #include "utils.h"
 #include "dassert.h"
 #include "drunner_paths.h"
-#include "service_install.h"
+#include "service_manage.h"
 
-ddev::ddev() : pluginhelper("ddev")
+ddev::ddev() : configuredplugin("ddev")
 {
    addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true);
    addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true);
@@ -39,6 +39,11 @@ cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
       default:
          return cError("Unrecognised command " + cl.command);
    }
+}
+
+cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
+{
+   return kRNoChange;
 }
 
 cResult ddev::showHelp() const
@@ -103,13 +108,13 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
       return cError("Build failed.");
    logmsg(kLINFO, "Built " + v.getVal("TAG"));
 
+   // install
    std::string dservicename = v.getVal("DSERVICENAME");
    if (dservicename.length() > 0)
    {
       logmsg(kLINFO, "Installing " + v.getVal("TAG") + " as " + dservicename);
-
-      service_install si(dservicename, v.getVal("TAG"));
-      return si.recover();
+      service_manage::uninstall(dservicename);
+      rval+=service_manage::install(dservicename, v.getVal("TAG"));
    }
    else
       logmsg(kLINFO,"Not a dService so not installing.");

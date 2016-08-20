@@ -10,8 +10,6 @@
 #include "service_lua.h"
 #include "service_paths.h"
 
-class service;
-
 // class to allow dService to hook into any supported action.
 class servicehook
 {
@@ -23,8 +21,8 @@ public:
    cResult starthook();
    cResult endhook();
 private:
-   void setHookCmds();
-   cResult runHook(std::string se);
+   cResult _runHook(std::string se);
+   cResult _runHook_NoService(std::string se);
 
    // ----
    servicePaths mPaths;

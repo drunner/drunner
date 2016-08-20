@@ -25,6 +25,7 @@ public:
 
    GlobalContext();
 
+private:
    static std::shared_ptr<const params> s_params;
    static std::shared_ptr<const drunnerSettings> s_settings;
    static std::shared_ptr<const plugins> s_plugins;
