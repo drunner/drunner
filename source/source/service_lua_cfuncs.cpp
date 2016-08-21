@@ -15,6 +15,7 @@ extern "C" int l_addproxy(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
+extern "C" int l_drun_outputexit(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
@@ -36,7 +37,8 @@ namespace servicelua
 
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
-      REGISTERLUAC(l_dstop, "dstop")  
+      REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
+      REGISTERLUAC(l_dstop, "dstop")
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
@@ -162,7 +164,7 @@ namespace servicelua
    // -----------------------------------------------------------------------------------------------------------------------
    
 
-   int drun(lua_State *L, bool returnOutput)
+   int drun(lua_State *L, bool returnOutput, bool returnExit)
    {
       luafile * lf = get_luafile(L);
 
@@ -173,16 +175,22 @@ namespace servicelua
 
       Poco::Path runin = lf->getPathdService();
       std::string out;
-      utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll(), &out);
+      int r = utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll(), &out);
 
+      int rcount = 0;
       if (returnOutput)
       {
          Poco::trimInPlace(out);
          lua_pushstring(L, out.c_str());
-         return 1; // one argument to return.
+         ++rcount;
       }
-      else
-         return _luasuccess(L);
+      if (returnExit)
+      {
+         lua_pushinteger(L, r);
+         ++rcount;
+      }
+
+      return rcount;
    }
 
 
@@ -193,7 +201,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
 
-      return drun(L, false);
+      return drun(L, false, true);
    }
 
 
@@ -204,7 +212,17 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
 
-      return drun(L, true);
+      return drun(L, true, false);
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_drun_outputexit(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
+
+      return drun(L, true, true);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
