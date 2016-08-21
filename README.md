@@ -1,10 +1,10 @@
 # dRunner [![Build Status](https://travis-ci.org/drunner/drunner.svg?branch=master)](https://travis-ci.org/drunner/drunner)
 
-## Status - EXPERIMENTAL (Stable is [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md)).
+## Status - In light production use 
 
-The previous stable version of dRunner has proven reliable in light production use. Instructions are still available for it in the [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md).
+The previous stable version of dRunner (0.6) is still available: [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md).
 
-This version is a major rewrite to be cross-platform. While key functionality works it's not yet complete and has had minimal testing.
+This version is a major rewrite to be cross-platform. While key functionality works it's under active development and has had only a small amount of testing (primarily on Linux). The documentation is currently incomplete, particularly around making your own dServices.
 
 ## Overview
 
@@ -29,6 +29,7 @@ services that consist of multiple Docker containers.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
 * Ansible friendly for automation (see [Exit Codes](README.md#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
+* Includes simple HTTP(S) port forwarding based on domain name (dproxy), with automatic configuration.
 * Scripts to control docker containers are in Lua.
 * You can use Docker Compose files to define services.
 * Some useful tools to build dServices and test them.
