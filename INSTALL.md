@@ -15,6 +15,8 @@ Then give yourself permissions to run docker with:
 sudo adduser ${USER} docker
 ```
 
+You'll need to log out then in again for the group to take effect.
+
 ### Installing dRunner
 ```
 wget http://drunner.s3.amazonaws.com/lin/drunner-install
