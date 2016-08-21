@@ -57,7 +57,7 @@ namespace utils
    bool commandexists(std::string command);
    
    int runcommand(const CommandLine & operation, std::string &out);
-   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory = "", const Poco::Process::Env & env = {});
+   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env, std::string * out);
 
    bool findStringIC(const std::string & strHaystack, const std::string & strNeedle);
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);

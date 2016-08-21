@@ -23,6 +23,7 @@
 #include <Poco/Net/DNS.h>
 #include <Poco/Net/NetworkInterface.h>
 #include <Poco/DirectoryIterator.h>
+#include <Poco/TeeStream.h>
 
 #include <sys/stat.h>
 
@@ -45,42 +46,16 @@ namespace utils
       return (stat (name.toString().c_str(), &buffer) == 0);
    }
 
-   //bool stringisame(const std::string & s1, const std::string &s2 )
-   //{
-   //   return (0 == Poco::icompare(s1, s2)); // http://pocoproject.org/slides/040-StringsAndFormatting.pdf
-   //}
-
    int runcommand(const CommandLine & operation, std::string &out)
    {
-      int rval;
-
-      { // log the command
-         std::ostringstream oss;
-         oss << "Runcommand: " << operation.command;
-         for (auto x : operation.args) oss << " " << x;
-         logdbg(oss.str());
-      }
-
-      try
-      {
-         Poco::Pipe outpipe;
-         Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args, 0, &outpipe, &outpipe); // use the one pipe for both stdout and stderr.
-         Poco::PipeInputStream istrout(outpipe);
-         Poco::StreamCopier::copyToString(istrout, out);
-
-         rval = ph.wait();
-      }
-      catch (Poco::SystemException & se)
-      {
-         fatal(se.displayText());
-      }
-
-      return rval;
+      return runcommand_stream(operation, kOSuppressed, "", {}, &out);
    }
 
 
-   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env)
+   int runcommand_stream(const CommandLine & operation, edServiceOutput outputMode, Poco::Path initialDirectory, const Poco::Process::Env & env, std::string * out)
    { // streaming as the command runs.
+      int rval = -1;
+      std::ostringstream oss;
 
       // sanity check parameters.
       Poco::Path bfp(operation.command);
@@ -93,20 +68,34 @@ namespace utils
          cmd += " [" + entry + "]";
       logmsg(kLDEBUG, "runcommand_stream: " + cmd);
 
-      Poco::Pipe outpipe;
-      Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args, 
-         initialDirectory.toString(), 0, &outpipe, &outpipe, env);
-      Poco::PipeInputStream istrout(outpipe);
+      try {
+         Poco::Pipe outpipe;
+         Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args,
+            initialDirectory.toString(), 0, &outpipe, &outpipe, env);
+         Poco::PipeInputStream pis(outpipe);
 
-      if (outputMode == kORaw)
-         Poco::StreamCopier::copyStreamUnbuffered(istrout, std::cout);
-      else if (outputMode != kOSuppressed)
-         dServiceLog(istrout);
+         Poco::TeeOutputStream tee(oss);
+         if (outputMode==kORaw)
+            tee.addStream(std::cout);
 
-      int rval = ph.wait();
-      std::ostringstream oss;
-      oss << bfp.getFileName() << " returned " << rval;
-      logmsg(kLDEBUG, oss.str());
+         Poco::StreamCopier::copyStreamUnbuffered(pis, tee);
+
+         rval = ph.wait();
+      }
+      catch (Poco::SystemException & se)
+      {
+         fatal(se.displayText());
+      }
+
+      if (out != NULL)
+         *out = oss.str();
+
+      if (rval != 0)
+      {
+         std::ostringstream rvalmsg;
+         rvalmsg << bfp.getFileName() << " returned " << rval;
+         logmsg(kLDEBUG, rvalmsg.str());
+      }
       return rval;
    }
 
@@ -151,8 +140,8 @@ namespace utils
    {
       std::string op;
       CommandLine cl("docker", { "pull",imagename });
-      int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
-      return (rval==0) ? cResult(kRSuccess) : cError("Failed to pull "+imagename);
+      int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&op);
+      return (rval==0) ? cResult(kRSuccess) : cError("Failed to pull "+imagename+":\n "+op);
    }
 
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)

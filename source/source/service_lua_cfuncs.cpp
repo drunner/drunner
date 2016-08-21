@@ -1,3 +1,5 @@
+#include "Poco/String.h"
+
 #include "service_lua.h"
 #include "dassert.h"
 #include "utils_docker.h"
@@ -12,7 +14,12 @@ extern "C" int l_addcontainer(lua_State *L);
 extern "C" int l_addproxy(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
+extern "C" int l_drun_output(lua_State *L);
+extern "C" int l_drun_outputexit(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
+extern "C" int l_dsub(lua_State *L);
+extern "C" int l_dconfig_get(lua_State *L);
+extern "C" int l_dconfig_set(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -29,7 +36,12 @@ namespace servicelua
       REGISTERLUAC(l_addproxy,"addproxy")
 
       REGISTERLUAC(l_drun, "drun")
-      REGISTERLUAC(l_dstop, "dstop")  
+      REGISTERLUAC(l_drun_output, "drun_output")
+      REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
+      REGISTERLUAC(l_dstop, "dstop")
+      REGISTERLUAC(l_dsub, "dsub")
+      REGISTERLUAC(l_dconfig_get, "dconfig_get")
+      REGISTERLUAC(l_dconfig_set, "dconfig_set")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -147,7 +159,39 @@ namespace servicelua
 
       return _luasuccess(L);
    }
+
+
+   // -----------------------------------------------------------------------------------------------------------------------
    
+
+   int drun(lua_State *L, bool returnOutput, bool returnExit)
+   {
+      luafile * lf = get_luafile(L);
+
+      CommandLine operation;
+      operation.command = lua_tostring(L, 1);
+      for (int i = 2; i <= lua_gettop(L); ++i)
+         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+
+      Poco::Path runin = lf->getPathdService();
+      std::string out;
+      int r = utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll(), &out);
+
+      int rcount = 0;
+      if (returnOutput)
+      {
+         Poco::trimInPlace(out);
+         lua_pushstring(L, out.c_str());
+         ++rcount;
+      }
+      if (returnExit)
+      {
+         lua_pushinteger(L, r);
+         ++rcount;
+      }
+
+      return rcount;
+   }
 
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -157,18 +201,28 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
 
-      luafile * lf = get_luafile(L);
+      return drun(L, false, true);
+   }
 
-      CommandLine operation;
-      operation.command = lua_tostring(L, 1);
-      for (int i = 2; i <= lua_gettop(L); ++i)
-         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
 
-      Poco::Path runin = lf->getPathdService();
+   // -----------------------------------------------------------------------------------------------------------------------
 
-      utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll());
+   extern "C" int l_drun_output(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
 
-      return _luasuccess(L);
+      return drun(L, true, false);
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_drun_outputexit(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
+
+      return drun(L, true, true);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -192,5 +246,54 @@ namespace servicelua
          logmsg(kLDEBUG, subcontainer + " is not running.");
       return _luasuccess(L);
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dsub(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the string to substitute) for dsub.");
+
+      luafile * lf = get_luafile(L);
+      std::string s = lf->getServiceVars()->substitute(lua_tostring(L, 1));
+      lua_pushstring(L, s.c_str());
+      return 1; // one argument to return.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dconfig_get(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the variable name) for dconfig_get.");
+
+      std::string s = lua_tostring(L, 1);
+      luafile *lf = get_luafile(L);
+      std::string v = lf->getServiceVars()->getVal(s);
+      lua_pushstring(L, v.c_str());
+      return 1; // one arg to return.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dconfig_set(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         return luaL_error(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
+      luafile *lf = get_luafile(L);
+
+      std::string s = lua_tostring(L, 1);
+      std::string v = lua_tostring(L, 2);
+
+      cResult r = lf->getServiceVars()->setVal(s, v);
+
+      if (r == kRError)
+         logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
+
+      lua_pushinteger(L, r);
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
 
 }

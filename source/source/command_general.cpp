@@ -33,7 +33,7 @@ namespace command_general
 
       logmsg(kLINFO,"Cleaning.");
       CommandLine cl("docker", { "run","--rm","-v","/var/run/docker.sock:/var/run/docker.sock","spotify/docker-gc" });
-      if (utils::runcommand_stream(cl,kORaw)!=0)
+      if (utils::runcommand_stream(cl, kORaw, "", {},NULL) != 0)
          logmsg(kLERROR,"Unable to run spotify/docker-gc to clean docker images.");
 
       logmsg(kLINFO,"Cleaning is complete.");
