@@ -1,3 +1,5 @@
+#include "Poco/String.h"
+
 #include "service_lua.h"
 #include "dassert.h"
 #include "utils_docker.h"
@@ -12,6 +14,7 @@ extern "C" int l_addcontainer(lua_State *L);
 extern "C" int l_addproxy(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
+extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
@@ -29,6 +32,7 @@ namespace servicelua
       REGISTERLUAC(l_addproxy,"addproxy")
 
       REGISTERLUAC(l_drun, "drun")
+      REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_dstop, "dstop")  
    }
 
@@ -169,6 +173,31 @@ namespace servicelua
       utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll());
 
       return _luasuccess(L);
+   }
+
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_drun_output(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
+
+      luafile * lf = get_luafile(L);
+
+      CommandLine operation;
+      operation.command = lua_tostring(L, 1);
+      for (int i = 2; i <= lua_gettop(L); ++i)
+         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+
+      Poco::Path runin = lf->getPathdService();
+
+      std::string out;
+      utils::runcommand(operation, out);
+
+      Poco::trimInPlace(out);
+      lua_pushstring(L, out.c_str());
+      return 1; // one argument to return.
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
