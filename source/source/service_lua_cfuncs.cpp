@@ -16,6 +16,7 @@ extern "C" int l_addproxy(lua_State *L);
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
+extern "C" int l_dsub(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -34,6 +35,7 @@ namespace servicelua
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_dstop, "dstop")  
+      REGISTERLUAC(l_dsub, "dsub")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -223,4 +225,16 @@ namespace servicelua
       return _luasuccess(L);
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dsub(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the string to substitute) for dsub.");
+
+      luafile * lf = get_luafile(L);
+      std::string s = lf->getServiceVars()->substitute(lua_tostring(L, 1));
+      lua_pushstring(L, s.c_str());
+      return 1; // one argument to return.
+   }
 }
