@@ -78,7 +78,7 @@ namespace utils
          if (outputMode==kORaw)
             tee.addStream(std::cout);
 
-         Poco::StreamCopier::copyStream(pis, tee);
+         Poco::StreamCopier::copyStreamUnbuffered(pis, tee);
 
          rval = ph.wait();
       }
