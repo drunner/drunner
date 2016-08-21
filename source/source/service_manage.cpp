@@ -62,9 +62,10 @@ namespace service_manage
                v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
                "chmod","0777","/tempmount" });
 
-            int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode());
+            std::string faily;
+            int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&faily);
             if (rval != 0)
-               fatal("Failed to set permissions on docker volume " + v);
+               fatal("Failed to set permissions on docker volume " + v + ":\n "+faily);
 
             logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
          }

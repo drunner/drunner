@@ -232,10 +232,11 @@ namespace drunnerSetup
       std::string target = targetdir + "/drunner-install";
 
       utils::makedirectory(targetdir, S_700);
+      std::string op;
       CommandLine cl("docker", { "run","--rm","-v",targetdir+":/dtemp","drunner/drunner_utils","download_drunner_install" });
-      int r = utils::runcommand_stream(cl, kORaw);
+      int r = utils::runcommand_stream(cl, kORaw, "", {}, &op);
       if (r != 0)
-         fatal("Update script failed.");
+         fatal("Update script failed:\n "+op);
    
       if (!utils::fileexists(target))
          fatal("Couldn't download drunner-install.");

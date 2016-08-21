@@ -26,7 +26,7 @@ namespace compress
             "-e","PASS=\"" + passwd + "\"",
             drunnerPaths::getdrunnerUtilsImage(), "bash", "-c", ctrcmd };
 
-      utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode() );
+      utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},NULL);
    }
 
    // --------------------------------------

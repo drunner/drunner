@@ -33,7 +33,6 @@ enum eLogLevel
 
 enum edServiceOutput
 {
-   kOLogged,
    kORaw,
    kOSuppressed
 };

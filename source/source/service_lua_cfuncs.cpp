@@ -151,7 +151,33 @@ namespace servicelua
 
       return _luasuccess(L);
    }
+
+
+   // -----------------------------------------------------------------------------------------------------------------------
    
+
+   int drun(lua_State *L, bool returnOutput)
+   {
+      luafile * lf = get_luafile(L);
+
+      CommandLine operation;
+      operation.command = lua_tostring(L, 1);
+      for (int i = 2; i <= lua_gettop(L); ++i)
+         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+
+      Poco::Path runin = lf->getPathdService();
+      std::string out;
+      utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll(), &out);
+
+      if (returnOutput)
+      {
+         Poco::trimInPlace(out);
+         lua_pushstring(L, out.c_str());
+         return 1; // one argument to return.
+      }
+      else
+         return _luasuccess(L);
+   }
 
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -161,18 +187,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
 
-      luafile * lf = get_luafile(L);
-
-      CommandLine operation;
-      operation.command = lua_tostring(L, 1);
-      for (int i = 2; i <= lua_gettop(L); ++i)
-         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
-
-      Poco::Path runin = lf->getPathdService();
-
-      utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll());
-
-      return _luasuccess(L);
+      return drun(L, false);
    }
 
 
@@ -183,21 +198,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
 
-      luafile * lf = get_luafile(L);
-
-      CommandLine operation;
-      operation.command = lua_tostring(L, 1);
-      for (int i = 2; i <= lua_gettop(L); ++i)
-         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
-
-      Poco::Path runin = lf->getPathdService();
-
-      std::string out;
-      utils::runcommand(operation, out);
-
-      Poco::trimInPlace(out);
-      lua_pushstring(L, out.c_str());
-      return 1; // one argument to return.
+      return drun(L, true);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------

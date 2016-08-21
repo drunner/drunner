@@ -17,7 +17,7 @@ public:
    std::string getCommandStr() const { return mCmdStr; }
    eLogLevel getLogLevel() const { return mLogLevel; }
 
-   edServiceOutput supportCallMode() const { return mServiceOutput_supportcalls ? kOLogged : kOSuppressed; }
+   edServiceOutput supportCallMode() const { return mServiceOutput_supportcalls ? kORaw : kOSuppressed; }
    edServiceOutput serviceCmdMode() const { return mServiceOutput_servicecmd ? kORaw : kOSuppressed; }
 
    const std::vector<std::string> & getArgs() const { return mArgs; }
