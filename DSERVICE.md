@@ -24,6 +24,8 @@ A more complete example is with the minecraft dService here:
 | `drun_output( command, arg1, arg2, ...)` | Same as drun, but returns a string (trimmed command output). |
 | `dstop( containername )` | stops the given container if it's running. |
 | `dsub( string )` | returns the string where any configuration variables have been substituted. |
+| `dconfig_get( key )` | returns the value of the configuration variable. |
+| `dconfig_set( key, val )` | sets the value of the configuration variable. |
 
 ## Hooks
 
