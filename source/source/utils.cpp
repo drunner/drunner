@@ -426,6 +426,29 @@ namespace utils
       return kRSuccess;
    }
 
+   void logfile(std::string fname)
+   {
+      FILE* f = fopen(fname.c_str(), "r");
+      if (f == NULL)
+      {
+         logmsg(kLINFO, "The file " + fname + " does not exist.");
+         return;
+      }
+
+      fseek(f, 0, SEEK_END);
+      size_t size = ftell(f);
+      char* where = new char[size];
+      rewind(f);
+      fread(where, sizeof(char), size, f);
+
+      logmsg(kLINFO, "Contents of file " + fname + ":");
+      logmsg(kLINFO, "---------------------------------------------------");
+      logmsg(kLINFO, where);
+      logmsg(kLINFO, "---------------------------------------------------");
+
+      delete[] where;
+   }
+
 } // namespace utils
 
 void CommandLine::logcommand(std::string prefix,eLogLevel ll) const

@@ -16,6 +16,7 @@
 // some statics.
 
 static const mode_t S_ALLREAD = S_IRUSR | S_IRGRP | S_IROTH;
+static const mode_t S_500 = S_IRUSR | S_IWUSR;
 static const mode_t S_700 = S_IRUSR | S_IWUSR | S_IXUSR;
 static const mode_t S_755 = S_700 | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 static const mode_t S_777 = S_755 | S_IWGRP | S_IWOTH;

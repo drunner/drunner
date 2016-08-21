@@ -79,9 +79,14 @@ Poco::Path drunnerPaths::getPath_HostVolumes()
    return getPath_Root().pushDirectory("hostVolumes");
 }
 
+Poco::Path drunnerPaths::getPath_Settings()
+{
+   return getPath_Root().pushDirectory("settings");
+}
+
 Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {
-   return getPath_Root().setFileName("drunnerSettings.json");
+   return getPath_Settings().setFileName("drunnerSettings.json");
 }
 
 std::string drunnerPaths::getdrunnerUtilsImage()
