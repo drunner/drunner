@@ -19,7 +19,7 @@ A more complete example is with the minecraft dService here:
 
 ## Helper functions
 | Function         |  Args | Description
-|:----------------:|:--------------:|
+|:----------------:|:--------------:|:--------------:|
 | drun      |  | |
 
 
