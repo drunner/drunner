@@ -15,3 +15,8 @@ install:
 
 build:
    project: vs\\drunner.sln
+
+artifacts:
+   - path: vs\\Release\\drunner.exe
+     name: drunner.exe
+     
