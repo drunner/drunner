@@ -20,8 +20,8 @@ A more complete example is with the minecraft dService here:
 ## Helper functions
 | Function         |   Description
 |:----------------|:--------------|
-| `drun( command, arg1, arg2, ...)` | Runs the command on the host, returns the exit code. Substitutes any configuration variables, e.g. ${SERVICENAME} |
-| `drun_output( command, arg1, arg2, ...)` | Same as drun, but returns a trimmed version of anything in stdout as a string. |
+| `drun( command, arg1, arg2, ...)` | Runs the command on the host, returns the exit code. Substitutes any configuration variables, e.g. ${SERVICENAME}. |
+| `drun_output( command, arg1, arg2, ...)` | Run the command on the host, returns a trimmed version of anything in stdout as a string. |
 | `dstop( containername )` | stops the given container if it's running. |
 
 
