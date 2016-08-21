@@ -17,6 +17,8 @@ extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
+extern "C" int l_dconfig_get(lua_State *L);
+extern "C" int l_dconfig_set(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -36,6 +38,8 @@ namespace servicelua
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_dstop, "dstop")  
       REGISTERLUAC(l_dsub, "dsub")
+      REGISTERLUAC(l_dconfig_get, "dconfig_get")
+      REGISTERLUAC(l_dconfig_set, "dconfig_set")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -237,4 +241,41 @@ namespace servicelua
       lua_pushstring(L, s.c_str());
       return 1; // one argument to return.
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dconfig_get(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the variable name) for dconfig_get.");
+
+      std::string s = lua_tostring(L, 1);
+      luafile *lf = get_luafile(L);
+      std::string v = lf->getServiceVars()->getVal(s);
+      lua_pushstring(L, v.c_str());
+      return 1; // one arg to return.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dconfig_set(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         return luaL_error(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
+      luafile *lf = get_luafile(L);
+
+      std::string s = lua_tostring(L, 1);
+      std::string v = lua_tostring(L, 2);
+
+      cResult r = lf->getServiceVars()->setVal(s, v);
+
+      if (r == kRError)
+         logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
+
+      lua_pushinteger(L, r);
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
 }
