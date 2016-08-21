@@ -16,9 +16,15 @@ public:
    Poco::Path configurationFilePath() const;
    static Poco::Path haproxyCfgPath();
 private:
-   cResult update() const;
+   cResult update(std::string ip) const;
    cResult start() const;
    cResult stop() const;
+   cResult status(std::string ip) const;
+
+   std::string generateconfig(std::string ip) const;
+
+   bool configNeedsUpdated(std::string ip) const;
+   bool dproxyRunning() const;
 };
 
 

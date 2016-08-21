@@ -90,3 +90,11 @@ cResult configuredplugin::addConfig(std::string name, std::string description, s
    return kRSuccess;
 }
 
+const variables configuredplugin::getVariables() const
+{
+   Poco::Path spath = configurationFilePath();
+   persistvariables pv(mName, spath, mConfiguration);
+   cResult r = pv.loadvariables();
+   return pv.getVariables();
+}
+

@@ -12,6 +12,7 @@ namespace drunnerPaths
    Poco::Path getPath_dServices();
    Poco::Path getPath_Temp();
    Poco::Path getPath_HostVolumes();
+   Poco::Path getPath_Settings();
    Poco::Path getPath_drunnerSettings_json();
 
    std::string getdrunnerUtilsImage();

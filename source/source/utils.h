@@ -76,6 +76,8 @@ namespace utils
 
    cResult split_in_args(std::string command, CommandLine & cl);
 
+   void logfile(std::string fname);
+
    class tempfolder
    {
    public:

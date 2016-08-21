@@ -23,7 +23,7 @@ class backupConfig
 public:
    backupConfig() 
    {
-      mPath = drunnerPaths::getPath_Root().setFileName("dbackup.json");
+      mPath = drunnerPaths::getPath_Settings().setFileName("dbackup.json");
    }
    cResult loadconfig() 
    {

@@ -42,6 +42,8 @@ public:
    cResult addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required);
 
 protected:
+   const variables getVariables() const;
+
    std::string mName;
    std::vector<Configuration> mConfiguration;
 };
