@@ -136,7 +136,7 @@ function main {
       install)
          runbuild
          sudo cp "${MYDIR}/source/drunner" "${DRUNNER}"
-         drunner -d -v setup
+         drunner -d -v initialise
          ;;
 
       check)

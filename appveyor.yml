@@ -20,6 +20,8 @@ build:
 # See: http://help.appveyor.com/discussions/questions/1244-path-inside-artifact-name-is-there-a-way-to-remove-it
 after_build:
    - ps: copy vs\Release\drunner.exe drunner.exe
+# No docker on host.
+#   - ps: drunner.exe initialise
 
 artifacts:
    - path: drunner.exe

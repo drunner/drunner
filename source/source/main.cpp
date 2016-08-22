@@ -18,6 +18,7 @@
 #include "validateimage.h"
 #include "service_manage.h"
 #include "drunner_settings.h"
+#include "drunner_paths.h"
 
 //  sudo apt-get install build-essential g++-multilib libboost-all-dev
 
@@ -79,12 +80,12 @@ std::string _imageparse(std::string imagename)
 cResult mainroutines::process()
 {
    const params & p(*GlobalContext::getParams());
-
-   // do this last - expects settings global object to be available.
-   bool forceUpdate = (p.getCommand() == c_setup && p.numArgs() < 1);
-   cResult csr = drunnerSetup::check_setup(forceUpdate);
-   if (forceUpdate)
-      return csr;
+   
+   if ((p.getCommand() == c_initialise) || (!utils::fileexists(drunnerPaths::getPath_Root())))
+   {
+      logmsg(kLINFO, "Updating drunner setup (initialising).");
+      return drunnerSetup::check_setup();
+   }
 
    // allow unit tests to be run directly from installer.
    if (p.getCommand()==c_unittest)
@@ -136,11 +137,6 @@ cResult mainroutines::process()
             return drunnerSetup::update_drunner();
          else
             return service_manage::update(p.getArg(0));
-      }
-
-      case c_setup:
-      { // dRunner case handled above.
-         fatal("Setup not available for dServices.");
       }
 
       case c_checkimage:
@@ -218,7 +214,6 @@ cResult mainroutines::process()
 
       case c_help:
       {
-         drunnerSetup::check_setup(false);
          showhelp();
          return kRSuccess;
       }

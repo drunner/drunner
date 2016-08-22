@@ -10,6 +10,7 @@
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "validateimage.h"
+#include "dassert.h"
 
 #include <Poco/Process.h>
 #include <Poco/Path.h>
@@ -150,8 +151,6 @@ namespace drunnerSetup
       }
    }
 
-   static bool s_setup_fully_checked = false;
-
    void _makedirectory(Poco::Path d, mode_t mode)
    {
       cResult r = utils::makedirectory(d, mode);
@@ -159,26 +158,9 @@ namespace drunnerSetup
          fatal("Couldn't create directory " + d.toString() + "\nError: " + r.what());
    }
 
-   cResult check_setup(bool forceUpdate)
+   cResult check_setup()
    {
-      if (s_setup_fully_checked)
-         return kRNoChange;
-
       const params & p(*GlobalContext::getParams().get());
-
-      // -----------------------------------------------------------------------------
-      // create rootpath if it doesn't exist.
-      if (utils::fileexists(drunnerPaths::getPath_Root()) && !forceUpdate)
-#ifndef _DEBUG
-         return kRNoChange;
-#else 
-         logmsg(kLINFO, "Debug build - checking drunner setup is up to date.");
-#endif
-      else
-         logmsg(kLINFO, forceUpdate ? "Ensuring drunner setup is up to date." :
-            "Settup up drunner for the first time.");
-
-      s_setup_fully_checked = true;
 
       // check prereqs (e.g. docker installed).
       _check_prerequisits();

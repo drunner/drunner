@@ -12,6 +12,6 @@ docker run --rm -v "/usr/local/bin:/ulb" "drunner/drunner_utils" bash -c \
 
 echo "dRunner updated."
 echo "Updating dRunner setup..."
-drunner setup
+drunner initialise
 
 echo "dRunner setup updated."

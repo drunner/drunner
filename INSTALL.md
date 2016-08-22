@@ -37,6 +37,11 @@ Download the Windows native build from:
 ```
 https://s3-ap-southeast-2.amazonaws.com/drunner/win/drunner.exe
 ```
+Double click it to install.
+
+Add `C:\Users\[USERNAME]\.drunner\bin` to your path in Windows.
+
+Open powershell, now you should be able to run drunner.
 
 
 ## OS X
