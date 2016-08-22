@@ -20,17 +20,15 @@ artifacts:
    - path: vs\Release\drunner.exe
      name: drunner.exe
 
--
-   branches:
-      only:
-        - master
-   deploy:
-     - provider: S3
-       access_key_id:
-         secure: m1Zla0GdyVcPtgii1OsDVIJum8LUMO2lj1BAMoYTqYo=
-       secret_access_key:
-         secure: Q9rvfslUVOEJv2WPoQ0qySKhGRBCk3ubjaUHWnigKAdpdybURrGXaO2GraEfKojE
-       bucket: drunner
-       folder: win
-       artifact: drunner.exe
-       set_public: true
+deploy:
+  - provider: S3
+    access_key_id:
+      secure: m1Zla0GdyVcPtgii1OsDVIJum8LUMO2lj1BAMoYTqYo=
+    secret_access_key:
+      secure: Q9rvfslUVOEJv2WPoQ0qySKhGRBCk3ubjaUHWnigKAdpdybURrGXaO2GraEfKojE
+    bucket: drunner
+    folder: win
+    artifact: drunner.exe
+    set_public: true
+    on:
+       branch: master
