@@ -35,6 +35,5 @@ deploy:
     folder: win
     artifact: drunner.exe
     region: ap-southeast-2
-    set_public: true
     on:
        branch: master
