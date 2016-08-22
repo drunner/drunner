@@ -10,13 +10,27 @@ shallow_clone: true
 install:
      - echo Installing POCO
      - ps: pushd pocowin
-     - ps: .\\pocowin.ps1
+     - ps: .\pocowin.ps1
      - ps: popd
 
 build:
-   project: vs\\drunner.sln
+   project: vs\drunner.sln
 
 artifacts:
-   - path: vs\\Release\\drunner.exe
+   - path: vs\Release\drunner.exe
      name: drunner.exe
-     
+
+-
+   branches:
+      only:
+        - master
+   deploy:
+     - provider: S3
+       access_key_id:
+         secure: m1Zla0GdyVcPtgii1OsDVIJum8LUMO2lj1BAMoYTqYo=
+       secret_access_key:
+         secure: Q9rvfslUVOEJv2WPoQ0qySKhGRBCk3ubjaUHWnigKAdpdybURrGXaO2GraEfKojE
+       bucket: drunner
+       folder: win
+       artifact: drunner.exe
+       set_public: true
