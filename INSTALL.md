@@ -27,7 +27,16 @@ If this is the first time you've installed dRunner, log out then in again to upd
 
 
 ## Windows
+Install Docker for Windows:
+```
+https://docs.docker.com/docker-for-windows/
+```
 
+Download the Windows native build from:
+
+```
+https://s3-ap-southeast-2.amazonaws.com/drunner/win/drunner.exe
+```
 
 
 ## OS X
