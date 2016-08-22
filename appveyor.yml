@@ -16,8 +16,13 @@ install:
 build:
    project: vs\drunner.sln
 
+# put in root folder for artifact, so S3 upload goes to root folder.
+# See: http://help.appveyor.com/discussions/questions/1244-path-inside-artifact-name-is-there-a-way-to-remove-it
+after_build:
+   - ps: copy vs\Release\drunner.exe drunner.exe
+
 artifacts:
-   - path: vs\Release\drunner.exe
+   - path: drunner.exe
      name: drunner.exe
 
 deploy:
