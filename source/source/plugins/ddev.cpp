@@ -91,8 +91,18 @@ Poco::Path ddev::configurationFilePath() const
 
 cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) const
 {
-   if (v.getVal("TAG").length() == 0)
+   std::string imagename = v.getVal("TAG");
+   std::string dservicename = v.getVal("DSERVICENAME");
+
+   if (imagename.length() == 0)
       return cError("You need to configure ddev with a tag first.");
+
+   if (!utils::imageislocal(imagename) && dservicename.length()>0)
+   {
+      if (imagename.find(':')!=std::string::npos)
+         return cError("If using ddev build to install a dService the only tag allowed is :local");
+      imagename += ":local";
+   }
 
    d.makeDirectory().setFileName("Dockerfile");
    if (!utils::fileexists(d))
@@ -106,15 +116,14 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    int rval = utils::runcommand_stream(operation, kORaw, d.parent(), {},NULL);
    if (rval != 0)
       return cError("Build failed.");
-   logmsg(kLINFO, "Built " + v.getVal("TAG"));
+   logmsg(kLINFO, "Built " + imagename);
 
    // install
-   std::string dservicename = v.getVal("DSERVICENAME");
    if (dservicename.length() > 0)
    {
-      logmsg(kLINFO, "Installing " + v.getVal("TAG") + " as " + dservicename);
+      logmsg(kLINFO, "Installing " + imagename + " as " + dservicename);
       service_manage::uninstall(dservicename);
-      rval+=service_manage::install(dservicename, v.getVal("TAG"));
+      rval+=service_manage::install(dservicename, imagename);
    }
    else
       logmsg(kLINFO,"Not a dService so not installing.");
