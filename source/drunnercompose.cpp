@@ -62,27 +62,6 @@ const std::vector<cServiceInfo>& drunnerCompose::getServicesInfo() const
    return mServicesInfo;
 }
 
-//const void drunnerCompose::getVolumes(std::vector<cVolInfo> & vecvols) const
-//{
-//   for (auto entry : mServicesInfo)
-//      for (auto vol : entry.mVolumes)
-//         vecvols.push_back(vol);
-//}
-
-//void drunnerCompose::getDockerVolumeNames(tVecStr & dv) const
-//{
-//   for (auto entry : mServicesInfo)
-//      for (auto vol : entry.mVolumes)
-//         dv.push_back(vol.mDockerVolumeName);
-//}
-//
-//void drunnerCompose::getDockerVolumeNamesBackup(tVecStr & dv) const
-//{
-//   for (auto entry : mServicesInfo)
-//      for (auto vol : entry.mVolumes)
-//         dv.push_back(vol.mDockerVolumeNameBackup);
-//}
-
 std::string drunnerCompose::getImageName() const
 {
    return mService.getImageName();
@@ -131,8 +110,8 @@ void drunnerCompose::load_docker_compose_yml()
             volinfo.mDockerVolumeNameRaw = external["name"].as<std::string>();
             // need to var substitute ${SERVICENAME} in it.
             volinfo.mDockerVolumeName = utils::replacestring(volinfo.mDockerVolumeNameRaw, "${SERVICENAME}", mService.getName());
-            volinfo.mDockerVolumeNameBackup = utils::replacestring(volinfo.mDockerVolumeNameRaw, "${SERVICENAME}", "_SERVICENAME_");
-            logmsg(kLDEBUG, "dRunner managed volume: " + volinfo.mDockerVolumeName);
+            volinfo.mDockerVolumeNameBackup = utils::replacestring(volinfo.mDockerVolumeNameRaw, "${SERVICENAME}", "SERVICENAME");
+            logmsg(kLDEBUG, "dRunner managed volume: " + volinfo.mDockerVolumeName); // +" (Backed up as " + volinfo.mDockerVolumeNameBackup + ")");
             VolumesInfo.push_back(volinfo);
          }
       }
@@ -179,7 +158,11 @@ void drunnerCompose::load_docker_compose_yml()
                volinfo.mDockerVolumeName = "";
                for (auto entry : VolumesInfo)
                   if (entry.mLabel == volinfo.mLabel)
+                  {
                      volinfo.mDockerVolumeName = entry.mDockerVolumeName;
+                     volinfo.mDockerVolumeNameBackup = entry.mDockerVolumeNameBackup;
+                     volinfo.mDockerVolumeNameRaw = entry.mDockerVolumeNameRaw;
+                  }
                if (volinfo.mDockerVolumeName.length() == 0)
                   logmsg(kLDEBUG, "Volume " + volinfo.mLabel + " is not managed by dRunner. Skipped.");
                else

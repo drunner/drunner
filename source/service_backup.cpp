@@ -60,7 +60,7 @@ void service::backup(const std::string & backupfile)
          if (utils::dockerVolExists(entry.mDockerVolumeName))
          {
             compress::compress_volume(password, entry.mDockerVolumeName, tempf, entry.mDockerVolumeNameBackup + ".tar",true);
-            logmsg(kLDEBUG, "Backed up docker volume " + entry.mDockerVolumeName);
+            logmsg(kLDEBUG, "Backed up docker volume " + entry.mDockerVolumeName + " as " + entry.mDockerVolumeNameBackup);
          }
          else
             logmsg(kLWARN, "Couldn't find docker volume " + entry.mDockerVolumeName + " ... skipping.");

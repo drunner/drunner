@@ -24,27 +24,12 @@ public:
    // creates from drunnerCompose.
    bool create(std::string imagename)
    {
-      //tVecStr dockervols;
-      //drc.getDockerVolumeNamesBackup(dockervols);
-
-      //// all docker volumes that dRunner has to manage.
-      //setVec("DOCKERVOLS", dockervols);
-
-      //tVecStr test;
-      //getVec("DOCKERVOLS", test);
-      //if (test.size() != dockervols.size())
-      //   fatal("Mismatch in shb :/  ");
-      //for (int i = 0; i < test.size(); ++i)
-      //   if (test[i] != dockervols[i])
-      //      fatal("not equal: " + test[i] + " " + dockervols[i]);
-
       // the main image name.
       setString("IMAGENAME", imagename);
 
       return true;
    }
 
-   //void getDockerVolumeNamesBackup(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
    std::string getImageName() const { return getString("IMAGENAME"); }
    std::string getPathFromParent(std::string parentpath) { return parentpath + "/backupvars.sh"; }
 
