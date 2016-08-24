@@ -75,7 +75,7 @@ namespace utils
          Poco::PipeInputStream pis(outpipe);
 
          Poco::TeeOutputStream tee(oss);
-         if (outputMode==kORaw)
+         if (outputMode==kORaw) // otherwise it's kOSuppressed.
             tee.addStream(std::cout);
 
          Poco::StreamCopier::copyStreamUnbuffered(pis, tee);
