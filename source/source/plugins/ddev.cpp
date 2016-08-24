@@ -112,7 +112,7 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
 
    CommandLine operation;
    operation.command = "docker";
-   operation.args = { "build","-t",v.getVal("TAG"),"." };
+   operation.args = { "build","-t",imagename,"." };
    int rval = utils::runcommand_stream(operation, kORaw, d.parent(), {},NULL);
    if (rval != 0)
       return cError("Build failed.");
