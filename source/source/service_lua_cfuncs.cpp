@@ -175,7 +175,7 @@ namespace servicelua
 
       Poco::Path runin = lf->getPathdService();
       std::string out;
-      int r = utils::runcommand_stream(operation, kORaw, runin, lf->getServiceVars()->getAll(), &out);
+      int r = utils::runcommand_stream(operation, returnOutput ? kOSuppressed : kORaw, runin, lf->getServiceVars()->getAll(), &out);
 
       int rcount = 0;
       if (returnOutput)
