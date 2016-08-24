@@ -171,8 +171,12 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    {
       if (!utils::dockerVolExists(dockervols[i]))
          logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!");
+
+      if (!utils::fileexists(tempf + "/" + dockervols[i] + ".tar"))
+         fatal("Required docker volume " + dockervols[i] + " is missing from backup.");
+
       compress::decompress_volume(password, dockervols[i],
-         tempf, shb_dockervolumenames[i] + ".tar",true);
+         tempf, dockervols[i] + ".tar",true);
    }
 
    // restore host vol (local storage)
