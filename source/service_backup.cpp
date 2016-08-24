@@ -28,7 +28,7 @@ void service::backup(const std::string & backupfile)
 
    // write out variables that we need to decompress everything.
    sh_backupvars shb;
-   shb.createFromdrunnerCompose(drunnerCompose(*this));
+   shb.create(getImageName());
    shb.writeSettings(shb.getPathFromParent(tempparent.getpath()));
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
@@ -52,18 +52,19 @@ void service::backup(const std::string & backupfile)
    // back up volume containers
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
-   std::vector<std::string> dockervols;
-   shb.getDockerVolumeNames(dockervols);
-   for (auto const & entry : dockervols)
-   {
-      if (utils::dockerVolExists(entry))
+
+   drunnerCompose drc(*this);
+   for (auto const & si : drc.getServicesInfo())
+      for (auto const entry : si.mVolumes)
       {
-         compress::compress_volume(password, entry, tempf, entry + ".tar",true);
-         logmsg(kLDEBUG, "Backed up docker volume " + entry);
+         if (utils::dockerVolExists(entry.mDockerVolumeName))
+         {
+            compress::compress_volume(password, entry.mDockerVolumeName, tempf, entry.mDockerVolumeNameBackup + ".tar",true);
+            logmsg(kLDEBUG, "Backed up docker volume " + entry.mDockerVolumeName);
+         }
+         else
+            logmsg(kLWARN, "Couldn't find docker volume " + entry.mDockerVolumeName + " ... skipping.");
       }
-      else
-         logmsg(kLINFO, "Couldn't find docker volume " + entry + " ... skipping.");
-   }
 
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
    tstep.restart();
@@ -138,11 +139,7 @@ cResult service_restore(const std::string & servicename, const std::string & bac
 
    if (!utils::fileexists(tempc))
       logmsg(kLERROR, "Backup corrupt - missing " + tempc);
-   std::vector<std::string> shb_dockervolumenames;
-   shb.getDockerVolumeNames(shb_dockervolumenames);
-   for (auto entry : shb_dockervolumenames)
-      if (!utils::fileexists(tempf + "/" + entry + ".tar"))
-         logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
+
 
    // backup seems okay - lets go!
    service svc(servicename, shb.getImageName());
@@ -156,28 +153,18 @@ cResult service_restore(const std::string & servicename, const std::string & bac
    if (drc.readOkay()==kRError)
       logmsg(kLERROR, "Installation failed - drunner-compose.yml broken.");
 
-   // check that nothing about the volumes has changed in the dService.
-   tVecStr dockervols;
-   drc.getDockerVolumeNames(dockervols);
-   if (shb_dockervolumenames.size() != dockervols.size())
-   {
-      logmsg(kLWARN, "Number of docker volumes stored does not match what we expect. Restored backup is in unknown state.");
-      svc.uninstall();
-      logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
-   }
-
    // restore all the volumes.
-   for (unsigned int i = 0; i < dockervols.size(); ++i)
-   {
-      if (!utils::dockerVolExists(dockervols[i]))
-         logmsg(kLERROR, "Installation should have created " + dockervols[i] + " but didn't!");
+   for (auto si : drc.getServicesInfo())
+      for (auto entry : si.mVolumes)
+      {
+         if (!utils::dockerVolExists(entry.mDockerVolumeName))
+            logmsg(kLERROR, "Installation should have created " + entry.mDockerVolumeName + " but didn't!");
 
-      if (!utils::fileexists(tempf + "/" + dockervols[i] + ".tar"))
-         fatal("Required docker volume " + dockervols[i] + " is missing from backup.");
+         if (!utils::fileexists(tempf + "/" + entry.mDockerVolumeNameBackup + ".tar"))
+            fatal("Required docker volume " + entry.mDockerVolumeNameBackup + " is missing from backup.");
 
-      compress::decompress_volume(password, dockervols[i],
-         tempf, dockervols[i] + ".tar",true);
-   }
+         compress::decompress_volume(password, entry.mDockerVolumeName, tempf, entry.mDockerVolumeNameBackup + ".tar",true);
+      }
 
    // restore host vol (local storage)
    logmsg(kLDEBUG, "Restoring host volume.");

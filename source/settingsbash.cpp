@@ -140,37 +140,24 @@ void settingsbash::setString(const std::string & key, const std::string & s)
    setSetting(bl, true);
 }
 
-void settingsbash::getVec(const std::string & key, std::vector<std::string> & vec) const
-{
-   vec.clear();
-
-   std::string astr = getElement(key).getvalue();
-   astr = dequote(dequote(astr, '('), ')');
-   std::stringstream ss(astr);
-   while (ss.good())
-   {
-      ss >> astr;
-      utils::trim(astr);
-      std::string element = dequote(astr, '\"');
-      if (element.length() > 0)
-         vec.push_back(element);
-   }
-}
-
-void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
-{
-   std::stringstream ss;
-   ss << "(";
-   for (unsigned int i = 0; i < v.size(); ++i)
-   {
-      if (i > 0) ss << " ";
-      ss << "\"" << v[i] << "\"";
-   }
-   ss << ")";
-   bashline bl;
-   bl.setkeyvalue(key, ss.str());
-   setSetting(bl, true);
-}
+//void settingsbash::getVec(const std::string & key, std::vector<std::string> & vec) const
+//{
+//   vec.clear();
+//
+//   int n = atoi(getString(key + "_size").c_str());
+//   for (int i = 0; i < n; ++i)
+//   {
+//      std::string x = getString(key + "_" + std::to_string(i));
+//      vec.push_back(x);
+//   }
+//}
+//
+//void settingsbash::setVec(const std::string & key, const std::vector<std::string> & v)
+//{
+//   setString(key + "_size", std::to_string(v.size()));
+//   for (unsigned int i=0 ; i < v.size() ; ++i)
+//      setString(key + "_" + std::to_string(i), v[i]);
+//}
 
 //
 bool settingsbash::istrue(const std::string & s) const

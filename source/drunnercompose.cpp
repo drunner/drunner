@@ -62,19 +62,26 @@ const std::vector<cServiceInfo>& drunnerCompose::getServicesInfo() const
    return mServicesInfo;
 }
 
-const void drunnerCompose::getVolumes(std::vector<cVolInfo> & vecvols) const
-{
-   for (auto entry : mServicesInfo)
-      for (auto vol : entry.mVolumes)
-         vecvols.push_back(vol);
-}
+//const void drunnerCompose::getVolumes(std::vector<cVolInfo> & vecvols) const
+//{
+//   for (auto entry : mServicesInfo)
+//      for (auto vol : entry.mVolumes)
+//         vecvols.push_back(vol);
+//}
 
-void drunnerCompose::getDockerVolumeNames(tVecStr & dv) const
-{
-   for (auto entry : mServicesInfo)
-      for (auto vol : entry.mVolumes)
-         dv.push_back(vol.mDockerVolumeName);
-}
+//void drunnerCompose::getDockerVolumeNames(tVecStr & dv) const
+//{
+//   for (auto entry : mServicesInfo)
+//      for (auto vol : entry.mVolumes)
+//         dv.push_back(vol.mDockerVolumeName);
+//}
+//
+//void drunnerCompose::getDockerVolumeNamesBackup(tVecStr & dv) const
+//{
+//   for (auto entry : mServicesInfo)
+//      for (auto vol : entry.mVolumes)
+//         dv.push_back(vol.mDockerVolumeNameBackup);
+//}
 
 std::string drunnerCompose::getImageName() const
 {
@@ -121,9 +128,10 @@ void drunnerCompose::load_docker_compose_yml()
          else
          {
             if (!external["name"]) logmsg(kLERROR, "Volume " + volinfo.mLabel + " is missing a required name:");
-            volinfo.mDockerVolumeName = external["name"].as<std::string>();
+            volinfo.mDockerVolumeNameRaw = external["name"].as<std::string>();
             // need to var substitute ${SERVICENAME} in it.
-            volinfo.mDockerVolumeName = utils::replacestring(volinfo.mDockerVolumeName, "${SERVICENAME}", mService.getName());
+            volinfo.mDockerVolumeName = utils::replacestring(volinfo.mDockerVolumeNameRaw, "${SERVICENAME}", mService.getName());
+            volinfo.mDockerVolumeNameBackup = utils::replacestring(volinfo.mDockerVolumeNameRaw, "${SERVICENAME}", "_SERVICENAME_");
             logmsg(kLDEBUG, "dRunner managed volume: " + volinfo.mDockerVolumeName);
             VolumesInfo.push_back(volinfo);
          }

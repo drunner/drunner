@@ -8,6 +8,7 @@
 #include "service.h"
 #include "settingsbash.h"
 #include "drunnercompose.h"
+#include "globallogger.h"
 
 class sh_backupvars : public settingsbash
 {
@@ -21,21 +22,29 @@ public:
    }
 
    // creates from drunnerCompose.
-   bool createFromdrunnerCompose(const drunnerCompose & drc)
+   bool create(std::string imagename)
    {
-      tVecStr dockervols;
-      drc.getDockerVolumeNames(dockervols);
+      //tVecStr dockervols;
+      //drc.getDockerVolumeNamesBackup(dockervols);
 
-      // all docker volumes that dRunner has to manage.
-      setVec("DOCKERVOLS", dockervols);
+      //// all docker volumes that dRunner has to manage.
+      //setVec("DOCKERVOLS", dockervols);
+
+      //tVecStr test;
+      //getVec("DOCKERVOLS", test);
+      //if (test.size() != dockervols.size())
+      //   fatal("Mismatch in shb :/  ");
+      //for (int i = 0; i < test.size(); ++i)
+      //   if (test[i] != dockervols[i])
+      //      fatal("not equal: " + test[i] + " " + dockervols[i]);
 
       // the main image name.
-      setString("IMAGENAME", drc.getImageName());
+      setString("IMAGENAME", imagename);
 
       return true;
    }
 
-   void getDockerVolumeNames(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
+   //void getDockerVolumeNamesBackup(std::vector<std::string> & s)	const { getVec("DOCKERVOLS",s); }
    std::string getImageName() const { return getString("IMAGENAME"); }
    std::string getPathFromParent(std::string parentpath) { return parentpath + "/backupvars.sh"; }
 
@@ -44,7 +53,6 @@ protected:
    {
       std::vector<std::string> nothing;
       setString("IMAGENAME", "not set");
-      setVec("DOCKERVOLS", nothing);
    }
 };
 

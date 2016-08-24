@@ -37,11 +37,11 @@ public:
 
    bool getBool(const std::string & key) const;
    std::string getString(const std::string & key) const;
-   void getVec(const std::string & key, std::vector<std::string> & vec) const;
+   //void getVec(const std::string & key, std::vector<std::string> & vec) const;
 
    void setBool(const std::string & key, bool b);
    void setString(const std::string & key, const std::string & s);
-   void setVec(const std::string & key, const std::vector<std::string> & v);
+   //void setVec(const std::string & key, const std::vector<std::string> & v);
 
 protected:
    const bool mCreateOnRead;

@@ -1,2 +1,615 @@
-﻿  service_backup.cpp
-c:\users\j\documents\dev\drunner\source\service_backup.cpp(3): fatal error C1083: Cannot open include file: 'boost/filesystem.hpp': No such file or directory
+﻿  unittests.cpp
+z:\dev\drunner\source\tests\unittests.cpp(2): fatal error C1083: Cannot open include file: 'catch.h': No such file or directory
+  test_settingsbash.cpp
+z:\dev\drunner\source\tests\test_settingsbash.cpp(1): fatal error C1083: Cannot open include file: 'catch.h': No such file or directory
+  utils_docker.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  utils.cpp
+z:\dev\drunner\source\utils.cpp(8): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+  timez.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\timez.cpp(67): error C3861: 'strptime': identifier not found
+  showhelp.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  sh_drunnercfg.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  settingsbash.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  servicehook.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  service_install.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+z:\dev\drunner\source\generate.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(12): error C2146: syntax error: missing ')' before identifier 'mode'
+z:\dev\drunner\source\generate.h(12): error C3646: 'mode': unknown override specifier
+z:\dev\drunner\source\generate.h(13): error C2143: syntax error: missing ';' before '&'
+z:\dev\drunner\source\generate.h(13): error C2182: 'string': illegal use of type 'void'
+z:\dev\drunner\source\generate.h(13): error C2226: syntax error: unexpected type 'std::string'
+z:\dev\drunner\source\generate.h(13): warning C4228: nonstandard extension used: qualifiers after comma in declarator list are ignored
+z:\dev\drunner\source\generate.h(14): error C2059: syntax error: ')'
+z:\dev\drunner\source\generate.h(14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(14): error C2530: 'content': references must be initialized
+z:\dev\drunner\source\generate_utils_sh.h(136): error C2660: 'generate': function does not take 3 arguments
+  service_backup.cpp
+z:\dev\drunner\source\service_backup.cpp(3): fatal error C1083: Cannot open include file: 'boost/filesystem.hpp': No such file or directory
+  service.cpp
+z:\dev\drunner\source\service.cpp(1): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+  plugins.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+z:\dev\drunner\source\generate.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(12): error C2146: syntax error: missing ')' before identifier 'mode'
+z:\dev\drunner\source\generate.h(12): error C3646: 'mode': unknown override specifier
+z:\dev\drunner\source\generate.h(13): error C2143: syntax error: missing ';' before '&'
+z:\dev\drunner\source\generate.h(13): error C2182: 'string': illegal use of type 'void'
+z:\dev\drunner\source\generate.h(13): error C2226: syntax error: unexpected type 'std::string'
+z:\dev\drunner\source\generate.h(13): warning C4228: nonstandard extension used: qualifiers after comma in declarator list are ignored
+z:\dev\drunner\source\generate.h(14): error C2059: syntax error: ')'
+z:\dev\drunner\source\generate.h(14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(14): error C2530: 'content': references must be initialized
+z:\dev\drunner\source\plugins\generate_plugin_script.h(41): error C2660: 'generate': function does not take 3 arguments
+  dbackup.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+z:\dev\drunner\source\plugins\dbackup.cpp(116): error C2660: 'utils::makedirectory': function does not take 2 arguments
+z:\dev\drunner\source\plugins\dbackup.cpp(144): error C2660: 'utils::makedirectory': function does not take 2 arguments
+z:\dev\drunner\source\plugins\dbackup.cpp(145): error C2660: 'utils::makedirectory': function does not take 2 arguments
+z:\dev\drunner\source\plugins\dbackup.cpp(146): error C2660: 'utils::makedirectory': function does not take 2 arguments
+z:\dev\drunner\source\plugins\dbackup.cpp(179): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\plugins\dbackup.cpp(179): warning C4566: character represented by universal-character-name '\u2714' cannot be represented in the current code page (1252)
+z:\dev\drunner\source\plugins\dbackup.cpp(181): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\plugins\dbackup.cpp(181): warning C4566: character represented by universal-character-name '\u2718' cannot be represented in the current code page (1252)
+  backupConfig.cpp
+z:\dev\drunner\source\plugins\backupconfig.cpp(3): fatal error C1083: Cannot open include file: 'yaml-cpp/yaml.h': No such file or directory
+  params.cpp
+z:\dev\drunner\source\params.cpp(4): fatal error C1083: Cannot open include file: 'getopt.h': No such file or directory
+  main.cpp
+z:\dev\drunner\source\main.cpp(4): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+  globallogger.cpp
+z:\dev\drunner\source\globallogger.cpp(5): fatal error C1083: Cannot open include file: 'boost/algorithm/string.hpp': No such file or directory
+  globalcontext.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  generate.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\generate.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(12): error C2146: syntax error: missing ')' before identifier 'mode'
+z:\dev\drunner\source\generate.h(12): error C3646: 'mode': unknown override specifier
+z:\dev\drunner\source\generate.h(13): error C2143: syntax error: missing ';' before '&'
+z:\dev\drunner\source\generate.h(13): error C2182: 'string': illegal use of type 'void'
+z:\dev\drunner\source\generate.h(13): error C2226: syntax error: unexpected type 'std::string'
+z:\dev\drunner\source\generate.h(13): warning C4228: nonstandard extension used: qualifiers after comma in declarator list are ignored
+z:\dev\drunner\source\generate.h(14): error C2059: syntax error: ')'
+z:\dev\drunner\source\generate.h(14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.h(14): error C2530: 'content': references must be initialized
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+z:\dev\drunner\source\generate.cpp(7): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(7): error C2146: syntax error: missing ')' before identifier 'mode'
+z:\dev\drunner\source\generate.cpp(7): error C3646: 'mode': unknown override specifier
+z:\dev\drunner\source\generate.cpp(8): error C2143: syntax error: missing ';' before '&'
+z:\dev\drunner\source\generate.cpp(8): error C2182: 'string': illegal use of type 'void'
+z:\dev\drunner\source\generate.cpp(8): error C2226: syntax error: unexpected type 'std::string'
+z:\dev\drunner\source\generate.cpp(8): warning C4228: nonstandard extension used: qualifiers after comma in declarator list are ignored
+z:\dev\drunner\source\generate.cpp(9): error C2059: syntax error: ')'
+z:\dev\drunner\source\generate.cpp(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(10): error C2086: 'int &content': redefinition
+  z:\dev\drunner\source\generate.h(14): note: see declaration of 'content'
+z:\dev\drunner\source\generate.cpp(13): error C2065: 'fullpath': undeclared identifier
+z:\dev\drunner\source\generate.cpp(13): error C2059: syntax error: ';'
+z:\dev\drunner\source\generate.cpp(17): error C3927: '->': trailing return type is not allowed after a non-function declarator
+z:\dev\drunner\source\generate.cpp(17): error C3484: syntax error: expected '->' before the return type
+z:\dev\drunner\source\generate.cpp(17): error C3613: missing return type after '->' ('int' assumed)
+z:\dev\drunner\source\generate.cpp(17): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(17): error C2371: 'ofs': redefinition; different basic types
+  z:\dev\drunner\source\generate.cpp(16): note: see declaration of 'ofs'
+z:\dev\drunner\source\generate.cpp(17): error C2146: syntax error: missing ';' before identifier 'open'
+z:\dev\drunner\source\generate.cpp(18): error C2059: syntax error: 'if'
+z:\dev\drunner\source\generate.cpp(20): error C2143: syntax error: missing ';' before '<<'
+z:\dev\drunner\source\generate.cpp(20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(20): error C2371: 'ofs': redefinition; different basic types
+  z:\dev\drunner\source\generate.cpp(16): note: see declaration of 'ofs'
+z:\dev\drunner\source\generate.cpp(21): error C3927: '->': trailing return type is not allowed after a non-function declarator
+z:\dev\drunner\source\generate.cpp(21): error C3484: syntax error: expected '->' before the return type
+z:\dev\drunner\source\generate.cpp(21): error C3613: missing return type after '->' ('int' assumed)
+z:\dev\drunner\source\generate.cpp(21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(21): error C2371: 'ofs': redefinition; different basic types
+  z:\dev\drunner\source\generate.cpp(16): note: see declaration of 'ofs'
+z:\dev\drunner\source\generate.cpp(21): error C2146: syntax error: missing ';' before identifier 'close'
+z:\dev\drunner\source\generate.cpp(23): error C2059: syntax error: 'if'
+z:\dev\drunner\source\generate.cpp(26): error C2065: 'fullpath': undeclared identifier
+z:\dev\drunner\source\generate.cpp(26): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\generate.cpp(26): error C2365: 'logmsg': redefinition; previous definition was 'function'
+  z:\dev\drunner\source\globallogger.h(9): note: see declaration of 'logmsg'
+z:\dev\drunner\source\generate.cpp(27): error C2059: syntax error: '}'
+z:\dev\drunner\source\generate.cpp(27): error C2143: syntax error: missing ';' before '}'
+  Generating Code...
+  Compiling...
+  exceptions.cpp
+z:\dev\drunner\source\exceptions.cpp(15): error C2679: binary '<<': no operator found which takes a right-hand operand of type 'std::string' (or there is no acceptable conversion)
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(495): note: could be 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(std::basic_streambuf<char,std::char_traits<char>> *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(475): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(const void *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(455): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(long double)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(435): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(double)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(415): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(float)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(395): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned __int64)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(375): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(__int64)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(355): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned long)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(335): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(long)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(315): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned int)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(290): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(int)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(270): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(unsigned short)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(236): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(short)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(216): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(bool)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(209): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(std::ios_base &(__cdecl *)(std::ios_base &))'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(202): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(std::basic_ios<char,std::char_traits<char>> &(__cdecl *)(std::basic_ios<char,std::char_traits<char>> &))'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(196): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(std::basic_ostream<char,std::char_traits<char>> &(__cdecl *)(std::basic_ostream<char,std::char_traits<char>> &))'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(692): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<char,std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const char *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(739): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<char,std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,char)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(777): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const char *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(824): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,char)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(950): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const signed char *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(957): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,signed char)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(964): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const unsigned char *)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(971): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,unsigned char)'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(981): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<char,std::char_traits<char>,std::string>(std::basic_ostream<char,std::char_traits<char>> &&,const _Ty &)'
+          with
+          [
+              _Ty=std::string
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\ostream(1019): note: or       'std::basic_ostream<char,std::char_traits<char>> &std::operator <<<char,std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const std::error_code &)'
+  z:\dev\drunner\source\exceptions.cpp(15): note: while trying to match the argument list '(std::basic_ostream<char,std::char_traits<char>>, std::string)'
+  dservicelogger.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+  drunnercompose.cpp
+z:\dev\drunner\source\drunnercompose.cpp(7): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+  compress.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  command_setup.cpp
+z:\dev\drunner\source\command_setup.cpp(1): fatal error C1083: Cannot open include file: 'boost/filesystem.hpp': No such file or directory
+  command_general.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  command_dev.cpp
+z:\dev\drunner\source\enums.h(9): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(9): error C2146: syntax error: missing ';' before identifier 'S_ALLREAD'
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(9): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(10): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(10): error C2146: syntax error: missing ';' before identifier 'S_755'
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IWUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXUSR': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IRGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXGRP': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IROTH': undeclared identifier
+z:\dev\drunner\source\enums.h(10): error C2065: 'S_IXOTH': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(11): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(11): error C2146: syntax error: missing ';' before identifier 'S_777'
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXG': undeclared identifier
+z:\dev\drunner\source\enums.h(11): error C2065: 'S_IRWXO': undeclared identifier
+z:\dev\drunner\source\enums.h(12): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+z:\dev\drunner\source\enums.h(12): error C2086: 'const int mode_t': redefinition
+  z:\dev\drunner\source\enums.h(9): note: see declaration of 'mode_t'
+z:\dev\drunner\source\enums.h(12): error C2146: syntax error: missing ';' before identifier 'S_700'
+z:\dev\drunner\source\enums.h(12): error C2065: 'S_IRWXU': undeclared identifier
+z:\dev\drunner\source\utils.h(15): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(16): warning C4129: 'e': unrecognized character escape sequence
+z:\dev\drunner\source\utils.h(22): error C2061: syntax error: identifier 'mode_t'
+  buildnum.cpp
+z:\dev\drunner\source\buildnum.cpp(2): fatal error C1083: Cannot open include file: 'build_number.h': No such file or directory
+  Generating Code...

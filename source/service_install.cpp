@@ -217,15 +217,14 @@ eResult service::obliterate()
       drunnerCompose drc(*this);
       if (drc.readOkay()!=kRError)
       {
-         tVecStr docvolnames;
-         drc.getDockerVolumeNames(docvolnames);
-         for (const auto & vol : docvolnames)
-         {
-            logmsg(kLINFO, "Obliterating docker volume " + vol);
-            std::string op;
-            if (0 != utils::bashcommand("docker volume rm " + vol, op))
-               logmsg(kLWARN, "Failed to remove " + vol + " -- " + op);
-         }
+         for (auto si : drc.getServicesInfo())
+            for (auto vol : si.mVolumes)
+            {
+               logmsg(kLINFO, "Obliterating docker volume " + vol.mDockerVolumeName);
+               std::string op;
+               if (0 != utils::bashcommand("docker volume rm " + vol.mDockerVolumeName, op))
+                  logmsg(kLWARN, "Failed to remove " + vol.mDockerVolumeName + " -- " + op);
+            }
       }
       else
          logmsg(kLDEBUG, "Couldn't read configuration to delete the associated docker volumes. :/");

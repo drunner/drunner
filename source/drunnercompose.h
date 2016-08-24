@@ -13,6 +13,8 @@ class cVolInfo {
 public:
    std::string mLabel;
    std::string mDockerVolumeName;
+   std::string mDockerVolumeNameRaw;
+   std::string mDockerVolumeNameBackup; // nice name for backup files.
 };
 
 class cServiceVolInfo : public cVolInfo {
@@ -44,10 +46,11 @@ public:
 
    // Volumes are as defined in the docker-compose.yml. These include all the volumes
    // defined in services, but may include extras.
-   const void getVolumes(std::vector<cVolInfo> & vecvols) const;
+   //const void getVolumes(std::vector<cVolInfo> & vecvols) const;
 
    // get a vector of mDockerVolumeName's (for convenience) - straight from mVolumes.
-   void getDockerVolumeNames(tVecStr & dv) const;
+   //void getDockerVolumeNames(tVecStr & dv) const;
+   //void getDockerVolumeNamesBackup(tVecStr & dv) const;
 
    // just queries the stored service for conveninece.
    std::string getImageName() const;
