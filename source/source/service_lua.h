@@ -20,6 +20,11 @@ namespace servicelua
       bool external;
       std::string name;
    };
+   struct BackupVol
+   {
+      std::string volumeName;
+      std::string backupName;
+   };
    struct Proxy
    {
       std::string vhost;
@@ -39,7 +44,7 @@ namespace servicelua
       const std::vector<std::string> & getContainers() const;
       const std::vector<Configuration> & getConfigItems() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
-      void getBackupDockerVolumeNames(std::vector<std::string> & vols) const;
+      void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
       const std::vector<Proxy> & getProxies() const;
 
       // for service::serviceRunnerCommand

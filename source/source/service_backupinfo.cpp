@@ -11,13 +11,11 @@ backupinfo::backupinfo(Poco::Path path) : mPath(path)
    drunner_assert(path.isFile(),"The backupinfo file is not a Poco file.");
 }
 
-void backupinfo::createFromServiceLua(std::string imagename, const servicelua::luafile & syf)
+void backupinfo::create(std::string imagename)
 {
-   drunner_assert(mVolumes.size() == 0, "Dirty volumes.");
-   drunner_assert(mImageName.length() == 0,"Dirty imagename.");
    drunner_assert(imagename.length() > 0, "Empty imagename.");
    mImageName = imagename;
-   syf.getBackupDockerVolumeNames(mVolumes);
+   mVersion = 2;
 }
 
 cResult backupinfo::loadvars()
@@ -29,6 +27,7 @@ cResult backupinfo::loadvars()
    archive(*this);
 
    drunner_assert(mImageName.length() > 0, "Empty imagename.");
+   drunner_assert(mVersion == 2, "Incompatible backup version.");
 
    return kRSuccess;
 }
@@ -37,17 +36,14 @@ cResult backupinfo::savevars() const
 {
    drunner_assert(mImageName.length() > 0, "Empty imagename.");
 
+   mVersion = 2;
+
    std::ofstream os(mPath.toString());
    if (os.bad())
       return cError("Bad output stream.");
    cereal::JSONOutputArchive archive(os);
    archive(*this);
    return kRSuccess;
-}
-
-const std::vector<std::string> & backupinfo::getDockerVolumeNames() const
-{
-   return mVolumes;
 }
 
 std::string backupinfo::getImageName() const

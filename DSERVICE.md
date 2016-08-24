@@ -35,7 +35,7 @@ dRunner provides quite a few hooks for you to use in your servicerunner script. 
 | Hook             |  Description
 |:----------------:|:--------------:|
 | install_end      | |
-| backup_start     | |
+| backup_start     | First argument is a temporary folder on the host that gets backed up. |
 | backup_end       | |
 | restore_start    | |
 | restore_end      | |
