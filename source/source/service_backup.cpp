@@ -33,7 +33,7 @@ cResult service::backup(const std::string & backupfile)
 
    // write out variables that we need to decompress everything.
    backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
-   bvars.createFromServiceLua(getImageName(),mServiceLua);
+   bvars.create(getImageName());
    bvars.savevars();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
@@ -57,20 +57,20 @@ cResult service::backup(const std::string & backupfile)
    // back up volume containers
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
-   std::vector<std::string> dockervols;
+   std::vector<servicelua::BackupVol> dockervols;
    mServiceLua.getBackupDockerVolumeNames(dockervols);
 
    for (auto const & entry : dockervols)
    {
-      if (utils_docker::dockerVolExists(entry))
+      if (utils_docker::dockerVolExists(entry.volumeName))
       {
          Poco::Path volarchive(tempf);
-         volarchive.setFileName(entry + ".tar");
-         compress::compress_volume(password, entry, volarchive);
-         logmsg(kLDEBUG, "Backed up docker volume " + entry);
+         volarchive.setFileName(entry.backupName + ".tar");
+         compress::compress_volume(password, entry.volumeName, volarchive);
+         logmsg(kLDEBUG, "Backed up docker volume " + entry.volumeName + " as "+entry.backupName);
       }
       else
-         fatal("Couldn't find docker volume " + entry + ".");
+         fatal("Couldn't find docker volume " + entry.volumeName + ".");
    }
 
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
@@ -156,22 +156,13 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    std::string password = utils::getenv("PASS");
    compress::decompress_folder(password, tempparent.getpath(), bigarchive);
 
+   if (!utils::fileexists(tempc))
+      logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
+
    // read in old variables, just need imagename and olddockervols from them.
    backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
    if (kRSuccess!=bvars.loadvars())
       logmsg(kLERROR, "Backup corrupt - "+backupinfo::filename+" couldn't be read.");
-
-   if (!utils::fileexists(tempc))
-      logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
-   const std::vector<std::string> & shb_dockervolumenames(bvars.getDockerVolumeNames());
-
-   for (auto entry : shb_dockervolumenames)
-   {
-      Poco::Path entrypath = tempf;
-      entrypath.setFileName(entry + ".tar");
-      if (!utils::fileexists(entrypath))
-         logmsg(kLERROR, "Backup corrupt - missing backup of volume " + entry);
-   }
 
    // backup seems okay - lets go!
    std::string imagename = bvars.getImageName();
@@ -185,20 +176,20 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
       service_restore_fail(servicename,"Installation did not correctly create the service.lua file.");
 
    // check that nothing about the volumes has changed in the dService.
-   tVecStr dockervols;
+   std::vector<servicelua::BackupVol> dockervols;
    newluafile.getBackupDockerVolumeNames(dockervols);
-   if (shb_dockervolumenames.size() != dockervols.size())
-      service_restore_fail(servicename, "Number of docker volumes stored does not match what we expect.");
    
    // restore all the volumes.
-   for (unsigned int i = 0; i < dockervols.size(); ++i)
+   for (auto vol : dockervols)
    {
-      if (!utils_docker::dockerVolExists(dockervols[i]))
-         service_restore_fail(servicename, "Installation should have created " + dockervols[i] + " but didn't!");
+      if (!utils_docker::dockerVolExists(vol.volumeName))
+         service_restore_fail(servicename, "Installation should have created " + vol.volumeName + " but didn't!");
 
       Poco::Path volarchive(tempf);
-      volarchive.setFileName(shb_dockervolumenames[i] + ".tar");
-      compress::decompress_volume(password, dockervols[i], volarchive);
+      volarchive.setFileName(vol.backupName + ".tar");
+      if (!utils::fileexists(volarchive))
+         fatal("Backup set did not contain backup of volume " + volarchive.toString());
+      compress::decompress_volume(password, vol.volumeName, volarchive);
    }
 
    // restore host vol (local storage)

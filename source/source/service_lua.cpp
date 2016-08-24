@@ -161,14 +161,16 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   void luafile::getBackupDockerVolumeNames(std::vector<std::string> & vols) const
+   void luafile::getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const
    {
       drunner_assert(vols.size() == 0, "Coding error: passing dirty volume vector to getBackupDockerVolumeNames");
       for (const auto & v : mVolumes)
          if (v.backup)
          {
-            std::string volname = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
-            vols.push_back(volname);
+            BackupVol bv;
+            bv.volumeName = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
+            bv.backupName = utils::replacestring(v.name, "${SERVICENAME}", "SERVICENAME");
+            vols.push_back(bv);
          }
    }
 

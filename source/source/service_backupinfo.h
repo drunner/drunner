@@ -20,9 +20,10 @@ public:
    backupinfo(Poco::Path path);
    
    // creates from drunnerCompose.
-   void createFromServiceLua(std::string imagename, const servicelua::luafile & syf);
+   //void createFromServiceLua(std::string imagename, const servicelua::luafile & syf);
+   void create(std::string imagename);
 
-   const std::vector<std::string> & getDockerVolumeNames() const;
+   //const std::vector<std::string> & getDockerVolumeNames() const;
    std::string getImageName() const;
 
    cResult loadvars();
@@ -31,14 +32,15 @@ public:
    static const std::string filename;
 
 private:
-   std::vector<std::string> mVolumes;
+   //std::vector<std::string> mVolumes;
    std::string mImageName;
+   mutable int mVersion;
    Poco::Path mPath;
 
    // --- serialisation --
    friend class cereal::access;
-   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mVolumes, mImageName); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVolumes, mImageName); }
+   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mVersion, mImageName); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVersion, mImageName); }
    // --- serialisation --
 };
 CEREAL_CLASS_VERSION(backupinfo, 1);
