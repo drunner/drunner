@@ -1,4 +1,5 @@
 #include "Poco/String.h"
+#include "Poco/StringTokenizer.h"
 
 #include "service_lua.h"
 #include "dassert.h"
@@ -20,6 +21,7 @@ extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
+extern "C" int l_dsplit(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -42,6 +44,7 @@ namespace servicelua
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
+      REGISTERLUAC(l_dsplit, "dsplit")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -64,7 +67,14 @@ namespace servicelua
    extern "C" int l_addconfig(lua_State *L)
    {
       if (lua_gettop(L) != 5)
-         return luaL_error(L, "Expected exactly one argument (the docker container to stop) for addconfig.");
+         return luaL_error(L, "Expected five arguments for addconfig.");
+
+      // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
+      drunner_assert(lua_isstring(L, 1), "The name must be a string.");
+      drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
+      drunner_assert(lua_isstring(L, 3), "The decsription must be a string.");
+      drunner_assert(lua_isstring(L, 4), "The type must be a string.");
+      drunner_assert(lua_isboolean(L, 5), "The required flag must be a boolean.");
 
       configtype t;
       {
@@ -116,6 +126,7 @@ namespace servicelua
       luafile * lf = get_luafile(L);
 
       Volume v;
+      drunner_assert(lua_isstring(L, 1), "The name of the volume must be a string.");
       v.name = lua_tostring(L, 1); // lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
       v.backup = true;
       v.external = false;
@@ -137,6 +148,7 @@ namespace servicelua
    {
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the name of the container) for addcontainer.");
+      drunner_assert(lua_isstring(L, 1), "The name of the container must be a string.");
       std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
 
       get_luafile(L)->addContainer(cname);
@@ -151,6 +163,9 @@ namespace servicelua
       if (lua_gettop(L) != 3)
          return luaL_error(L, "Expected exactly three arguments (VIRTUAL_HOST,HTTP_PORT,HTTPS_PORT) for addproxy.");
       Proxy p;
+      drunner_assert(lua_isstring(L, 1), "virtual host must be a string.");
+      drunner_assert(lua_isstring(L, 2), "http port must be a string.");
+      drunner_assert(lua_isstring(L, 3), "https port must be a string.");
       p.vhost = lua_tostring(L, 1);
       p.dport_http = lua_tostring(L, 2);
       p.dport_https = lua_tostring(L, 3);
@@ -167,11 +182,39 @@ namespace servicelua
    int drun(lua_State *L, bool returnOutput, bool returnExit)
    {
       luafile * lf = get_luafile(L);
-
       CommandLine operation;
-      operation.command = lua_tostring(L, 1);
-      for (int i = 2; i <= lua_gettop(L); ++i)
-         operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+
+
+      if (lua_isstring(L, 1) == 1)
+      {
+         drunner_assert(lua_isstring(L, 1), "command must be a string");
+         operation.command = lua_tostring(L, 1);
+         for (int i = 2; i <= lua_gettop(L); ++i)
+         {
+            drunner_assert(lua_isstring(L, i), "arg must be a string");
+            operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+         }
+      }
+      else if (lua_istable(L, 1) == 1)
+      {
+         int t = 1;
+         lua_pushnil(L); // we want the first key.
+         while (lua_next(L, t) != 0)
+         {
+            drunner_assert(lua_isnumber(L, -2), "Table keys aren't numbers");
+            drunner_assert(lua_isstring(L, -1), "Table value isn't a string");
+            int i = (int)lua_tonumber(L, -2); // key
+            std::string s = lua_tostring(L, -1); // value
+            //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
+            if (i == 1)
+               operation.command = s;
+            else
+               operation.args.push_back(s);
+            lua_pop(L, 1); // remove value, keep key for next iteration.
+         }
+      }
+      else
+         fatal("Unrecognised argument type passed to drun family.");
 
       Poco::Path runin = lf->getPathdService();
       std::string out;
@@ -231,6 +274,7 @@ namespace servicelua
    {
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the container name to stop) for dstop.");
+      drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
 
       luafile *lf = get_luafile(L);
@@ -254,6 +298,7 @@ namespace servicelua
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the string to substitute) for dsub.");
 
+      drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       luafile * lf = get_luafile(L);
       std::string s = lf->getServiceVars()->substitute(lua_tostring(L, 1));
       lua_pushstring(L, s.c_str());
@@ -267,6 +312,7 @@ namespace servicelua
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the variable name) for dconfig_get.");
 
+      drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
       std::string v = lf->getServiceVars()->getVal(s);
@@ -282,6 +328,8 @@ namespace servicelua
          return luaL_error(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
       luafile *lf = get_luafile(L);
 
+      drunner_assert(lua_isstring(L, 1), "String expected as argument.");
+      drunner_assert(lua_isstring(L, 2), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
       std::string v = lua_tostring(L, 2);
 
@@ -291,6 +339,59 @@ namespace servicelua
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
 
       lua_pushinteger(L, r);
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dsplit(lua_State *L)
+   {
+      if (lua_gettop(L)!=1)
+         return luaL_error(L, "Expected exactly one argument (the string to split) for dsplit.");
+
+      drunner_assert(lua_isstring(L, 1), "String expected as argument.");
+      std::string s = lua_tostring(L, 1);
+
+      // tokenize string, recognising quoted substrings and escaped characters.
+      std::vector<std::string> tok;
+      std::string elem;
+      for (size_t i = 0; i<s.length(); ++i) {
+         switch (s[i])
+         {
+         case ' ':
+            tok.push_back(elem);
+            elem.clear();
+            break;
+
+         case '\\':
+            ++i;
+            drunner_assert(i < s.length(), "Incomplete escape sequence.");
+            elem += s[i];
+            break;
+
+         case '"':
+            ++i;
+            while (i < s.length() && s[i] != '"') { elem += s[i]; ++i; }
+            break;
+
+         default:
+            elem += s[i];
+         }
+      }
+      if (elem.length() > 0)
+         tok.push_back(elem);
+
+      // output the split string into a Lua table.
+      lua_createtable(L, tok.size(),0);
+      int top = lua_gettop(L);
+
+      for (unsigned int i = 0; i < tok.size(); ++i)
+      {
+         lua_pushnumber(L, i+1);
+         lua_pushstring(L, tok[i].c_str());
+         lua_settable(L, top);
+      }
+
       return 1;
    }
 
