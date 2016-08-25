@@ -1,4 +1,5 @@
 #include "Poco/String.h"
+#include "Poco/StringTokenizer.h"
 
 #include "service_lua.h"
 #include "dassert.h"
@@ -20,6 +21,7 @@ extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
+extern "C" int l_dsplit(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -42,6 +44,7 @@ namespace servicelua
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
+      REGISTERLUAC(l_dsplit, "dsplit")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -291,6 +294,57 @@ namespace servicelua
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
 
       lua_pushinteger(L, r);
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dsplit(lua_State *L)
+   {
+      if (lua_gettop(L)!=1)
+         return luaL_error(L, "Expected exactly one argument (the string to split) for dsplit.");
+
+      std::string s = lua_tostring(L, 1);
+      std::vector<std::string> tok;
+
+      std::string elem;
+      for (size_t i = 0; i<s.length(); ++i) {
+         char c = s[i];
+         switch (c)
+         {
+         case ' ':
+            tok.push_back(elem);
+            elem.clear();
+            break;
+
+         case '\\':
+            ++i;
+            drunner_assert(i < s.length(), "Incomplete escape sequence.");
+            elem += s[i];
+            break;
+
+         case '"':
+            ++i;
+            while (i < s.length() && s[i] != '"') { elem += s[i]; ++i; }
+            break;
+
+         default:
+            elem += c;
+         }
+      }
+      if (elem.length() > 0)
+         tok.push_back(elem);
+
+      lua_createtable(L, tok.size(),0);
+      int top = lua_gettop(L);
+
+      for (unsigned int i = 0; i < tok.size(); ++i)
+      {
+         lua_pushnumber(L, i);
+         lua_pushstring(L, tok[i].c_str());
+         lua_settable(L, top);
+      }
+
       return 1;
    }
 
