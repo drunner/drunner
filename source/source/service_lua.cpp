@@ -135,14 +135,24 @@ namespace servicelua
       }
       else
       { // run the command
+         for (auto x : serviceCmd.args)
+            lua_pushstring(L, x.c_str());
+
          mSVptr = sVars;
-         if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+         if (lua_pcall(L, serviceCmd.args.size(), 1, 0) != LUA_OK)
             fatal("Command " + serviceCmd.command + " failed:\n "+ std::string(lua_tostring(L,-1)));
          mSVptr = NULL;
 
-         rval = kRSuccess;
+         if (!lua_isnumber(L, -1))
+         {
+            logdbg("No return code from command " + serviceCmd.command);
+            rval = kRSuccess;
+         }
+         else
+            rval = (int)lua_tonumber(L, -1);
       }
-      drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after runCommand.");
+
+      lua_settop(L, 0); // clear stack in case function didn't use args etc.
       return rval;
    }
 

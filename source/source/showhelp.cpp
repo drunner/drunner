@@ -39,6 +39,7 @@ COMMANDS
    ${EXENAME} clean
    ${EXENAME} list
    ${EXENAME} update
+   ${EXENAME} initialise
    ${EXENAME} checkimage IMAGENAME
 
    [PASS=?] ${EXENAME} backup  SERVICENAME BACKUPFILE
