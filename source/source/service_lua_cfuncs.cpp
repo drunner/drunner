@@ -351,8 +351,9 @@ namespace servicelua
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
-      std::vector<std::string> tok;
 
+      // tokenize string, recognising quoted substrings and escaped characters.
+      std::vector<std::string> tok;
       std::string elem;
       for (size_t i = 0; i<s.length(); ++i) {
          switch (s[i])
@@ -380,6 +381,7 @@ namespace servicelua
       if (elem.length() > 0)
          tok.push_back(elem);
 
+      // output the split string into a Lua table.
       lua_createtable(L, tok.size(),0);
       int top = lua_gettop(L);
 
