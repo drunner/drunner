@@ -187,9 +187,13 @@ namespace servicelua
 
       if (lua_isstring(L, 1) == 1)
       {
+         drunner_assert(lua_isstring(L, 1), "command must be a string");
          operation.command = lua_tostring(L, 1);
          for (int i = 2; i <= lua_gettop(L); ++i)
+         {
+            drunner_assert(lua_isstring(L, i), "arg must be a string");
             operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+         }
       }
       else if (lua_istable(L, 1) == 1)
       {
@@ -199,12 +203,14 @@ namespace servicelua
          {
             drunner_assert(lua_isnumber(L, -2), "Table keys aren't numbers");
             drunner_assert(lua_isstring(L, -1), "Table value isn't a string");
-            //int i = (int)lua_tonumber(L, -2); // key
+            int i = (int)lua_tonumber(L, -2); // key
             std::string s = lua_tostring(L, -1); // value
-            if (operation.command.length() == 0)
+            //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
+            if (i == 1)
                operation.command = s;
             else
                operation.args.push_back(s);
+            lua_pop(L, 1); // remove value, keep key for next iteration.
          }
       }
       else
@@ -379,7 +385,7 @@ namespace servicelua
 
       for (unsigned int i = 0; i < tok.size(); ++i)
       {
-         lua_pushnumber(L, i);
+         lua_pushnumber(L, i+1);
          lua_pushstring(L, tok[i].c_str());
          lua_settable(L, top);
       }
