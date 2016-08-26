@@ -20,13 +20,15 @@ A more complete example is with the minecraft dService here:
 ## Helper functions
 | Function         |   Description
 |:----------------|:--------------|
-| `drun( command, arg1, arg2, ...)` | Runs command on the host, returns the exit code. Substitutes any configuration variables, e.g. ${SERVICENAME}. |
+| `drun( command, arg1, arg2, ...)` | Runs command on the host, returns the exit code. Substitutes any configuration variables, e.g. ${SERVICENAME}. The command and args can also be passed as a Lua table. |
 | `drun_output( command, arg1, arg2, ...)` | Same as drun, but returns a string (trimmed command output) instead of the exit code. |
 | `drun_outputexit( command, arg1, arg2, ...)` | Same as drun, but returns both a string (trimmed command output) and the exit code. |
-| `dstop( containername )` | stops the given container if it's running. |
+| `drunning( containername )` | Returns true if the container is currently running. |
+| `dstop( containername )` | Stops the given container if it's running. |
 | `dsub( string )` | returns the string where any configuration variables have been substituted. |
 | `dconfig_get( key )` | returns the value of the configuration variable. |
 | `dconfig_set( key, val )` | sets the value of the configuration variable. |
+| `dsplit( string)` | Splits a command line string into a Lua table. |
 
 ## Hooks
 

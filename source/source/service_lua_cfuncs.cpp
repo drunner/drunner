@@ -17,6 +17,7 @@ extern "C" int l_addproxy(lua_State *L);
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_drun_outputexit(lua_State *L);
+extern "C" int l_drunning(lua_State *L);
 extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
@@ -40,6 +41,7 @@ namespace servicelua
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
+      REGISTERLUAC(l_drunning, "drunning")
       REGISTERLUAC(l_dstop, "dstop")
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
@@ -266,6 +268,22 @@ namespace servicelua
          return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
 
       return drun(L, true, true);
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+      
+   extern "C" int l_drunning(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the container name to check) for drunning.");
+      drunner_assert(lua_isstring(L, 1), "container name must be a string.");
+      std::string containerraw = lua_tostring(L, 1);
+      luafile *lf = get_luafile(L);
+      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
+      
+      bool running = utils_docker::dockerContainerRunning(subcontainer);
+      lua_pushboolean(L,running);
+      return 1;
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
