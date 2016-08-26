@@ -119,10 +119,19 @@ namespace utils_docker
 
    bool dockerContainerExists(const std::string & container)
    {
+      CommandLine cl("docker", { "ps","-a","-f","name=" + container });
+      std::string out;
+      int rval = utils::runcommand(cl, out);
+      return (rval != 0 ? false : utils::wordmatch(out, container));
+   }
+
+   bool dockerContainerRunning(const std::string & container)
+   {
       CommandLine cl("docker", { "ps","-f","name=" + container });
       std::string out;
       int rval = utils::runcommand(cl, out);
       return (rval != 0 ? false : utils::wordmatch(out, container));
    }
+
 
 } // namespace

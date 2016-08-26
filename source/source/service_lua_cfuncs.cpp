@@ -280,10 +280,14 @@ namespace servicelua
       luafile *lf = get_luafile(L);
       std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
 
-      if (utils_docker::dockerContainerExists(subcontainer))
+      if (utils_docker::dockerContainerRunning(subcontainer))
       {
          logmsg(kLINFO, "Stopping " + lf->getServiceName());
          utils_docker::stopContainer(subcontainer);
+      }
+      if (utils_docker::dockerContainerExists(subcontainer))
+      {
+         logmsg(kLINFO, "Removing " + lf->getServiceName());
          utils_docker::removeContainer(subcontainer);
       }
       else

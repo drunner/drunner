@@ -9,6 +9,7 @@ namespace utils_docker
 {
    bool dockerVolExists(const std::string & vol);
    bool dockerContainerExists(const std::string & container);
+   bool dockerContainerRunning(const std::string & container);
 
    void createDockerVolume(std::string name);
    void stopContainer(std::string name);

@@ -328,5 +328,5 @@ bool dproxy::configNeedsUpdated(std::string ip) const
 
 bool dproxy::dproxyRunning() const
 {
-   return utils_docker::dockerContainerExists(s_dproxycontainer);
+   return utils_docker::dockerContainerRunning(s_dproxycontainer);
 }
