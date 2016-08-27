@@ -11,7 +11,7 @@ namespace service_manage
    cResult obliterate(std::string servicename);
    cResult uninstall(std::string servicename);
    cResult update(std::string servicename);
-   cResult install(std::string servicename, std::string imagename);
+   cResult install(std::string & servicename, std::string imagename);
    cResult service_restore(const std::string & backupfile, std::string servicename);
 
    // helper routines.

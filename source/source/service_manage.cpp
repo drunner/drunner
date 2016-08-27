@@ -161,8 +161,18 @@ namespace service_manage
       return kRSuccess;
    }
 
-   cResult install(std::string servicename, std::string imagename)
+   cResult install(std::string & servicename, std::string imagename)
    {
+      if (servicename.length() == 0)
+      {
+         servicename = imagename;
+         size_t found;
+         while ((found = servicename.find("/")) != std::string::npos)
+            servicename.erase(0, found + 1);
+         while ((found = servicename.find(":")) != std::string::npos)
+            servicename.erase(found);
+      }
+
       servicePaths sp(servicename);
       drunner_assert(imagename.length() > 0, "Can't install service " + servicename + " - image name could not be determined.");
 

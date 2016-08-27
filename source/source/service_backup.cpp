@@ -17,11 +17,18 @@
 #include "dassert.h"
 
 // Back up this service to backupfile.
-cResult service::backup(const std::string & backupfile)
+cResult service::backup(std::string backupfile)
 {
    timez ttotal, tstep;
 
    std::string op;
+
+   if (backupfile.length() == 0)
+   {
+      backupfile = getName() + "_";
+      backupfile += timeutils::getDateTimeStr();
+      backupfile += ".dbk";
+   }
    
    Poco::Path bf(backupfile);
    bf.makeAbsolute();
@@ -131,6 +138,7 @@ void service_restore_fail(std::string servicename, std::string message)
    logmsg(kLERROR, "Restore failed. Uninstalled the broken dService.");
 }
 
+// servicename can be empty, in which case it's determined from the imagename.
 cResult service_manage::service_restore(const std::string & backupfile, std::string servicename)
 { // restore from backup.
    Poco::Path bf(backupfile);
@@ -139,9 +147,9 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
       logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
    logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("restore-"+ servicename));
-   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + servicename));
-
+   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("service-restore-"+timeutils::getDateTimeStr()));
+   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("service-archive-"+timeutils::getDateTimeStr()));
+   
    // for docker volumes
    const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
    // for container custom backups (e.g. mysqldump)
@@ -167,7 +175,8 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    // backup seems okay - lets go!
    std::string imagename = bvars.getImageName();
    drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
-   service_manage::install(servicename, imagename);
+   service_manage::install(servicename, imagename); // if servicename is empty then it sets it.
+   drunner_assert(servicename.length() > 0, "Empty servicename in backup after install step.");
 
    // load in the new lua file.
    servicePaths paths(servicename);

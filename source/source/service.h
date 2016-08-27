@@ -21,7 +21,7 @@ public:
    const serviceVars & getServiceVars() const { return *mServiceVarsPtr; }
 
 
-   cResult backup(const std::string & backupfile);
+   cResult backup(std::string backupfile);
    cResult servicecmd();
 
 private:

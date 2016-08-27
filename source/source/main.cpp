@@ -152,19 +152,9 @@ cResult mainroutines::process()
       {
          if (p.numArgs()<1 || p.numArgs()>2)
             logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
+
          std::string imagename = _imageparse(p.getArg(0));
-         std::string servicename;
-         if ( p.numArgs()==2)
-            servicename=p.getArg(1); // if empty then install will set to default from imagename.
-         else
-         {
-            servicename = imagename;
-            size_t found;
-            while ((found = servicename.find("/")) != std::string::npos)
-               servicename.erase(0, found + 1);
-            while ((found = servicename.find(":")) != std::string::npos)
-               servicename.erase(found);
-         }
+         std::string servicename = p.numArgs() == 2 ? p.getArg(1) : "";
 
          cResult r = service_manage::install(servicename, imagename);
          if (r==kRSuccess)
@@ -174,18 +164,18 @@ cResult mainroutines::process()
 
       case c_restore:
       {
-         if (p.numArgs() < 2)
-            logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE SERVICENAME");
+         if (p.numArgs() < 1 || p.numArgs() > 2)
+            logmsg(kLERROR, "Usage: [PASS=?] drunner restore BACKUPFILE [SERVICENAME]");
 
-         return service_manage::service_restore(p.getArg(0), p.getArg(1));
+         return service_manage::service_restore(p.getArg(0), p.numArgs()==2 ? p.getArg(1) : "");
       }
 
       case c_backup:
       {
-         if (p.numArgs() < 2)
-            logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME BACKUPFILE");
+         if (p.numArgs() < 1 || p.numArgs() > 2)
+            logmsg(kLERROR, "Usage: [PASS = ? ] drunner backup SERVICENAME [BACKUPFILE]");
          service svc(p.getArg(0));
-         return svc.backup(p.getArg(1));
+         return svc.backup( p.numArgs()==2 ? p.getArg(1) : "");
       }
 
       case c_servicecmd:
