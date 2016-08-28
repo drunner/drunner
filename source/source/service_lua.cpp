@@ -46,6 +46,11 @@ namespace servicelua
       lua_pushlightuserdata(L, (void*)this);  // value
       lua_setglobal(L, "luafile");
 
+      // set the current working directory
+      mPwd = getPathdService();
+      drunner_assert(mPwd.isDirectory(), "mPwd is not a directory");
+
+      // We load service variables only when needed.
       mSVptr = NULL;
    }
       
@@ -211,6 +216,24 @@ namespace servicelua
    void luafile::addProxy(Proxy p)
    {
       mProxies.push_back(p);
+   }
+
+   Poco::Path luafile::getPWD() const
+   {
+      return mPwd;
+   }
+
+   void luafile::setPWD(std::string p)
+   {
+      if (p.length() > 0)
+      {
+         mPwd = p;
+         mPwd.makeDirectory();
+      }
+      else
+         mPwd = getPathdService();
+
+      drunner_assert(mPwd.isDirectory(), "mPwd is not a directory");
    }
 
 

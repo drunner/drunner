@@ -24,6 +24,9 @@ extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
 extern "C" int l_dsplit(lua_State *L);
 
+extern "C" int l_getpwd(lua_State *L);
+extern "C" int l_setpwd(lua_State *L);
+
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
 namespace servicelua
@@ -47,6 +50,9 @@ namespace servicelua
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
       REGISTERLUAC(l_dsplit, "dsplit")
+
+      REGISTERLUAC(l_getpwd,"getpwd")
+      REGISTERLUAC(l_setpwd,"setpwd")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -218,9 +224,8 @@ namespace servicelua
       else
          fatal("Unrecognised argument type passed to drun family.");
 
-      Poco::Path runin = lf->getPathdService();
       std::string out;
-      int r = utils::runcommand_stream(operation, returnOutput ? kOSuppressed : kORaw, runin, lf->getServiceVars()->getAll(), &out);
+      int r = utils::runcommand_stream(operation, returnOutput ? kOSuppressed : kORaw, lf->getPWD(), lf->getServiceVars()->getAll(), &out);
 
       int rcount = 0;
       if (returnOutput)
@@ -415,6 +420,36 @@ namespace servicelua
       }
 
       return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_getpwd(lua_State *L)
+   {
+      luafile *lf = get_luafile(L);
+      lua_pushstring(L, lf->getPWD().toString().c_str());
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_setpwd(lua_State *L)
+   {
+      std::string s;
+
+      if (lua_gettop(L) > 1)
+         return luaL_error(L, "Expected exactly one argument (the new directory) for setpwd.");
+
+      if (lua_gettop(L) == 1)
+      {
+         drunner_assert(lua_isstring(L, 1), "String expected as argument.");
+         s = lua_tostring(L, 1);
+      }
+
+      luafile *lf = get_luafile(L);
+      lf->setPWD(s);
+
+      return _luasuccess(L);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------

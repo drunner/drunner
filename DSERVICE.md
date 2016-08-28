@@ -29,6 +29,8 @@ A more complete example is with the minecraft dService here:
 | `dconfig_get( key )` | returns the value of the configuration variable. |
 | `dconfig_set( key, val )` | sets the value of the configuration variable. |
 | `dsplit( string)` | Splits a command line string into a Lua table. |
+| `getpwd()` | Returns the present working directory (used for drun commands) |
+| `setpwd( dir )` | Sets the present working directory. If no argument passed resets to default (the dService folder on the host). |
 
 ## Hooks
 
