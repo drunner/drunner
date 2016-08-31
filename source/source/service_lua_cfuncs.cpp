@@ -24,8 +24,9 @@ extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
 extern "C" int l_dsplit(lua_State *L);
 
+extern "C" int l_getdrundir(lua_State *L);
+extern "C" int l_setdrundir(lua_State *L);
 extern "C" int l_getpwd(lua_State *L);
-extern "C" int l_setpwd(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -51,8 +52,9 @@ namespace servicelua
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
       REGISTERLUAC(l_dsplit, "dsplit")
 
-      REGISTERLUAC(l_getpwd,"getpwd")
-      REGISTERLUAC(l_setpwd,"setpwd")
+      REGISTERLUAC(l_getdrundir,"getdrundir")
+      REGISTERLUAC(l_setdrundir, "setdrundir")
+      REGISTERLUAC(l_getpwd, "getpwd")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -225,7 +227,12 @@ namespace servicelua
          fatal("Unrecognised argument type passed to drun family.");
 
       std::string out;
-      int r = utils::runcommand_stream(operation, returnOutput ? kOSuppressed : kORaw, lf->getPWD(), lf->getServiceVars()->getAll(), &out);
+      int r = utils::runcommand_stream(
+         operation, 
+         returnOutput ? kOSuppressed : kORaw, 
+         lf->getdRunDir(), 
+         lf->getServiceVars()->getAll(), 
+         &out);
 
       int rcount = 0;
       if (returnOutput)
@@ -424,16 +431,16 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_getpwd(lua_State *L)
+   extern "C" int l_getdrundir(lua_State *L)
    {
       luafile *lf = get_luafile(L);
-      lua_pushstring(L, lf->getPWD().toString().c_str());
+      lua_pushstring(L, lf->getdRunDir().toString().c_str());
       return 1;
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_setpwd(lua_State *L)
+   extern "C" int l_setdrundir(lua_State *L)
    {
       std::string s;
 
@@ -447,11 +454,19 @@ namespace servicelua
       }
 
       luafile *lf = get_luafile(L);
-      lf->setPWD(s);
+      lf->setdRunDir(s);
 
       return _luasuccess(L);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_getpwd(lua_State *L)
+   {
+      Poco::Path cfp = Poco::Path::current();
+      lua_pushstring(L, cfp.toString().c_str());
+      return 1;
+   }
+
 
 }

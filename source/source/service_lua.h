@@ -59,8 +59,8 @@ namespace servicelua
       void addConfiguration(Configuration cf);
       void addVolume(Volume v);
       void addProxy(Proxy p);
-      Poco::Path getPWD() const;
-      void setPWD(std::string p);
+      Poco::Path getdRunDir() const;
+      void setdRunDir(std::string p);
 
       Poco::Path getPathdService();
       serviceVars * getServiceVars();
@@ -82,7 +82,7 @@ namespace servicelua
       bool mVarsLoaded;
       bool mLoadAttempt;
 
-      Poco::Path mPwd;
+      Poco::Path mdRunDir;
    };
 
    void _register_lua_cfuncs(lua_State *L);
