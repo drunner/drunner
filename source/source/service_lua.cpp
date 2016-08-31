@@ -47,8 +47,8 @@ namespace servicelua
       lua_setglobal(L, "luafile");
 
       // set the current working directory
-      mPwd = getPathdService();
-      drunner_assert(mPwd.isDirectory(), "mPwd is not a directory");
+      setdRunDir("");
+      drunner_assert(mdRunDir.isDirectory(), "mPwd is not a directory");
 
       // We load service variables only when needed.
       mSVptr = NULL;
@@ -218,22 +218,22 @@ namespace servicelua
       mProxies.push_back(p);
    }
 
-   Poco::Path luafile::getPWD() const
+   Poco::Path luafile::getdRunDir() const
    {
-      return mPwd;
+      return mdRunDir;
    }
 
-   void luafile::setPWD(std::string p)
+   void luafile::setdRunDir(std::string p)
    {
       if (p.length() > 0)
       {
-         mPwd = p;
-         mPwd.makeDirectory();
+         mdRunDir = p;
+         mdRunDir.makeDirectory();
       }
       else
-         mPwd = getPathdService();
+         mdRunDir = getPathdService();
 
-      drunner_assert(mPwd.isDirectory(), "mPwd is not a directory");
+      drunner_assert(mdRunDir.isDirectory(), "mPwd is not a directory");
    }
 
 
