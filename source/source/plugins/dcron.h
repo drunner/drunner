@@ -15,7 +15,7 @@ public:
    Poco::Path configurationFilePath() const;
 
 private:
-   cResult _runcron(const CommandLine & cl, const variables & v, Poco::Path d) const;
+   cResult _runcron(const CommandLine & cl, const variables & v) const;
 };
 
 

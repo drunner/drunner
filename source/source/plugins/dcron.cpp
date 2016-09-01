@@ -19,7 +19,7 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
       return cError("Only command supported is 'run'");
    }
 
-   return kRSuccess;
+   return _runcron(cl, v);
 }
 
 cResult dcron::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
@@ -59,7 +59,7 @@ Poco::Path dcron::configurationFilePath() const
    return target;
 }
 
-cResult dcron::_runcron(const CommandLine & cl, const variables & v, Poco::Path d) const
+cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
 {
    return cResult();
 }
