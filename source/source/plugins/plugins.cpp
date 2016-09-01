@@ -12,12 +12,14 @@
 #include "dbackup.h"
 #include "ddev.h"
 #include "dproxy.h"
+#include "dcron.h"
 
 plugins::plugins()
 {
    mPlugins.push_back(std::unique_ptr<plugin>(new dbackup()));
    mPlugins.push_back(std::unique_ptr<plugin>(new ddev()));
    mPlugins.push_back(std::unique_ptr<plugin>(new dproxy()));
+   mPlugins.push_back(std::unique_ptr<plugin>(new dcron()));
 }
 
 void plugins::generate_plugin_scripts() const
@@ -49,7 +51,7 @@ cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, 
 // -----------------------------------
 
 
-configuredplugin::configuredplugin(std::string name) : mName(name)
+configuredplugin::configuredplugin() 
 {
 }
 
@@ -74,7 +76,7 @@ cResult configuredplugin::runCommand() const
       return showHelp();
    
    Poco::Path spath = configurationFilePath();
-   persistvariables pv(mName, spath, mConfiguration);
+   persistvariables pv(getName(), spath, mConfiguration);
    cResult r = pv.loadvariables();
    
    if (cl.command == "configure")
@@ -93,7 +95,7 @@ cResult configuredplugin::addConfig(std::string name, std::string description, s
 const variables configuredplugin::getVariables() const
 {
    Poco::Path spath = configurationFilePath();
-   persistvariables pv(mName, spath, mConfiguration);
+   persistvariables pv(getName(), spath, mConfiguration);
    cResult r = pv.loadvariables();
    return pv.getVariables();
 }

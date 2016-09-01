@@ -30,7 +30,7 @@ public:
 class configuredplugin : public plugin
 {
 public:
-   configuredplugin(std::string name);
+   configuredplugin();
    virtual ~configuredplugin();
 
    virtual cResult runCommand(const CommandLine & cl, const variables & v) const = 0;
@@ -44,7 +44,6 @@ public:
 protected:
    const variables getVariables() const;
 
-   std::string mName;
    std::vector<Configuration> mConfiguration;
 };
 
