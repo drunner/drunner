@@ -26,6 +26,7 @@
 #include <Poco/TeeStream.h>
 
 #include <sys/stat.h>
+#include <stdio.h>
 
 #include "utils.h"
 #include "exceptions.h"
@@ -33,7 +34,6 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
-#include "chmod.h"
 #include "drunner_paths.h"
 #include "dassert.h"
 
@@ -177,34 +177,12 @@ namespace utils
          logdbg("Created " + d.toString());
       }
 
+#ifndef _WIN32
       if (xchmod(d.toString().c_str(), mode) != 0)
          return cError("Unable to change permissions on " + d.toString());
+#endif
 
       return kRSuccess;
-   }
-
-   cResult _makedirectories(Poco::Path path)
-   {
-      Poco::File f(path);
-
-      if (f.exists())
-         return kRNoChange;
-
-      f.createDirectories();
-      return (f.exists() ? cResult(kRSuccess) : cError("Failed to create directory "+path.toString()));
-   }
-
-   cResult makedirectories(Poco::Path path, mode_t mode)
-   {
-      cResult r = _makedirectories(path);
-      if (r.success())
-      {
-         logdbg("Created " + path.toString());
-         if (xchmod(path.toString().c_str(), mode) != 0)
-            return cError("Unable to change permissions on " + path.toString());
-      }
-
-      return r;
    }
 
    // recusively delete the path given. we do this manually to set the permissions to writable,
@@ -248,6 +226,24 @@ namespace utils
    cResult delfile(Poco::Path fullpath)
    {
       drunner_assert(fullpath.isFile(), "delfile: asked to delete a directory: "+fullpath.toString());
+
+#ifdef _WIN32
+      logdbg(fullpath.toString());
+      SetFileAttributesA(fullpath.toString().c_str(),
+         GetFileAttributesA(fullpath.toString().c_str()) & ~FILE_ATTRIBUTE_READONLY);
+
+      if (0 == DeleteFileA(fullpath.toString().c_str()))
+      {
+         if (GetLastError() == ERROR_ACCESS_DENIED)
+            fatal("Couldn't delete - read only");
+         if (GetLastError() == ERROR_FILE_NOT_FOUND)
+            fatal("File not found - "+std::to_string(GetLastError()));
+         if (GetLastError() == ERROR_SHARING_VIOLATION)
+            fatal("Sharing violation");
+         fatal("?!" + std::to_string(GetLastError()));
+      }
+#endif
+
       try
       {
          Poco::File f(fullpath);
@@ -333,8 +329,10 @@ namespace utils
       f.createDirectories();
       logmsg(kLDEBUG, "Created " + d.toString());
 
+#ifndef _WIN32
       if (xchmod(d.toString().c_str(), S_777) != 0)
          die("Unable to change permissions on " + d.toString());
+#endif
    }
 
    tempfolder::~tempfolder() 

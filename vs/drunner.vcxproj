@@ -118,7 +118,6 @@
     <ClInclude Include="..\source\deps\lua\lzio.h" />
     <ClInclude Include="..\source\source\basen.h" />
     <ClInclude Include="..\source\source\buildnum.h" />
-    <ClInclude Include="..\source\source\chmod.h" />
     <ClInclude Include="..\source\source\command_general.h" />
     <ClInclude Include="..\source\source\dassert.h" />
     <ClInclude Include="..\source\source\drunner_paths.h" />

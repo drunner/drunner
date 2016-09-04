@@ -37,11 +37,6 @@ void waitforreturn()
       }
 }
 
-void _handleexception()
-{
-
-}
-
 int main(int argc, char **argv)
 {
    try

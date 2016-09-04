@@ -12,7 +12,6 @@
 #include "drunner_setup.h"
 #include "service.h"
 #include "servicehook.h"
-#include "chmod.h"
 #include "validateimage.h"
 #include "service_manage.h"
 #include "utils_docker.h"

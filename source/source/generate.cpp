@@ -8,25 +8,19 @@
 #include "generate.h"
 #include "globallogger.h"
 #include "utils.h"
-#include "chmod.h"
 
 // check if two files are the same.
 bool filesameasstring(std::string filename, const std::string & thestring)
 {
-   FILE* f = fopen(filename.c_str(), "r");
-   if (f == NULL)
-      return false;
+   bool rval = false;
 
-   fseek(f, 0, SEEK_END);
-   size_t size = ftell(f);
-   char* where = new char[size];
-   rewind(f);
-   fread(where, sizeof(char), size, f);
+   std::ifstream t(filename.c_str());
+   std::stringstream buffer;
+   buffer << t.rdbuf();
 
-   bool rval = (thestring.compare(where) == 0);
+   rval = (thestring.compare(buffer.str()) == 0);
 
-   delete[] where;
-
+   t.close();
    return rval;
 }
 
@@ -52,14 +46,17 @@ cResult generate(
    poco_assert(fullpath.isFile());
 
    if (filesameasstring(fullpath.toString(), content))
+   {
+      logdbg("File " + fullpath.toString() + " unchanged.");
       return kRNoChange;
+   }
 
-   Poco::File f(fullpath);
-   if (f.exists())
+   if (utils::fileexists(fullpath))
    {
       logmsg(kLDEBUG, "Updating " + fullpath.toString());
-      if (kRSuccess != utils::delfile(fullpath.toString()))
-         logmsg(kLERROR, "Unable to delete file " + fullpath.toString());
+      cResult r = utils::delfile(fullpath.toString());
+      if (!r.success())
+         logmsg(kLERROR, "Unable to delete file " + fullpath.toString()+"\n"+r.what());
    }
    else
       logmsg(kLDEBUG, "Creating " + fullpath.toString());
@@ -67,8 +64,10 @@ cResult generate(
    // we re-generate rather than move the temp file, as it may be across filesystems (which won't work for C++ move).
    generate_low(fullpath.toString(), content);
 
-   if (xchmod(fullpath.toString().c_str(), mode) != 0)
+#ifndef _WIN32
+   if (chmod(fullpath.toString().c_str(), mode) != 0)
       logmsg(kLERROR, "Unable to change permissions on " + fullpath.toString());
+#endif
 
    return kRSuccess;
 }

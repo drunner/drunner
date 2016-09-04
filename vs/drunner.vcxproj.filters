@@ -228,9 +228,6 @@
     <ClInclude Include="..\source\source\buildnum.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\chmod.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\command_general.h">
       <Filter>Source Files</Filter>
     </ClInclude>

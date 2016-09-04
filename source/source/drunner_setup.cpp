@@ -167,19 +167,8 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create directory structure.
-      utils::makedirectory(drunnerPaths::getPath_Root(), S_755);
-      // make root hidden on windows.
-#ifdef _WIN32
-      if (!Poco::File(drunnerPaths::getPath_Root()).isHidden())
-         SetFileAttributes(drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN);
-#endif
-
+      _makedirectory(drunnerPaths::getPath_Root(), S_755);
       _makedirectory(drunnerPaths::getPath_Bin(), S_700);
-
-#ifdef _WIN32
-      _copyexe();
-#endif
-
       _makedirectory(drunnerPaths::getPath_dServices(), S_755);
       _makedirectory(drunnerPaths::getPath_Temp(), S_755);
       _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
@@ -188,6 +177,12 @@ namespace drunnerSetup
       // -----------------------------------------------------------------------------
       // generate plugin scripts
       GlobalContext::getPlugins()->generate_plugin_scripts();
+
+#ifdef _WIN32
+      _copyexe();
+      // make root hidden on windows.
+      drunner_assert(0 != SetFileAttributesA("C:\\Users\\j2\\.drunner", FILE_ATTRIBUTE_HIDDEN), "Couldn't set attributes");//drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN); // &~FILE_ATTRIBUTE_READONLY);
+#endif
 
       // -----------------------------------------------------------------------------
       // get latest root util image.
