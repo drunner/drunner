@@ -87,7 +87,9 @@ namespace service_manage
       drunner_assert(imagename.length() > 0, "Can't recreate service " + servicename + " - image name could not be determined.");
       servicePaths sp(servicename);
 
-      if (!devMode)
+      if (devMode)
+         logmsg(kLINFO,"Development mode - "+servicename+" will never pull images.");
+      else
          utils_docker::pullImage(imagename);
 
       try
@@ -131,9 +133,6 @@ namespace service_manage
          serviceVars sv(servicename, imagename, syf.getConfigItems());
          if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
             logdbg("Loaded existing service variables.");
-
-         // force the devmode if needed.
-         sv.setVal("DEVMODE", devMode ? "True" : "False");
 
          // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
          sv.setImageName(imagename);

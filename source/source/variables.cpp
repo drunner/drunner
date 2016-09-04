@@ -248,6 +248,9 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
 void persistvariables::_addConfig(const Configuration & c)
 {
    mConfig.push_back(c);
+
+   if (!hasKey(c.name) || getVal(c.name).length() == 0)
+      mVariables.setVal(c.name, c.defaultval);
 }
 
 void persistvariables::setVal_mem(std::string key, std::string val)
