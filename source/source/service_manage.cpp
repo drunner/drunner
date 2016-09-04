@@ -25,20 +25,20 @@
 namespace service_manage
 {
 
-   std::string _loadImageName(std::string servicename)
+   bool _loadImageName(std::string servicename, std::string & imagename, bool & devmode)
    { // no imagename specified. Load from service variables if we can.
-      std::string iname;
       servicelua::luafile lf(servicename);
       if (kRSuccess == lf.loadlua())
       {
          serviceVars v(servicename, lf.getConfigItems());
          v.loadvariables();
-         iname = v.getImageName();
-      }
+         imagename = v.getImageName();
+         devmode = v.getIsDevMode();
 
-      if (iname.length() == 0)
-         logdbg("No imagename specified and unable to read it from the service configuration.");
-      return iname;
+         drunner_assert(imagename.length() > 0, "Imagename is empty!");
+         return true;
+      }
+      return false;
    }
 
    void _createVolumes(std::vector<std::string> & volumes)
@@ -82,12 +82,13 @@ namespace service_manage
       if (!r2.success()) fatal("Couldn't create directory.\nError: " + r2.what());
    }
 
-   cResult _recreate(std::string servicename, std::string imagename)
+   cResult _recreate(std::string servicename, std::string imagename, bool devMode)
    {
       drunner_assert(imagename.length() > 0, "Can't recreate service " + servicename + " - image name could not be determined.");
       servicePaths sp(servicename);
 
-      utils_docker::pullImage(imagename);
+      if (!devMode)
+         utils_docker::pullImage(imagename);
 
       try
       {
@@ -131,14 +132,19 @@ namespace service_manage
          if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
             logdbg("Loaded existing service variables.");
 
+         // force the devmode if needed.
+         sv.setVal("DEVMODE", devMode ? "True" : "False");
+
          // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
-         sv.setVal("IMAGENAME", imagename);
+         sv.setImageName(imagename);
+         sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
          sv.savevariables();
 
-         // pull all containers.
-         for (const auto & entry : syf.getContainers())
-            utils_docker::pullImage(entry);
+         // pull all containers if not in dev mode.
+         if (!devMode)
+            for (const auto & entry : syf.getContainers())
+               utils_docker::pullImage(entry);
 
          // create volumes, with variables substituted.
          std::vector<std::string> vols;
@@ -160,7 +166,7 @@ namespace service_manage
       return kRSuccess;
    }
 
-   cResult install(std::string & servicename, std::string imagename)
+   cResult install(std::string & servicename, std::string imagename, bool devMode)
    {
       if (servicename.length() == 0)
       {
@@ -180,12 +186,13 @@ namespace service_manage
          logmsg(kLERROR, "Service already exists. Try:\n drunner update " + servicename);
 
       // make sure we have the latest version of the service.
-      utils_docker::pullImage(imagename);
+      if (!devMode)
+         utils_docker::pullImage(imagename);
 
       logmsg(kLDEBUG, "Attempting to validate " + imagename);
       validateImage::validate(imagename);
 
-      _recreate(servicename,imagename);
+      _recreate(servicename,imagename,devMode);
 
       servicehook hook(servicename, "install");
       hook.endhook();
@@ -302,12 +309,14 @@ namespace service_manage
 
    cResult update(std::string servicename)
    { // update the service (recreate it)
-      std::string imagename = _loadImageName(servicename);
-      drunner_assert(imagename.length() > 0, "Can't update service " + servicename + " - image name could not be determined.");
+      std::string imagename;
+      bool devmode;
+      bool loaded = _loadImageName(servicename,imagename,devmode);
+      drunner_assert(loaded, "Can't update service " + servicename + " - docker image name could not be determined.");
 
       servicehook hook(servicename, "update");
       cResult rslt = hook.starthook();
-      rslt += _recreate(servicename, imagename);
+      rslt += _recreate(servicename, imagename,devmode);
       rslt += hook.endhook();
 
       return rslt;

@@ -8,9 +8,6 @@ namespace validateImage
 {
    void validate(std::string imagename)
    {
-      if (utils::imageislocal(imagename))
-         logmsg(kLDEBUG, imagename + " is tagged local, so won't be pulled.");
-
       std::string data = R"EOF(#!/bin/bash
 set -o nounset
 set -e

@@ -64,9 +64,6 @@ namespace utils
    std::string alphanumericfilter(std::string s, bool whitespace);
    bool wordmatch(std::string s, std::string word);
 
-   bool imageislocal(const std::string & imagename);
-   cResult pullimage(const std::string & imagename);
-
    std::string getTime();
    std::string getPWD();
 

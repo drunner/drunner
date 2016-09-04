@@ -151,7 +151,7 @@ cResult mainroutines::process()
          std::string imagename = _imageparse(p.getArg(0));
          std::string servicename = p.numArgs() == 2 ? p.getArg(1) : "";
 
-         cResult r = service_manage::install(servicename, imagename);
+         cResult r = service_manage::install(servicename, imagename, GlobalContext::getParams()->isDevelopmentMode());
          if (r==kRSuccess)
             logmsg(kLINFO, "Installation complete - try running " + servicename + " now!");
          return r;

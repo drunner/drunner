@@ -123,27 +123,6 @@ namespace utils
       return h;
    }
 
-   bool imageislocal(const std::string & imagename)
-   {
-      std::size_t pos = imagename.find_last_of("/:");
-      if (pos == std::string::npos || imagename[pos] != ':')
-         return false;
-
-      std::string branchname=imagename.substr(pos+1);
-      if (0 == Poco::icompare(branchname, "local"))
-         return true;
-
-      return false;
-   }
-
-   cResult pullimage(const std::string & imagename)
-   {
-      std::string op;
-      CommandLine cl("docker", { "pull",imagename });
-      int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&op);
-      return (rval==0) ? cResult(kRSuccess) : cError("Failed to pull "+imagename+":\n "+op);
-   }
-
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)
    {
       Poco::File f(parent);

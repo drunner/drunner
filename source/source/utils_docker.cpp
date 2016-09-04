@@ -60,13 +60,7 @@ namespace utils_docker
 
       if (!GlobalContext::getSettings()->getPullImages())
       {
-         logmsg(kLDEBUG, "Pulling images disabled in global options.");
-         return;
-      }
-
-      if (utils::imageislocal(image))
-      {
-         logmsg(kLDEBUG, image+" is tagged local, so assuming dev environment and not pulling.");
+         logmsg(kLDEBUG, "Pulling images disabled in the global dRunner configuration.");
          return;
       }
 
@@ -78,12 +72,15 @@ namespace utils_docker
 
 
       logmsg(kLINFO, "Pulling Docker image " + image + ".\n This may take some time...");
-      cResult rslt = utils::pullimage(image);
 
-      if (rslt.error())
+
+      // pull the image
+      std::string op;
+      CommandLine cl("docker", { "pull", image });
+      int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&op);
+
+      if (rval!=0)
          logmsg(kLERROR, "Couldn't pull " + image);
-      else if (rslt.noChange())
-         logmsg(kLDEBUG, "No change to Docker image (it's already up to date).");
       else
       {
          S_PullList.push_back(image);

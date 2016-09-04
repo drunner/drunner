@@ -20,6 +20,8 @@ public:
    static bool hasParams();
    static bool hasSettings();
    static bool hasPlugins();
+   //static bool isDeveloperMode();
+   //static void forceDeveloperMode();
 
    static void init(int argc, char **argv);
 
@@ -29,6 +31,7 @@ private:
    static std::shared_ptr<const params> s_params;
    static std::shared_ptr<const drunnerSettings> s_settings;
    static std::shared_ptr<const plugins> s_plugins;
+   static bool s_ForceDeveloperMode;
 };
 
 #endif

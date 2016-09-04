@@ -175,7 +175,7 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    // backup seems okay - lets go!
    std::string imagename = bvars.getImageName();
    drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
-   service_manage::install(servicename, imagename); // if servicename is empty then it sets it.
+   service_manage::install(servicename, imagename, false); // if servicename is empty then it sets it.
    drunner_assert(servicename.length() > 0, "Empty servicename in backup after install step.");
 
    // load in the new lua file.
@@ -213,9 +213,9 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    if (kRSuccess != oldvars.loadvariables()) // loads with new schema (updates).
       logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");
 
-   // clobber SERVICENAME and IMAGENAME, ensuring they are the latest.
-   oldvars.setVal("SERVICENAME", servicename);
-   oldvars.setVal("IMAGENAME", imagename);
+   // clobber IMAGENAME, ensuring it's updated to the one we were given.
+   oldvars.setImageName(imagename);
+   oldvars.setDevMode(GlobalContext::getParams()->isDevelopmentMode());
 
    if (kRSuccess != oldvars.savevariables())
       logmsg(kLWARN, "Failed to save variables.");

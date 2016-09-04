@@ -6,6 +6,7 @@
 std::shared_ptr<const params> GlobalContext::s_params = 0;
 std::shared_ptr<const drunnerSettings> GlobalContext::s_settings = 0;
 std::shared_ptr<const plugins> GlobalContext::s_plugins = 0;
+//bool GlobalContext::s_ForceDeveloperMode = false;
 
 GlobalContext::GlobalContext()
 {
@@ -36,6 +37,22 @@ bool GlobalContext::hasPlugins()
 {
    return s_plugins.get() != NULL;
 }
+
+//bool GlobalContext::isDeveloperMode()
+//{
+//   if (s_ForceDeveloperMode)
+//      return true;
+//
+//   if (hasParams() && getParams()->isDevelopmentMode())
+//      return true;
+//
+//   return false;
+//}
+
+//void GlobalContext::forceDeveloperMode()
+//{
+//   s_ForceDeveloperMode = true;
+//}
 
 std::shared_ptr<const params> GlobalContext::getParams()
 {
