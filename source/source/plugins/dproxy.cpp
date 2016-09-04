@@ -11,9 +11,9 @@
 
 static std::string s_dproxycontainer = "drunner_dproxy";
 
-dproxy::dproxy() : configuredplugin("dproxy")
+dproxy::dproxy()
 {
-   addConfig("IP", "The IP address of the server, for HAProxy configuration.", "", kCF_string, true);
+   addConfig("IP", "The IP address of the server, for HAProxy configuration.", "", kCF_string, true,true);
 }
 
 std::string dproxy::getName() const

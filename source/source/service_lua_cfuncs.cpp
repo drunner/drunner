@@ -76,8 +76,8 @@ namespace servicelua
 
    extern "C" int l_addconfig(lua_State *L)
    {
-      if (lua_gettop(L) != 5)
-         return luaL_error(L, "Expected five arguments for addconfig.");
+      if (lua_gettop(L) < 5 || lua_gettop(L) > 6)
+         return luaL_error(L, "Expected five or six arguments for addconfig.");
 
       // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
       drunner_assert(lua_isstring(L, 1), "The name must be a string.");
@@ -85,6 +85,9 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 3), "The decsription must be a string.");
       drunner_assert(lua_isstring(L, 4), "The type must be a string.");
       drunner_assert(lua_isboolean(L, 5), "The required flag must be a boolean.");
+
+      if (lua_gettop(L) == 6)
+         drunner_assert(lua_isboolean(L, 6), "The usersettable flag must be a boolean.");
 
       configtype t;
       {
@@ -108,7 +111,10 @@ namespace servicelua
          }
       }
 
-      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), t, (lua_toboolean(L, 5) == 1), true);
+      // optional parameter.
+      bool usersettable = (lua_gettop(L) == 6 ? (lua_toboolean(L, 6) == 1) : true);
+
+      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), t, (lua_toboolean(L, 5) == 1), usersettable);
       get_luafile(L)->addConfiguration(c);
 
       cResult rval = kRSuccess;

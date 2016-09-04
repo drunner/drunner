@@ -27,10 +27,27 @@ std::string serviceVars::getServiceName() const
    return sname;
 }
 
+bool serviceVars::getIsDevMode() const
+{
+   return getBool("DEVMODE");
+}
+
+void serviceVars::setImageName(std::string imagename)
+{
+   setVal("IMAGENAME", imagename);
+}
+
+void serviceVars::setDevMode(bool isDevMode)
+{
+   setVal("DEVMODE", isDevMode ? "True" : "False");
+}
+
+
 void serviceVars::_setconfig()
 {
    // we always know the servicename.
    setVal_mem("SERVICENAME", mName);
    
    _addConfig(Configuration("IMAGENAME", "", "Image name", kCF_string, true, false));
+   _addConfig(Configuration("DEVMODE", "False", "Development Mode", kCF_bool, true, false));
 }

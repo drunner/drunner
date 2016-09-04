@@ -8,11 +8,11 @@
 #include "drunner_paths.h"
 #include "service_manage.h"
 
-ddev::ddev() : configuredplugin("ddev")
+ddev::ddev()
 {
-   addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true);
-   addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true);
-   addConfig("DSERVICENAME", "The name to install the dService as (blank = don't install)", "", kCF_string, false);
+   addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true,true);
+   addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true,true);
+   addConfig("DSERVICENAME", "The name to install the dService as (blank = don't install)", "", kCF_string, false,true);
 }
 
 std::string ddev::getName() const
@@ -97,12 +97,12 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    if (imagename.length() == 0)
       return cError("You need to configure ddev with a tag first.");
 
-   if (!utils::imageislocal(imagename) && dservicename.length()>0)
-   {
-      if (imagename.find(':')!=std::string::npos)
-         return cError("If using ddev build to install a dService the only tag allowed is :local");
-      imagename += ":local";
-   }
+   //if (!utils::imageislocal(imagename) && dservicename.length()>0)
+   //{
+   //   if (imagename.find(':')!=std::string::npos)
+   //      return cError("If using ddev build to install a dService the only tag allowed is :local");
+   //   imagename += ":local";
+   //}
 
    d.makeDirectory().setFileName("Dockerfile");
    if (!utils::fileexists(d))
@@ -123,7 +123,7 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    {
       logmsg(kLINFO, "Installing " + imagename + " as " + dservicename);
       service_manage::uninstall(dservicename);
-      rval+=service_manage::install(dservicename, imagename);
+      rval+=service_manage::install(dservicename, imagename, true); // don't pull images.
    }
    else
       logmsg(kLINFO,"Not a dService so not installing.");
@@ -158,7 +158,7 @@ cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path
    if (foundjson)
    {
       logmsg(kLINFO,"Building " + ddevjson.toString());
-      persistvariables pv(mName, ddevjson, mConfiguration);
+      persistvariables pv(getName(), ddevjson, mConfiguration);
       cResult r = pv.loadvariables();
       if (!r.success())
          return r;

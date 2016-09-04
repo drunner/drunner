@@ -26,6 +26,7 @@
 #include <Poco/TeeStream.h>
 
 #include <sys/stat.h>
+#include <stdio.h>
 
 #include "utils.h"
 #include "exceptions.h"
@@ -33,7 +34,6 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "enums.h"
-#include "chmod.h"
 #include "drunner_paths.h"
 #include "dassert.h"
 
@@ -123,27 +123,6 @@ namespace utils
       return h;
    }
 
-   bool imageislocal(const std::string & imagename)
-   {
-      std::size_t pos = imagename.find_last_of("/:");
-      if (pos == std::string::npos || imagename[pos] != ':')
-         return false;
-
-      std::string branchname=imagename.substr(pos+1);
-      if (0 == Poco::icompare(branchname, "local"))
-         return true;
-
-      return false;
-   }
-
-   cResult pullimage(const std::string & imagename)
-   {
-      std::string op;
-      CommandLine cl("docker", { "pull",imagename });
-      int rval = runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&op);
-      return (rval==0) ? cResult(kRSuccess) : cError("Failed to pull "+imagename+":\n "+op);
-   }
-
    bool getFolders(const std::string & parent, std::vector<std::string> & folders)
    {
       Poco::File f(parent);
@@ -177,34 +156,12 @@ namespace utils
          logdbg("Created " + d.toString());
       }
 
-      if (xchmod(d.toString().c_str(), mode) != 0)
+#ifndef _WIN32
+      if (chmod(d.toString().c_str(), mode) != 0)
          return cError("Unable to change permissions on " + d.toString());
+#endif
 
       return kRSuccess;
-   }
-
-   cResult _makedirectories(Poco::Path path)
-   {
-      Poco::File f(path);
-
-      if (f.exists())
-         return kRNoChange;
-
-      f.createDirectories();
-      return (f.exists() ? cResult(kRSuccess) : cError("Failed to create directory "+path.toString()));
-   }
-
-   cResult makedirectories(Poco::Path path, mode_t mode)
-   {
-      cResult r = _makedirectories(path);
-      if (r.success())
-      {
-         logdbg("Created " + path.toString());
-         if (xchmod(path.toString().c_str(), mode) != 0)
-            return cError("Unable to change permissions on " + path.toString());
-      }
-
-      return r;
    }
 
    // recusively delete the path given. we do this manually to set the permissions to writable,
@@ -248,6 +205,24 @@ namespace utils
    cResult delfile(Poco::Path fullpath)
    {
       drunner_assert(fullpath.isFile(), "delfile: asked to delete a directory: "+fullpath.toString());
+
+#ifdef _WIN32
+      logdbg(fullpath.toString());
+      SetFileAttributesA(fullpath.toString().c_str(),
+         GetFileAttributesA(fullpath.toString().c_str()) & ~FILE_ATTRIBUTE_READONLY);
+
+      if (0 == DeleteFileA(fullpath.toString().c_str()))
+      {
+         if (GetLastError() == ERROR_ACCESS_DENIED)
+            fatal("Couldn't delete - read only");
+         if (GetLastError() == ERROR_FILE_NOT_FOUND)
+            fatal("File not found - "+std::to_string(GetLastError()));
+         if (GetLastError() == ERROR_SHARING_VIOLATION)
+            fatal("Sharing violation");
+         fatal("?!" + std::to_string(GetLastError()));
+      }
+#endif
+
       try
       {
          Poco::File f(fullpath);
@@ -333,8 +308,10 @@ namespace utils
       f.createDirectories();
       logmsg(kLDEBUG, "Created " + d.toString());
 
-      if (xchmod(d.toString().c_str(), S_777) != 0)
+#ifndef _WIN32
+      if (chmod(d.toString().c_str(), S_777) != 0)
          die("Unable to change permissions on " + d.toString());
+#endif
    }
 
    tempfolder::~tempfolder() 

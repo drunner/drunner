@@ -42,8 +42,8 @@ namespace utils
    const std::string kCODE_E="\e[0m";
 #endif
 
-   cResult _makedirectories(Poco::Path path);
-   cResult makedirectories(Poco::Path path,mode_t mode);
+   //cResult _makedirectories(Poco::Path path);
+   //cResult makedirectories(Poco::Path path,mode_t mode);
    cResult makedirectory(Poco::Path d, mode_t mode);
 //   void makesymlink(Poco::Path file, Poco::Path link);
 
@@ -63,9 +63,6 @@ namespace utils
    std::string replacestring(std::string subject, const std::string& search, const std::string& replace);
    std::string alphanumericfilter(std::string s, bool whitespace);
    bool wordmatch(std::string s, std::string word);
-
-   bool imageislocal(const std::string & imagename);
-   cResult pullimage(const std::string & imagename);
 
    std::string getTime();
    std::string getPWD();

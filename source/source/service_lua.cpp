@@ -124,9 +124,7 @@ namespace servicelua
    {
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
       drunner_assert(sVars != NULL, "sVars has not been set.");
-
-      if (Poco::icompare(serviceCmd.command, "configure") == 0 || Poco::icompare(serviceCmd.command, "config") == 0)
-         return sVars->handleConfigureCommand(serviceCmd);
+      drunner_assert(Poco::icompare(serviceCmd.command, "configure") != 0, "Configure leaked through");
 
       if (Poco::icompare(serviceCmd.command, "help") == 0)
          return _showHelp(sVars);

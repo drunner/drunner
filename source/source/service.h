@@ -25,7 +25,6 @@ public:
    cResult servicecmd();
 
 private:
-   cResult _showconfiginfo();
    cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _dstop(const CommandLine & operation) const;
 

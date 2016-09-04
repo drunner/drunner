@@ -39,6 +39,10 @@ https://s3-ap-southeast-2.amazonaws.com/drunner/win/drunner.exe
 ```
 Double click it to install.
 
+Make sure to enable sharing to your C: drive (if that's where your User folder is) in
+the Docker settings. Test it works using the command shown in the Docker Shared Drives
+screen.
+
 Add `C:\Users\[USERNAME]\.drunner\bin` to your path in Windows.
 
 Open powershell, now you should be able to run drunner.

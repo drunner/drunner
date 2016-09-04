@@ -14,6 +14,10 @@ public:
 
    std::string getImageName() const;
    std::string getServiceName() const;
+   bool getIsDevMode() const;
+
+   void setImageName(std::string imagename);
+   void setDevMode(bool isDevMode);
 
 private:
    void _setconfig();

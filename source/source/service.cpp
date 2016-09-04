@@ -55,7 +55,7 @@ cResult service::servicecmd()
    {
       servicehook hook(getName(), "configure", cl.args);
       hook.starthook();
-      cResult rval= mServiceLua.runCommand(cl, mServiceVarsPtr.get()); // no hooks.
+      cResult rval = mServiceVarsPtr->handleConfigureCommand(cl);
       hook.endhook();
       return rval;
    }

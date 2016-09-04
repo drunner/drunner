@@ -38,6 +38,6 @@ const std::vector<Configuration> drunnerSettings::_getConfig()
    std::vector<Configuration> config;
    config.push_back(Configuration("INSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF", "The URL to download drunner from.", kCF_URL, true, true));
    config.push_back(Configuration("INSTALLTIME", utils::getTime(), "Time installed.", kCF_string, false, false));
-   config.push_back(Configuration("PULLIMAGES", "true", "Whether to pull docker images", kCF_bool, true, true));
+   config.push_back(Configuration("PULLIMAGES", "true", "Set to false to never pull docker images", kCF_bool, true, true));
    return config;
 }

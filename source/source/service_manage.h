@@ -11,7 +11,7 @@ namespace service_manage
    cResult obliterate(std::string servicename);
    cResult uninstall(std::string servicename);
    cResult update(std::string servicename);
-   cResult install(std::string & servicename, std::string imagename);
+   cResult install(std::string & servicename, std::string imagename, bool devMode);
    cResult service_restore(const std::string & backupfile, std::string servicename);
 
    // helper routines.
@@ -20,8 +20,8 @@ namespace service_manage
 
    void _createVolumes(std::vector<std::string> & volumes);
    void _ensureDirectoriesExist(std::string servicename);
-   cResult _recreate(std::string servicename, std::string imagename);
-   std::string _loadImageName(std::string servicename);
+   cResult _recreate(std::string servicename, std::string imagename, bool devMode);
+   bool _loadImageName(std::string servicename, std::string & imagename, bool & devmode);
 }
 
 
