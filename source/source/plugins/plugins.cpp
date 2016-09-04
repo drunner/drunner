@@ -85,9 +85,9 @@ cResult configuredplugin::runCommand() const
       return runCommand(cl, pv.getVariables());
 }
 
-cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required)
+cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable)
 {
-   Configuration c(name, defaultval, description, type, required, true);
+   Configuration c(name, defaultval, description, type, required, usersettable);
    mConfiguration.push_back(c);
    return kRSuccess;
 }

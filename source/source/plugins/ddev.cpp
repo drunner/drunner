@@ -10,9 +10,9 @@
 
 ddev::ddev()
 {
-   addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true);
-   addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true);
-   addConfig("DSERVICENAME", "The name to install the dService as (blank = don't install)", "", kCF_string, false);
+   addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true,true);
+   addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true,true);
+   addConfig("DSERVICENAME", "The name to install the dService as (blank = don't install)", "", kCF_string, false,true);
 }
 
 std::string ddev::getName() const

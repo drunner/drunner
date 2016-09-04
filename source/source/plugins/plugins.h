@@ -39,7 +39,7 @@ public:
 
 public:
    virtual cResult runCommand() const;
-   cResult addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required);
+   cResult addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable);
 
 protected:
    const variables getVariables() const;

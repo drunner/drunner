@@ -161,23 +161,39 @@ inline int _max(int a, int b) { return (a > b) ? a : b; }
 
 cResult persistvariables::_showconfiginfo() const
 { // show current variables.
-   logmsg(kLINFO, "Current configuration is:\n ");
+   logmsg(kLINFO, "Current configuration:\n ");
 
    int maxkey = 0;
    for (const auto & y : mVariables.getAll())
       maxkey = _max(maxkey, y.first.length());
+
+   int uservars = 0;
    for (const auto & y : mVariables.getAll())
       for (const auto & z : mConfig)
-         if (Poco::icompare(z.name, y.first) == 0 && z.usersettable)
+         if (Poco::icompare(z.name, y.first) == 0)
          {
-            logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
-            logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
+            if (z.usersettable)
+            {
+               logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+               logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
+               ++uservars;
+            }
+            else
+            {
+               logdbg("[" + _pad(y.first, maxkey) + "]= " + y.second + " (not user settable)");
+               logdbg(" " + _pad(" ", maxkey) + "   " + z.description + "\n");
+            }
          }
 
-   logmsg(kLINFO, " ");
-   logmsg(kLINFO, "Change configuration variables with:");
-   logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment var");
-   logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
+   if (uservars == 0)
+      logmsg(kLINFO, "There are no user configurable variables.");
+   else
+   {
+      logmsg(kLINFO, " ");
+      logmsg(kLINFO, "Change configuration variables with:");
+      logmsg(kLINFO, " " + mName + " configure VARIABLE         -- configure from environment var");
+      logmsg(kLINFO, " " + mName + " configure VARIABLE=VALUE   -- configure with specified value");
+   }
    return kRSuccess;
 }
 

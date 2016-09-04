@@ -3,7 +3,7 @@
 
 dcron::dcron()
 {
-   addConfig("LastRun", "The last time dcron was run [automatically set].", "", kCF_string, false);
+   addConfig("LastRun", "The last time dcron was run [automatically set].", "", kCF_string, false,false);
 }
 
 std::string dcron::getName() const
@@ -19,12 +19,13 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
       return cError("Only command supported is 'run'");
    }
 
+   logdbg("Running dcron.");
    return _runcron(cl, v);
 }
 
 cResult dcron::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
 {
-   return cResult();
+   return kRNoChange; // nothing to do.
 }
 
 cResult dcron::showHelp() const
