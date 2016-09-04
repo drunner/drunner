@@ -178,7 +178,7 @@ namespace utils
       }
 
 #ifndef _WIN32
-      if (xchmod(d.toString().c_str(), mode) != 0)
+      if (chmod(d.toString().c_str(), mode) != 0)
          return cError("Unable to change permissions on " + d.toString());
 #endif
 
@@ -330,7 +330,7 @@ namespace utils
       logmsg(kLDEBUG, "Created " + d.toString());
 
 #ifndef _WIN32
-      if (xchmod(d.toString().c_str(), S_777) != 0)
+      if (chmod(d.toString().c_str(), S_777) != 0)
          die("Unable to change permissions on " + d.toString());
 #endif
    }
