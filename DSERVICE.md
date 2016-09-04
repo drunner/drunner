@@ -15,6 +15,18 @@ A more complete example is with the minecraft dService here:
 
 ## Configuration
 
+Call the following functions as needed from drunner_setup() in your service.lua file.
+
+```
+function drunner_setup()
+-- addconfig(NAME, DESCRIPTION, DEFAULT VALUE, TYPE, REQUIRED, USERSETTABLE)
+-- addvolume(NAME, [BACKUP], [EXTERNAL])
+-- addcontainer(NAME)
+-- addproxy(VIRTUAL_HOST,HTTP_PORT,HTTPS_PORT)
+-- addcron(offsetmin, repeatmin, function)
+end
+```
+
 ## Volumes
 
 ## Helper functions
