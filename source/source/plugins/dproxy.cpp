@@ -43,25 +43,37 @@ cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
       }
 
       update(ip);
-      logmsg(kLINFO, "dproxy configuration updated. Restarting dproxy.");
+      logmsg(kLINFO, "dproxy configuration updated.");
       if (dproxyRunning())
+      {
+         logmsg(kLINFO, "Restarting dproxy.");
          stop();
-      return start();
+         return start();
+      }
+      else
+         return kRSuccess;
    }
 
    case (s2i("start")):
    {
-      if (!configNeedsUpdated(ip))
-      { // just need to check dproxy is running.
-         if (dproxyRunning())
-            return kRNoChange;
-         return start();
+      bool running = dproxyRunning();
+      bool outdated = configNeedsUpdated(ip);
+
+      if (running)
+      {
+         if (outdated)
+            logmsg(kLWARN, "dproxy already running on old configuration.\nRun  dproxy update  to update.");
+         return kRNoChange;
       }
 
-      update(ip);
-      logmsg(kLINFO, "dproxy configuration updated. Restarting dproxy.");
-      if (dproxyRunning())
-         stop();
+      // configuration out of date.
+      if (outdated)
+      {
+         logmsg(kLINFO, "dproxy configuration updated.");
+         update(ip);
+      }
+
+      logmsg(kLINFO, "Starting dproxy.");
       return start();
    }
 
@@ -101,10 +113,10 @@ cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, c
    {
       std::string ip = getVariables().getVal("IP");
 
-      if (ip.length()>0 && !configNeedsUpdated(ip))
-         return kRNoChange;
-
-      logmsg(kLINFO, "The dproxy settings are out of date with service configuration.\nRun  dproxy update  if you make the configuration changes live.");
+      // only report changes if we've set up dproxy + it's running.
+      if (ip.length() > 0  && dproxyRunning() && configNeedsUpdated(ip))
+         logmsg(kLINFO, "The running dproxy settings are now outdated.\nRun  dproxy update  if you make the configuration changes live.");
+      return kRNoChange;
    }
 
    default:

@@ -9,11 +9,6 @@
 #include "dassert.h"
 
 
-//variables::variables(const variables & other)
-//{
-//   const tKeyVals & otherkvs(other.getAll());
-//   mVariables.insert(otherkvs.begin(), otherkvs.end());
-//}
 variables::variables(const variables & other1, const variables & other2)
 {
    mVariables = other1.getAll();
@@ -27,6 +22,11 @@ bool variables::hasKey(std::string key) const
       if (0==Poco::icompare(key, x.first))
          return true;
    return false;
+}
+
+bool variables::isDefined(std::string key) const
+{
+   return getVal(key).length()>0;
 }
 
 std::string variables::getVal(std::string key) const
@@ -77,7 +77,7 @@ persistvariables::persistvariables(std::string name, Poco::Path path, const std:
 {
    // set default values for settings if they don't already have a setting.
    for (const auto & x : mConfig)
-      if (!hasKey(x.name) || getVal(x.name).length() == 0)
+      if (!isDefined(x.name))
          mVariables.setVal(x.name, x.defaultval);
 }
 
@@ -130,7 +130,7 @@ cResult persistvariables::savevariables() const
 cResult persistvariables::checkRequired() const
 {
    for (const auto & x : mConfig)
-      if (x.required && !hasKey(x.name))
+      if (x.required && !isDefined(x.name))
          return cError("Required setting " + x.name + " is not defined.");
    return kRSuccess;
 }
@@ -172,15 +172,16 @@ cResult persistvariables::_showconfiginfo() const
       for (const auto & z : mConfig)
          if (Poco::icompare(z.name, y.first) == 0)
          {
+            std::string v = (z.type == kCF_password ? "xxxxxxxx" : y.second);
             if (z.usersettable)
             {
-               logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
+               logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + v);
                logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
                ++uservars;
             }
             else
             {
-               logdbg("[" + _pad(y.first, maxkey) + "]= " + y.second + " (not user settable)");
+               logdbg("[" + _pad(y.first, maxkey) + "]= " + v + " (not user settable)");
                logdbg(" " + _pad(" ", maxkey) + "   " + z.description + "\n");
             }
          }
@@ -224,18 +225,30 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
       { // form key=val.
          if (epos == 0)
             logmsg(kLERROR, "Missing key.");
-         if (epos == kv.length() - 1)
-            logmsg(kLERROR, "Missing value.");
 
          key = kv.substr(0, epos);
-         val = kv.substr(epos + 1);
-         logmsg(kLINFO, "Setting " + key + " to " + val);
+         if (epos < kv.length() - 1)
+            val = kv.substr(epos + 1);
       }
 
+      bool found = false;
       for (const auto & x : mConfig)
          if (Poco::icompare(x.name, key) == 0)
+         {
             if (!x.usersettable)
                return cError("You can't override " + x.name);
+
+            if (val.length()==0)
+               logmsg(kLINFO, "Clearing " + key);
+            else
+               logmsg(kLINFO, "Setting " + key + (x.type==kCF_password ? " (password not shown)" :  " to " + val));
+            found = true;
+         }
+      if (!found)
+      {
+         logmsg(kLDEBUG, "Configuration variable " + key + " was not recognised");
+         return cError("Configuration variable " + key + " was not recognised");
+      }
 
       // find the corresponding configuration definition and set the variable.
       rval += setVal(key, val);
@@ -249,7 +262,7 @@ void persistvariables::_addConfig(const Configuration & c)
 {
    mConfig.push_back(c);
 
-   if (!hasKey(c.name) || getVal(c.name).length() == 0)
+   if (!isDefined(c.name))
       mVariables.setVal(c.name, c.defaultval);
 }
 
@@ -260,6 +273,11 @@ void persistvariables::setVal_mem(std::string key, std::string val)
 
 bool persistvariables::hasKey(std::string key) const { 
    return mVariables.hasKey(key) || mVariables_Mem.hasKey(key); 
+}
+
+bool persistvariables::isDefined(std::string key) const
+{
+   return mVariables.hasKey(key) ? mVariables.isDefined(key) : mVariables_Mem.isDefined(key);
 }
 
 std::string persistvariables::getVal(std::string key) const 
@@ -292,4 +310,35 @@ cResult persistvariables::_checkvalid(std::string key, std::string val, Configur
    return kRSuccess;
 }
 
+configtype to_configtype(std::string s)
+{
+   configtype t;
+   switch (s2i(s.c_str()))
+   {
+   case s2i("port"):
+      t = kCF_port;
+      break;
+   case s2i("path"):
+      t = kCF_path;
+      break;
+   case s2i("existingpath"):
+      t = kCF_existingpath;
+      break;
+   case s2i("string"):
+      t = kCF_string;
+      break;
+   case s2i("bool"):
+      t = kCF_bool;
+      break;
+   case s2i("url"):
+      t = kCF_URL;
+      break;
+   case s2i("password"):
+      t = kCF_password;
+      break;
+   default:
+      fatal("Unknown configuration type: " + s);
+   };
+   return t;
+}
 

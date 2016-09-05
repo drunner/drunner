@@ -27,6 +27,15 @@ function drunner_setup()
 end
 ```
 
+Valid types for config definitions are (case-insensitive):
+* Port
+* Path
+* ExistingPath
+* String
+* Bool
+* URL
+* Password
+
 ## Volumes
 
 ## Helper functions

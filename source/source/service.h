@@ -29,7 +29,7 @@ private:
    cResult _dstop(const CommandLine & operation) const;
 
    servicelua::luafile mServiceLua;
-   std::unique_ptr<serviceVars> mServiceVarsPtr;
+   std::unique_ptr<serviceVars> mServiceVarsPtr; // the full configuration for the service. Includes config from service.lua + extras.
 };
 
 

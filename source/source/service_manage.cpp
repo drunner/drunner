@@ -30,7 +30,7 @@ namespace service_manage
       servicelua::luafile lf(servicename);
       if (kRSuccess == lf.loadlua())
       {
-         serviceVars v(servicename, lf.getConfigItems());
+         serviceVars v(servicename, lf.getLuaConfigurationDefinitions());
          v.loadvariables();
          imagename = v.getImageName();
          devmode = v.getIsDevMode();
@@ -130,7 +130,7 @@ namespace service_manage
             fatal("Corrupt dservice - couldn't read service.lua.");
 
          // write out service configuration for the dService.
-         serviceVars sv(servicename, imagename, syf.getConfigItems());
+         serviceVars sv(servicename, imagename, syf.getLuaConfigurationDefinitions());
          if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
             logdbg("Loaded existing service variables.");
 
@@ -193,7 +193,7 @@ namespace service_manage
 
       _recreate(servicename,imagename,devMode);
 
-      servicehook hook(servicename, "install");
+      servicehook hook(servicename, "install", {});
       hook.endhook();
 
       logdbg("Installation of " + servicename + " complete.");
@@ -210,7 +210,7 @@ namespace service_manage
 
       try
       {
-         servicehook hook(servicename, "uninstall");
+         servicehook hook(servicename, "uninstall", {});
          hook.starthook();
       }
       catch (const eExit &)
@@ -242,7 +242,7 @@ namespace service_manage
       {
          try
          {
-            servicehook hook(servicename, "obliterate");
+            servicehook hook(servicename, "obliterate", {});
             hook.starthook();
 
             logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
@@ -313,7 +313,7 @@ namespace service_manage
       bool loaded = _loadImageName(servicename,imagename,devmode);
       drunner_assert(loaded, "Can't update service " + servicename + " - docker image name could not be determined.");
 
-      servicehook hook(servicename, "update");
+      servicehook hook(servicename, "update", {});
       cResult rslt = hook.starthook();
       rslt += _recreate(servicename, imagename,devmode);
       rslt += hook.endhook();
