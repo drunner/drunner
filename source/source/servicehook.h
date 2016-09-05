@@ -14,10 +14,7 @@
 class servicehook
 {
 public:
-   //servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname, const std::vector<std::string> & hookparams);
-   //servicehook(std::string servicename, const servicelua::luafile & lfile, std::string actionname);
    servicehook(std::string servicename, std::string actionname, const std::vector<std::string> & hookparams);
-   servicehook(std::string servicename, std::string actionname);
    cResult starthook();
    cResult endhook();
 private:

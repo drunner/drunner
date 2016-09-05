@@ -45,6 +45,7 @@ public:
    variables(const variables & other1, const variables & other2);
 
    bool hasKey(std::string key) const;
+   bool isDefined(std::string key) const; // hasKey and is not empty string.
    std::string getVal(std::string key) const;
    bool getBool(std::string key) const;
    void setVal(std::string key, std::string val);
@@ -76,6 +77,7 @@ public:
    
    // expose other methods.
    bool hasKey(std::string key) const;
+   bool isDefined(std::string key) const; // hasKey and is not empty string.
    std::string getVal(std::string key) const;
    bool getBool(std::string key) const;
    std::string substitute(std::string s) const;

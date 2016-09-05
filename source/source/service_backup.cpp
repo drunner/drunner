@@ -208,7 +208,7 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
 
    // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
-   serviceVars oldvars(servicename, imagename, newluafile.getConfigItems());
+   serviceVars oldvars(servicename, imagename, newluafile.getLuaConfigurationDefinitions());
 
    if (kRSuccess != oldvars.loadvariables()) // loads with new schema (updates).
       logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");

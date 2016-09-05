@@ -12,13 +12,6 @@ servicehook::servicehook(std::string servicename, std::string actionname, const 
 {
 }
 
-
-servicehook::servicehook(std::string servicename, std::string actionname) :
-   mPaths(servicename), mActionName(actionname)
-{
-}
-
-
 cResult servicehook::starthook()
 {
    return _runHook(mActionName + "_start");
@@ -44,7 +37,7 @@ cResult servicehook::_runHook(std::string se)
    if (rval != kRSuccess)
       return rval;
 
-   serviceVars sv(mPaths.getName(),lf.getConfigItems());
+   serviceVars sv(mPaths.getName(),lf.getLuaConfigurationDefinitions());
    rval += sv.loadvariables();
    if (rval != kRSuccess)
       return rval;

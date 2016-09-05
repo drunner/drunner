@@ -203,7 +203,7 @@ namespace servicelua
 
    void luafile::addConfiguration(Configuration cf)
    {
-      mConfigItems.push_back(cf);
+      mLuaConfigurationDefinitions.push_back(cf);
    }
 
    void luafile::addVolume(Volume v)
@@ -250,9 +250,9 @@ namespace servicelua
    {
       return mContainers;
    }
-   const std::vector<Configuration> & luafile::getConfigItems() const
+   const std::vector<Configuration> & luafile::getLuaConfigurationDefinitions() const
    {
-      return mConfigItems;
+      return mLuaConfigurationDefinitions;
    }
 
 } // namespace

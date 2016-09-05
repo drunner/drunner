@@ -9,11 +9,6 @@
 #include "dassert.h"
 
 
-//variables::variables(const variables & other)
-//{
-//   const tKeyVals & otherkvs(other.getAll());
-//   mVariables.insert(otherkvs.begin(), otherkvs.end());
-//}
 variables::variables(const variables & other1, const variables & other2)
 {
    mVariables = other1.getAll();
@@ -27,6 +22,11 @@ bool variables::hasKey(std::string key) const
       if (0==Poco::icompare(key, x.first))
          return true;
    return false;
+}
+
+bool variables::isDefined(std::string key) const
+{
+   return getVal(key).length()>0;
 }
 
 std::string variables::getVal(std::string key) const
@@ -77,7 +77,7 @@ persistvariables::persistvariables(std::string name, Poco::Path path, const std:
 {
    // set default values for settings if they don't already have a setting.
    for (const auto & x : mConfig)
-      if (!hasKey(x.name) || getVal(x.name).length() == 0)
+      if (!isDefined(x.name))
          mVariables.setVal(x.name, x.defaultval);
 }
 
@@ -130,7 +130,7 @@ cResult persistvariables::savevariables() const
 cResult persistvariables::checkRequired() const
 {
    for (const auto & x : mConfig)
-      if (x.required && !hasKey(x.name))
+      if (x.required && !isDefined(x.name))
          return cError("Required setting " + x.name + " is not defined.");
    return kRSuccess;
 }
@@ -249,7 +249,7 @@ void persistvariables::_addConfig(const Configuration & c)
 {
    mConfig.push_back(c);
 
-   if (!hasKey(c.name) || getVal(c.name).length() == 0)
+   if (!isDefined(c.name))
       mVariables.setVal(c.name, c.defaultval);
 }
 
@@ -260,6 +260,11 @@ void persistvariables::setVal_mem(std::string key, std::string val)
 
 bool persistvariables::hasKey(std::string key) const { 
    return mVariables.hasKey(key) || mVariables_Mem.hasKey(key); 
+}
+
+bool persistvariables::isDefined(std::string key) const
+{
+   return mVariables.hasKey(key) ? mVariables.isDefined(key) : mVariables_Mem.isDefined(key);
 }
 
 std::string persistvariables::getVal(std::string key) const 

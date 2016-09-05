@@ -28,7 +28,7 @@ service::service(std::string servicename) :
       fatal("Could not load service.lua: " + getPathServiceLua().toString());
 
    // make_unique is C++14.
-   mServiceVarsPtr = std::unique_ptr<serviceVars>(new serviceVars(servicename, mServiceLua.getConfigItems()));
+   mServiceVarsPtr = std::unique_ptr<serviceVars>(new serviceVars(servicename, mServiceLua.getLuaConfigurationDefinitions()));
 
    if (mServiceVarsPtr->loadvariables() != kRSuccess)
       fatal("Could not load service varialbes.");
@@ -67,10 +67,9 @@ cResult service::servicecmd()
       fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
 
    // check all required variables are configured.
-   for (const auto & var : mServiceLua.getConfigItems())
-      if (var.required)
-         if (!mServiceVarsPtr->hasKey(var.name))
-            fatal("A required configuration variable " + var.name + " has not yet been set.");
+   cResult reqdresult = mServiceVarsPtr->checkRequired();
+   if (!reqdresult.success())
+      logmsg(kLWARN, reqdresult.what());
 
    // handle the command.
    std::ostringstream oss;
