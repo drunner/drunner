@@ -14,6 +14,7 @@
 
 typedef std::map<std::string, std::string> tKeyVals;
 
+// If configtypes are added then to_configtype needs to be updated.
 enum configtype
 {
    kCF_port,
@@ -22,7 +23,10 @@ enum configtype
    kCF_string,
    kCF_bool,
    kCF_URL,
+   kCF_password,
 };
+
+configtype to_configtype(std::string s);
 
 class Configuration
 {

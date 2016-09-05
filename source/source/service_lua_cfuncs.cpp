@@ -89,32 +89,13 @@ namespace servicelua
       if (lua_gettop(L) == 6)
          drunner_assert(lua_isboolean(L, 6), "The usersettable flag must be a boolean.");
 
-      configtype t;
-      {
-         using namespace utils;
-         switch (s2i(lua_tostring(L, 4)))
-         {
-         case s2i("port"):
-            t = kCF_port;
-            break;
-         case s2i("path"):
-            t = kCF_path;
-            break;
-         case s2i("existingpath"):
-            t = kCF_existingpath;
-            break;
-         case s2i("string"):
-            t = kCF_string;
-            break;
-         default:
-            fatal("Unknown configuration type: " + std::string(lua_tostring(L, 4)));
-         }
-      }
+      // convert configtype.
+      configtype ctype = to_configtype(lua_tostring(L, 4));
 
       // optional parameter.
       bool usersettable = (lua_gettop(L) == 6 ? (lua_toboolean(L, 6) == 1) : true);
 
-      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), t, (lua_toboolean(L, 5) == 1), usersettable);
+      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), ctype, (lua_toboolean(L, 5) == 1), usersettable);
       get_luafile(L)->addConfiguration(c);
 
       cResult rval = kRSuccess;
