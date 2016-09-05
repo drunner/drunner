@@ -225,11 +225,10 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
       { // form key=val.
          if (epos == 0)
             logmsg(kLERROR, "Missing key.");
-         if (epos == kv.length() - 1)
-            logmsg(kLERROR, "Missing value.");
 
          key = kv.substr(0, epos);
-         val = kv.substr(epos + 1);
+         if (epos < kv.length() - 1)
+            val = kv.substr(epos + 1);
       }
 
       bool found = false;
@@ -238,7 +237,11 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
          {
             if (!x.usersettable)
                return cError("You can't override " + x.name);
-            logmsg(kLINFO, "Setting " + key + (x.type==kCF_password ? " (password not shown)" :  " to " + val));
+
+            if (val.length()==0)
+               logmsg(kLINFO, "Clearing " + key);
+            else
+               logmsg(kLINFO, "Setting " + key + (x.type==kCF_password ? " (password not shown)" :  " to " + val));
             found = true;
          }
       if (!found)
