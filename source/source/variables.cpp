@@ -242,7 +242,10 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
             found = true;
          }
       if (!found)
-
+      {
+         logmsg(kLDEBUG, "Configuration variable " + key + " was not recognised");
+         return cError("Configuration variable " + key + " was not recognised");
+      }
 
       // find the corresponding configuration definition and set the variable.
       rval += setVal(key, val);
