@@ -24,6 +24,7 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
 
    logdbg("Running dcron.");
 
+   std::istringstream s(v.getVal("LastRun"));
    time_t t;
    s >> t;
    cResult r = _runcron(cl, v, t);
