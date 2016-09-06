@@ -77,12 +77,23 @@ cResult configuredplugin::runCommand() const
    
    Poco::Path spath = configurationFilePath();
    persistvariables pv(getName(), spath, mConfiguration);
-   cResult r = pv.loadvariables();
-   
+
+   // if the variables file does not exist then create it (will pick up defaults from pv ctor).
+   if (!pv.exists())
+   {
+      if (!pv.savevariables().success())
+         fatal("Couldn't create " + spath.toString());
+      else
+         logdbg("Created " + spath.toString());
+   }
+
+
+   cResult r = pv.loadvariables();   
+   drunner_assert(r.success(), "Failed to save empty variables.");
    if (cl.command == "configure")
       return pv.handleConfigureCommand(cl);
-   else
-      return runCommand(cl, pv.getVariables());
+
+   return runCommand(cl, pv.getVariables());
 }
 
 cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable)
@@ -97,6 +108,23 @@ const variables configuredplugin::getVariables() const
    Poco::Path spath = configurationFilePath();
    persistvariables pv(getName(), spath, mConfiguration);
    cResult r = pv.loadvariables();
-   return pv.getVariables();
+   if (r.success())
+      return pv.getVariables();
+   else
+      return variables();
+}
+
+cResult configuredplugin::setVariable(std::string key, std::string val) const
+{
+   Poco::Path spath = configurationFilePath();
+   persistvariables pv(getName(), spath, mConfiguration);
+   cResult r = pv.loadvariables();
+   if (r.success())
+   {
+      r += pv.setVal(key, val);
+      if (r.success())
+         r += pv.savevariables();
+   }
+   return r;
 }
 

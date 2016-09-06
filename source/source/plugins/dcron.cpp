@@ -1,3 +1,6 @@
+#include <time.h>
+#include <sstream>
+
 #include "dcron.h"
 #include "drunner_paths.h"
 
@@ -16,11 +19,19 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
    if (cl.command != "run")
    {
       showHelp();
-      return cError("Only command supported is 'run'");
+      return cError("Only commands supported are 'run' or 'configure'.");
    }
 
    logdbg("Running dcron.");
-   return _runcron(cl, v);
+
+   time_t t;
+   s >> t;
+   cResult r = _runcron(cl, v, t);
+
+   // update stored time to now.
+   logdbg("Updating LastRun time.");
+   r += setVariable("LastRun", std::to_string(time(NULL)));
+   return r;
 }
 
 cResult dcron::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
@@ -60,7 +71,7 @@ Poco::Path dcron::configurationFilePath() const
    return target;
 }
 
-cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
+cResult dcron::_runcron(const CommandLine & cl, const variables & v, time_t lasttime) const
 {
    return cResult();
 }

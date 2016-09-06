@@ -87,6 +87,7 @@ public:
    std::string substitute(std::string s) const;
    const tKeyVals getAll() const;
    const variables getVariables() const;
+   bool exists() const;
    
    cResult handleConfigureCommand(CommandLine cl);
 

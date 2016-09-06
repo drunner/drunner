@@ -43,6 +43,7 @@ public:
 
 protected:
    const variables getVariables() const;
+   cResult setVariable(std::string key, std::string val) const;
 
    std::vector<Configuration> mConfiguration;
 };
