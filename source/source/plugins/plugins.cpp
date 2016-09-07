@@ -114,7 +114,7 @@ const variables configuredplugin::getVariables() const
       return variables();
 }
 
-cResult configuredplugin::setVariable(std::string key, std::string val) const
+cResult configuredplugin::setAndSaveVariable(std::string key, std::string val) const
 {
    Poco::Path spath = configurationFilePath();
    persistvariables pv(getName(), spath, mConfiguration);

@@ -97,13 +97,6 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    if (imagename.length() == 0)
       return cError("You need to configure ddev with a tag first.");
 
-   //if (!utils::imageislocal(imagename) && dservicename.length()>0)
-   //{
-   //   if (imagename.find(':')!=std::string::npos)
-   //      return cError("If using ddev build to install a dService the only tag allowed is :local");
-   //   imagename += ":local";
-   //}
-
    d.makeDirectory().setFileName("Dockerfile");
    if (!utils::fileexists(d))
       d.setFileName("dockerfile");
@@ -136,8 +129,6 @@ cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path
    Poco::DirectoryIterator di(d), end;
    Poco::Path ddevjson;
    bool foundjson = false;
-
-   //logdbg("Checking " + d.toString());
 
    // process all subdirectories
    while (di != end)
@@ -209,17 +200,32 @@ cResult ddev::_test(const CommandLine & cl, const variables & v) const
 
    cResult r;
    r += _testcommand(dservicename, { "help" });
-   r += _testcommand(dservicename, { "configure" });
+
+   if (r.success())
+      r += _testcommand(dservicename, { "configure" });
 
    utils::tempfolder scratch(drunnerPaths::getPath_Temp().pushDirectory("test-" + dservicename));
    Poco::Path bfile = scratch.getpath().setFileName("backupfile.bak");
    std::string tempservice = dservicename + "__TEMP_TEST";
 
-   r += _testcommand(CommandLine("drunner", { "backup",dservicename,bfile.toString() }));
-   r += _testcommand(CommandLine("drunner", { "restore",bfile.toString(),tempservice }));
-   r += _testcommand(tempservice, { "help" });
-   r += _testcommand(tempservice, { "configure" });
-   r += _testcommand(CommandLine("drunner", { "obliterate", tempservice }));
+   if (r.success())
+      r += _testcommand(CommandLine("drunner", { "backup",dservicename,bfile.toString() }));
+   
+   if (r.success())
+      r += _testcommand(CommandLine("drunner", { "restore",bfile.toString(),tempservice }));
+   
+   if (r.success())
+      r += _testcommand(tempservice, { "help" });
+   
+   if (r.success())
+      r += _testcommand(tempservice, { "configure" });
+
+   if (!r.success())
+      logmsg(kLWARN, "Previous test failed. Obliterating then logging failure message.");
+
+   cResult rr = _testcommand(CommandLine("drunner", { "obliterate", tempservice }));
+   if (r.success())
+      r += rr;
 
    if (r.success())
       logmsg(kLINFO, "Tests completed successfully.");
@@ -228,48 +234,3 @@ cResult ddev::_test(const CommandLine & cl, const variables & v) const
 
    return r;
 }
-
-
-
-//
-//
-//bool isrepo(const std::string & d, std::string & branch)
-//{
-//   CommandLine cl("git", { "rev-parse", "--abbrev-ref","HEAD",d });
-//   int r = runcommand(cl, branch);
-//   // drop everything after branch name
-//   branch.erase(branch.find_first_of("\r\n "));
-//   logmsg(kLDEBUG, "Branch:           " + branch);
-//   return (r == 0);
-//}
-//
-//void build(const std::string & thedir)
-//{
-//   std::string pwd = (thedir.length()>0 ? thedir : getPWD());
-//   std::string dfile = pwd + "/Dockerfile";
-//   if (!fileexists(dfile)) dfile = pwd + "/dockerfile";
-//   if (!fileexists(dfile)) logmsg(kLERROR, "No Dockerfile in " + pwd + ", it's not a valid dService.");
-//
-//   // read in service settings.
-//   //sh_ddev dd;
-//   //if (!dd.readSettings(dd.getPathFromParent(pwd)))
-//   //   logmsg(kLERROR,"No dService found at "+pwd);
-//
-//   //std::string baseimagename=dd.buildname;
-//   //std::string branchedimagename=dd.buildname;
-//
-//   //std::string branch;
-//   //if (isrepo(pwd,branch))
-//   //   {
-//   //   if (!stringisame(branch,"master")) {
-//   //   logmsg(kLDEBUG,"Branch is "+branch);
-//   //      branchedimagename+=":"+branch;}
-//   //   logmsg(kLDEBUG, "Full name:        "+branchedimagename);
-//   //   }
-//
-//   //// build it
-//   //CommandLine cl("docker", { "build", "-t",branchedimagename,pwd });
-//   //std::string oout;
-//   //int r = runcommand(cl, oout, kRC_Defaults);
-//   //if (r!=0) logmsg(kLERROR,"docker build faild.\n"+ oout);
-//}

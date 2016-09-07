@@ -184,7 +184,7 @@ namespace service_manage
       if (utils::fileexists(sp.getPathdService()))
          logmsg(kLERROR, "Service already exists. Try:\n drunner update " + servicename);
 
-      // make sure we have the latest version of the service.
+      // make sure we have the latest version of the service for validation.
       if (!devMode)
          utils_docker::pullImage(imagename);
 
