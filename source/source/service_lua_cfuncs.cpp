@@ -13,6 +13,7 @@ extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_addvolume(lua_State *L);
 extern "C" int l_addcontainer(lua_State *L);
 extern "C" int l_addproxy(lua_State *L);
+extern "C" int l_addcron(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
@@ -41,6 +42,7 @@ namespace servicelua
       REGISTERLUAC(l_addvolume, "addvolume")
       REGISTERLUAC(l_addcontainer, "addcontainer")
       REGISTERLUAC(l_addproxy,"addproxy")
+      REGISTERLUAC(l_addcron,"addcron")
 
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
@@ -172,6 +174,30 @@ namespace servicelua
       return _luasuccess(L);
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_addcron(lua_State *L)
+   {
+      if (lua_gettop(L) != 3)
+         return luaL_error(L, "addcron requries three arguments (offsetmin, repeatmin, functionname).");
+      CronEntry c;
+      drunner_assert(lua_isstring(L, 1), "offsetmin must be able to be interpreted as a string.");
+      drunner_assert(lua_isstring(L, 2), "repeatmin must be able to be interpreted as a string.");
+      drunner_assert(lua_isstring(L, 3), "function name must be a string.");
+
+      //std::istringstream offset(lua_tostring(L, 1));
+      //offset >> c.offsetmin;
+      //std::istringstream repeat(lua_tostring(L, 2));
+      //repeat >> c.repeatmin;
+
+      c.offsetmin = lua_tostring(L, 1);
+      c.repeatmin = lua_tostring(L, 2);
+      c.function = lua_tostring(L, 3);
+
+      get_luafile(L)->addCronEntry(c);
+
+      return _luasuccess(L);
+   }
 
    // -----------------------------------------------------------------------------------------------------------------------
    

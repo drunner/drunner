@@ -24,6 +24,8 @@ public:
    cResult backup(std::string backupfile);
    cResult servicecmd();
 
+   cResult runLuaFunction(CommandLine cl);
+
 private:
    cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _dstop(const CommandLine & operation) const;
