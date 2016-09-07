@@ -59,6 +59,17 @@ Poco::Path drunnerPaths::getPath_Exe()
    return p;
 }
 
+Poco::Path drunnerPaths::getPath_Exe_Target()
+{
+#ifdef _WIN32
+   Poco::Path exelocation = drunnerPaths::getPath_Bin();
+   exelocation.setFileName("drunner.exe");
+   return exelocation;
+#else
+   return getPath_Exe();
+#endif
+}
+
 Poco::Path drunnerPaths::getPath_Bin()
 {
    return getPath_Root().pushDirectory("bin");
