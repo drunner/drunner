@@ -174,15 +174,18 @@ namespace drunnerSetup
       _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
       _makedirectory(drunnerPaths::getPath_Settings(), S_755);
 
-      // -----------------------------------------------------------------------------
-      // generate plugin scripts
-      GlobalContext::getPlugins()->generate_plugin_scripts();
 
+      // On windows, we copy the executable to the .drunner/bin folder and make the .drunner folder hidden.
+      // On Linux drunner is manually copied to /usr/local/bin (or wherever) by the user as part of the install process.
 #ifdef _WIN32
       _copyexe();
       // make root hidden on windows.
-      drunner_assert(0 != SetFileAttributesA("C:\\Users\\j2\\.drunner", FILE_ATTRIBUTE_HIDDEN), "Couldn't set attributes");//drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN); // &~FILE_ATTRIBUTE_READONLY);
+      drunner_assert(0 != SetFileAttributesA(drunnerPaths::getPath_Root().toString().c_str(), FILE_ATTRIBUTE_HIDDEN), "Couldn't change attributes on the .drunner directory");
 #endif
+
+      // -----------------------------------------------------------------------------
+      // generate plugin scripts
+      GlobalContext::getPlugins()->generate_plugin_scripts();
 
       // -----------------------------------------------------------------------------
       // get latest root util image.

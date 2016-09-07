@@ -15,10 +15,14 @@ void generate_plugin_script(std::string pluginname)
 {
    std::string vdata = R"EOF(
 @echo off
-drunner __plugin____PLUGINNAME__ %*
+__DRUNNER__ __plugin____PLUGINNAME__ %*
 )EOF";
 
+   Poco::Path exelocation = drunnerPaths::getPath_Bin();
+   exelocation.setFileName("drunner.exe");
+
    vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
+   vdata = utils::replacestring(vdata, "__DRUNNER__", exelocation.toString());
 
    Poco::Path target = drunnerPaths::getPath_Bin().setFileName(pluginname + ".bat");
    generate(target, S_755, vdata);
@@ -54,11 +58,15 @@ function die { echo "$1"; exit 1 ; }
 CMD="help"
 [ "$#" -eq 0 ] || { CMD=$1 ; shift ; }
 
-drunner "__plugin__${PLUGINNAME}" "${CMD}" "$@"
+__DRUNNER__ "__plugin__${PLUGINNAME}" "${CMD}" "$@"
 
 )EOF";
 
+   std::string drunnerlocation = drunnerPaths::getPath_Exe().toString();
+
    vdata = utils::replacestring(vdata, "__PLUGINNAME__", pluginname);
+   vdata = utils::replacestring(vdata, "__DRUNNER__", drunnerlocation);
+
    Poco::Path target = drunnerPaths::getPath_Bin().setFileName(pluginname);
    generate(target, S_755, vdata);
 }
