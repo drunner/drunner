@@ -83,7 +83,7 @@ persistvariables::persistvariables(std::string name, Poco::Path path, const std:
 
 cResult persistvariables::loadvariables()
 {
-   if (!utils::fileexists(mPath))
+   if (!exists())
       return cError("The settings file does not exist: " + mPath.toString());
 
    // read the settings.
@@ -303,6 +303,11 @@ const tKeyVals persistvariables::getAll() const
 const variables persistvariables::getVariables() const 
 { 
    return variables(mVariables, mVariables_Mem);
+}
+
+bool persistvariables::exists() const
+{
+   return utils::fileexists(mPath);
 }
 
 cResult persistvariables::_checkvalid(std::string key, std::string val, Configuration config)

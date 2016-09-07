@@ -194,6 +194,11 @@ namespace servicelua
       return mProxies;
    }
 
+   const std::vector<CronEntry>& luafile::getCronEntries() const
+   {
+      return mCronEntries;
+   }
+
    void luafile::addContainer(std::string cname)
    {
       drunner_assert(cname.size() > 0, "Empty container name passed to addContainer.");
@@ -214,6 +219,11 @@ namespace servicelua
    void luafile::addProxy(Proxy p)
    {
       mProxies.push_back(p);
+   }
+
+   void luafile::addCronEntry(CronEntry c)
+   {
+      mCronEntries.push_back(c);
    }
 
    Poco::Path luafile::getdRunDir() const

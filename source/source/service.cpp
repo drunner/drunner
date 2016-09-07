@@ -66,6 +66,11 @@ cResult service::servicecmd()
    if (p.isHook(cl.command))
       fatal(cl.command + " is a reserved word and not available from the comamnd line for " + mName);
 
+   return runLuaFunction(cl);
+}
+
+cResult service::runLuaFunction(CommandLine cl)
+{
    // check all required variables are configured.
    cResult reqdresult = mServiceVarsPtr->checkRequired();
    if (!reqdresult.success())
@@ -77,7 +82,7 @@ cResult service::servicecmd()
    for (const auto & x : cl.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
 
-   cResult rval = mServiceLua.runCommand(cl,mServiceVarsPtr.get());
+   cResult rval = mServiceLua.runCommand(cl, mServiceVarsPtr.get());
 
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
