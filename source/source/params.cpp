@@ -44,7 +44,6 @@ std::string params::substitute( const std::string & source ) const
    std::string d(source);
    d=utils::replacestring(d,"${VERSION}",mVersion);
    d=utils::replacestring(d,"${EXENAME}","drunner");
-   d=utils::replacestring(d,"${ROOTPATH}", drunnerPaths::getPath_Exe().toString());
    return d;
 }
 

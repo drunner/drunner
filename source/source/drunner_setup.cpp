@@ -137,13 +137,14 @@ namespace drunnerSetup
 
    void _copyexe()
    {
-      Poco::Path drunnerexe = drunnerPaths::getPath_Exe();
+      Poco::Path currentexe = drunnerPaths::getPath_Exe();
 
       try 
       {
-         if (drunnerexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
-            Poco::File(drunnerexe).copyTo(drunnerPaths::getPath_Bin().toString());
+         if (currentexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
+            Poco::File(currentexe).copyTo(drunnerPaths::getPath_Bin().toString());
          logdbg("Copied drunner to "+ drunnerPaths::getPath_Bin().toString());
+         drunner_assert(utils::fileexists(drunnerPaths::getPath_Exe_Target()), "Failed to install drunner.exe");
       }
       catch (const Poco::FileException & e)
       {
