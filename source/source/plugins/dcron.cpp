@@ -29,11 +29,14 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
    std::istringstream s(v.getVal("LastRun"));
    time_t t;
    s >> t;
-   cResult r = _runcron(cl, v, t);
 
-   // update stored time to now.
+   // update stored time to now, before running cron (so we don't overlap cron jobs!).
    logdbg("Updating LastRun time.");
-   r += setVariable("LastRun", std::to_string(time(NULL)));
+   cResult r = setAndSaveVariable("LastRun", std::to_string(time(NULL)));
+
+   // now run cron.
+   r += _runcron(cl, v, t);
+
    return r;
 }
 

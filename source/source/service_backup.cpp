@@ -40,7 +40,7 @@ cResult service::backup(std::string backupfile)
 
    // write out variables that we need to decompress everything.
    backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
-   bvars.create(getImageName());
+   bvars.create(getImageName(),mServiceVarsPtr->getIsDevMode());
    bvars.savevars();
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
@@ -167,15 +167,18 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    if (!utils::fileexists(tempc))
       logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
 
-   // read in old variables, just need imagename and olddockervols from them.
+   // read in old variables, just need imagename and devMode.
    backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
    if (kRSuccess!=bvars.loadvars())
       logmsg(kLERROR, "Backup corrupt - "+backupinfo::filename+" couldn't be read.");
 
    // backup seems okay - lets go!
    std::string imagename = bvars.getImageName();
+   bool devMode = bvars.getDevMode();
    drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
-   service_manage::install(servicename, imagename, false); // if servicename is empty then it sets it.
+
+   // install from the image
+   service_manage::install(servicename, imagename, devMode); // if servicename is empty then it sets it.
    drunner_assert(servicename.length() > 0, "Empty servicename in backup after install step.");
 
    // load in the new lua file.

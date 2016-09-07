@@ -11,11 +11,11 @@ backupinfo::backupinfo(Poco::Path path) : mPath(path)
    drunner_assert(path.isFile(),"The backupinfo file is not a Poco file.");
 }
 
-void backupinfo::create(std::string imagename)
+void backupinfo::create(std::string imagename, bool devmode)
 {
    drunner_assert(imagename.length() > 0, "Empty imagename.");
    mImageName = imagename;
-   mVersion = 2;
+   mDevMode = devmode;
 }
 
 cResult backupinfo::loadvars()
@@ -27,7 +27,6 @@ cResult backupinfo::loadvars()
    archive(*this);
 
    drunner_assert(mImageName.length() > 0, "Empty imagename.");
-   drunner_assert(mVersion == 2, "Incompatible backup version.");
 
    return kRSuccess;
 }
@@ -35,8 +34,6 @@ cResult backupinfo::loadvars()
 cResult backupinfo::savevars() const
 {
    drunner_assert(mImageName.length() > 0, "Empty imagename.");
-
-   mVersion = 2;
 
    std::ofstream os(mPath.toString());
    if (os.bad())
@@ -49,5 +46,10 @@ cResult backupinfo::savevars() const
 std::string backupinfo::getImageName() const
 {
    return mImageName;
+}
+
+bool backupinfo::getDevMode() const
+{
+   return mDevMode;
 }
 

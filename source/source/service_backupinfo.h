@@ -21,10 +21,11 @@ public:
    
    // creates from drunnerCompose.
    //void createFromServiceLua(std::string imagename, const servicelua::luafile & syf);
-   void create(std::string imagename);
+   void create(std::string imagename, bool devmode);
 
    //const std::vector<std::string> & getDockerVolumeNames() const;
    std::string getImageName() const;
+   bool getDevMode() const;
 
    cResult loadvars();
    cResult savevars() const;
@@ -34,15 +35,28 @@ public:
 private:
    //std::vector<std::string> mVolumes;
    std::string mImageName;
-   mutable int mVersion;
+   bool mDevMode;
+
    Poco::Path mPath;
 
    // --- serialisation --
    friend class cereal::access;
-   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mVersion, mImageName); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mVersion, mImageName); }
+   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mImageName, mDevMode); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) 
+   { 
+      mDevMode = false;
+      if (version == 1)
+      {
+         int version;
+         ar(version, mImageName);
+      }
+      else if (version == 2)
+         ar(mImageName, mDevMode);
+      else
+         fatal("Bad version in backup save file. Do you need to update dRunner?");
+   }
    // --- serialisation --
 };
-CEREAL_CLASS_VERSION(backupinfo, 1);
+CEREAL_CLASS_VERSION(backupinfo, 2);
 
 #endif
