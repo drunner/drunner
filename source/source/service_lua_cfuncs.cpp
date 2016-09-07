@@ -381,6 +381,7 @@ namespace servicelua
       std::string v = lua_tostring(L, 2);
 
       cResult r = lf->getServiceVars()->setVal(s, v);
+      r += lf->getServiceVars()->savevariables();
 
       if (r == kRError)
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
