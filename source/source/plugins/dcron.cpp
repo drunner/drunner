@@ -10,7 +10,27 @@
 
 // ----------------------------------------------------------------------------
 
+// load a time_t value from a file.
+time_t dcron::_gettimefile(Poco::Path fname)
+{
+   std::ifstream ifs(fname.toString());
+   time_t z;
+   ifs >> z;
+   ifs.close();
+   return z;
+}
 
+// save a time_t value to a file.
+cResult dcron::_settimefile(time_t t, Poco::Path fname)
+{
+   // write lockfile.
+   std::ofstream ofs(fname.toString());
+   ofs << t;
+   ofs.close();
+   return kRSuccess;
+}
+
+// A simple lock file. Expires in 2 hours.
 class lockfile
 {
 public:
@@ -23,13 +43,10 @@ public:
       // check lockfile.
       if (utils::fileexists(lockfilepath()))
       {
-         std::ifstream ifs(lockfilepath().toString());
-         time_t z;
-         ifs >> z;
-         ifs.close();
-         if (time(NULL) - z < 60 * 60 * 2) // 2 hours
+         time_t z = dcron::_gettimefile(lockfilepath());
+         if (time(NULL) - z < expiretime) // 2 hours
          {
-            logmsg(kLINFO, "dcron already running for "+mUniqueName+" (lock file " + lockfilepath().toString() + " exists)");
+            logmsg(kLINFO, "dcron already running for " + mUniqueName); // (lock file " + lockfilepath().toString() + " exists)");
             return kRNoChange;
          }
          logmsg(kLWARN, "Lock file is stale (>= 2 hours old). Removing it.");
@@ -38,12 +55,10 @@ public:
       }
 
    // write lockfile.
-   std::ofstream ofs(lockfilepath().toString());
-   ofs << time(NULL);
-   ofs.close();
+   dcron::_settimefile(time(NULL),lockfilepath());
 
-   logdbg("Got dcron lock for " + mUniqueName + " ("+lockfilepath().toString()+")");
-
+   logdbg("Got dcron lock for " + mUniqueName);
+   
    return kRSuccess;
    }
 
@@ -60,21 +75,13 @@ private:
       return drunnerPaths::getPath_Temp().setFileName(mUniqueName + ".lockfile");
    }
    std::string mUniqueName;
+   static const time_t expiretime = 60 * 60 * 2;
 };
 
 // ----------------------------------------------------------------------------
 
 
 // ----------------------------------------------------------------------------
-
-
-dcron::dcron()
-{
-}
-
-dcron::~dcron()
-{
-}
 
 std::string dcron::getName() const
 {
@@ -137,11 +144,7 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
    Poco::Path lastrunpath = drunnerPaths::getPath_Settings().setFileName("dcron-"+uniquename + ".lastrun");
    time_t lastrun = 55555;
    if (utils::fileexists(lastrunpath))
-   {
-      std::ifstream ifs(lastrunpath.toString());
-      ifs >> lastrun;
-      ifs.close();
-   }
+      lastrun = _gettimefile(lastrunpath);
 
    std::istringstream offsetmin_s(c.offsetmin);
    std::istringstream repeatmin_s(c.repeatmin);
@@ -153,15 +156,11 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
    time_t x = (time(NULL) / 60 - offsetmin) / repeatmin;
    time_t z = (lastrun / 60 - offsetmin) / repeatmin;
 
-   if (x > z) // different time segment.
-   {
-      std::ofstream ofs(lastrunpath.toString());
-      ofs << time(NULL);
-      ofs.close();
+   if (x <= z) // same time segment.
+      return false;
 
-      return true;
-   }
-   return false;
+   _settimefile(time(NULL), lastrunpath);
+   return true;
 }
 
 cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
