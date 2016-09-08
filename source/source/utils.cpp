@@ -207,7 +207,6 @@ namespace utils
       drunner_assert(fullpath.isFile(), "delfile: asked to delete a directory: "+fullpath.toString());
 
 #ifdef _WIN32
-      logdbg(fullpath.toString());
       SetFileAttributesA(fullpath.toString().c_str(),
          GetFileAttributesA(fullpath.toString().c_str()) & ~FILE_ATTRIBUTE_READONLY);
 
@@ -221,8 +220,7 @@ namespace utils
             fatal("Sharing violation");
          fatal("?!" + std::to_string(GetLastError()));
       }
-#endif
-
+#else
       try
       {
          Poco::File f(fullpath);
@@ -230,12 +228,14 @@ namespace utils
          {
             f.setWriteable(true);
             f.remove();
-            logmsg(kLDEBUG, "Deleted " + fullpath.toString());
          }
       }
       catch (const Poco::Exception & e) {
          return cError("Couldn't delete "+fullpath.toString()+" - "+e.what());
       }
+#endif
+
+      logmsg(kLDEBUG, "Deleted " + fullpath.toString());
       return kRSuccess;
    }
 
