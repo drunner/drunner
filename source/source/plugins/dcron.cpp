@@ -157,7 +157,12 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
    time_t z = (lastrun / 60 - offsetmin) / repeatmin;
 
    if (x <= z) // same time segment.
+   {
+      time_t delta = time(NULL) / 60 - lastrun / 60;
+      time_t target = (x + 1)*repeatmin + offsetmin - lastrun / 60;
+      logdbg("Not running: " + std::to_string(delta) + " minutes elapsed, next run at " + std::to_string(target));
       return false;
+   }
 
    _settimefile(time(NULL), lastrunpath);
    return true;
