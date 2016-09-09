@@ -199,11 +199,11 @@ namespace servicelua
       return mCronEntries;
    }
 
-   void luafile::addContainer(std::string cname)
+   void luafile::addContainer(Container c)
    {
-      drunner_assert(cname.size() > 0, "Empty container name passed to addContainer.");
-      drunner_assert(std::find(mContainers.begin(), mContainers.end(), cname) == mContainers.end(), "Container already exists " + cname);
-      mContainers.push_back(cname);
+      drunner_assert(c.name.size() > 0, "Empty container name passed to addContainer.");
+      //drunner_assert(std::find(mContainers.begin(), mContainers.end(), c.name) == mContainers.end(), "Container already exists " + c.name);
+      mContainers.push_back(c);
    }
 
    void luafile::addConfiguration(Configuration cf)
@@ -256,7 +256,7 @@ namespace servicelua
       return mSVptr;
    }
 
-   const std::vector<std::string> & luafile::getContainers() const
+   const std::vector<Container> & luafile::getContainers() const
    {
       return mContainers;
    }

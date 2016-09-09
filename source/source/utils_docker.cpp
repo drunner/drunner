@@ -130,5 +130,19 @@ namespace utils_docker
       return (rval != 0 ? false : utils::wordmatch(out, container));
    }
 
+   bool dockerContainerRunsAsRoot(std::string container)
+   {
+      std::string script = R"EOF(
+#!/bin/sh
+[ "$(whoami)" != "root" ] || { echo "Running as root."; exit 0; }
+echo "Not running as root."
+exit 1
+)EOF";
+      std::string op;
+      cResult r = runBashScriptInContainer(script, container, op);
+      logdbg(op);
+      return r.success(); // returns 0 if root (success).
+   }
+
 
 } // namespace

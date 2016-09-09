@@ -17,6 +17,7 @@ namespace utils_docker
    void pullImage(const std::string & image);
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op);
+   bool dockerContainerRunsAsRoot(std::string container);
 }
 
 #endif
