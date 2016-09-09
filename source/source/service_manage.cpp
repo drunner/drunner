@@ -328,16 +328,18 @@ namespace service_manage
 #ifdef _WIN32
       Poco::Path target = drunnerPaths::getPath_Bin().setFileName(servicename + ".bat");
       std::string vdata = R"EOF(@echo off
-drunner servicecmd __SERVICENAME__ %*
+__DRUNNER__ servicecmd __SERVICENAME__ %*
 )EOF";
 #else
       Poco::Path target = drunnerPaths::getPath_Bin().setFileName(servicename);
-      std::string vdata = R"EOF(#!/bin/bash
-drunner servicecmd "__SERVICENAME__" "$@"
+      std::string vdata = R"EOF(#!/bin/sh
+__DRUNNER__ servicecmd "__SERVICENAME__" "$@"
 )EOF";
 #endif
 
       vdata = utils::replacestring(vdata, "__SERVICENAME__", servicename);
+      vdata = utils::replacestring(vdata, "__DRUNNER__", drunnerPaths::getPath_Exe_Target().toString());
+
       generate(target, S_755, vdata);
       return kRSuccess;
    }
