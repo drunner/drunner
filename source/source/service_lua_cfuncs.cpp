@@ -119,8 +119,8 @@ namespace servicelua
 
    extern "C" int l_addvolume(lua_State *L)
    {
-      if (lua_gettop(L) < 1 || lua_gettop(L)>3)
-         return luaL_error(L, "Expected one to three arguments: (name, backup, external) for addvolume.");
+      if (lua_gettop(L) < 1 || lua_gettop(L)>4)
+         return luaL_error(L, "Expected one to four arguments: (name, backup, external, runasroot) for addvolume.");
 
       luafile * lf = get_luafile(L);
 
@@ -145,12 +145,21 @@ namespace servicelua
 
    extern "C" int l_addcontainer(lua_State *L)
    {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the name of the container) for addcontainer.");
+      if (lua_gettop(L) <1 || lua_gettop(L)>2)
+         return luaL_error(L, "Expected one to two arguments (the name of the container and if it is permitted to run as root) for addcontainer.");
       drunner_assert(lua_isstring(L, 1), "The name of the container must be a string.");
-      std::string cname = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+     
+      Container c;
+      c.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
+      c.runasroot = false;
 
-      get_luafile(L)->addContainer(cname);
+      if (lua_gettop(L) > 1)
+      {
+         drunner_assert(lua_isboolean(L, 2), "The runasroot flag must be a boolean.");
+         c.runasroot = (1 == lua_toboolean(L, 2));
+      }
+
+      get_luafile(L)->addContainer(c);
 
       return _luasuccess(L);
    }

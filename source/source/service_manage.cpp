@@ -141,9 +141,19 @@ namespace service_manage
          sv.savevariables();
 
          // pull all containers if not in dev mode.
-         if (!devMode)
-            for (const auto & entry : syf.getContainers())
-               utils_docker::pullImage(entry);
+         for (const auto & entry : syf.getContainers())
+         {
+            bool runsasroot = utils_docker::dockerContainerRunsAsRoot(entry.name);
+            if (runsasroot && !entry.runasroot)
+               fatal("Docker container " + entry.name + " runs as root, but service.lua does not permit this.");
+            else if (!runsasroot && entry.runasroot)
+               logmsg(kLWARN, "Docker container " + entry.name + " doesn't run as root, but service.lua says it should.");
+            else if (entry.runasroot)
+               logmsg(kLWARN, "Docker container " + entry.name + " runs as root. This may pose a security risk.");
+
+            if (!devMode)
+               utils_docker::pullImage(entry.name);
+         }
 
          // create volumes, with variables substituted.
          std::vector<std::string> vols;

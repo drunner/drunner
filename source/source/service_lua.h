@@ -20,6 +20,13 @@ namespace servicelua
       bool external;
       std::string name;
    };
+
+   struct Container
+   {
+      std::string name;
+      bool runasroot;
+   };
+
    struct BackupVol
    {
       std::string volumeName;
@@ -47,7 +54,7 @@ namespace servicelua
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult loadlua();
 
-      const std::vector<std::string> & getContainers() const;
+      const std::vector<Container> & getContainers() const;
       const std::vector<Configuration> & getLuaConfigurationDefinitions() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
@@ -62,7 +69,7 @@ namespace servicelua
       std::string getServiceName() { return mServicePaths.getName(); }
 
       // for lua
-      void addContainer(std::string cname);
+      void addContainer(Container c);
       void addConfiguration(Configuration cf);
       void addVolume(Volume v);
       void addProxy(Proxy p);
@@ -78,7 +85,7 @@ namespace servicelua
 
       const servicePaths mServicePaths;
 
-      std::vector<std::string> mContainers;
+      std::vector<Container> mContainers;
       std::vector<Configuration> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
       std::vector<Volume> mVolumes;
       std::vector<Proxy> mProxies;
