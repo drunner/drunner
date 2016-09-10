@@ -12,6 +12,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <system_error>
+#include <algorithm>
+#include <iterator>
 
 #include <Poco/String.h>
 #include <Poco/Process.h>
@@ -413,6 +415,32 @@ namespace utils
       logmsg(kLINFO, "---------------------------------------------------");
 
       delete[] where;
+   }
+
+   std::string base64encode(std::string s)
+   {
+      std::string encoded_data;
+      bn::encode_b64(s.begin(), s.end(), std::back_inserter(encoded_data));
+      return encoded_data;
+   }
+
+   std::string base64encodeWithEquals(std::string s)
+   {
+      std::string encoded_data = base64encode(s);
+
+      int n = encoded_data.length() % 4;
+      if (n == 2) encoded_data += "==";
+      if (n == 3) encoded_data += "=";
+      poco_assert(n != 1);
+
+      return encoded_data;
+   }
+
+   std::string base64decode(std::string s)
+   {
+      std::ostringstream os;
+      bn::decode_b64(s.begin(), s.end(), std::ostream_iterator<char>(os, ""));
+      return std::string();
    }
 
 } // namespace utils

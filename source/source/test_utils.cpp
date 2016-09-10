@@ -47,6 +47,14 @@ TEST_CASE("split_in_args works", "[utils.h]") {
       REQUIRE(cl.args[6].compare(R"EOF(sponge="_"''"_"_dave")EOF") == 0);
    }
 
+
+   SECTION("Test base64 encoding.")
+   {
+      std::string s = "wiffle 231089Z&$hsdfava HJKFSAH adfsjf lwe89r yh32hoh2n3rnz zisdfoifywewq |)@(*#$)&%&^ .... ---- \"sdafasdf '";
+      REQUIRE(utils::base64encode(s) != s);
+      REQUIRE(utils::base64decode(utils::base64encode(s)) == s);
+   }
+
    //SECTION("Test false functions")
    //{
    //}

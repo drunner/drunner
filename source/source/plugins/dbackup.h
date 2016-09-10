@@ -4,22 +4,22 @@
 #include <string>
 #include "plugins.h"
 
-class dbackup : public plugin
+class dbackup : public configuredplugin
 {
 public:
    dbackup();
    std::string getName() const;
-   cResult runCommand() const;
+   cResult runCommand(const CommandLine & cl, const variables & v) const;
    cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
    
    cResult showHelp() const;
 
 private:
-   cResult include(std::string servicename) const;
-   cResult exclude(std::string servicename) const;
-   cResult run() const;
-   cResult info() const;
-   cResult configure(std::string path) const;
+   cResult _include(std::string servicename, variables &v) const;
+   cResult _exclude(std::string servicename, variables &v) const;
+   cResult _run(variables &v) const;
+   cResult _info(variables &v) const;
+   cResult _configure(std::string path, variables &v) const; // hook command.
 
    cResult purgeOldBackups() const;
 };

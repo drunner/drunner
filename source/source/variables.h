@@ -55,6 +55,9 @@ public:
    void setVal(std::string key, std::string val);
    void delKey(std::string key);
 
+   void getVecStr(std::string key, std::vector<std::string> & vecstr);
+   void setVecStr(std::string key, std::vector<std::string> vecstr);
+
    std::string substitute(std::string s) const;
    const tKeyVals & getAll() const { return mVariables; }
 

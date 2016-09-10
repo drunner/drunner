@@ -10,6 +10,7 @@
 
 #include "enums.h"
 #include "cresult.h"
+#include "basen.h"
 
 typedef std::vector<std::string> tVecStr;
 
@@ -74,6 +75,11 @@ namespace utils
    cResult split_in_args(std::string command, CommandLine & cl);
 
    void logfile(std::string fname);
+
+   std::string base64encode(std::string s);
+   std::string base64decode(std::string s);
+
+   std::string base64encodeWithEquals(std::string s); // able to be decoded with base64 -d in Linux.
 
    class tempfolder
    {

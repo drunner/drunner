@@ -90,12 +90,7 @@ namespace utils_docker
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op)
    {
-      std::string encoded_data;
-      bn::encode_b64(data.begin(), data.end(), std::back_inserter(encoded_data));
-      int n = encoded_data.length() % 4;
-      if (n == 2) encoded_data += "==";
-      if (n == 3) encoded_data += "=";
-      poco_assert(n != 1);
+      std::string encoded_data = utils::base64encodeWithEquals(data);
 
       CommandLine cl("docker", {"run","--rm",imagename,"/bin/bash","-c",
          "echo " + encoded_data + " | base64 -d > /tmp/_script ; /bin/bash /tmp/_script"});
