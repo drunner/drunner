@@ -52,8 +52,22 @@ TEST_CASE("split_in_args works", "[utils.h]") {
    {
       std::string s = "wiffle 231089Z&$hsdfava HJKFSAH adfsjf lwe89r yh32hoh2n3rnz zisdfoifywewq |)@(*#$)&%&^ .... ---- \"sdafasdf '";
       REQUIRE(utils::base64encode(s) != s);
+      REQUIRE(utils::base64encode(s).length() > 0);
       REQUIRE(utils::base64decode(utils::base64encode(s)) == s);
    }
+
+   SECTION("Test vecstr2str and str2vecstr")
+   {
+      std::vector<std::string> vs = { "fifle","asd fsdflakj sdf |!@#098df_!#@$(+","a",""," " };
+      std::string s = utils::vecstr2str(vs);
+      std::vector<std::string> vs2;
+      utils::str2vecstr(s, vs2);
+
+      REQUIRE(vs.size() == vs2.size());
+      for (unsigned int i = 0; i < vs.size(); ++i)
+         REQUIRE(vs[i] == vs2[i]);
+   }
+
 
    //SECTION("Test false functions")
    //{

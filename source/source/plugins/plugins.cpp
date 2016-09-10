@@ -93,7 +93,7 @@ cResult configuredplugin::runCommand() const
    if (cl.command == "configure")
       return pv.handleConfigureCommand(cl);
 
-   return runCommand(cl, pv.getVariables());
+   return runCommand(cl, pv);
 }
 
 cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable)

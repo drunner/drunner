@@ -88,7 +88,7 @@ std::string dcron::getName() const
    return "dcron";
 }
 
-cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
+cResult dcron::runCommand(const CommandLine & cl, persistvariables & v) const
 {
    if (cl.command != "run")
    {
@@ -99,7 +99,7 @@ cResult dcron::runCommand(const CommandLine & cl, const variables & v) const
    logdbg("Running dcron.");
 
    // now run cron.
-   return _runcron(cl, v);
+   return _runcron(cl, v.getVariables());
 }
 
 cResult dcron::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const

@@ -55,50 +55,6 @@ void variables::delKey(std::string key)
    mVariables.erase(key);
 }
 
-void variables::getVecStr(std::string key, std::vector<std::string>& vecstr)
-{
-   std::string pPath = getVal(key);
-
-   std::string::const_iterator cur = pPath.begin();
-   std::string::const_iterator beg = pPath.begin();
-   bool added = false;
-   while (cur < pPath.end())
-   {
-      if (*cur == '|')
-      {
-         vecstr.insert(vecstr.end(), std::string(beg, cur));
-         beg = ++cur;
-         added = true;
-      }
-      else
-         cur++;
-   }
-
-   vecstr.insert(vecstr.end(), std::string(beg, cur));
-}
-
-void variables::setVecStr(std::string key, std::vector<std::string> vecstr)
-{
-   for (unsigned int i = 0; i < vecstr.size(); ++i)
-      vecstr[i] = utils::base64encode(vecstr[i]);
-
-   std::string s;
-   switch (vecstr.size())
-   {
-   case 0:
-      s = ""; break;
-   case 1:
-      s = vecstr[0];
-   default:
-      std::ostringstream os;
-      std::copy(vecstr.begin(), vecstr.end() - 1, std::ostream_iterator<std::string>(os, "|"));
-      os << *vecstr.rbegin();
-      s = os.str();
-   }
-
-   setVal(key, s);
-}
-
 
 std::string variables::substitute(std::string s) const
 {

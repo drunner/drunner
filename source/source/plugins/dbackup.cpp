@@ -17,70 +17,6 @@
 #include "dassert.h"
 
 // -----------------------------------------------------------------------------------------------------------
-//
-//class backupConfig
-//{
-//public:
-//   backupConfig() 
-//   {
-//      mPath = drunnerPaths::getPath_Settings().setFileName("dbackup.json");
-//   }
-//   cResult loadconfig() 
-//   {
-//      std::ifstream ifs(mPath.toString());
-//      if (ifs.bad())
-//         return cError("Bad input stream to backupinfo::loadvars. :/");
-//      cereal::JSONInputArchive archive(ifs);
-//      archive(*this);
-//      return kRSuccess;
-//   }
-//   cResult saveconfig()
-//   {
-//      std::ofstream os(mPath.toString());
-//      if (os.bad())
-//         return cError("Bad output stream.");
-//      cereal::JSONOutputArchive archive(os);
-//      archive(*this);
-//      return kRSuccess;
-//   }
-//
-//   bool isEnabled(std::string servicename)
-//   {
-//      auto result = std::find(mDisabledServices.begin(), mDisabledServices.end(), servicename);
-//      return (result == mDisabledServices.end());
-//   }
-//
-//   cResult enable(std::string servicename)
-//   {
-//      if (isEnabled(servicename))
-//         return kRNoChange;
-//      auto result = std::find(mDisabledServices.begin(), mDisabledServices.end(), servicename);
-//      drunner_assert(result != mDisabledServices.end(),"Result of isEnabled is broken?");
-//      mDisabledServices.erase(result);
-//      return kRSuccess;
-//   }
-//
-//   cResult disable(std::string servicename)
-//   {
-//      if (!isEnabled(servicename))
-//         return kRNoChange;
-//      mDisabledServices.push_back(servicename);
-//      return kRSuccess;
-//   }
-//
-//private:
-//   std::vector<std::string> mDisabledServices;
-//   bool mIsConfigured;
-//   Poco::Path mPath;
-//
-//   // --- serialisation --
-//   friend class cereal::access;
-//   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mDisabledServices); }
-//   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mDisabledServices); }
-//   // --- serialisation --
-//};
-
-// -----------------------------------------------------------------------------------------------------------
 
 dbackup::dbackup() 
 {
@@ -93,26 +29,31 @@ std::string dbackup::getName() const
    return std::string("dbackup");
 }
 
-cResult dbackup::runCommand(const CommandLine & cl, const variables & v) const
+Poco::Path dbackup::configurationFilePath() const
+{
+   return drunnerPaths::getPath_Settings().setFileName("dbackup.json");
+}
+
+cResult dbackup::runCommand(const CommandLine & cl, persistvariables & v) const
 {
    switch (s2i(cl.command.c_str()))
    {
    case s2i("exclude") :
       if (cl.args.size() == 0)
          fatal("Usage:  dbackup exclude SERVICENAME");
-      return exclude(cl.args[0]);
+      return _exclude(cl.args[0],v);
 
    case s2i("include"):
       if (cl.args.size() == 0)
          fatal("Usage:  dbackup include SERVICENAME");
-      return include(cl.args[0]);
+      return _include(cl.args[0],v);
 
    case s2i("run"):
-      return run();
+      return _run(v);
 
    case s2i("info"):
    case s2i("list"):
-      return info();
+      return _info(v);
 
    default:
       return cError("Unrecognised command " + cl.command);
@@ -127,117 +68,116 @@ cResult dbackup::runHook(std::string hook, std::vector<std::string> hookparams, 
 
 // -----------------------------------------------------------------------------------------------------------
 
-cResult dbackup::_include(std::string servicename, variables &v) const
+cResult dbackup::_include(std::string servicename, persistvariables &v) const
 {
-   
-   backupConfig config;
-   if (!config.loadconfig())
-      logmsg(kLERROR, "Backups are not yet configured. Run dbackup configure first.");
+   std::vector<std::string> excluded;
+   _getExcluded(excluded, v);
+   auto f = std::find(excluded.begin(), excluded.end(), servicename);
+   if (f == excluded.end())
+      return kRNoChange; // not in excluded list, so automatically included.
 
-   if (config.enable(servicename) == kRNoChange)
-      return kRNoChange;
-
-   if (!config.saveconfig())
-      logmsg(kLERROR, "Failed to write to configuration file.");
-
-   return kRSuccess;
+   excluded.erase(f);
+   _setExcluded(excluded, v);
+   return v.savevariables();
 }
 
-cResult dbackup::_exclude(std::string servicename, variables &v) const
+cResult dbackup::_exclude(std::string servicename, persistvariables &v) const
 {
-   backupConfig config;
-   if (!config.loadconfig())
-      logmsg(kLERROR, "Backups are not yet configured. Run dbackup configure first.");
+   std::vector<std::string> excluded;
+   _getExcluded(excluded, v);
+   auto f = std::find(excluded.begin(), excluded.end(), servicename);
+   if (f != excluded.end())
+      return kRNoChange; // already excluded
 
-   if (config.disable(servicename) == kRNoChange)
-      return kRNoChange;
-
-   if (!config.saveconfig())
-      logmsg(kLERROR, "Failed to write to configuration file.");
-
-   return kRSuccess;
+   excluded.push_back(servicename);
+   _setExcluded(excluded, v);
+   return v.savevariables();
 }
 
-cResult dbackup::_run(variables &v) const
+cResult dbackup::_run(persistvariables &v) const
 {
-   backupConfig config;
-   if (!config.loadconfig())
-      return cError("Backups are not yet configured.  Run dbackup configure first.");
+   Poco::Path p = _getPath(v);
+   std::string path = p.toString();
 
-   std::vector<std::string> services;
-   utils::getAllServices(services);
-
-   std::string datefolder = config.getBackupPath() + "/daily/" + timeutils::getDateTimeStr();
-   utils::makedirectory(datefolder, S_700);
-
-   logmsg(kLINFO, "Backing up services.");
-   for (auto const & s : services)
-      if (config.isEnabled(s))
-      {
-         // backup service s.
-         std::string path = datefolder + "/" + timeutils::getArchiveName(s);
-         
-         logmsg(kLINFO, "----------------- " + s + " --------------------");
-         service svc(s);
-         svc.backup(path);
-      }
-
-   return purgeOldBackups();
-}
-
-cResult dbackup::_configure(std::string path, variables &v) const
-{
-   backupConfig config;
-   config.loadconfig();
-
-   // TODO: check path exists and make canonical.
-   if (!utils::fileexists(path))
-      logmsg(kLERROR, "The path " + path + " does not exist.");
-
-   Poco::Path p(path);
-   if (!p.isAbsolute())
-      p.makeAbsolute();
-   path = p.toString(Poco::Path::PATH_NATIVE);
-
-   // create folders.
+   if (!utils::fileexists(p))
+      fatal("Configure dbackup before running.");
    utils::makedirectory(path + "/daily", S_700);
    utils::makedirectory(path + "/weekly", S_700);
    utils::makedirectory(path + "/monthly", S_700);
 
-   if (0==Poco::icompare(config.getBackupPath(), path))
+   std::vector<std::string> services;
+   utils::getAllServices(services);
+
+   std::string datefolder = path + "/daily/" + timeutils::getDateTimeStr();
+   utils::makedirectory(datefolder, S_700);
+
+   logmsg(kLINFO, "Backing up services.");
+   std::vector<std::string> excludedservices;
+   _getExcluded(excludedservices, v);
+
+   for (auto const & s : services)
    {
-      logmsg(kLINFO, "Path unchanged.");
-      return kRNoChange;
+      if (std::find(excludedservices.begin(), excludedservices.end(), s) == excludedservices.end()) // not excluded.
+      {
+         // backup service s.
+         std::string path = datefolder + "/" + timeutils::getArchiveName(s);
+
+         logmsg(kLINFO, "----------------- " + s + " --------------------");
+         service svc(s);
+         svc.backup(path);
+      }
    }
 
-   config.update(path);
-   if (!config.saveconfig())
-      logmsg(kLERROR, "Unable to save backup configuration file.");
-
-   logmsg(kLINFO, "The backup path has been changed to " + path);
-
-   return kRSuccess;
+   return _purgeOldBackups(v);
 }
 
-cResult dbackup::_info(variables &v) const
+Poco::Path dbackup::_getPath(persistvariables & v) const
 {
-   backupConfig config;
-   if (!config.loadconfig())
+   Poco::Path p(v.getVal("BACKUPPATH"));
+   if (!p.isAbsolute())
+      p.makeAbsolute();
+   return p;
+}
+
+void dbackup::_getExcluded(std::vector<std::string>& vs, persistvariables &v) const
+{
+   std::string ds = v.getVal("DISABLEDSERVICES");
+   utils::str2vecstr(ds, vs);
+}
+
+void dbackup::_setExcluded(const std::vector<std::string>& vs, persistvariables &v) const
+{
+   std::string s = utils::vecstr2str(vs);
+   v.setVal("DISABLEDSERVICES", s);
+}
+
+cResult dbackup::_info(persistvariables &v) const
+{
+   std::string path = _getPath(v).toString();
+
+   if (!utils::fileexists(_getPath(v)))
    {
-      logmsg(kLINFO, "Backups are not yet configured.");
-      return kRNoChange;
+      if (path.length() == 0)
+         fatal("dbackup is not configured (no path set).");
+      else
+         fatal("dbackup incorrectly configured, path does not exist:\n "+path);
    }
 
    std::vector<std::string> services;
    utils::getAllServices(services);
 
+   std::vector<std::string> excluded;
+   _getExcluded(excluded, v);
+
    logmsg(kLINFO, "SERVICES TO BE BACKED UP:");
    for (auto const & s : services)
    {
+      bool isEnabled = (std::find(excluded.begin(), excluded.end(), s)==excluded.end()); // enabled if not in excluded list.
+
 #ifdef _WIN32
-         logmsg(kLINFO, (config.isEnabled(s) ? "[Y] " : "[N] ") + s);
+         logmsg(kLINFO, (isEnabled ? "[Y] " : "[N] ") + s);
 #else
-      if (config.isEnabled(s))
+      if (isEnabled)
          logmsg(kLINFO, "\e[32m\u2714\e[0m " + s);
       else
          logmsg(kLINFO, "\e[31m\e[1m\u2718\e[0m " + s);
@@ -245,7 +185,7 @@ cResult dbackup::_info(variables &v) const
    }
    logmsg(kLINFO, " ");
    logmsg(kLINFO, "Backups will be saved to:");
-   logmsg(kLINFO, " " + config.getBackupPath());
+   logmsg(kLINFO, " " + path);
 
    return kRNoChange;
 }
@@ -334,19 +274,17 @@ void shifty(std::string src, std::string dst, int interval, unsigned int numtoke
 
 }
 
-cResult dbackup::purgeOldBackups() const
+cResult dbackup::_purgeOldBackups(persistvariables &v) const
 {
-   backupConfig config;
-   if (!config.loadconfig())
-      return cError("Backups are not yet configured.  Run dbackup configure first.");
+   std::string path = _getPath(v).toString();
 
    logmsg(kLINFO, "--------------------------------------------------");
    logmsg(kLINFO, "Managing older backups");
    //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
 
-   std::string dailyfolder = config.getBackupPath() + "/daily";
-   std::string weeklyfolder = config.getBackupPath() + "/weekly";
-   std::string monthlyfolder = config.getBackupPath() + "/monthly";
+   std::string dailyfolder = path + "/daily";
+   std::string weeklyfolder = path + "/weekly";
+   std::string monthlyfolder = path + "/monthly";
 
    shifty(dailyfolder, weeklyfolder, 24, 7);
    shifty(weeklyfolder, monthlyfolder, 24*7, 4);

@@ -81,6 +81,9 @@ namespace utils
 
    std::string base64encodeWithEquals(std::string s); // able to be decoded with base64 -d in Linux.
 
+   void str2vecstr(std::string s, std::vector<std::string> & vecstr);
+   std::string vecstr2str(std::vector<std::string> vecstr);
+
    class tempfolder
    {
    public:

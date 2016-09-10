@@ -21,7 +21,7 @@ std::string dproxy::getName() const
    return "dproxy";
 }
 
-cResult dproxy::runCommand(const CommandLine & cl, const variables & v) const
+cResult dproxy::runCommand(const CommandLine & cl, persistvariables & v) const
 {
    std::string ip = v.getVal("IP");
 
