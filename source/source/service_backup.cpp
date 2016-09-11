@@ -20,9 +20,10 @@
 cResult service::backup(std::string backupfile)
 {
    timez ttotal, tstep;
-
    std::string op;
-
+   
+   // -----------------------------------------
+   // Preliminaries
    if (backupfile.length() == 0)
    {
       backupfile = getName() + "_";
@@ -52,15 +53,17 @@ cResult service::backup(std::string backupfile)
    logmsg(kLINFO, "Time for preliminaries:           " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // notify service we're starting our backup.
    tVecStr args;
    args.push_back(tempc.toString());
    servicehook hook(getName(), "backup", args);
    hook.starthook();
 
-   logmsg(kLINFO, "Time for dService to self-backup: " + tstep.getelpased());
+   logmsg(kLINFO, "Time for dService to backup hook: " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // back up volume containers
    logmsg(kLDEBUG, "Backing up all docker volumes.");
    std::string password = utils::getenv("PASS");
@@ -83,6 +86,7 @@ cResult service::backup(std::string backupfile)
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // back up host vol (local storage)
    logmsg(kLDEBUG, "Backing up host volume.");
    Poco::Path hostvolp(tempf);
@@ -92,12 +96,14 @@ cResult service::backup(std::string backupfile)
    logmsg(kLINFO, "Time for host volume backup:      " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // notify service we've finished our backup.
    hook.endhook();
 
    logmsg(kLINFO, "Time for dService to wrap up:     " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // compress everything together
    Poco::Path bigarchive(archivefolder.getpath());
    bigarchive.setFileName("backup.tar.enc");
@@ -108,18 +114,21 @@ cResult service::backup(std::string backupfile)
    logmsg(kLINFO, "Time to compress and encrypt:     " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
    // move compressed file to target dir.
    Poco::File bigafile(bigarchive);
    if (!bigafile.exists())
       logmsg(kLERROR, "Expected archive not found at " + bigarchive.toString());
 
    logdbg("Moving " + bigarchive.toString() + " to " + bf.toString());
-   bigafile.renameTo(bf.toString());
-//      logmsg(kLERROR, "Couldn't move archive from "+source+" to " + bf);
+   bigafile.copyTo(bf.toString());
+   bigafile.remove();
 
    logmsg(kLINFO, "Time to move archive:             " + tstep.getelpased());
    tstep.restart();
 
+   // -----------------------------------------
+   // Output results.
    logmsg(kLINFO, "Archive of service " + getName() + " created at " + bf.toString());
    logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
 
