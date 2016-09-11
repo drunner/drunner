@@ -5,6 +5,7 @@
 #include <Poco/File.h>
 #include <Poco/String.h>
 #include <cereal/archives/json.hpp>
+#include <math.h>
 
 #include "utils.h"
 #include "globallogger.h"
@@ -293,4 +294,78 @@ cResult dbackup::_purgeOldBackups(persistvariables &v) const
    logmsg(kLINFO, "Done");
 
    return kRSuccess;
+}
+
+inline double square(double x) { return x*x; }
+#define MEXP1         2.71828182845904523536028747135266250   /* e */
+
+double dbackup::objfn(double di, double i, double maxdays, double n)
+{
+   double numerator = exp(i / (n - 1)) - 1;
+   double denominator = MEXP1 - 1;
+
+   double idealvalue = maxdays * square(numerator / denominator);
+
+   return square(di - idealvalue);
+}
+
+double dbackup::droptest(const std::vector<int> & backupdays, unsigned int droppos, double maxdays, unsigned int n)
+{
+   // calculate goodness.
+   double val = 0.0;
+   for (unsigned int i = 0, j = 0; i < n; ++i, ++j)
+      if (i == droppos)
+         --j; // j is index into fictional vector with backupdays[droppos] erased.
+      else
+         val += objfn(backupdays[i], j, maxdays, n - 1);
+   drunner_assert(val > 0, "Logic error.");
+   return val;
+}
+
+// Given a vector of backups, specified in days since today that the backup was taken (0=today), 
+// the oldest backup we want to keep (maxdays), the max number of backups (maxbackups), and
+// the number of most recent backups to always keep (alwayskeep), this returns the position
+// of the backup to drop (or backupdays.length() if nothing should be dropped).
+//
+// Run until it returns backupdays.length(), deleting elements as you go.
+//
+// The basic objective function is a normalized Exp[x]^2, where x is the index normalized to [0,1].
+// i.e. ( (Exp[i/(n-1)] - 1)/(e - 1) )^2
+// We minimise using least squares the difference between this and the backup vector with one item dropped,
+// in order to pick which item to drop (we choose the one with the lowest value of the ojective function).
+//
+// In addition to the objective function, we also ensure that the most recent 'alwayskeep' backups are retained,
+// and we drop anything older than maxdays as our first priority.
+//
+// see backup algorithm.nb in docs for more info.
+unsigned int dbackup::refine(const std::vector<int> & backupdays, int maxdays, int maxbackups, int alwayskeep)
+{
+   unsigned int n = backupdays.size();
+
+   // keep all backups if we're under our limit.
+   if (n <= maxbackups)
+      return backupdays.size();
+
+   drunner_assert(alwayskeep < maxbackups, "Parameter error - trying to always keep more than the maximum number of backups!");
+
+   // if our oldest backup is too old just drop that.
+   if (backupdays[n-1] > maxdays)
+      return n-1;
+
+   // find the least wanted backup to drop, comparing to an exponential curve (keeping more of the recent ones).
+   double bestval = -1;
+   unsigned int bestpos = 0;
+   for (unsigned int droppos = alwayskeep; droppos < n; ++droppos) // droppos must be in [0, ..., n-1]
+   {
+      double val = droptest(backupdays, droppos, maxdays, n);
+
+      if (bestval < 0 || val < bestval)
+      {
+         bestval = val;
+         bestpos = droppos;
+      }
+   }
+
+   drunner_assert(bestval > 0, "Logic error.");
+   return bestpos;
 }

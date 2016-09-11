@@ -2,9 +2,9 @@
 
 #include "catch/catch.h"
 #include "utils.h"
+#include "dbackup.h"
 
-TEST_CASE("split_in_args works", "[utils.h]") {
-//   bool split_in_args(std::vector<std::string>& qargs, std::string command);
+TEST_CASE("Test that utils helper functions work", "[utils.h]") {
 
    SECTION("Test simple cases")
    {
@@ -68,9 +68,10 @@ TEST_CASE("split_in_args works", "[utils.h]") {
          REQUIRE(vs[i] == vs2[i]);
    }
 
-
    //SECTION("Test false functions")
    //{
    //}
 }
+
+
 

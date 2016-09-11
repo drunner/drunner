@@ -33,7 +33,8 @@ int main(int argc, char **argv)
       {
          forcereturn = true;
 //         std::vector<std::string> args = { "drunner", "-v","-p","-d","initialise" };
-         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };
+//         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };
+         std::vector<std::string> args = { "drunner", "-v","unittest" };
 
          GlobalContext::init(args);
       }

@@ -223,6 +223,9 @@
     <ClCompile Include="..\source\source\plugins\dcron.cpp">
       <Filter>Source Files\plugins</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\test_dbackup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
