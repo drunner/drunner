@@ -17,7 +17,7 @@
 #include "dassert.h"
 
 // Parse command line parameters.
-params::params(int argc, char **argv) :
+params::params(int argc, char * const * argv) :
    mCommandList({
    {"clean",c_clean},
    {"list",c_list},
@@ -94,7 +94,7 @@ void params::_setdefaults()
 
 
 
-void params::_parse(int argc, char **argv)
+void params::_parse(int argc, char * const * argv)
 {
 // parse command line stuff.
 int c;

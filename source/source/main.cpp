@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sstream>
+#include <Poco/String.h>
 
 #include "globalcontext.h"
 #include "globallogger.h"
@@ -20,28 +21,24 @@
 #include "drunner_settings.h"
 #include "drunner_paths.h"
 
-//  sudo apt-get install build-essential g++-multilib libboost-all-dev
-
-using namespace utils;
-
 // ----------------------------------------------------------------------------------------------------------------------
-
-void waitforreturn()
-{
-   if (GlobalContext::hasParams())
-      if (GlobalContext::getParams()->doPause())
-      {
-         std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
-         std::string s;
-         std::getline(std::cin, s);
-      }
-}
 
 int main(int argc, char **argv)
 {
+   bool forcereturn = false;
+
    try
    {
-      GlobalContext::init(argc, argv);
+      if (argc > 1 && 0==Poco::icompare(std::string(argv[1]), "debug"))
+      {
+         forcereturn = true;
+//         std::vector<std::string> args = { "drunner", "-v","-p","-d","initialise" };
+         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };
+
+         GlobalContext::init(args);
+      }
+      else
+         GlobalContext::init(argc, argv);
 
       logmsg(kLDEBUG,"dRunner C++ "+GlobalContext::getParams()->getVersion());
 
@@ -51,12 +48,12 @@ int main(int argc, char **argv)
          logdbg("Error context: "+rval.context());
          fatal(rval.what());
       }
-      waitforreturn();
+      mainroutines::waitforreturn(forcereturn);
       return rval;
    }
 
    catch (const eExit & e) {
-      waitforreturn();
+      mainroutines::waitforreturn(forcereturn);
       return e.exitCode();
    }
 }
@@ -216,6 +213,17 @@ cResult mainroutines::process()
       }
    }
    return 0;
+}
+
+
+void mainroutines::waitforreturn(bool force)
+{
+   if (force || (GlobalContext::hasParams() && GlobalContext::getParams()->doPause()))
+   {
+      std::cerr << std::endl << std::endl << "--- PRESS RETURN TO CONTINUE ---" << std::endl;
+      std::string s;
+      std::getline(std::cin, s);
+   }
 }
 
 

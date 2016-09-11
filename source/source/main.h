@@ -7,6 +7,7 @@ namespace mainroutines
 {
 
    cResult process();
+   void waitforreturn(bool force);
 
 } // namespace
 
