@@ -22,6 +22,9 @@
 dbackup::dbackup() 
 {
    addConfig("BACKUPPATH", "The path to save backups into.", "", kCF_string, true, true);
+   addConfig("MAXDAYS", "The maximum number of days to keep backups for.", "100", kCF_string, true, true);
+   addConfig("MAXBACKUPS", "The maximum number of backup sets to keep.", "20", kCF_string, true, true);
+   addConfig("ALWAYSKEEP", "Always keep this many of the most recent backups.", "3", kCF_string, true, true);
    addConfig("DISABLEDSERVICES", "Services that have been disabled (base64 encoded).", "", kCF_string, false, false);
 }
 
@@ -102,14 +105,11 @@ cResult dbackup::_run(persistvariables &v) const
 
    if (!utils::fileexists(p))
       fatal("Configure dbackup before running.");
-   utils::makedirectory(path + "/daily", S_700);
-   utils::makedirectory(path + "/weekly", S_700);
-   utils::makedirectory(path + "/monthly", S_700);
 
    std::vector<std::string> services;
    utils::getAllServices(services);
 
-   std::string datefolder = path + "/daily/" + timeutils::getDateTimeStr();
+   std::string datefolder = path + timeutils::getDateTimeStr();
    utils::makedirectory(datefolder, S_700);
 
    logmsg(kLINFO, "Backing up services.");
@@ -218,78 +218,41 @@ COMMANDS
    return kRSuccess;
 }
 
-void shifty(std::string src, std::string dst, int interval, unsigned int numtokeep)
-{
-   Poco::File f(src);
-   if (!f.exists())
-      fatal("shift: source doesn't exist - "+src);
-
-   std::vector<std::string> folders;
-   f.list(folders);
-   std::sort(folders.begin(), folders.end());
-   if (folders.size() <= numtokeep)
-      return; // nothing to do.
-
-   // move/delete anything old
-   for (auto f : folders)
-   {
-      auto tf = timeutils::dateTimeStr2Time(f);
-      Poco::DateTime now;
-
-      if ((now-tf).totalHours() > interval)
-      { // old
-         if (dst.length() != 0)
-         { // shift
-            logmsg(kLINFO, "Moving backup " + f + " to "+dst);
-            utils::movetree(src + "/" + f, dst + "/" + f);
-         }
-         else
-         {
-            logmsg(kLINFO, "Deleting old backup " + src + "/" + f);
-            utils::deltree(src + "/" + f);
-         }
-      }
-   }
-
-   // prune anything unneeded that puts us over storage limit.
-   for (unsigned int i = 0; i < folders.size(); ++i)
-   { // check trio folder[i]..[i+2]
-      Poco::DateTime f0, f2;
-
-      f0 = timeutils::dateTimeStr2Time(folders[i]);
-      f2 = timeutils::dateTimeStr2Time(folders[i+2]);
-
-      if (f2 < f0)
-         logmsg(kLERROR, "Backup folders after sorting are in incorrect order. :/");
-
-      if ((f2 - f0).totalHours() < interval)
-      { // f1 is redundant. Delete it!
-         logmsg(kLINFO, "Deleting unneeded backup " + src+"/"+folders[i + 1]);
-         utils::deltree(src + "/" + folders[i + 1]);
-         folders.erase(folders.begin() + i + 1);
-         if (folders.size() <= numtokeep)
-            return; // we've done enough
-         --i; // try again with folders[i]..[i+2]
-      }
-   }
-
-}
-
 cResult dbackup::_purgeOldBackups(persistvariables &v) const
 {
-   std::string path = _getPath(v).toString();
+   Poco::Path path(_getPath(v));
+   Poco::File file(path);
 
    logmsg(kLINFO, "--------------------------------------------------");
    logmsg(kLINFO, "Managing older backups");
    //bool getFolders(const std::string & parent, std::vector<std::string> & folders)
+   int maxdays = atoi(v.getVal("MAXDAYS").c_str());
+   int maxbackups = atoi(v.getVal("MAXBACKUPS").c_str());
+   int alwayskeep = atoi(v.getVal("ALWAYSKEEP").c_str());
 
-   std::string dailyfolder = path + "/daily";
-   std::string weeklyfolder = path + "/weekly";
-   std::string monthlyfolder = path + "/monthly";
+   if (maxdays < 5) fatal("MAXDAYS configuration value must be at least 5.");
+   if (maxbackups <= alwayskeep) fatal("MAXBACKUPS configuration value must be greater than ALWAYSKEEP.");
 
-   shifty(dailyfolder, weeklyfolder, 24, 7);
-   shifty(weeklyfolder, monthlyfolder, 24*7, 4);
-   shifty(monthlyfolder, "", 24*7*30, 6);
+   std::vector<std::string> folders;
+   std::vector<int> days;
+      
+   file.list(folders);
+
+   for (auto f : folders)
+   {
+      auto tf = timeutils::dateTimeStr2Time(f);
+      Poco::DateTime now;
+      days.push_back((now - tf).totalHours() / 24);
+   }
+
+   int drop;
+   while ((drop = refine(days, maxdays, maxbackups, alwayskeep)) < (int)days.size())
+   {
+      logmsg(kLINFO, "Deleting unneeded backup " + path.toString() + "/" + folders[drop]);
+      utils::deltree(path.toString() + "/" + folders[drop]);
+      folders.erase(folders.begin() + drop);
+      days.erase(days.begin() + drop);
+   }
 
    logmsg(kLINFO, "Done");
 
@@ -327,7 +290,7 @@ double dbackup::droptest(const std::vector<int> & backupdays, unsigned int dropp
 // the number of most recent backups to always keep (alwayskeep), this returns the position
 // of the backup to drop (or backupdays.length() if nothing should be dropped).
 //
-// Run until it returns backupdays.length(), deleting elements as you go.
+// Run until it returns backupdays.size(), deleting elements as you go.
 //
 // The basic objective function is a normalized Exp[x]^2, where x is the index normalized to [0,1].
 // i.e. ( (Exp[i/(n-1)] - 1)/(e - 1) )^2
@@ -343,7 +306,7 @@ unsigned int dbackup::refine(const std::vector<int> & backupdays, int maxdays, i
    unsigned int n = backupdays.size();
 
    // keep all backups if we're under our limit.
-   if (n <= maxbackups)
+   if ((int)n <= maxbackups)
       return backupdays.size();
 
    drunner_assert(alwayskeep < maxbackups, "Parameter error - trying to always keep more than the maximum number of backups!");

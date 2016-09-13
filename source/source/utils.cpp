@@ -440,14 +440,12 @@ namespace utils
    {
       std::string::const_iterator cur = s.begin();
       std::string::const_iterator beg = s.begin();
-      bool added = false;
       while (cur < s.end())
       {
          if (*cur == '|')
          {
             vecstr.insert(vecstr.end(), std::string(beg, cur));
             beg = ++cur;
-            added = true;
          }
          else
             cur++;
