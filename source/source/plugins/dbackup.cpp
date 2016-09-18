@@ -26,7 +26,7 @@ dbackup::dbackup()
    addConfig("MAXBACKUPS", "The maximum number of backup sets to keep.", "20", kCF_string, true, true);
    addConfig("ALWAYSKEEP", "Always keep this many of the most recent backups.", "3", kCF_string, true, true);
 
-   addConfig("AUTOBACKUP", "Run the backups automatically using dcron once per day", "true", kCF_bool, true, true);
+   addConfig("AUTOBACKUP", "Run the backups automatically using dcron once per day", "false", kCF_bool, true, true);
 
    // system set (not user settable).
    addConfig("DISABLEDSERVICES", "Services that have been disabled (base64 encoded).", "", kCF_string, false, false);
