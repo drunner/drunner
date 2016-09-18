@@ -15,6 +15,11 @@ public:
 
    Poco::Path configurationFilePath() const;
    static Poco::Path haproxyCfgPath();
+
+   // no cron service.
+   servicelua::CronEntry getCron() const { return servicelua::CronEntry(); }
+   cResult runCron() const { return kRSuccess; }
+
 private:
    cResult update(std::string ip) const;
    cResult start() const;

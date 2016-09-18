@@ -22,9 +22,13 @@
 dbackup::dbackup() 
 {
    addConfig("BACKUPPATH", "The path to save backups into.", "", kCF_string, true, true);
-   addConfig("MAXDAYS", "The maximum number of days to keep backups for.", "100", kCF_string, true, true);
+   addConfig("MAXDAYS", "The maximum number of days to keep backups for.", "90", kCF_string, true, true);
    addConfig("MAXBACKUPS", "The maximum number of backup sets to keep.", "20", kCF_string, true, true);
    addConfig("ALWAYSKEEP", "Always keep this many of the most recent backups.", "3", kCF_string, true, true);
+
+   addConfig("AUTOBACKUP", "Run the backups automatically using dcron once per day", "true", kCF_bool, true, true);
+
+   // system set (not user settable).
    addConfig("DISABLEDSERVICES", "Services that have been disabled (base64 encoded).", "", kCF_string, false, false);
 }
 
@@ -36,6 +40,26 @@ std::string dbackup::getName() const
 Poco::Path dbackup::configurationFilePath() const
 {
    return drunnerPaths::getPath_Settings().setFileName("dbackup.json");
+}
+
+servicelua::CronEntry dbackup::getCron() const
+{
+   servicelua::CronEntry ce;
+
+   persistvariables p(getPersistVariables());
+
+   if (p.getBool("AUTOBACKUP"))
+   { // could make these user settable if there was a need.
+      ce.offsetmin = "180"; // 3 am
+      ce.repeatmin = "1440"; // 24 hours
+   }
+
+   return ce;
+}
+
+cResult dbackup::runCron() const
+{
+   return _run(getPersistVariables());
 }
 
 cResult dbackup::runCommand(const CommandLine & cl, persistvariables & v) const
@@ -98,7 +122,7 @@ cResult dbackup::_exclude(std::string servicename, persistvariables &v) const
    return v.savevariables();
 }
 
-cResult dbackup::_run(persistvariables &v) const
+cResult dbackup::_run(const persistvariables &v) const
 {
    Poco::Path p = _getPath(v);
    std::string path = p.toString();
@@ -132,7 +156,7 @@ cResult dbackup::_run(persistvariables &v) const
    return _purgeOldBackups(v);
 }
 
-Poco::Path dbackup::_getPath(persistvariables & v) const
+Poco::Path dbackup::_getPath(const persistvariables & v) const
 {
    Poco::Path p(v.getVal("BACKUPPATH"));
    if (!p.isAbsolute())
@@ -140,7 +164,7 @@ Poco::Path dbackup::_getPath(persistvariables & v) const
    return p;
 }
 
-void dbackup::_getExcluded(std::vector<std::string>& vs, persistvariables &v) const
+void dbackup::_getExcluded(std::vector<std::string>& vs, const persistvariables &v) const
 {
    std::string ds = v.getVal("DISABLEDSERVICES");
    utils::str2vecstr(ds, vs);
@@ -218,7 +242,7 @@ COMMANDS
    return kRSuccess;
 }
 
-cResult dbackup::_purgeOldBackups(persistvariables &v) const
+cResult dbackup::_purgeOldBackups(const persistvariables &v) const
 {
    Poco::Path path(_getPath(v));
    Poco::File file(path);

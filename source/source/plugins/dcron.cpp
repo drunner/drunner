@@ -7,6 +7,8 @@
 #include "service_lua.h"
 #include "service.h"
 #include "timez.h"
+#include "globalcontext.h"
+#include "dassert.h"
 
 // ----------------------------------------------------------------------------
 
@@ -141,11 +143,10 @@ Poco::Path dcron::configurationFilePath() const
 
 bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) const
 {
-   Poco::Path lastrunpath = drunnerPaths::getPath_Settings().setFileName("dcron-"+uniquename + ".lastrun");
-   time_t lastrun = 55555;
-   if (utils::fileexists(lastrunpath))
-      lastrun = _gettimefile(lastrunpath);
+   if (!c.isvalid())
+      return false;
 
+   // determine intervals.
    std::istringstream offsetmin_s(c.offsetmin);
    std::istringstream repeatmin_s(c.repeatmin);
 
@@ -153,10 +154,19 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
    offsetmin_s >> offsetmin;
    repeatmin_s >> repeatmin;
 
+   drunner_assert(repeatmin > 0, "Invalid cron entry returned valid.");
+    
+   // read in last run time from file
+   Poco::Path lastrunpath = drunnerPaths::getPath_Settings().setFileName("dcron-"+uniquename + ".lastrun");
+   time_t lastrun = 55555;
+   if (utils::fileexists(lastrunpath))
+      lastrun = _gettimefile(lastrunpath);
+
+   // calculate the time segments.
    time_t x = (time(NULL) / 60 - offsetmin) / repeatmin;
    time_t z = (lastrun / 60 - offsetmin) / repeatmin;
 
-   if (x <= z) // same time segment.
+   if (x <= z) // same time segment (or cron job was last run in future - clock wound back).
    {
       time_t delta = time(NULL) / 60 - lastrun / 60;
       time_t target = (x + 1)*repeatmin + offsetmin - lastrun / 60;
@@ -164,12 +174,14 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
       return false;
    }
 
+   // we're into a new time segment, update the file on disk to the current time and return true (run the job!).
    _settimefile(time(NULL), lastrunpath);
    return true;
 }
 
 cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
 {
+   cResult r;
    // cycle through all dServices testing if cron jobs need to run.
 
    std::vector<std::string> services;
@@ -178,29 +190,45 @@ cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
    for (auto const & s : services)
    {
       service svc(s);
-
       for (auto ce : svc.getServiceLua().getCronEntries())
-      {
-         std::string uniquename = s + "-" + ce.function;
-         lockfile lockf(uniquename);
-         cResult lfr = lockf.getlock();
-         if (lfr.success())
-         {
-            ce.offsetmin = svc.getServiceVars().substitute(ce.offsetmin);
-            ce.repeatmin = svc.getServiceVars().substitute(ce.repeatmin);
-
-            if (_runjob(uniquename, ce))
-            { // time interval has changed, run the command.
-               logdbg("Invoking cron function: " + ce.function);
-               CommandLine cl;
-               cl.command = ce.function;
-               svc.runLuaFunction(cl);
-            }
-
-            lockf.freelock();
-         } // lock
-      } // dcron entries
+         r += _runcron(svc, ce, v);
    } // services
 
-   return cResult();
+   // plugins (e.g. dbackup)
+   std::vector<std::string> plugins;
+   GlobalContext::getPlugins()->getPluginNames(plugins);
+   for (auto p : plugins)
+   {
+      servicelua::CronEntry ce = GlobalContext::getPlugins()->getCronJob(p);
+      if (_runjob("plugin-" + p, ce))
+         r += GlobalContext::getPlugins()->runCron(p);
+   }
+
+   return r;
+}
+
+cResult dcron::_runcron(service & svc, servicelua::CronEntry & ce, const variables & v) const
+{
+   std::string uniquename = svc.getName() + "-" + ce.function;
+   lockfile lockf(uniquename);
+   cResult lfr = lockf.getlock();
+   if (lfr.success())
+   {
+      ce.offsetmin = svc.getServiceVars().substitute(ce.offsetmin);
+      ce.repeatmin = svc.getServiceVars().substitute(ce.repeatmin);
+
+      if (_runjob(uniquename, ce))
+      { // time interval has changed, run the command.
+         logdbg("Invoking cron function: " + ce.function);
+         CommandLine cl;
+         cl.command = ce.function;
+         svc.runLuaFunction(cl);
+      }
+
+      lockf.freelock();
+
+      return kRSuccess;
+   } // lock
+
+   return kRNoChange; // couldn't get lock - cron job already running.
 }

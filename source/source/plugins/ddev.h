@@ -14,6 +14,10 @@ public:
 
    Poco::Path configurationFilePath() const;
 
+   // no cron service.
+   servicelua::CronEntry getCron() const { return servicelua::CronEntry(); }
+   cResult runCron() const { return kRSuccess; }
+
 private:
    cResult _build(const CommandLine & cl, const variables & v, Poco::Path d) const;
    cResult _buildtree(const CommandLine & cl, const variables & v, Poco::Path d) const;

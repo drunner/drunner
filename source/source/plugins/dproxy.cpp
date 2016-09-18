@@ -111,7 +111,7 @@ cResult dproxy::runHook(std::string hook, std::vector<std::string> hookparams, c
    case (s2i("uninstall_end")):
    case (s2i("obliterate_end")):
    {
-      std::string ip = getVariables().getVal("IP");
+      std::string ip = getPersistVariables().getVal("IP");
 
       // only report changes if we've set up dproxy + it's running.
       if (ip.length() > 0  && dproxyRunning() && configNeedsUpdated(ip))

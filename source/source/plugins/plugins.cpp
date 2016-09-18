@@ -48,6 +48,31 @@ cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, 
    return rval;
 }
 
+void plugins::getPluginNames(std::vector<std::string> & names) const
+{
+   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
+      names.push_back(p->get()->getName());
+}
+
+servicelua::CronEntry plugins::getCronJob(std::string pluginName) const
+{
+   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
+      if (0 == Poco::icompare(p->get()->getName(), pluginName))
+         return p->get()->getCron();
+
+   fatal("Couldn't find plugin " + pluginName);
+   return servicelua::CronEntry();
+}
+
+cResult plugins::runCron(std::string pluginName) const
+{
+   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
+      if (0 == Poco::icompare(p->get()->getName(), pluginName))
+         return p->get()->runCron();
+
+   return cError("Couldn't find plugin "+pluginName);
+}
+
 // -----------------------------------
 
 
@@ -75,21 +100,8 @@ cResult configuredplugin::runCommand() const
    if (cl.command == "help")
       return showHelp();
    
-   Poco::Path spath = configurationFilePath();
-   persistvariables pv(getName(), spath, mConfiguration);
+   persistvariables pv(getPersistVariables());
 
-   // if the variables file does not exist then create it (will pick up defaults from pv ctor).
-   if (!pv.exists())
-   {
-      if (!pv.savevariables().success())
-         fatal("Couldn't create " + spath.toString());
-      else
-         logdbg("Created " + spath.toString());
-   }
-
-
-   cResult r = pv.loadvariables();   
-   drunner_assert(r.success(), "Failed to save empty variables.");
    if (cl.command == "configure")
       return pv.handleConfigureCommand(cl);
 
@@ -103,15 +115,24 @@ cResult configuredplugin::addConfig(std::string name, std::string description, s
    return kRSuccess;
 }
 
-const variables configuredplugin::getVariables() const
+const persistvariables configuredplugin::getPersistVariables() const
 {
    Poco::Path spath = configurationFilePath();
    persistvariables pv(getName(), spath, mConfiguration);
+
+   // if the variables file does not exist then create it (will pick up defaults from pv ctor).
+   if (!pv.exists())
+   {
+      if (!pv.savevariables().success())
+         fatal("Couldn't create " + spath.toString());
+      else
+         logdbg("Created " + spath.toString());
+   }
+
    cResult r = pv.loadvariables();
-   if (r.success())
-      return pv.getVariables();
-   else
-      return variables();
+   drunner_assert(r.success(), "Failed to save empty variables.");
+
+   return pv;
 }
 
 cResult configuredplugin::setAndSaveVariable(std::string key, std::string val) const
