@@ -30,7 +30,9 @@ B) the service configuration variables, which includes:
 
 namespace servicelua
 {   
-// -------------------------------------------------------------------------------
+ // -------------------------------------------------------------------------------
+
+
 
    luafile::luafile(std::string serviceName) : 
       mServicePaths(serviceName), 

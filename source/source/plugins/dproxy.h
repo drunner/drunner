@@ -8,13 +8,18 @@ class dproxy : public configuredplugin
 public:
    dproxy();
    virtual std::string getName() const;
-   virtual cResult runCommand(const CommandLine & cl, const variables & v) const;
+   virtual cResult runCommand(const CommandLine & cl, persistvariables & v) const;
    virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
 
    cResult showHelp() const;
 
    Poco::Path configurationFilePath() const;
    static Poco::Path haproxyCfgPath();
+
+   // no cron service.
+   servicelua::CronEntry getCron() const { return servicelua::CronEntry(); }
+   cResult runCron() const { return kRSuccess; }
+
 private:
    cResult update(std::string ip) const;
    cResult start() const;

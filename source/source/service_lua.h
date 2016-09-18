@@ -38,8 +38,12 @@ namespace servicelua
       std::string dport_http;
       std::string dport_https;
    };
-   struct CronEntry
+   class CronEntry
    {
+   public:
+      CronEntry() : offsetmin("0"), repeatmin("0"), function("") {}
+      bool isvalid() const { return repeatmin != "0"; }
+
       std::string offsetmin;
       std::string repeatmin;
       std::string function;

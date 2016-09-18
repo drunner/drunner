@@ -21,7 +21,8 @@ public:
    static bool hasSettings();
    static bool hasPlugins();
 
-   static void init(int argc, char **argv);
+   static void init(int argc, char * const * argv); // array of const strings.
+   static void init(const std::vector<std::string> & args);
 
    GlobalContext();
 

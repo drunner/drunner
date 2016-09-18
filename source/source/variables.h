@@ -78,7 +78,7 @@ public:
    cResult checkRequired() const;
    cResult setVal(std::string key, std::string val);
    void setVal_mem(std::string key, std::string val);
-   
+
    // expose other methods.
    bool hasKey(std::string key) const;
    bool isDefined(std::string key) const; // hasKey and is not empty string.

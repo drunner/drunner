@@ -20,21 +20,21 @@ std::string ddev::getName() const
    return "ddev";
 }
 
-cResult ddev::runCommand(const CommandLine & cl, const variables & v) const
+cResult ddev::runCommand(const CommandLine & cl, persistvariables & v) const
 {
    switch (s2i(cl.command.c_str()))
    {
       case (s2i("build")):
       {
-         return _build(cl, v, Poco::Path::current());
+         return _build(cl, v.getVariables(), Poco::Path::current());
       }
       case (s2i("buildtree")):
       {
-         return _buildtree(cl, v, Poco::Path::current());
+         return _buildtree(cl, v.getVariables(), Poco::Path::current());
       }
       case (s2i("test")):
       {
-         return _test(cl, v);
+         return _test(cl, v.getVariables());
       }
       default:
          return cError("Unrecognised command " + cl.command);

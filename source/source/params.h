@@ -9,7 +9,7 @@
 
 class params {
 public:
-   params(int argc, char **argv);
+   params(int argc, char * const * argv); // pointer to a const string (poitner to a const pointer to a char).
    std::string substitute( const std::string & source ) const;
 
    const std::string & getVersion() const { return mVersion; }
@@ -48,7 +48,7 @@ private:
    std::vector<std::string> mOptions;
    params();
    void _setdefaults();
-   void _parse(int argc, char **argv);
+   void _parse(int argc, char * const * argv);
 };
 
 #endif

@@ -38,7 +38,7 @@ services that consist of multiple Docker containers.
 
 ## Installation
 
-[Installation Notes](INSTALL.md)
+[Installation Notes](docs/INSTALL.md)
 
 ### Trying it out
 
@@ -129,7 +129,7 @@ This is to aid Ansible use.
 
 ## Backups
 
-dRunner includes a plugin called dbackup to provide management of daily/weekly/monthly backups. After installing drunner try
+dRunner includes a plugin called dbackup to provide management of rolling backups. After installing dRunner try
 ```
 dbackup help
 ```
@@ -140,10 +140,10 @@ See [Docker's Security Statement](https://docs.docker.com/engine/security/securi
 
 ## Creating your own dService
 
-To see how to make a dService [read the documentation](DSERVICE.md).
+To see how to make a dService read the [dService documentation](docs/DSERVICE.md).
 
 
 
 ## Developing dRunner itself
 
-[Read the documentation](DRUNNERDEV.md).
+If you want to compile dRunner from source, read the [dRunner development documentation](docs/DRUNNERDEV.md).

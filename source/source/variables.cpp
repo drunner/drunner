@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "globallogger.h"
 #include "dassert.h"
+#include "basen.h"
 
 
 variables::variables(const variables & other1, const variables & other2)

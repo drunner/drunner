@@ -1,4 +1,6 @@
-# dService Creation
+# dService Documentation
+
+This documentation outlines how to create a dService.
 
 ## Essential components
 

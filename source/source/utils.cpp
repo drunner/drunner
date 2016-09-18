@@ -12,6 +12,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <system_error>
+#include <algorithm>
+#include <iterator>
 
 #include <Poco/String.h>
 #include <Poco/Process.h>
@@ -413,6 +415,77 @@ namespace utils
       logmsg(kLINFO, "---------------------------------------------------");
 
       delete[] where;
+   }
+
+   std::string base64encode(std::string s)
+   {
+      std::string encoded_data;
+      bn::encode_b64(s.begin(), s.end(), std::back_inserter(encoded_data));
+      return encoded_data;
+   }
+
+   std::string base64encodeWithEquals(std::string s)
+   {
+      std::string encoded_data = base64encode(s);
+
+      int n = encoded_data.length() % 4;
+      if (n == 2) encoded_data += "==";
+      if (n == 3) encoded_data += "=";
+      poco_assert(n != 1);
+
+      return encoded_data;
+   }
+
+   void str2vecstr(std::string s, std::vector<std::string>& vecstr)
+   {
+      std::string::const_iterator cur = s.begin();
+      std::string::const_iterator beg = s.begin();
+      while (cur < s.end())
+      {
+         if (*cur == '|')
+         {
+            vecstr.insert(vecstr.end(), std::string(beg, cur));
+            beg = ++cur;
+         }
+         else
+            cur++;
+      }
+
+      vecstr.insert(vecstr.end(), std::string(beg, cur));
+
+      // base64 decode all the strings.
+      for (unsigned int i = 0; i < vecstr.size(); ++i)
+         vecstr[i] = utils::base64decode(vecstr[i]);
+   }
+
+   std::string vecstr2str(std::vector<std::string> vecstr)
+   {
+      std::string s;
+
+      // base64 encode all the strings.
+      for (unsigned int i = 0; i < vecstr.size(); ++i)
+         vecstr[i] = utils::base64encode(vecstr[i]);
+
+      switch (vecstr.size())
+      {
+      case 0:
+         s = ""; break;
+      case 1:
+         s = vecstr[0];
+      default:
+         std::ostringstream os;
+         std::copy(vecstr.begin(), vecstr.end() - 1, std::ostream_iterator<std::string>(os, "|"));
+         os << *vecstr.rbegin();
+         s = os.str();
+      }
+      return s;
+   }
+
+   std::string base64decode(std::string s)
+   {
+      std::ostringstream os;
+      bn::decode_b64(s.begin(), s.end(), std::ostream_iterator<char>(os, ""));
+      return os.str();
    }
 
 } // namespace utils

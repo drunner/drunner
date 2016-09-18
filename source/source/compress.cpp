@@ -33,6 +33,7 @@ namespace compress
 
    bool _compress(std::string password, std::string volumename, Poco::Path archive)
    {
+      logdbg("Backing up " + volumename + " to " + archive.toString());
       std::string archivefolder = archive.parent().toString();
       std::string archivename = archive.getFileName();
 
@@ -50,6 +51,10 @@ namespace compress
 #endif
 
       _rundocker(volumename, archivefolder, password, cmd);
+
+      if (!utils::fileexists(archivefolder + archivename))
+         fatal("Archive doesn't exist: " + archivefolder + archivename);
+
       return true;
    }
 
