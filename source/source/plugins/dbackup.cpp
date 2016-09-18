@@ -128,7 +128,7 @@ cResult dbackup::_run(const persistvariables &v) const
       return cError("Please configure dbackup before running.");
 
    Poco::Path p = _getPath(v);
-   std::string path = p.toString();
+   p.makeDirectory();
 
    if (!utils::fileexists(p))
       fatal("Configure dbackup before running.");
@@ -136,8 +136,8 @@ cResult dbackup::_run(const persistvariables &v) const
    std::vector<std::string> services;
    utils::getAllServices(services);
 
-   std::string datefolder = path + timeutils::getDateTimeStr();
-   utils::makedirectory(datefolder, S_700);
+   p.pushDirectory(timeutils::getDateTimeStr());
+   utils::makedirectory(p, S_700);
 
    logmsg(kLINFO, "Backing up services.");
    std::vector<std::string> excludedservices;
@@ -148,11 +148,11 @@ cResult dbackup::_run(const persistvariables &v) const
       if (std::find(excludedservices.begin(), excludedservices.end(), s) == excludedservices.end()) // not excluded.
       {
          // backup service s.
-         std::string path = datefolder + "/" + timeutils::getArchiveName(s);
+         p.setFileName(timeutils::getArchiveName(s));
 
          logmsg(kLINFO, "----------------- " + s + " --------------------");
          service svc(s);
-         svc.backup(path);
+         svc.backup(p.toString());
       }
    }
 
