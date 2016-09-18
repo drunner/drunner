@@ -124,6 +124,9 @@ cResult dbackup::_exclude(std::string servicename, persistvariables &v) const
 
 cResult dbackup::_run(const persistvariables &v) const
 {
+   if (!v.checkRequired().success())
+      return cError("Please configure dbackup before running.");
+
    Poco::Path p = _getPath(v);
    std::string path = p.toString();
 
