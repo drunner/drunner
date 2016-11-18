@@ -12,7 +12,6 @@
 extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_addvolume(lua_State *L);
 extern "C" int l_addcontainer(lua_State *L);
-extern "C" int l_addproxy(lua_State *L);
 extern "C" int l_addcron(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
@@ -41,7 +40,6 @@ namespace servicelua
       REGISTERLUAC(l_addconfig, "addconfig")
       REGISTERLUAC(l_addvolume, "addvolume")
       REGISTERLUAC(l_addcontainer, "addcontainer")
-      REGISTERLUAC(l_addproxy,"addproxy")
       REGISTERLUAC(l_addcron,"addcron")
 
       REGISTERLUAC(l_drun, "drun")
@@ -160,25 +158,6 @@ namespace servicelua
       }
 
       get_luafile(L)->addContainer(c);
-
-      return _luasuccess(L);
-   }
-
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_addproxy(lua_State *L)
-   {
-      if (lua_gettop(L) != 3)
-         return luaL_error(L, "Expected exactly three arguments (VIRTUAL_HOST,HTTP_PORT,HTTPS_PORT) for addproxy.");
-      Proxy p;
-      drunner_assert(lua_isstring(L, 1), "virtual host must be a string.");
-      drunner_assert(lua_isstring(L, 2), "http port must be a string.");
-      drunner_assert(lua_isstring(L, 3), "https port must be a string.");
-      p.vhost = lua_tostring(L, 1);
-      p.dport_http = lua_tostring(L, 2);
-      p.dport_https = lua_tostring(L, 3);
-
-      get_luafile(L)->addProxy(p);
 
       return _luasuccess(L);
    }
