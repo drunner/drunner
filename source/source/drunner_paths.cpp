@@ -95,6 +95,12 @@ Poco::Path drunnerPaths::getPath_Settings()
    return getPath_Root().pushDirectory("settings");
 }
 
+Poco::Path drunnerPaths::getPath_Logs()
+{
+   return getPath_Root().pushDirectory("logs");
+}
+
+
 Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {
    return getPath_Settings().setFileName("drunnerSettings.json");
@@ -104,3 +110,4 @@ std::string drunnerPaths::getdrunnerUtilsImage()
 {
    return  "drunner/drunner_utils";
 }
+

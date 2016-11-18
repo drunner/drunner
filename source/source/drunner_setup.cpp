@@ -174,6 +174,7 @@ namespace drunnerSetup
       _makedirectory(drunnerPaths::getPath_Temp(), S_755);
       _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
       _makedirectory(drunnerPaths::getPath_Settings(), S_755);
+      _makedirectory(drunnerPaths::getPath_Logs(), S_755);
 
 
       // On windows, we copy the executable to the .drunner/bin folder and make the .drunner folder hidden.
