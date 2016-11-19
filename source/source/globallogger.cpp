@@ -32,7 +32,7 @@ bool CheckLogFileOpen(std::string mainlogfile)
       if (!g_LogFailedMsgSent)
       {
          g_LogFailedMsgSent = true;
-         logmsg(kLINFO, "Logging suspended - could not open log file: " + mainlogfile);
+         logmsg(kLWARN, "Logging suspended - could not open log file: " + mainlogfile);
       }
       return false;
    }
