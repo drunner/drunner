@@ -162,6 +162,7 @@ cResult dbackup::_run(const persistvariables &v) const
 Poco::Path dbackup::_getPath(const persistvariables & v) const
 {
    Poco::Path p(v.getVal("BACKUPPATH"));
+   p.makeDirectory();
    if (!p.isAbsolute())
       p.makeAbsolute();
    return p;
@@ -272,11 +273,15 @@ cResult dbackup::_purgeOldBackups(const persistvariables &v) const
       days.push_back((now - tf).totalHours() / 24);
    }
 
+   logmsg(kLDEBUG, "Currently have " + std::to_string( days.size() ) + " backups of " + std::to_string( maxbackups ) + " max.");
+
    int drop;
    while ((drop = refine(days, maxdays, maxbackups, alwayskeep)) < (int)days.size())
    {
-      logmsg(kLINFO, "Deleting unneeded backup " + path.toString() + "/" + folders[drop]);
-      utils::deltree(path.toString() + "/" + folders[drop]);
+      Poco::Path ftodel = path;
+      ftodel.pushDirectory(folders[drop]);
+      logmsg(kLINFO, "Deleting unneeded backup " + ftodel.toString());
+      utils::deltree(ftodel);
       folders.erase(folders.begin() + drop);
       days.erase(days.begin() + drop);
    }
