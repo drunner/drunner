@@ -21,23 +21,37 @@
 
 std::ofstream g_CurrentStream;
 const size_t g_Limit = 1024 * 1024 * 5;
+bool g_LogFailedMsgSent = false;
 
-void CheckLogFileOpen(std::string mainlogfile)
+bool CheckLogFileOpen(std::string mainlogfile)
 {
    if (!g_CurrentStream.is_open())
       g_CurrentStream.open(mainlogfile, std::ios_base::app);
    if (!g_CurrentStream.is_open())
    {
-      std::cerr << "Could not open log file: " << mainlogfile << std::endl;
-      exit(1);
+      if (!g_LogFailedMsgSent)
+      {
+         g_LogFailedMsgSent = true;
+         logmsg(kLINFO, "Logging suspended - could not open log file: " + mainlogfile);
+      }
+      return false;
    }
+
+   if (g_LogFailedMsgSent)
+   {
+      g_LogFailedMsgSent = false;
+      logmsg(kLINFO, "Now logging to log file: " + mainlogfile);
+   }
+
+   return true;
 }
 
 void FileRotationLogSink(std::string s)
 {
    Poco::Path mainlogfile = drunnerPaths::getPath_Logs().setFileName("log.txt");
 
-   CheckLogFileOpen(mainlogfile.toString());
+   if (!CheckLogFileOpen(mainlogfile.toString()))
+      return; // can't log to file.
 
    if (static_cast<std::string::size_type>(g_CurrentStream.tellp()) +  s.length() > g_Limit) 
    {
@@ -52,7 +66,8 @@ void FileRotationLogSink(std::string s)
       }
       
       // open new logfile
-      CheckLogFileOpen(mainlogfile.toString());
+      if (!CheckLogFileOpen(mainlogfile.toString()))
+         return; // can't log to file.
    }
 
    g_CurrentStream << s;
