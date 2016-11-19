@@ -191,11 +191,6 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   const std::vector<Proxy>& luafile::getProxies() const
-   {
-      return mProxies;
-   }
-
    const std::vector<CronEntry>& luafile::getCronEntries() const
    {
       return mCronEntries;
@@ -216,11 +211,6 @@ namespace servicelua
    void luafile::addVolume(Volume v)
    {
       mVolumes.push_back(v);
-   }
-
-   void luafile::addProxy(Proxy p)
-   {
-      mProxies.push_back(p);
    }
 
    void luafile::addCronEntry(CronEntry c)

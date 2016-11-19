@@ -17,6 +17,63 @@
 #include "utils.h"
 #include "termcolor.h"
 #include "timez.h"
+#include "drunner_paths.h"
+
+std::ofstream g_CurrentStream;
+const size_t g_Limit = 1024 * 1024 * 5;
+bool g_LogFailedMsgSent = false;
+
+bool CheckLogFileOpen(std::string mainlogfile)
+{
+   if (!g_CurrentStream.is_open())
+      g_CurrentStream.open(mainlogfile, std::ios_base::app);
+   if (!g_CurrentStream.is_open())
+   {
+      if (!g_LogFailedMsgSent)
+      {
+         g_LogFailedMsgSent = true;
+         logmsg(kLWARN, "Logging suspended - could not open log file: " + mainlogfile);
+      }
+      return false;
+   }
+
+   if (g_LogFailedMsgSent)
+   {
+      g_LogFailedMsgSent = false;
+      logmsg(kLINFO, "Now logging to log file: " + mainlogfile);
+   }
+
+   return true;
+}
+
+void FileRotationLogSink(std::string s)
+{
+   Poco::Path mainlogfile = drunnerPaths::getPath_Logs().setFileName("log.txt");
+
+   if (!CheckLogFileOpen(mainlogfile.toString()))
+      return; // can't log to file.
+
+   if (static_cast<std::string::size_type>(g_CurrentStream.tellp()) +  s.length() > g_Limit) 
+   {
+      g_CurrentStream.close();
+      
+      Poco::Path archive = drunnerPaths::getPath_Logs().setFileName(timeutils::getDateTimeStr() + "_log.txt");
+
+      if (0 != std::rename(mainlogfile.toString().c_str(), archive.toString().c_str()))
+      {
+         std::cerr << "Could not archive log file from" << std::endl << mainlogfile.toString() << std::endl << "to" << std::endl << archive.toString() << std::endl;
+         exit(1);
+      }
+      
+      // open new logfile
+      if (!CheckLogFileOpen(mainlogfile.toString()))
+         return; // can't log to file.
+   }
+
+   g_CurrentStream << s;
+}
+
+
 
 eLogLevel getMinLevel()
 {
@@ -50,6 +107,9 @@ void logverbatim(eLogLevel level, std::string s)
 {
    if (level < getMinLevel())
       return;
+
+   FileRotationLogSink(s);
+
 
    // we use stdout for normal messages, stderr for warn and error.
    switch (level)

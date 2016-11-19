@@ -214,9 +214,6 @@
     <ClCompile Include="..\source\source\service_vars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\plugins\dproxy.cpp">
-      <Filter>Source Files\plugins</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\service_manage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -413,9 +410,6 @@
     </ClInclude>
     <ClInclude Include="..\source\source\service_vars.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\plugins\dproxy.h">
-      <Filter>Source Files\plugins</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>

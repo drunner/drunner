@@ -11,14 +11,12 @@
 
 #include "dbackup.h"
 #include "ddev.h"
-#include "dproxy.h"
 #include "dcron.h"
 
 plugins::plugins()
 {
    mPlugins.push_back(std::unique_ptr<plugin>(new dbackup()));
    mPlugins.push_back(std::unique_ptr<plugin>(new ddev()));
-   mPlugins.push_back(std::unique_ptr<plugin>(new dproxy()));
    mPlugins.push_back(std::unique_ptr<plugin>(new dcron()));
 }
 

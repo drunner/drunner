@@ -32,12 +32,7 @@ namespace servicelua
       std::string volumeName;
       std::string backupName;
    };
-   struct Proxy
-   {
-      std::string vhost;
-      std::string dport_http;
-      std::string dport_https;
-   };
+
    class CronEntry
    {
    public:
@@ -62,7 +57,6 @@ namespace servicelua
       const std::vector<Configuration> & getLuaConfigurationDefinitions() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
-      const std::vector<Proxy> & getProxies() const;
       const std::vector<CronEntry> & getCronEntries() const;
 
       // for service::serviceRunnerCommand
@@ -76,7 +70,6 @@ namespace servicelua
       void addContainer(Container c);
       void addConfiguration(Configuration cf);
       void addVolume(Volume v);
-      void addProxy(Proxy p);
       void addCronEntry(CronEntry c);
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
@@ -92,7 +85,6 @@ namespace servicelua
       std::vector<Container> mContainers;
       std::vector<Configuration> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
       std::vector<Volume> mVolumes;
-      std::vector<Proxy> mProxies;
       std::vector<CronEntry> mCronEntries;
 
       lua_State * L;

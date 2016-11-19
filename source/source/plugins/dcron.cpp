@@ -68,6 +68,9 @@ public:
    {
       if (!utils::delfile(lockfilepath()).success())
          return cError("Couldn't remove lockfile.");
+
+      logdbg("Released dcron lock for " + mUniqueName);
+
       return kRSuccess;
    }
 
@@ -144,8 +147,10 @@ Poco::Path dcron::configurationFilePath() const
 bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) const
 {
    if (!c.isvalid())
+   {
+      logdbg("No valid cronjob for " + uniquename);
       return false;
-
+   }
    // determine intervals.
    std::istringstream offsetmin_s(c.offsetmin);
    std::istringstream repeatmin_s(c.repeatmin);
@@ -170,7 +175,7 @@ bool dcron::_runjob(std::string uniquename, const servicelua::CronEntry & c) con
    {
       time_t delta = time(NULL) / 60 - lastrun / 60;
       time_t target = (x + 1)*repeatmin + offsetmin - lastrun / 60;
-      logdbg("Not running: " + std::to_string(delta) + " minutes elapsed, next run at " + std::to_string(target));
+      logdbg("Not running "+uniquename+": " + std::to_string(delta) + " minutes elapsed, next run at " + std::to_string(target));
       return false;
    }
 
@@ -201,7 +206,10 @@ cResult dcron::_runcron(const CommandLine & cl, const variables & v) const
    {
       servicelua::CronEntry ce = GlobalContext::getPlugins()->getCronJob(p);
       if (_runjob("plugin-" + p, ce))
+      {
+         logdbg("Invoking cron for plugin " + p);
          r += GlobalContext::getPlugins()->runCron(p);
+      }
    }
 
    return r;
@@ -219,7 +227,7 @@ cResult dcron::_runcron(service & svc, servicelua::CronEntry & ce, const variabl
 
       if (_runjob(uniquename, ce))
       { // time interval has changed, run the command.
-         logdbg("Invoking cron function: " + ce.function);
+         logdbg("Invoking "+svc.getName()+" cron function: " + ce.function);
          CommandLine cl;
          cl.command = ce.function;
          svc.runLuaFunction(cl);

@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sstream>
 #include <Poco/String.h>
+#include <Poco/File.h>
 
 #include "globalcontext.h"
 #include "globallogger.h"
@@ -25,6 +26,11 @@
 
 int main(int argc, char **argv)
 {
+   // try to create logging directory...
+   if (!utils::fileexists(drunnerPaths::getPath_Logs()))
+      Poco::File(drunnerPaths::getPath_Logs()).createDirectories();
+
+
    bool forcereturn = false;
 
    try

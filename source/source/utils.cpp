@@ -170,7 +170,7 @@ namespace utils
    // so that windows doesn't cause permission denied errors.
    cResult deltree(Poco::Path s)
    {
-      drunner_assert(s.isDirectory(), "deltree: asked to delete a file.");
+      drunner_assert(s.isDirectory(), "deltree: asked to delete a file: "+s.toString());
       cResult rval = kRNoChange;
 
       try
