@@ -1,6 +1,6 @@
 # dRunner [![Build Status](https://travis-ci.org/drunner/drunner.svg?branch=master)](https://travis-ci.org/drunner/drunner)
 
-## Status - In production use
+## Status
 
 This version is a major rewrite to be cross-platform. While key functionality works it's under active development and has had only a small amount of testing (primarily on Linux). The documentation is currently incomplete, particularly around making your own dServices.
 
