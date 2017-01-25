@@ -14,13 +14,16 @@ The luafile class is a combination of:
 
 A) the interpreted service.lua, which defines:
     i)   the commands the dService can run
-    ii)  the user-configurable variables for the dService (e.g. port)
+    ii)  the docker containers to be used
+    iii) the docker volumes to manage/back up
+    iv)  the user-configurable variables for the dService (e.g. port)
 
 and
 
 B) the service configuration variables, which includes:
-    i)  the variables set by the user (as per (iv) above)
-    ii) the in-memory SERVICENAME variable
+    i)   the variables set by the user (as per (iv) above)
+    ii)  the variable IMAGENAME set to the installed image name
+    iii) the in-memory SERVICENAME variable
 
 */
 
@@ -158,13 +161,61 @@ namespace servicelua
       return rval;
    }
 
-  
    // -------------------------------------------------------------------------------
 
+   void luafile::getManageDockerVolumeNames(std::vector<std::string> & vols) const
+   {
+      drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
+      for (const auto & v : mVolumes)
+         if (!v.external)
+         {
+            std::string volname = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
+            vols.push_back(volname);
+         }
+   }
 
-   void luafile::addEnv(Configuration cf)
+   // -------------------------------------------------------------------------------
+
+   void luafile::getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const
+   {
+      drunner_assert(vols.size() == 0, "Coding error: passing dirty volume vector to getBackupDockerVolumeNames");
+      for (const auto & v : mVolumes)
+         if (v.backup)
+         {
+            BackupVol bv;
+            bv.volumeName = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
+            bv.backupName = utils::replacestring(v.name, "${SERVICENAME}", "SERVICENAME");
+            vols.push_back(bv);
+         }
+   }
+
+   // -------------------------------------------------------------------------------
+
+   const std::vector<CronEntry>& luafile::getCronEntries() const
+   {
+      return mCronEntries;
+   }
+
+   void luafile::addContainer(Container c)
+   {
+      drunner_assert(c.name.size() > 0, "Empty container name passed to addContainer.");
+      //drunner_assert(std::find(mContainers.begin(), mContainers.end(), c.name) == mContainers.end(), "Container already exists " + c.name);
+      mContainers.push_back(c);
+   }
+
+   void luafile::addConfiguration(Configuration cf)
    {
       mLuaConfigurationDefinitions.push_back(cf);
+   }
+
+   void luafile::addVolume(Volume v)
+   {
+      mVolumes.push_back(v);
+   }
+
+   void luafile::addCronEntry(CronEntry c)
+   {
+      mCronEntries.push_back(c);
    }
 
    Poco::Path luafile::getdRunDir() const
@@ -197,6 +248,10 @@ namespace servicelua
       return mSVptr;
    }
 
+   const std::vector<Container> & luafile::getContainers() const
+   {
+      return mContainers;
+   }
    const std::vector<Configuration> & luafile::getLuaConfigurationDefinitions() const
    {
       return mLuaConfigurationDefinitions;

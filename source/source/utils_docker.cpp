@@ -8,7 +8,6 @@
 #include "utils_docker.h"
 #include "globalcontext.h"
 #include "globallogger.h"
-#include "drunner_paths.h"
 
 namespace utils_docker
 {
@@ -24,18 +23,6 @@ namespace utils_docker
       if (rval != 0)
          logmsg(kLERROR, "Unable to create docker volume " + name);
       logmsg(kLDEBUG, "Created docker volume " + name);
-
-      // set permissions on volume.
-      CommandLine cl("docker", { "run", "--rm", "-v",
-         name + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
-         "chmod","0777","/tempmount" });
-
-      std::string faily;
-      int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {}, &faily);
-      if (rval != 0)
-         fatal("Failed to set permissions on docker volume " + name + ":\n " + faily);
-
-      logmsg(kLDEBUG, "Set permissions to allow access to volume " + name);
    }
 
    void stopContainer(std::string name)

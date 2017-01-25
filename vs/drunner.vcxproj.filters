@@ -217,6 +217,9 @@
     <ClCompile Include="..\source\source\service_manage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\plugins\dcron.cpp">
+      <Filter>Source Files\plugins</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -410,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\plugins\dcron.h">
+      <Filter>Source Files\plugins</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

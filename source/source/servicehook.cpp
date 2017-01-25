@@ -41,6 +41,8 @@ cResult servicehook::_runHook(std::string se)
    rval += sv.loadvariables();
    if (rval != kRSuccess)
       return rval;
+   if (sv.getImageName().length() == 0)
+      return cError("IMAGENAME was not set in service variables (servicehook::runHook).");
 
    { // allow service to hook the command
       CommandLine serviceCmd(se, mHookParams);

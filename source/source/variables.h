@@ -14,14 +14,30 @@
 
 typedef std::map<std::string, std::string> tKeyVals;
 
+// If configtypes are added then to_configtype needs to be updated.
+enum configtype
+{
+   kCF_port,
+   kCF_path,
+   kCF_existingpath,
+   kCF_string,
+   kCF_bool,
+   kCF_URL,
+   kCF_password,
+};
+
+configtype to_configtype(std::string s);
+
 class Configuration
 {
 public:
-   Configuration(std::string n, std::string dflt, std::string desc, bool user) : name(n), defaultval(dflt), description(desc), usersettable(user) {}
+   Configuration(std::string n, std::string dflt, std::string desc, configtype t, bool rqd, bool user) : name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
    
    std::string name;
    std::string defaultval;
    std::string description;
+   configtype type;
+   bool required;
    bool usersettable;
 };
 
@@ -59,6 +75,7 @@ public:
    persistvariables(std::string name, Poco::Path path, const std::vector<Configuration> config);
    cResult loadvariables();
    cResult savevariables() const;
+   cResult checkRequired() const;
    cResult setVal(std::string key, std::string val);
    void setVal_mem(std::string key, std::string val);
 
