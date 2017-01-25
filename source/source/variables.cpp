@@ -128,14 +128,6 @@ cResult persistvariables::savevariables() const
    return kRSuccess;
 }
 
-cResult persistvariables::checkRequired() const
-{
-   for (const auto & x : mConfig)
-      if (x.required && !isDefined(x.name))
-         return cError("Required setting " + x.name + " is not defined.");
-   return kRSuccess;
-}
-
 cResult persistvariables::setVal(std::string key, std::string val)
 {
    for (const auto & x : mConfig)
@@ -173,16 +165,16 @@ cResult persistvariables::_showconfiginfo() const
       for (const auto & z : mConfig)
          if (Poco::icompare(z.name, y.first) == 0)
          {
-            std::string v = (z.type == kCF_password ? "xxxxxxxx" : y.second);
+            //std::string v = (z.type == kCF_password ? "xxxxxxxx" : y.second);
             if (z.usersettable)
             {
-               logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + v);
+               logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + y.second);
                logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + z.description + "\n");
                ++uservars;
             }
             else
             {
-               logdbg("[" + _pad(y.first, maxkey) + "]= " + v + " (not user settable)");
+               logdbg("[" + _pad(y.first, maxkey) + "]= " + y.second + " (not user settable)");
                logdbg(" " + _pad(" ", maxkey) + "   " + z.description + "\n");
             }
          }
@@ -242,7 +234,7 @@ cResult persistvariables::handleConfigureCommand(CommandLine cl)
             if (val.length()==0)
                logmsg(kLINFO, "Clearing " + key);
             else
-               logmsg(kLINFO, "Setting " + key + (x.type==kCF_password ? " (password not shown)" :  " to " + val));
+               logmsg(kLINFO, "Setting " + key);
             found = true;
          }
       if (!found)
@@ -315,36 +307,3 @@ cResult persistvariables::_checkvalid(std::string key, std::string val, Configur
 {
    return kRSuccess;
 }
-
-configtype to_configtype(std::string s)
-{
-   configtype t;
-   switch (s2i(s.c_str()))
-   {
-   case s2i("port"):
-      t = kCF_port;
-      break;
-   case s2i("path"):
-      t = kCF_path;
-      break;
-   case s2i("existingpath"):
-      t = kCF_existingpath;
-      break;
-   case s2i("string"):
-      t = kCF_string;
-      break;
-   case s2i("bool"):
-      t = kCF_bool;
-      break;
-   case s2i("url"):
-      t = kCF_URL;
-      break;
-   case s2i("password"):
-      t = kCF_password;
-      break;
-   default:
-      fatal("Unknown configuration type: " + s);
-   };
-   return t;
-}
-

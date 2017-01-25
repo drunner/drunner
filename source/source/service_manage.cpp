@@ -25,52 +25,6 @@
 namespace service_manage
 {
 
-   bool _loadImageName(std::string servicename, std::string & imagename, bool & devmode)
-   { // no imagename specified. Load from service variables if we can.
-      servicelua::luafile lf(servicename);
-      if (kRSuccess == lf.loadlua())
-      {
-         serviceVars v(servicename, lf.getLuaConfigurationDefinitions());
-         v.loadvariables();
-         imagename = v.getImageName();
-         devmode = v.getIsDevMode();
-
-         drunner_assert(imagename.length() > 0, "Imagename is empty!");
-         return true;
-      }
-      return false;
-   }
-
-   void _createVolumes(std::vector<std::string> & volumes)
-   {
-      if (volumes.size() == 0)
-         logmsg(kLDEBUG, "[No volumes declared to be managed by drunner]");
-      else
-         for (const auto & v : volumes)
-         {
-            logmsg(kLDEBUG, "Checking status of volume " + v);
-
-            // each service may be running under a different userid.
-            if (utils_docker::dockerVolExists(v))
-               logmsg(kLINFO, "A docker volume already exists for " + v + ", reusing it.");
-            else
-               utils_docker::createDockerVolume(v);
-
-            // set permissions on volume.
-            CommandLine cl("docker", { "run", "--rm", "-v",
-               v + ":" + "/tempmount", drunnerPaths::getdrunnerUtilsImage(),
-               "chmod","0777","/tempmount" });
-
-            std::string faily;
-            int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&faily);
-            if (rval != 0)
-               fatal("Failed to set permissions on docker volume " + v + ":\n "+faily);
-
-            logmsg(kLDEBUG, "Set permissions to allow access to volume " + v);
-         }
-      logmsg(kLDEBUG, "Finished checking volumes.");
-   }
-
    void _ensureDirectoriesExist(std::string servicename)
    {
       servicePaths sp(servicename);
@@ -82,15 +36,9 @@ namespace service_manage
       if (!r2.success()) fatal("Couldn't create directory.\nError: " + r2.what());
    }
 
-   cResult _recreate(std::string servicename, std::string imagename, bool devMode)
+   cResult _recreate(std::string servicename, bool devMode)
    {
-      drunner_assert(imagename.length() > 0, "Can't recreate service " + servicename + " - image name could not be determined.");
       servicePaths sp(servicename);
-
-      if (devMode)
-         logmsg(kLINFO,"Development mode - "+servicename+" will never pull images.");
-      else
-         utils_docker::pullImage(imagename);
 
       try
       {
@@ -109,6 +57,9 @@ namespace service_manage
          _ensureDirectoriesExist(servicename);
 
          // copy files to service directory on host.
+
+#pragma TODO("Need to do this!")
+
          logdbg("Copying across drunner files from " + imagename);
          CommandLine cl("docker", { "run","--rm","-u","root","-v",
             sp.getPathdService().toString() + ":/tempcopy", imagename, "/bin/bash", "-c" });
@@ -130,12 +81,11 @@ namespace service_manage
             fatal("Corrupt dservice - couldn't read service.lua.");
 
          // write out service configuration for the dService.
-         serviceVars sv(servicename, imagename, syf.getLuaConfigurationDefinitions());
+         serviceVars sv(servicename, syf.getLuaConfigurationDefinitions());
          if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
             logdbg("Loaded existing service variables.");
 
          // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
-         sv.setImageName(imagename);
          sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
          sv.savevariables();

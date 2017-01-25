@@ -16,10 +16,6 @@ public:
 
    Poco::Path configurationFilePath() const;
 
-   // we do have a cron service for dbackup (running backups nightly).
-   servicelua::CronEntry getCron() const;
-   cResult runCron() const;
-
 
    // given a vector of backups, specified in days since today that the backup was taken (0=today), 
    // the oldest backup we want to keep (maxdays), the max number of backups (maxbackups), and

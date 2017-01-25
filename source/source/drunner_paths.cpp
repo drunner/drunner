@@ -62,7 +62,7 @@ Poco::Path drunnerPaths::getPath_Exe()
 Poco::Path drunnerPaths::getPath_Exe_Target()
 {
 #ifdef _WIN32
-   Poco::Path exelocation = drunnerPaths::getPath_Bin();
+   Poco::Path exelocation = drunnerPaths::getPath_bin();
    exelocation.setFileName("drunner.exe");
    return exelocation;
 #else
@@ -70,7 +70,7 @@ Poco::Path drunnerPaths::getPath_Exe_Target()
 #endif
 }
 
-Poco::Path drunnerPaths::getPath_Bin()
+Poco::Path drunnerPaths::getPath_bin()
 {
    return getPath_Root().pushDirectory("bin");
 } // bin subfolder
@@ -80,22 +80,17 @@ Poco::Path drunnerPaths::getPath_dServices()
    return getPath_Root().pushDirectory("dServices");
 }
 
-Poco::Path drunnerPaths::getPath_Temp()
+Poco::Path drunnerPaths::getPath_temp()
 {
    return getPath_Root().pushDirectory("temp");
 }
 
-Poco::Path drunnerPaths::getPath_HostVolumes()
-{
-   return getPath_Root().pushDirectory("hostVolumes");
-}
-
-Poco::Path drunnerPaths::getPath_Settings()
+Poco::Path drunnerPaths::getPath_settings()
 {
    return getPath_Root().pushDirectory("settings");
 }
 
-Poco::Path drunnerPaths::getPath_Logs()
+Poco::Path drunnerPaths::getPath_logs()
 {
    return getPath_Root().pushDirectory("logs");
 }
@@ -103,7 +98,7 @@ Poco::Path drunnerPaths::getPath_Logs()
 
 Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {
-   return getPath_Settings().setFileName("drunnerSettings.json");
+   return getPath_settings().setFileName("drunnerSettings.json");
 }
 
 std::string drunnerPaths::getdrunnerUtilsImage()

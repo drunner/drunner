@@ -8,16 +8,29 @@ servicePaths::servicePaths(const std::string & servicename) :
 {
 }
 
+/*
+
+.drunner
+         /bin
+         /dServices
+                  /minecraft
+                        /minecraft.lua
+                        / (… any other files needed, e.g. docker-compose.yml)
+                        /variables.json
+         /settings
+                  /drunnerSettings.json
+         /logs
+                  /log.txt
+         /temp
+
+*/
+
+
 Poco::Path servicePaths::getPathdService() const
 {
    Poco::Path p = drunnerPaths::getPath_dServices().pushDirectory(mName);
    poco_assert(p.isDirectory());
    return p;
-}
-
-Poco::Path servicePaths::getPathHostVolume() const
-{
-   return drunnerPaths::getPath_HostVolumes().pushDirectory(mName);
 }
 
 Poco::Path servicePaths::getPathServiceLua() const

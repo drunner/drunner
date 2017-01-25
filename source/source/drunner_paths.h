@@ -9,12 +9,11 @@ namespace drunnerPaths
    Poco::Path getPath_Exe();        // the path of the drunner execuatble. can be anywhere
    Poco::Path getPath_Exe_Target(); // the target path of the drunner executable. On Linux this is the same as getPath_Exe (we don't move it). On Windows it's .drunner/bin (we do move it). 
 
-   Poco::Path getPath_Bin();
+   Poco::Path getPath_bin();
    Poco::Path getPath_dServices();
-   Poco::Path getPath_Temp();
-   Poco::Path getPath_HostVolumes();
-   Poco::Path getPath_Settings();
-   Poco::Path getPath_Logs();
+   Poco::Path getPath_temp();
+   Poco::Path getPath_settings();
+   Poco::Path getPath_logs();
 
    Poco::Path getPath_drunnerSettings_json();
 
