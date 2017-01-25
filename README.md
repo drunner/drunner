@@ -22,10 +22,14 @@ Aimed at Docker containers, dRunner eliminates the need to manually store and ma
 * Destroying a service leaves the machine in a clean state, no cruft left.
 * Everything in containers is run as a non-root user, drunner on the host also runs as non-root.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
+* Ansible friendly for automation (see [Exit Codes](README.md#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
-* Scripts to control containers are in Lua.
-* You can use Docker Compose files to define services if you wish.
-* Some useful tools to build dServices and test them are available.
+* Includes simple HTTP(S) port forwarding based on domain name (dproxy), with automatic configuration.
+* Scripts to control docker containers are in Lua.
+* You can use Docker Compose files to define services.
+* Some useful tools to build dServices and test them.
+
+
 
 ## Installation
 
