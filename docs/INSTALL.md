@@ -4,9 +4,9 @@
 
 ### Dependencies
 
-dRunner needs docker. You can install it with:
+dRunner version 0.9 needs docker. You can install it with:
 ```
-wget -nv http://drunner.s3.amazonaws.com/lin/docker-install
+wget -nv http://drunner.s3.amazonaws.com/09/lin/docker-install
 sudo bash docker-install
 ```
 
@@ -19,7 +19,7 @@ You'll need to log out then in again for the group to take effect.
 
 ### Installing dRunner
 ```
-wget http://drunner.s3.amazonaws.com/lin/drunner-install
+wget http://drunner.s3.amazonaws.com/09/lin/drunner-install
 bash drunner-install
 ```
 
@@ -35,7 +35,7 @@ https://docs.docker.com/docker-for-windows/
 Download the Windows native build from:
 
 ```
-https://s3-ap-southeast-2.amazonaws.com/drunner/win/drunner.exe
+https://s3-ap-southeast-2.amazonaws.com/drunner/09/win/drunner.exe
 ```
 Double click it to install.
 
