@@ -42,7 +42,7 @@ CEREAL_CLASS_VERSION(keyVals, 1);
 
 
 
-const unsigned int ENV_DEFAULTS = 0x0000; // not user settable, memory only, not secret.
+const unsigned int ENV_DEFAULTS_MEM = 0x0000; // not user settable, memory only, not secret.
 const unsigned int ENV_USERSETTABLE = 0x0001;
 const unsigned int ENV_PERSISTS = 0x0002;
 const unsigned int ENV_SECRET = 0x0004;
@@ -50,6 +50,7 @@ const unsigned int ENV_SECRET = 0x0004;
 
 class envFlags {
 public:
+   envFlags(unsigned int s) : state(s) {}
    unsigned int state;
 };
 

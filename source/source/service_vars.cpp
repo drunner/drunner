@@ -1,16 +1,16 @@
 #include "service_vars.h"
 #include "service_paths.h"
 
-serviceVars::serviceVars(std::string servicename, const std::vector<Configuration> & config) : 
+serviceVars::serviceVars(std::string servicename, const std::vector<envDef> & config) :
    persistvariables(servicename, servicePaths(servicename).getPathServiceVars(), config)
 {
-   _setconfig();
+   _extendconfig();
 }
 
-serviceVars::serviceVars(std::string servicename, std::string imagename, const std::vector<Configuration> & config) :
+serviceVars::serviceVars(std::string servicename, std::string imagename, const std::vector<envDef> & config) :
    persistvariables(servicename, servicePaths(servicename).getPathServiceVars(), config)
 {
-   _setconfig();
+   _extendconfig();
 }
 
 std::string serviceVars::getImageName() const
@@ -43,11 +43,9 @@ void serviceVars::setDevMode(bool isDevMode)
 }
 
 
-void serviceVars::_setconfig()
+void serviceVars::_extendconfig()
 {
-   // we always know the servicename.
-   setVal_mem("SERVICENAME", mName);
-   
-   _addConfig(Configuration("IMAGENAME", "", "Image name", kCF_string, true, false));
-   _addConfig(Configuration("DEVMODE", "False", "Development Mode", kCF_bool, true, false));
+   _addConfig(envDef("SERVICENAME", mName, "Name of Service", ENV_DEFAULTS_MEM)); // in memory, no need to persist this.
+   _addConfig(envDef("IMAGENAME", "", "Image name", ENV_PERSISTS));
+   _addConfig(envDef("DEVMODE", "False", "Development Mode", ENV_PERSISTS | ENV_USERSETTABLE));
 }
