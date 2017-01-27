@@ -57,14 +57,18 @@ void service::backup(const std::string & backupfile)
    for (auto const & si : drc.getServicesInfo())
       for (auto const entry : si.mVolumes)
       {
-         if (utils::dockerVolExists(entry.mDockerVolumeName))
+         if (utils::dockerVolExists(entry.mDockerVolumeName) && !utils::fileexists(tempf+entry.mDockerVolumeNameBackup + ".tar"))
          {
             compress::compress_volume(password, entry.mDockerVolumeName, tempf, entry.mDockerVolumeNameBackup + ".tar",true);
             logmsg(kLDEBUG, "Backed up docker volume " + entry.mDockerVolumeName + " as " + entry.mDockerVolumeNameBackup);
          }
+         else if (utils::fileexists(tempf+entry.mDockerVolumeNameBackup + ".tar")){
+            logmsg(kLWARN, "Archive already exists " + entry.mDockerVolumeNameBackup + ".tar");   
+         }
          else
             logmsg(kLWARN, "Couldn't find docker volume " + entry.mDockerVolumeName + " ... skipping.");
       }
+
 
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
    tstep.restart();
