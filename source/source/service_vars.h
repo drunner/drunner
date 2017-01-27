@@ -6,8 +6,8 @@
 class serviceVars : public persistvariables
 {
 public:
-   serviceVars(std::string servicename, const std::vector<Configuration> & config);
-   serviceVars(std::string servicename, std::string imagename, const std::vector<Configuration> & config);
+   serviceVars(std::string servicename, const std::vector<envDef> & config);
+   serviceVars(std::string servicename, std::string imagename, const std::vector<envDef> & config);
 
    //serviceVars(std::string servicename);
    //initialise(const std::vector<Configuration> & config);

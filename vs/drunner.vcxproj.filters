@@ -14,6 +14,9 @@
     <Filter Include="Source Files\win">
       <UniqueIdentifier>{98fd1ce8-fbea-426c-be93-ebf507ce8c65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\new 1_0">
+      <UniqueIdentifier>{0c53213d-4a83-44f2-bf80-0ce405a4f30b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp">

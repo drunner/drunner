@@ -42,13 +42,13 @@ public:
 
 public:
    virtual cResult runCommand() const;
-   cResult addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable);
+   cResult addConfig(envDef config);
 
 protected:
    const persistvariables getPersistVariables() const;
    cResult setAndSaveVariable(std::string key, std::string val) const;
 
-   std::vector<Configuration> mConfiguration;
+   std::vector<envDef> mConfiguration;
 };
 
 // ----------------------------------------------------------------------------------------

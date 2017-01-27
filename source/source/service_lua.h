@@ -54,7 +54,7 @@ namespace servicelua
       cResult loadlua();
 
       const std::vector<Container> & getContainers() const;
-      const std::vector<Configuration> & getLuaConfigurationDefinitions() const;
+      const std::vector<envDef> & getLuaConfigurationDefinitions() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
       const std::vector<CronEntry> & getCronEntries() const;
@@ -68,7 +68,7 @@ namespace servicelua
 
       // for lua
       void addContainer(Container c);
-      void addConfiguration(Configuration cf);
+      void addConfiguration(envDef cf);
       void addVolume(Volume v);
       void addCronEntry(CronEntry c);
       Poco::Path getdRunDir() const;
@@ -83,7 +83,7 @@ namespace servicelua
       const servicePaths mServicePaths;
 
       std::vector<Container> mContainers;
-      std::vector<Configuration> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
+      std::vector<envDef> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
       std::vector<Volume> mVolumes;
       std::vector<CronEntry> mCronEntries;
 
