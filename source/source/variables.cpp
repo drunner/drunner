@@ -144,7 +144,7 @@ cResult persistvariables::setVal(std::string key, std::string val)
    for (const auto & x : mEnvDefs)
       if (Poco::icompare(x.name, key) == 0)
       {
-         setVal(x.name, val);
+         keyVals::setVal(x.name, val);
          return kRSuccess;
       }
 
