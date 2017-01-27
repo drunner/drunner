@@ -33,17 +33,6 @@ namespace servicelua
       std::string backupName;
    };
 
-   class CronEntry
-   {
-   public:
-      CronEntry() : offsetmin("0"), repeatmin("0"), function("") {}
-      bool isvalid() const { return repeatmin != "0"; }
-
-      std::string offsetmin;
-      std::string repeatmin;
-      std::string function;
-   };
-
    // lua file.
    class luafile {
    public:
@@ -57,7 +46,6 @@ namespace servicelua
       const std::vector<envDef> & getLuaConfigurationDefinitions() const;
       void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
       void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
-      const std::vector<CronEntry> & getCronEntries() const;
 
       // for service::serviceRunnerCommand
       cResult runCommand(const CommandLine & serviceCmd, serviceVars * sVars);
@@ -70,7 +58,6 @@ namespace servicelua
       void addContainer(Container c);
       void addConfiguration(envDef cf);
       void addVolume(Volume v);
-      void addCronEntry(CronEntry c);
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
 
@@ -85,7 +72,6 @@ namespace servicelua
       std::vector<Container> mContainers;
       std::vector<envDef> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
       std::vector<Volume> mVolumes;
-      std::vector<CronEntry> mCronEntries;
 
       lua_State * L;
       serviceVars * mSVptr;

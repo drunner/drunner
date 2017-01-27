@@ -110,10 +110,6 @@ cResult mainroutines::process()
       return newSettings.handleConfigureCommand(cl); // needs to be read/write settings.
    }
 
-   cResult rval = GlobalContext::getSettings()->checkRequired();
-   if (!rval.success())
-      fatal("Please configure dRunner:\n " + rval.what());
-
    // ----------------
    // command handling
    switch (p.getCommand())

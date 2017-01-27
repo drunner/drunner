@@ -71,11 +71,6 @@ cResult service::servicecmd()
 
 cResult service::runLuaFunction(CommandLine cl)
 {
-   // check all required variables are configured.
-   cResult reqdresult = mServiceVarsPtr->checkRequired();
-   if (!reqdresult.success())
-      logmsg(kLWARN, reqdresult.what());
-
    // handle the command.
    std::ostringstream oss;
    oss << "[" << cl.command << "]";

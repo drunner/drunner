@@ -21,15 +21,13 @@
 
 dbackup::dbackup() 
 {
-   addConfig("BACKUPPATH", "The path to save backups into.", "", kCF_string, true, true);
-   addConfig("MAXDAYS", "The maximum number of days to keep backups for.", "90", kCF_string, true, true);
-   addConfig("MAXBACKUPS", "The maximum number of backup sets to keep.", "20", kCF_string, true, true);
-   addConfig("ALWAYSKEEP", "Always keep this many of the most recent backups.", "3", kCF_string, true, true);
-
-   addConfig("AUTOBACKUP", "Run the backups automatically using dcron once per day", "false", kCF_bool, true, true);
+   addConfig(envDef("BACKUPPATH", "", "The path to save backups into.", ENV_PERSISTS | ENV_USERSETTABLE));
+   addConfig(envDef("MAXDAYS", "90", "The maximum number of days to keep backups for.", ENV_PERSISTS | ENV_USERSETTABLE));
+   addConfig(envDef("MAXBACKUPS", "20", "The maximum number of backup sets to keep.", ENV_PERSISTS | ENV_USERSETTABLE));
+   addConfig(envDef("ALWAYSKEEP", "3", "Always keep this many of the most recent backups.", ENV_PERSISTS | ENV_USERSETTABLE));
 
    // system set (not user settable).
-   addConfig("DISABLEDSERVICES", "Services that have been disabled (base64 encoded).", "", kCF_string, false, false);
+   addConfig(envDef("DISABLEDSERVICES", "", "Services that have been disabled (base64 encoded).", ENV_PERSISTS));
 }
 
 std::string dbackup::getName() const
@@ -40,26 +38,6 @@ std::string dbackup::getName() const
 Poco::Path dbackup::configurationFilePath() const
 {
    return drunnerPaths::getPath_Settings().setFileName("dbackup.json");
-}
-
-servicelua::CronEntry dbackup::getCron() const
-{
-   servicelua::CronEntry ce;
-
-   persistvariables p(getPersistVariables());
-
-   if (p.getBool("AUTOBACKUP"))
-   { // could make these user settable if there was a need.
-      ce.offsetmin = "180"; // 3 am
-      ce.repeatmin = "1440"; // 24 hours
-   }
-
-   return ce;
-}
-
-cResult dbackup::runCron() const
-{
-   return _run(getPersistVariables());
 }
 
 cResult dbackup::runCommand(const CommandLine & cl, persistvariables & v) const
@@ -124,9 +102,6 @@ cResult dbackup::_exclude(std::string servicename, persistvariables &v) const
 
 cResult dbackup::_run(const persistvariables &v) const
 {
-   if (!v.checkRequired().success())
-      return cError("Please configure dbackup before running.");
-
    Poco::Path p = _getPath(v);
    p.makeDirectory();
 

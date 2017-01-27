@@ -22,9 +22,6 @@ public:
    virtual std::string getName() const = 0;
    virtual cResult runCommand() const = 0;
    virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const = 0;
-
-   virtual servicelua::CronEntry getCron() const = 0;
-   virtual cResult runCron() const = 0;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -63,8 +60,6 @@ public:
    cResult runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf=NULL, const serviceVars * sv=NULL) const;
 
    void getPluginNames(std::vector<std::string> & names) const;
-   servicelua::CronEntry getCronJob(std::string pluginName) const;
-   cResult runCron(std::string pluginName) const;
 
 private:
    std::deque< std::unique_ptr<plugin> > mPlugins;

@@ -116,7 +116,7 @@ namespace servicelua
          fatal("The argument returned by help was not a string, rather "+std::string(lua_typename(L,1)));
       std::string help = lua_tostring(L, 1);
 
-      logmsg(kLINFO, sVars->getVariables().substitute(help));
+      logmsg(kLINFO, sVars->substitute(help));
       return kRSuccess;
    }
 
@@ -191,11 +191,6 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   const std::vector<CronEntry>& luafile::getCronEntries() const
-   {
-      return mCronEntries;
-   }
-
    void luafile::addContainer(Container c)
    {
       drunner_assert(c.name.size() > 0, "Empty container name passed to addContainer.");
@@ -203,7 +198,7 @@ namespace servicelua
       mContainers.push_back(c);
    }
 
-   void luafile::addConfiguration(Configuration cf)
+   void luafile::addConfiguration(envDef cf)
    {
       mLuaConfigurationDefinitions.push_back(cf);
    }
@@ -211,11 +206,6 @@ namespace servicelua
    void luafile::addVolume(Volume v)
    {
       mVolumes.push_back(v);
-   }
-
-   void luafile::addCronEntry(CronEntry c)
-   {
-      mCronEntries.push_back(c);
    }
 
    Poco::Path luafile::getdRunDir() const
@@ -252,7 +242,7 @@ namespace servicelua
    {
       return mContainers;
    }
-   const std::vector<Configuration> & luafile::getLuaConfigurationDefinitions() const
+   const std::vector<envDef> & luafile::getLuaConfigurationDefinitions() const
    {
       return mLuaConfigurationDefinitions;
    }

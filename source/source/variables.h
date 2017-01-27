@@ -80,7 +80,6 @@ public:
    cResult loadvariables();
    cResult savevariables() const;
 
-   const keyVals getVariables() const;
    bool exists() const;
 
    // override base class, check it exists in the environment definitions before commiting.

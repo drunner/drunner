@@ -12,7 +12,6 @@
 extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_addvolume(lua_State *L);
 extern "C" int l_addcontainer(lua_State *L);
-extern "C" int l_addcron(lua_State *L);
 
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
@@ -40,7 +39,6 @@ namespace servicelua
       REGISTERLUAC(l_addconfig, "addconfig")
       REGISTERLUAC(l_addvolume, "addvolume")
       REGISTERLUAC(l_addcontainer, "addcontainer")
-      REGISTERLUAC(l_addcron,"addcron")
 
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
@@ -82,7 +80,7 @@ namespace servicelua
       // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
       drunner_assert(lua_isstring(L, 1), "The name must be a string.");
       drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
-      drunner_assert(lua_isstring(L, 3), "The decsription must be a string.");
+      drunner_assert(lua_isstring(L, 3), "The description must be a string.");
       drunner_assert(lua_isstring(L, 4), "The type must be a string.");
       drunner_assert(lua_isboolean(L, 5), "The required flag must be a boolean.");
 
@@ -90,13 +88,13 @@ namespace servicelua
          drunner_assert(lua_isboolean(L, 6), "The usersettable flag must be a boolean.");
 
       // convert configtype.
-      configtype ctype = to_configtype(lua_tostring(L, 4));
+      //configtype ctype = to_configtype(lua_tostring(L, 4));
 
       // optional parameter.
       bool usersettable = (lua_gettop(L) == 6 ? (lua_toboolean(L, 6) == 1) : true);
 
-      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), ctype, (lua_toboolean(L, 5) == 1), usersettable);
-      get_luafile(L)->addConfiguration(c);
+      envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), usersettable ? (ENV_PERSISTS | ENV_USERSETTABLE) : ENV_PERSISTS);
+      get_luafile(L)->addConfiguration(def);
 
       cResult rval = kRSuccess;
       lua_pushinteger(L, rval);
@@ -162,30 +160,6 @@ namespace servicelua
       return _luasuccess(L);
    }
 
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_addcron(lua_State *L)
-   {
-      if (lua_gettop(L) != 3)
-         return luaL_error(L, "addcron requries three arguments (offsetmin, repeatmin, functionname).");
-      CronEntry c;
-      drunner_assert(lua_isstring(L, 1), "offsetmin must be able to be interpreted as a string.");
-      drunner_assert(lua_isstring(L, 2), "repeatmin must be able to be interpreted as a string.");
-      drunner_assert(lua_isstring(L, 3), "function name must be a string.");
-
-      //std::istringstream offset(lua_tostring(L, 1));
-      //offset >> c.offsetmin;
-      //std::istringstream repeat(lua_tostring(L, 2));
-      //repeat >> c.repeatmin;
-
-      c.offsetmin = lua_tostring(L, 1);
-      c.repeatmin = lua_tostring(L, 2);
-      c.function = lua_tostring(L, 3);
-
-      get_luafile(L)->addCronEntry(c);
-
-      return _luasuccess(L);
-   }
 
    // -----------------------------------------------------------------------------------------------------------------------
    
