@@ -34,7 +34,7 @@ deploy:
     secret_access_key:
       secure: Q9rvfslUVOEJv2WPoQ0qySKhGRBCk3ubjaUHWnigKAdpdybURrGXaO2GraEfKojE
     bucket: drunner
-    folder: win
+    folder: 10/win
     artifact: drunner.exe
     region: ap-southeast-2
     on:
