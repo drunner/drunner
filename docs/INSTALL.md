@@ -35,7 +35,7 @@ https://docs.docker.com/docker-for-windows/
 Download the Windows native build from:
 
 ```
-https://s3-ap-southeast-2.amazonaws.com/drunner/09/win/drunner.exe
+https://s3-ap-southeast-2.amazonaws.com/drunner/10/win/drunner.exe
 ```
 Double click it to install.
 
