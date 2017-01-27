@@ -6,6 +6,7 @@ PERMISSIONSFILE="${MYDIR}/.permissions"
 DRUNNER="/usr/local/bin/drunner"
 
 VERSION="0.9"
+NICEVER="09"
 VERSIONSTR="${VERSION} r"
 VERSIONDATE="2016-11-19"
 VSHORT="NOT SET"
@@ -161,11 +162,11 @@ function main {
 
       upload)
       # relies on S3KEY and S3SECRET environ vars
-         putS3 "${MYDIR}/source/drunner" "/lin/drunner"
+         putS3 "${MYDIR}/source/drunner" "/${NICEVER}/lin/drunner"
 
          s3supportpath="${MYDIR}/.s3supportfiles"
          for file in "$s3supportpath"/*; do
-            putS3 "$s3supportpath/${file##*/}" "/lin/${file##*/}"
+            putS3 "$s3supportpath/${file##*/}" "/${NICEVER}/lin/${file##*/}"
          done
          ;;
 
