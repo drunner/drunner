@@ -12,12 +12,16 @@ public:
 
    serviceVars(std::string servicename);
 
-   std::string getImageName() const;
    std::string getServiceName() const;
-   bool getIsDevMode() const;
 
+   std::string getImageName() const;
    void setImageName(std::string imagename);
+
+   bool getIsDevMode() const;
    void setDevMode(bool isDevMode);
+
+   std::string getTempBackupFolder() const;
+   void setTempBackupFolder(std::string folder);
 
 private:
    void _extendconfig();

@@ -8,6 +8,8 @@
 #include "utils_docker.h"
 #include "globalcontext.h"
 #include "globallogger.h"
+#include "compress.h"
+#include "dassert.h"
 
 namespace utils_docker
 {
@@ -166,5 +168,21 @@ exit 1
       return r.success(); // returns 0 if root (success).
    }
 
+   cResult backupDockerVolume(std::string volumename, const serviceVars & sv)
+   {
+      // -----------------------------------------
+      // back up volume container
+      std::string password = utils::getenv("PASS");
+      std::string backupName = volumename; // todo : make it robust to weird chars etc.
+
+      if (!utils_docker::dockerVolExists(volumename))
+         fatal("Couldn't find docker volume " + volumename + ".");
+
+      Poco::Path volarchive( sv.getTempBackupFolder() );
+      drunner_assert(volarchive.isDirectory(),"Coding error: volarchive needs to be directory.");
+      volarchive.setFileName(backupName + ".tar");
+      compress::compress_volume(password, volumename, volarchive);
+      logmsg(kLDEBUG, "Backed up docker volume " + volumename + " as " + backupName);
+   }
 
 } // namespace

@@ -54,10 +54,22 @@ void serviceVars::setDevMode(bool isDevMode)
    setVal("DEVMODE", isDevMode ? "True" : "False");
 }
 
+std::string serviceVars::getTempBackupFolder() const
+{
+   return getVal("TEMPBACKUPFOLDER");
+}
+
+void serviceVars::setTempBackupFolder(std::string folder)
+{
+   setVal("TEMPBACKUPFOLDER", folder);
+}
+
 
 void serviceVars::_extendconfig()
 {
    _addConfig(envDef("SERVICENAME", mName, "Name of Service", ENV_DEFAULTS_MEM)); // in memory, no need to persist this.
+   _addConfig(envDef("TEMPBACKUPFOLDER", mName, "Temporary location for backup files", ENV_DEFAULTS_MEM)); // in memory, no need to persist this.
+
    _addConfig(envDef("IMAGENAME", "", "Image name", ENV_PERSISTS));
    _addConfig(envDef("DEVMODE", "False", "Development Mode", ENV_PERSISTS | ENV_USERSETTABLE));
 }

@@ -14,12 +14,9 @@ The luafile class handles the interpreted service.lua, which defines the command
 
 */
 
-
 namespace servicelua
 {   
  // -------------------------------------------------------------------------------
-
-
 
    luafile::luafile(serviceVars & sv, const CommandLine & serviceCmd) :
       mServicePaths(sv.getServiceName()), 

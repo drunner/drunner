@@ -14,25 +14,6 @@
 
 namespace servicelua
 {
-   struct Volume 
-   {
-      bool backup;
-      bool external;
-      std::string name;
-   };
-
-   struct Container
-   {
-      std::string name;
-      bool runasroot;
-   };
-
-   struct BackupVol
-   {
-      std::string volumeName;
-      std::string backupName;
-   };
-
    // lua file.
    class luafile {
    public:
@@ -43,9 +24,7 @@ namespace servicelua
       cResult getResult() { return mResult; }
       
       // for lua
-      void addContainer(Container c);
       void addConfiguration(envDef cf);
-      void addVolume(Volume v);
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
       std::string getServiceName() { return mServicePaths.getName(); }

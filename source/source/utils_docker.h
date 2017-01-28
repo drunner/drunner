@@ -19,6 +19,8 @@ namespace utils_docker
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op);
    bool dockerContainerRunsAsRoot(std::string container);
+
+   cResult backupDockerVolume(std::string volumename, const serviceVars & sv);
 }
 
 #endif

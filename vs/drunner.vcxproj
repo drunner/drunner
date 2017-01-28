@@ -58,7 +58,6 @@
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\plugins\ddev.cpp" />
-    <ClCompile Include="..\source\source\service_backupinfo.cpp" />
     <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
     <ClCompile Include="..\source\source\generate.cpp" />
@@ -141,7 +140,6 @@
     <ClInclude Include="..\source\source\variables.h" />
     <ClInclude Include="..\source\source\service_lua.h" />
     <ClInclude Include="..\source\source\showhelp.h" />
-    <ClInclude Include="..\source\source\service_backupinfo.h" />
     <ClInclude Include="..\source\source\drunner_settings.h" />
     <ClInclude Include="..\source\source\termcolor.h" />
     <ClInclude Include="..\source\source\tests\unittests.h" />

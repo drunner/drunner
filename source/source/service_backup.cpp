@@ -5,7 +5,6 @@
 
 #include "service.h"
 #include "utils.h"
-#include "service_backupinfo.h"
 #include "compress.h"
 #include "globallogger.h"
 #include "globalcontext.h"
@@ -14,6 +13,7 @@
 #include "service_manage.h"
 #include "utils_docker.h"
 #include "dassert.h"
+#include "service_lua.h"
 
 // Back up this service to backupfile.
 cResult service::backup(std::string backupfile)
@@ -38,49 +38,19 @@ cResult service::backup(std::string backupfile)
    utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + getName()));
    utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
 
-   // write out variables that we need to decompress everything.
-   backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
-   bvars.create(getImageName(),mServiceVarsPtr->getIsDevMode());
-   bvars.savevars();
+   std::string password = utils::getenv("PASS");
 
    // path for docker volumes and for container custom backups (e.g. mysqldump)
-   const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
-   const Poco::Path tempc = tempparent.getpath().pushDirectory("containerbackup");
+   const Poco::Path tempf = tempparent.getpath().pushDirectory("dservicebackup");
    if (!utils::makedirectory(tempf, S_777).success()) fatal("Failed to create temp dir."); // random UID in container needs access.
-   if (!utils::makedirectory(tempc, S_777).success()) fatal("Failed to create temp dir.");
 
    logmsg(kLINFO, "Time for preliminaries:           " + tstep.getelpased());
    tstep.restart();
 
-   // -----------------------------------------
-   // notify service we're starting our backup.
-   //tVecStr args;
-   //args.push_back(tempc.toString());
-   //servicehook hook(getName(), "backup", args);
-   //hook.starthook();
-
-   //logmsg(kLINFO, "Time for dService to backup hook: " + tstep.getelpased());
-   //tstep.restart();
-
-   // -----------------------------------------
-   // back up volume containers
-   logmsg(kLDEBUG, "Backing up all docker volumes.");
-   std::string password = utils::getenv("PASS");
-   std::vector<servicelua::BackupVol> dockervols;
-   mServiceLua.getBackupDockerVolumeNames(dockervols);
-
-   for (auto const & entry : dockervols)
-   {
-      if (utils_docker::dockerVolExists(entry.volumeName))
-      {
-         Poco::Path volarchive(tempf);
-         volarchive.setFileName(entry.backupName + ".tar");
-         compress::compress_volume(password, entry.volumeName, volarchive);
-         logmsg(kLDEBUG, "Backed up docker volume " + entry.volumeName + " as "+entry.backupName);
-      }
-      else
-         fatal("Couldn't find docker volume " + entry.volumeName + ".");
-   }
+   mServiceVars.setTempBackupFolder(tempf.toString());
+   servicelua::luafile lf(mServiceVars, CommandLine("backup"));
+   if (!lf.getResult().success())
+      fatal("Failed to run backup command in the dService's service.lua.");
 
    logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
    tstep.restart();
@@ -95,12 +65,11 @@ cResult service::backup(std::string backupfile)
    logmsg(kLINFO, "Time for host volume backup:      " + tstep.getelpased());
    tstep.restart();
 
-   // -----------------------------------------
-   // notify service we've finished our backup.
-   //hook.endhook();
 
-   logmsg(kLINFO, "Time for dService to wrap up:     " + tstep.getelpased());
-   tstep.restart();
+
+   TODO: Backup dservice files??? (Probably)
+
+
 
    // -----------------------------------------
    // compress everything together
