@@ -13,8 +13,6 @@ extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_drun_outputexit(lua_State *L);
-extern "C" int l_drunning(lua_State *L);
-extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
@@ -23,6 +21,11 @@ extern "C" int l_dsplit(lua_State *L);
 extern "C" int l_getdrundir(lua_State *L);
 extern "C" int l_setdrundir(lua_State *L);
 extern "C" int l_getpwd(lua_State *L);
+
+extern "C" int l_dockerstop(lua_State *L);
+extern "C" int l_dockerrunning(lua_State *L);
+extern "C" int l_dockerpull(lua_State *L);
+extern "C" int l_dockercreatevolume(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -35,11 +38,11 @@ namespace servicelua
    { // define all our C functions that we want available from service.lua
 
       REGISTERLUAC(l_addconfig, "addconfig")
+
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
-      REGISTERLUAC(l_drunning, "drunning")
-      REGISTERLUAC(l_dstop, "dstop")
+
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
@@ -48,6 +51,12 @@ namespace servicelua
       REGISTERLUAC(l_getdrundir,"getdrundir")
       REGISTERLUAC(l_setdrundir, "setdrundir")
       REGISTERLUAC(l_getpwd, "getpwd")
+
+      REGISTERLUAC(l_dockerstop, "dockerstop")
+      REGISTERLUAC(l_dockerrunning, "dockerrunning")
+      REGISTERLUAC(l_dockerpull, "dockerpull")
+      REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
+
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -213,7 +222,7 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
       
-   extern "C" int l_drunning(lua_State *L)
+   extern "C" int l_dockerrunning(lua_State *L)
    {
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the container name to check) for drunning.");
@@ -229,10 +238,25 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_dstop(lua_State *L)
+   extern "C" int l_dockerpull(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dstop.");
+         return luaL_error(L, "Expected exactly one argument (the image name to pull) for dockerpull.");
+      drunner_assert(lua_isstring(L, 1), "image name must be a string.");
+      std::string imagename = lua_tostring(L, 1);
+      //luafile *lf = get_luafile(L);
+
+      cResult r = utils_docker::pullImage(imagename);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerstop(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dockerstop.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
 
@@ -252,6 +276,20 @@ namespace servicelua
       else
          logmsg(kLDEBUG, subcontainer + " is not running.");
       return _luasuccess(L);
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockercreatevolume(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to create) for dockercreatevolume.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+      cResult r = utils_docker::createDockerVolume(vol);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
