@@ -23,7 +23,6 @@ namespace servicelua
       mServiceVars(sv)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(), "Coding error: services.lua path provided to luafile is not a file!");
-      drunner_assert(mServicePaths.getPathVariablesLua().isFile(), "Coding error: variables.lua path provided to luafile is not a file!");
 
       L = luaL_newstate();
       luaL_openlibs(L);
@@ -57,9 +56,6 @@ namespace servicelua
 
    cResult luafile::_loadlua()
    {
-      if (!utils::fileexists(mServicePaths.getPathVariablesLua()))
-         return cError("loadlua: the variables.lua file does not exist: " + mServicePaths.getPathVariablesLua().toString());
-
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))

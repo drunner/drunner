@@ -18,10 +18,9 @@ namespace service_manage
    cResult _createLaunchScript(std::string servicename);
    cResult _removeLaunchScript(std::string servicename);
 
+   cResult _create_common(std::string servicename); // common elements of creating a service, used by _create and by service_restore.
    void _createVolumes(std::vector<std::string> & volumes);
    void _ensureDirectoriesExist(std::string servicename);
-   cResult _recreate(std::string servicename, std::string imagename, bool devMode);
-   bool _loadImageName(std::string servicename, std::string & imagename, bool & devmode);
 }
 
 

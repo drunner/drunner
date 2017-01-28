@@ -64,7 +64,18 @@ namespace service_manage
       if (!r2.success()) fatal("Couldn't create directory.\nError: " + r2.what());
    }
 
-   cResult _create(std::string servicename, std::string imagename, bool devMode)
+   // common elements of creating a service, used by _create and by service_restore.
+   // everything except the dService definition and the service variables.
+   cResult _create_common(std::string servicename)
+   {
+      // create the basic directories.
+      _ensureDirectoriesExist(servicename);
+
+      // create launch script
+      return _createLaunchScript(servicename);
+   }
+
+   cResult _install_create(std::string servicename, std::string imagename, bool devMode)
    {
       drunner_assert(imagename.length() > 0, "Can't create service " + servicename + " - imagename could not be determined.");
       servicePaths sp(servicename);
@@ -82,8 +93,7 @@ namespace service_manage
          if (utils::fileexists(sp.getPathHostVolume()))
             logmsg(kLINFO, "A drunner hostVolume already exists for " + servicename + ", reusing it.");
 
-         // create the basic directories.
-         _ensureDirectoriesExist(servicename);
+         _create_common(servicename);
 
          // copy files to service directory on host.
          logdbg("Copying across drunner files from " + imagename);
@@ -108,9 +118,6 @@ namespace service_manage
          sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
          sv.savevariables();
-
-         // create launch script
-         _createLaunchScript(servicename);
       }
 
       catch (const eExit & e) {
@@ -150,7 +157,7 @@ namespace service_manage
       logmsg(kLDEBUG, "Attempting to validate " + imagename);
       validateImage::validate(imagename);
 
-      _create(servicename,imagename,devMode);
+      _install_create(servicename,imagename,devMode);
 
       serviceVars sv(servicename);
       servicelua::luafile lf(sv, CommandLine("install"));

@@ -89,7 +89,7 @@ namespace utils
    public:
       tempfolder(Poco::Path d);
       ~tempfolder();
-      Poco::Path getpath();
+      Poco::Path getpath() const;
       
    private:
       void die(std::string msg);

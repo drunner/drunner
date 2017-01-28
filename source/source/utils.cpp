@@ -321,7 +321,7 @@ namespace utils
       tidy();
    }
 
-   Poco::Path tempfolder::getpath() 
+   Poco::Path tempfolder::getpath() const
    { 
       poco_assert(mPath.isDirectory());
       return mPath; 

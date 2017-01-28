@@ -81,7 +81,7 @@ std::vector<envDef> serviceVars::loadServiceVariablesLua()
 {
    std::vector<envDef> defs;
 
-   std::string path = servicePaths(mName).getPathVariablesLua().toString();
+   std::string path = servicePaths(mName).getPathServiceLua().toString();
    std::ifstream infile(path);
    std::string line;
    std::string search = "addconfig(";

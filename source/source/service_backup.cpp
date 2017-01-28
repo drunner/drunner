@@ -35,47 +35,45 @@ cResult service::backup(std::string backupfile)
    if (utils::fileexists(bf))
       return cError("Backup file " + bf.toString() + " already exists. Aborting.");
 
-   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("archivefolder-" + getName()));
-   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("backup-"+getName()));
-
-   std::string password = utils::getenv("PASS");
-
-   // path for docker volumes and for container custom backups (e.g. mysqldump)
-   const Poco::Path tempf = tempparent.getpath().pushDirectory("dservicebackup");
-   if (!utils::makedirectory(tempf, S_777).success()) fatal("Failed to create temp dir."); // random UID in container needs access.
+   backupPathManager paths(mName);
 
    logmsg(kLINFO, "Time for preliminaries:           " + tstep.getelpased());
    tstep.restart();
 
-   mServiceVars.setTempBackupFolder(tempf.toString());
+   // -----------------------------------------
+   // back up whatever the dService tells us to
+   mServiceVars.setTempBackupFolder(paths.getPathSubArchives().toString());
    servicelua::luafile lf(mServiceVars, CommandLine("backup"));
    if (!lf.getResult().success())
       fatal("Failed to run backup command in the dService's service.lua.");
 
-   logmsg(kLINFO, "Time for containter backups:      " + tstep.getelpased());
+   logmsg(kLINFO, "Time for volume backups:      " + tstep.getelpased());
    tstep.restart();
 
    // -----------------------------------------
-   // back up host vol (local storage)
+   // back up host vol (local storage) - password not used.
    logmsg(kLDEBUG, "Backing up host volume.");
-   Poco::Path hostvolp(tempf);
-   hostvolp.setFileName("drunner_hostvol.tar");
-   compress::compress_folder(password, getPathHostVolume(), hostvolp);
+   compress::compress_folder("", getPathHostVolume(), paths.getPathHostVolArchiveFile());
    
-   logmsg(kLINFO, "Time for host volume backup:      " + tstep.getelpased());
+   logmsg(kLINFO, "Time for host volume backup:  " + tstep.getelpased());
    tstep.restart();
 
+   // ------------------------------------------
+   // back up dservice definition files - password not used.
 
+   logmsg(kLDEBUG, "Backing up dService definition files.");
+   compress::compress_folder("", getPathdService(), paths.getPathdServiceDefArchiveFile());
 
-   TODO: Backup dservice files??? (Probably)
+   logmsg(kLINFO, "Time for dService def backup: " + tstep.getelpased());
+   tstep.restart();
 
 
 
    // -----------------------------------------
    // compress everything together
-   Poco::Path bigarchive(archivefolder.getpath());
-   bigarchive.setFileName("backup.tar.enc");
-   bool ok=compress::compress_folder(password, tempparent.getpath().toString(), bigarchive);
+   std::string password = utils::getenv("PASS");
+   Poco::Path bigarchive(paths.getPathArchiveFile());
+   bool ok=compress::compress_folder(password, paths.getPathSubArchives(), bigarchive);
    if (!ok)
       logmsg(kLERROR, "Couldn't archive service " + getName());
 
@@ -118,92 +116,69 @@ void service_restore_fail(std::string servicename, std::string message)
 // servicename can be empty, in which case it's determined from the imagename.
 cResult service_manage::service_restore(const std::string & backupfile, std::string servicename)
 { // restore from backup.
+   timez ttotal, tstep;
+
    Poco::Path bf(backupfile);
    bf.makeAbsolute();
    if (!utils::fileexists(bf))
-      logmsg(kLERROR, "Backup file " + backupfile + " does not exist.");
+      fatal("Backup file " + backupfile + " does not exist.");
+
+   servicePaths servicepaths(servicename);
+   backupPathManager backuppaths(servicename);
+   std::string password = utils::getenv("PASS");
+
+   if (utils::fileexists(servicepaths.getPathdService()))
+      fatal("Can't restore to " + servicename + " - it already exists. Obliterate first or choose another service name.");
+   if (utils::fileexists(servicepaths.getPathHostVolume()))
+      fatal("Can't restore to " + servicename + " - data already exists. Obliterate first or choose another service name.");
+
    logmsg(kLDEBUG, "Restoring from " + bf.toString());
 
-   utils::tempfolder tempparent(drunnerPaths::getPath_Temp().pushDirectory("service-restore-"+timeutils::getDateTimeStr()));
-   utils::tempfolder archivefolder(drunnerPaths::getPath_Temp().pushDirectory("service-archive-"+timeutils::getDateTimeStr()));
-   
-   // for docker volumes
-   const Poco::Path tempf = tempparent.getpath().pushDirectory("drbackup");
-   // for container custom backups (e.g. mysqldump)
-   const Poco::Path tempc = tempparent.getpath().pushDirectory("containerbackup");
-
-   // decompress main backup
+   // -----------------------------------------
+   // decompress main backup. copy to ensure on same physical volume (or decompress can fail).
    Poco::File bff(bf);
-   Poco::Path bigarchive(archivefolder.getpath());
-   bigarchive.setFileName("backup.tar.enc");
-   bff.copyTo(bigarchive.toString());
+   bff.copyTo(backuppaths.getPathArchiveFile().toString());
+   compress::decompress_folder(password, backuppaths.getPathSubArchives(), backuppaths.getPathArchiveFile());
 
-   std::string password = utils::getenv("PASS");
-   compress::decompress_folder(password, tempparent.getpath(), bigarchive);
-
-   if (!utils::fileexists(tempc))
-      logmsg(kLERROR, "Backup corrupt - missing " + tempc.toString());
-
-   // read in old variables, just need imagename and devMode.
-   backupinfo bvars(tempparent.getpath().setFileName(backupinfo::filename));
-   if (kRSuccess!=bvars.loadvars())
-      logmsg(kLERROR, "Backup corrupt - "+backupinfo::filename+" couldn't be read.");
+   if (!utils::fileexists(backuppaths.getPathSubArchives()))
+      logmsg(kLERROR, "Backup corrupt - missing " + backuppaths.getPathSubArchives().toString());
 
    // backup seems okay - lets go!
-   std::string imagename = bvars.getImageName();
-   bool devMode = bvars.getDevMode();
-   drunner_assert(imagename.length() > 0, "Empty imagename in backup.");
+   service_manage::_create_common(servicename);
 
-   // install from the image
-   service_manage::install(servicename, imagename, devMode); // if servicename is empty then it sets it.
-   drunner_assert(servicename.length() > 0, "Empty servicename in backup after install step.");
-
-   // load in the new lua file.
-   servicePaths paths(servicename);
-   servicelua::luafile newluafile(servicename);
-   if (kRSuccess != newluafile.loadlua())
-      service_restore_fail(servicename,"Installation did not correctly create the service.lua file.");
-
-   // check that nothing about the volumes has changed in the dService.
-   std::vector<servicelua::BackupVol> dockervols;
-   newluafile.getBackupDockerVolumeNames(dockervols);
-   
-   // restore all the volumes.
-   for (auto vol : dockervols)
-   {
-      if (!utils_docker::dockerVolExists(vol.volumeName))
-         service_restore_fail(servicename, "Installation should have created " + vol.volumeName + " but didn't!");
-
-      Poco::Path volarchive(tempf);
-      volarchive.setFileName(vol.backupName + ".tar");
-      if (!utils::fileexists(volarchive))
-         fatal("Backup set did not contain backup of volume " + volarchive.toString());
-      compress::decompress_volume(password, vol.volumeName, volarchive);
-   }
-
+   // -----------------------------------------
    // restore host vol (local storage)
    logmsg(kLDEBUG, "Restoring host volume.");
-   Poco::Path hostvolp(tempf);
-   hostvolp.setFileName("drunner_hostvol.tar");
-   compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
+   compress::decompress_folder("", servicepaths.getPathHostVolume(), backuppaths.getPathHostVolArchiveFile());
 
-   // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
-   serviceVars oldvars(servicename); // , imagename, newluafile.getLuaConfigurationDefinitions());
+   logmsg(kLINFO, "Time for host volume restore:  " + tstep.getelpased());
+   tstep.restart();
 
-   // clobber IMAGENAME, ensuring it's updated to the one we were given.
-   oldvars.setImageName(imagename);
-   oldvars.setDevMode(GlobalContext::getParams()->isDevelopmentMode());
+   // ------------------------------------------
+   // restore dservice definition files
 
-   if (kRSuccess != oldvars.savevariables())
-      logmsg(kLWARN, "Failed to save variables.");
+   logmsg(kLDEBUG, "Restoring dService definition files.");
+   compress::compress_folder(password, servicepaths.getPathdService(), backuppaths.getPathdServiceDefArchiveFile());
 
-   //// tell the dService to do its restore_end action.
-   //tVecStr args;
-   //args.push_back(tempc.toString());
-   //servicehook hook(servicename, "restore", args);
-   //hook.endhook();
+   logmsg(kLINFO, "Time for dService def restore: " + tstep.getelpased());
+   tstep.restart();
 
+
+   // -----------------------------------------
+   // restore whatever the dService tells us to
+   serviceVars sv(servicename);
+   sv.setTempBackupFolder(backuppaths.getPathSubArchives().toString());
+   servicelua::luafile lf(sv, CommandLine("restore"));
+   if (!lf.getResult().success())
+      fatal("Failed to run restore command in the dService's service.lua.");
+
+   logmsg(kLINFO, "Time for volume restore:      " + tstep.getelpased());
+   tstep.restart();
+
+   // -----------------------------------------
+   // Output results.
    logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
+   logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
    return kRSuccess;
 }
 

@@ -168,7 +168,7 @@ exit 1
       return r.success(); // returns 0 if root (success).
    }
 
-   cResult backupDockerVolume(std::string volumename, const serviceVars & sv)
+   cResult backupDockerVolume(std::string volumename, Poco::Path TempBackupFolder)
    {
       // -----------------------------------------
       // back up volume container
@@ -178,11 +178,12 @@ exit 1
       if (!utils_docker::dockerVolExists(volumename))
          fatal("Couldn't find docker volume " + volumename + ".");
 
-      Poco::Path volarchive( sv.getTempBackupFolder() );
-      drunner_assert(volarchive.isDirectory(),"Coding error: volarchive needs to be directory.");
-      volarchive.setFileName(backupName + ".tar");
-      compress::compress_volume(password, volumename, volarchive);
+      drunner_assert(TempBackupFolder.isDirectory(),"Coding error: volarchive needs to be directory.");
+      TempBackupFolder.setFileName(backupName + ".tar");
+      compress::compress_volume(password, volumename, TempBackupFolder);
       logmsg(kLDEBUG, "Backed up docker volume " + volumename + " as " + backupName);
+
+      return kRSuccess;
    }
 
 } // namespace
