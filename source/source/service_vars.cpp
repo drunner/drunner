@@ -106,10 +106,10 @@ std::vector<envDef> serviceVars::loadServiceVariablesLua()
 
             std::vector<std::string> args;
             pos = 0;
-            while (pos= argstr.find("\"", pos) != std::string::npos)
+            while ((pos= argstr.find("\"", pos)) != std::string::npos)
             {
                ++pos;
-               if (pos2 = argstr.find("\"", pos) != std::string::npos)
+               if ((pos2 = argstr.find("\"", pos)) != std::string::npos)
                   args.push_back(argstr.substr(pos, pos2 - pos));
                pos = pos2 + 1;
             }
