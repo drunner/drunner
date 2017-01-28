@@ -87,6 +87,8 @@ public:
    
    cResult handleConfigureCommand(CommandLine cl);
 
+   const std::vector<envDef> & getEnvDefs() { return mEnvDefs; }
+
 protected:
    cResult _showconfiginfo() const;
    void _addConfig(const envDef & c);

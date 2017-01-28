@@ -36,53 +36,36 @@ namespace servicelua
    // lua file.
    class luafile {
    public:
-      luafile(serviceVars & sv);
+      // runs the given command.
+      luafile(serviceVars & sv, const CommandLine & serviceCmd);
       ~luafile();
+
+      cResult getResult() { return mResult; }
       
-      // loads the lua file, initialises the variables, loads the variables if able.
-      cResult loadlua();
-
-      const std::vector<Container> & getContainers() const;
-      const std::vector<envDef> & getLuaConfigurationDefinitions() const;
-      void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
-      void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
-
-      // for service::serviceRunnerCommand
-      cResult runCommand(const CommandLine & serviceCmd);
-
-      bool isLoaded() { return mLuaLoaded; }
-
-      std::string getServiceName() { return mServicePaths.getName(); }
-
       // for lua
       void addContainer(Container c);
       void addConfiguration(envDef cf);
       void addVolume(Volume v);
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
+      std::string getServiceName() { return mServicePaths.getName(); }
 
       serviceVars & getServiceVars() { return mServiceVars; }
-
-      Poco::Path getPathdService();
+      //Poco::Path getPathdService();
 
    private:
-      cResult loadvariableslua();
+      // loads the lua file, initialises the variables, loads the variables if able.
+      cResult _loadlua();
       cResult _showHelp();
+      cResult _runCommand(const CommandLine & serviceCmd);
 
       const servicePaths mServicePaths;
-
-      std::vector<Container> mContainers;
-      std::vector<envDef> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
-      std::vector<Volume> mVolumes;
 
       lua_State * L;
       serviceVars & mServiceVars;
 
-      bool mLuaLoaded;
-      bool mVarsLoaded;
-      bool mLoadAttempt;
-
       Poco::Path mdRunDir;
+      cResult mResult;
    };
 
    void _register_lua_cfuncs(lua_State *L);

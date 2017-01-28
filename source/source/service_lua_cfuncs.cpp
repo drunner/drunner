@@ -91,7 +91,7 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 3), "The description must be a string.");
 
       envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), ENV_PERSISTS | ENV_USERSETTABLE);
-      const std::vector<envDef> & config = servicelua::get_luafile(L)->getLuaConfigurationDefinitions();
+      const std::vector<envDef> & config = servicelua::get_luafile(L)->getServiceVars().getEnvDefs();
       bool found = false;
       for (auto & x : config)
          if (0 == Poco::icompare(x.name, def.name))

@@ -62,10 +62,8 @@ cResult service::runLuaFunction(CommandLine cl)
    for (const auto & x : cl.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
 
-   servicelua::luafile sl(mServiceVars);
-   sl.loadlua();
-
-   cResult rval = sl.runCommand(cl);
+   servicelua::luafile sl(mServiceVars,cl);
+   cResult rval = sl.getResult();
 
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);

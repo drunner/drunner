@@ -22,7 +22,7 @@ serviceVars::serviceVars(std::string servicename) :
 
    cResult r = loadvariables();
    if (!r.success())
-      logmsg(kLDEBUG, "Failed to load service variables.");
+      logmsg(kLWARN, "Failed to load service variables.");
 }
 
 std::string serviceVars::getImageName() const

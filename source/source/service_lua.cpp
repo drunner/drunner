@@ -10,20 +10,7 @@
 
 /*
 
-The luafile class is a combination of:
-
-A) the interpreted service.lua, which defines:
-    i)   the commands the dService can run
-    ii)  the docker containers to be used
-    iii) the docker volumes to manage/back up
-    iv)  the user-configurable variables for the dService (e.g. port)
-
-and
-
-B) the service configuration variables, which includes:
-    i)   the variables set by the user (as per (iv) above)
-    ii)  the variable IMAGENAME set to the installed image name
-    iii) the in-memory SERVICENAME variable
+The luafile class handles the interpreted service.lua, which defines the commands the dService can run
 
 */
 
@@ -34,10 +21,8 @@ namespace servicelua
 
 
 
-   luafile::luafile(serviceVars & sv) :
+   luafile::luafile(serviceVars & sv, const CommandLine & serviceCmd) :
       mServicePaths(sv.getServiceName()), 
-      mLuaLoaded(false), 
-      mLoadAttempt(false),
       mServiceVars(sv)
    {
       drunner_assert(mServicePaths.getPathServiceLua().isFile(), "Coding error: services.lua path provided to luafile is not a file!");
@@ -53,6 +38,13 @@ namespace servicelua
       // set the current working directory to where the service.lua file is.
       setdRunDir("");
       drunner_assert(mdRunDir.isDirectory(), "mPwd is not a directory");
+
+      // load the lua file and run the command.
+      mResult = _loadlua();
+      if (!mResult.success())
+         fatal("Could not load the service.lua file from " + mServicePaths.getPathServiceLua().toString()+"\n"+ mResult.what());
+
+      mResult = _runCommand(serviceCmd);
    }
       
    // -------------------------------------------------------------------------------
@@ -66,17 +58,10 @@ namespace servicelua
    // -------------------------------------------------------------------------------
 
 
-   cResult luafile::loadlua()
+   cResult luafile::_loadlua()
    {
-      drunner_assert(!mLoadAttempt, "Load called multiple times."); // mainly because I haven't checked this makes sense.
-      mLoadAttempt = true;
-
       if (!utils::fileexists(mServicePaths.getPathVariablesLua()))
          return cError("loadlua: the variables.lua file does not exist: " + mServicePaths.getPathVariablesLua().toString());
-
-      cResult loadvarresult = loadvariableslua();
-      if (!loadvarresult.success())
-         return loadvarresult;
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
@@ -99,7 +84,6 @@ namespace servicelua
          fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
-      mLuaLoaded = true;
       return kRSuccess;
    }
 
@@ -107,9 +91,6 @@ namespace servicelua
 
    cResult luafile::_showHelp()
    {
-      if (!mLuaLoaded)
-         return cError("Can't show help because we weren't able to load the service.lua file.");
-
       lua_getglobal(L, "help");
       if (lua_isnil(L, -1))
          fatal("Help not defined in service.lua for " + getServiceName());
@@ -129,7 +110,7 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   cResult luafile::runCommand(const CommandLine & serviceCmd)
+   cResult luafile::_runCommand(const CommandLine & serviceCmd)
    {
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
       drunner_assert(Poco::icompare(serviceCmd.command, "configure") != 0, "Configure leaked through");
@@ -167,51 +148,6 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   void luafile::getManageDockerVolumeNames(std::vector<std::string> & vols) const
-   {
-      drunner_assert(vols.size() == 0,"Coding error: passing dirty volume vector to getManageDockerVolumeNames");
-      for (const auto & v : mVolumes)
-         if (!v.external)
-         {
-            std::string volname = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
-            vols.push_back(volname);
-         }
-   }
-
-   // -------------------------------------------------------------------------------
-
-   void luafile::getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const
-   {
-      drunner_assert(vols.size() == 0, "Coding error: passing dirty volume vector to getBackupDockerVolumeNames");
-      for (const auto & v : mVolumes)
-         if (v.backup)
-         {
-            BackupVol bv;
-            bv.volumeName = utils::replacestring(v.name, "${SERVICENAME}", mServicePaths.getName());
-            bv.backupName = utils::replacestring(v.name, "${SERVICENAME}", "SERVICENAME");
-            vols.push_back(bv);
-         }
-   }
-
-   // -------------------------------------------------------------------------------
-
-   void luafile::addContainer(Container c)
-   {
-      drunner_assert(c.name.size() > 0, "Empty container name passed to addContainer.");
-      //drunner_assert(std::find(mContainers.begin(), mContainers.end(), c.name) == mContainers.end(), "Container already exists " + c.name);
-      mContainers.push_back(c);
-   }
-
-   void luafile::addConfiguration(envDef cf)
-   {
-      mLuaConfigurationDefinitions.push_back(cf);
-   }
-
-   void luafile::addVolume(Volume v)
-   {
-      mVolumes.push_back(v);
-   }
-
    Poco::Path luafile::getdRunDir() const
    {
       return mdRunDir;
@@ -225,24 +161,9 @@ namespace servicelua
          mdRunDir.makeDirectory();
       }
       else
-         mdRunDir = getPathdService();
-
+         mdRunDir = mServicePaths.getPathdService(); 
+      
       drunner_assert(mdRunDir.isDirectory(), "mPwd is not a directory");
-   }
-
-
-   Poco::Path luafile::getPathdService()
-   {
-      return mServicePaths.getPathdService();
-   }
-
-   const std::vector<Container> & luafile::getContainers() const
-   {
-      return mContainers;
-   }
-   const std::vector<envDef> & luafile::getLuaConfigurationDefinitions() const
-   {
-      return mLuaConfigurationDefinitions;
    }
 
 } // namespace

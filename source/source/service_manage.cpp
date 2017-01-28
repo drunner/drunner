@@ -23,23 +23,6 @@
 
 namespace service_manage
 {
-
-   bool _loadImageName(std::string servicename, std::string & imagename, bool & devmode)
-   { // no imagename specified. Load from service variables if we can.
-      servicelua::luafile lf(servicename);
-      if (kRSuccess == lf.loadlua())
-      {
-         serviceVars v(servicename);
-         v.loadvariables();
-         imagename = v.getImageName();
-         devmode = v.getIsDevMode();
-
-         drunner_assert(imagename.length() > 0, "Imagename is empty!");
-         return true;
-      }
-      return false;
-   }
-
    void _createVolumes(std::vector<std::string> & volumes)
    {
       if (volumes.size() == 0)
@@ -81,15 +64,10 @@ namespace service_manage
       if (!r2.success()) fatal("Couldn't create directory.\nError: " + r2.what());
    }
 
-   cResult _recreate(std::string servicename, std::string imagename, bool devMode)
+   cResult _create(std::string servicename, std::string imagename, bool devMode)
    {
-      drunner_assert(imagename.length() > 0, "Can't recreate service " + servicename + " - image name could not be determined.");
+      drunner_assert(imagename.length() > 0, "Can't create service " + servicename + " - imagename could not be determined.");
       servicePaths sp(servicename);
-
-      if (devMode)
-         logmsg(kLINFO,"Development mode - "+servicename+" will never pull images.");
-      else
-         utils_docker::pullImage(imagename);
 
       try
       {
@@ -122,12 +100,6 @@ namespace service_manage
             logmsg(kLERROR, "Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
          drunner_assert(utils::fileexists(sp.getPathServiceLua()), "The dService service.lua file was not copied across.");
 
-
-         // load the lua file
-         servicelua::luafile syf(servicename);
-         if (syf.loadlua() != kRSuccess)
-            fatal("Corrupt dservice - couldn't read service.lua.");
-
          // write out service configuration for the dService.
          serviceVars sv(servicename);
 
@@ -136,26 +108,6 @@ namespace service_manage
          sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
          sv.savevariables();
-
-         // pull all containers if not in dev mode.
-         for (const auto & entry : syf.getContainers())
-         {
-            bool runsasroot = utils_docker::dockerContainerRunsAsRoot(entry.name);
-            if (runsasroot && !entry.runasroot)
-               fatal("Docker container " + entry.name + " runs as root, but service.lua does not permit this.");
-            else if (!runsasroot && entry.runasroot)
-               logmsg(kLWARN, "Docker container " + entry.name + " doesn't run as root, but service.lua says it should.");
-            else if (entry.runasroot)
-               logmsg(kLWARN, "Docker container " + entry.name + " runs as root. This may pose a security risk.");
-
-            if (!devMode)
-               utils_docker::pullImage(entry.name);
-         }
-
-         // create volumes, with variables substituted.
-         std::vector<std::string> vols;
-         syf.getManageDockerVolumeNames(vols);
-         _createVolumes(vols);
 
          // create launch script
          _createLaunchScript(servicename);
@@ -198,10 +150,13 @@ namespace service_manage
       logmsg(kLDEBUG, "Attempting to validate " + imagename);
       validateImage::validate(imagename);
 
-      _recreate(servicename,imagename,devMode);
+      _create(servicename,imagename,devMode);
 
-      //servicehook hook(servicename, "install", {});
-      //hook.endhook();
+      serviceVars sv(servicename);
+      servicelua::luafile lf(sv, CommandLine("install"));
+      // run the recreate command
+      if (lf.getResult() != kRSuccess)
+         fatal("Failed to run install in service.lua.");
 
       logdbg("Installation of " + servicename + " complete.");
       return kRSuccess;
@@ -215,15 +170,10 @@ namespace service_manage
       if (!utils::fileexists(sp.getPathdService()))
          return cError("Can't uninstall " + servicename + " - it does not exist.");
 
-      //try
-      //{
-      //   servicehook hook(servicename, "uninstall", {});
-      //   hook.starthook();
-      //}
-      //catch (const eExit &)
-      //{
-      //   logmsg(kLWARN, "Installation damaged, unable to use uninstall hook.");
-      //}
+      serviceVars sv(servicename);
+      servicelua::luafile lf(sv, CommandLine("uninstall"));
+      if (!lf.getResult().success())
+         logmsg(kLWARN, "Uninstall service command failed.");
 
       // delete the service tree.
       logmsg(kLINFO, "Deleting all of the dService files");
@@ -240,6 +190,8 @@ namespace service_manage
       return rval;
    }
 
+   // -------------------------------------------------------------------------------------------------
+
    cResult obliterate(std::string servicename)
    {
       cResult rval = kRNoChange;
@@ -249,32 +201,11 @@ namespace service_manage
       {
          try
          {
-            //servicehook hook(servicename, "obliterate", {});
-            //hook.starthook();
-
-            logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
-            // [start] deleting docker volumes.
-            std::vector<std::string> vols;
-
-            servicelua::luafile lf(servicename);
-            if (lf.loadlua() == kRSuccess)
-            {
-               lf.getManageDockerVolumeNames(vols);
-               for (const auto & entry : vols)
-               {
-                  logmsg(kLINFO, "Obliterating docker volume " + entry);
-                  std::string op;
-                  CommandLine cl("docker", { "volume", "rm",entry });
-                  if (0 != utils::runcommand(cl, op))
-                  {
-                     logmsg(kLWARN, "Failed to remove " + entry + ":");
-                     logmsg(kLWARN, op);
-                     rval += cError("Failed to remove " + entry + ":" + op);
-                  }
-                  else
-                     rval += kRSuccess;
-               }
-            }
+            serviceVars sv(servicename);
+            
+            servicelua::luafile lf(sv, CommandLine("obliterate"));
+            if (!lf.getResult().success())
+               logmsg(kLWARN, "Obliterate service command failed.");
          }
          catch (const eExit &)
          {
@@ -313,19 +244,25 @@ namespace service_manage
       return rval;
    }
 
+   // -------------------------------------------------------------------------------------------------
+
    cResult update(std::string servicename)
    { // update the service (recreate it)
-      std::string imagename;
-      bool devmode;
-      bool loaded = _loadImageName(servicename,imagename,devmode);
-      drunner_assert(loaded, "Can't update service " + servicename + " - docker image name could not be determined.");
+      serviceVars v(servicename);
+      std::string imagename = v.getImageName();
+      bool devmode = v.getIsDevMode();
+      drunner_assert(imagename.length() > 0, "Imagename is empty!");
 
-      //servicehook hook(servicename, "update", {});
-      //cResult rslt = hook.starthook();
-      return _recreate(servicename, imagename,devmode);
-      //rslt += hook.endhook();
+      try
+      {
+         uninstall(servicename);
+      }
+      catch (const eExit &)
+      {
+         logmsg(kLWARN, "Installation damaged, unable to uninstall dService. Attempting install...");
+      }
 
-//      return rslt;
+      return install(servicename, imagename, devmode);
    }
 
 
