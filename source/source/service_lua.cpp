@@ -34,7 +34,7 @@ namespace servicelua
 
 
 
-   luafile::luafile(const serviceVars & sv) :
+   luafile::luafile(serviceVars & sv) :
       mServicePaths(sv.getServiceName()), 
       mLuaLoaded(false), 
       mLoadAttempt(false),

@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "service_vars.h"
 #include "service_paths.h"
 
@@ -11,8 +13,6 @@
 #include "service_lua.h"
 
 
-extern "C" int l_addconfig(lua_State *L);
-void _adddef(lua_State *L,  envDef def);
 std::vector<envDef> loadServiceVariablesLua();
 
 serviceVars::serviceVars(std::string servicename) :
@@ -65,67 +65,53 @@ void serviceVars::_extendconfig()
 
 // ------------------------------------------------------------------------------------------------------
 
-
-
-void _adddef(lua_State *L, envDef def);
-{
-   int stacksize = lua_gettop(L);
-   lua_getglobal(L, "luafile");
-   drunner_assert(lua_islightuserdata(L, -1), "Is not lightuserdata.");
-   void * luafilevoid = lua_touserdata(L, -1);
-   drunner_assert(luafilevoid != NULL, "`luafile' expected");
-   lua_pop(L, 1); // pop top element
-   drunner_assert(stacksize == lua_gettop(L), "Stack unbalanced : " + std::to_string(stacksize) + " != " + std::to_string(lua_gettop(L)));
-   return (luafile *)luafilevoid;
-}
-
-extern "C" int l_addconfig(lua_State *L)
-{
-   if (lua_gettop(L) != 3)
-      return luaL_error(L, "Expected three arguments for addconfig.");
-
-   // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
-   drunner_assert(lua_isstring(L, 1), "The name must be a string.");
-   drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
-   drunner_assert(lua_isstring(L, 3), "The description must be a string.");
-
-   envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), ENV_PERSISTS | ENV_USERSETTABLE);
-   servicelua::get_luafile(L)->addConfiguration(def);
-
-   cResult rval = kRSuccess;
-   lua_pushinteger(L, rval);
-   return 1; // one argument to return.
-}
-
-cResult luafile::loadvariableslua()
-{
-   lua_State * LVars = luaL_newstate();
-   luaL_openlibs(LVars);
-   // add pointer to ourselves, so C functions can access us.
-   lua_pushlightuserdata(LVars, (void*)this);  // value
-   lua_setglobal(LVars, "luafile");
-
-   // register the C function with lua.
-   lua_pushcfunction(LVars, l_addconfig);
-   lua_setglobal(LVars, "addconfig");
-
-   std::string path = mServicePaths.getPathVariablesLua().toString();
-   if (luaL_loadfile(L, path.c_str()))    /* Load but don't run the Lua script */
-      fatal("Failed to load " + path + "\n" + lua_tostring(L, -1));
-
-   // call global stuff
-   if (lua_pcall(L, 0, 0, 0))                  /* Run the loaded Lua script */
-      fatal("Failed to execute " + path + " " + lua_tostring(L, -1));
-
-   lua_close(L);                               /* Clean up, free the Lua state var */
-
-   return kRSuccess;
-}
-
-std::vector<envDef> loadServiceVariablesLua();
+std::vector<envDef> serviceVars::loadServiceVariablesLua()
 {
    std::vector<envDef> defs;
 
+   std::string path = servicePaths(mName).getPathVariablesLua().toString();
+   std::ifstream infile(path);
+   std::string line;
+   std::string search = "addconfig(";
+
+   if (!infile.is_open())
+   {
+      logmsg(kLWARN, "Couldn't open service.lua at "+path);
+      return defs;
+   }
+
+   while (std::getline(infile, line))
+   { // search for addconfig(
+      size_t pos = line.find(search);
+      if (pos != std::string::npos)
+      {
+         size_t pos2 = line.find(")",pos);
+         pos += search.length(); // move past the search string.
+
+         if (pos2 != std::string::npos && pos2 > pos)
+         {
+            std::string argstr = line.substr(pos, pos2 - pos);
+
+            std::vector<std::string> args;
+            pos = 0;
+            while (pos= argstr.find("\"", pos) != std::string::npos)
+            {
+               ++pos;
+               if (pos2 = argstr.find("\"", pos) != std::string::npos)
+                  args.push_back(argstr.substr(pos, pos2 - pos));
+               pos = pos2 + 1;
+            }
+
+            if (args.size() == 3)
+            {
+               defs.push_back(envDef(args[0], args[1], args[2], ENV_PERSISTS | ENV_USERSETTABLE));
+               logmsg(kLDEBUG, "addconfig: name=" + args[0] + ", default=" + args[1] + ", desc=" + args[2]);
+            }
+            else
+               logmsg(kLERROR, "addconfig requires three quoted arguments on this line:\n" + line);
+         }
+      }
+   }
 
    return defs;
 }

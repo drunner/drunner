@@ -36,7 +36,7 @@ namespace servicelua
    // lua file.
    class luafile {
    public:
-      luafile(const serviceVars & sv);
+      luafile(serviceVars & sv);
       ~luafile();
       
       // loads the lua file, initialises the variables, loads the variables if able.
@@ -61,6 +61,8 @@ namespace servicelua
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
 
+      serviceVars & getServiceVars() { return mServiceVars; }
+
       Poco::Path getPathdService();
 
    private:
@@ -74,7 +76,7 @@ namespace servicelua
       std::vector<Volume> mVolumes;
 
       lua_State * L;
-      const serviceVars & mServiceVars;
+      serviceVars & mServiceVars;
 
       bool mLuaLoaded;
       bool mVarsLoaded;

@@ -9,6 +9,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 
 // lua C functions - defined in service_lua_cfuncs
+extern "C" int l_addconfig(lua_State *L);
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_drun_outputexit(lua_State *L);
@@ -33,6 +34,7 @@ namespace servicelua
    void _register_lua_cfuncs(lua_State *L)
    { // define all our C functions that we want available from service.lua
 
+      REGISTERLUAC(l_addconfig, "addconfig")
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
@@ -75,54 +77,43 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-
-   extern "C" int l_addvolume(lua_State *L)
-   {
-      if (lua_gettop(L) < 1 || lua_gettop(L)>4)
-         return luaL_error(L, "Expected one to four arguments: (name, backup, external, runasroot) for addvolume.");
-
-      luafile * lf = get_luafile(L);
-
-      Volume v;
-      drunner_assert(lua_isstring(L, 1), "The name of the volume must be a string.");
-      v.name = lua_tostring(L, 1); // lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-      v.backup = true;
-      v.external = false;
-
-      if (lua_gettop(L)>1)
-         v.backup = (1 == lua_toboolean(L, 2));
-
-      if (lua_gettop(L)>2)
-         v.external = (1 == lua_toboolean(L, 3));
-
-      lf->addVolume(v);
-      
-      return _luasuccess(L);
-   }
-
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_addcontainer(lua_State *L)
+   // just sanity check the pass we've already done.
+   extern "C" int l_addconfig(lua_State *L)
    {
-      if (lua_gettop(L) <1 || lua_gettop(L)>2)
-         return luaL_error(L, "Expected one to two arguments (the name of the container and if it is permitted to run as root) for addcontainer.");
-      drunner_assert(lua_isstring(L, 1), "The name of the container must be a string.");
-     
-      Container c;
-      c.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-      c.runasroot = false;
+      if (lua_gettop(L) != 3)
+         return luaL_error(L, "Expected three arguments for addconfig.");
 
-      if (lua_gettop(L) > 1)
-      {
-         drunner_assert(lua_isboolean(L, 2), "The runasroot flag must be a boolean.");
-         c.runasroot = (1 == lua_toboolean(L, 2));
-      }
+      // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
+      drunner_assert(lua_isstring(L, 1), "The name must be a string.");
+      drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
+      drunner_assert(lua_isstring(L, 3), "The description must be a string.");
 
-      get_luafile(L)->addContainer(c);
+      envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), ENV_PERSISTS | ENV_USERSETTABLE);
+      const std::vector<envDef> & config = servicelua::get_luafile(L)->getLuaConfigurationDefinitions();
+      bool found = false;
+      for (auto & x : config)
+         if (0 == Poco::icompare(x.name, def.name))
+         {
+            found = true;
 
-      return _luasuccess(L);
+            if (0 != Poco::icompare(x.defaultval,def.defaultval))
+               logmsg(kLWARN, "Inconsistency of default value between quick read and lua execution for config " + def.defaultval);
+
+            if (0 != Poco::icompare(x.description, def.description))
+               logmsg(kLWARN, "Inconsistency of description between quick read and lua execution for config " + def.defaultval);
+
+            break;
+         }
+
+      if (!found)
+         logmsg(kLWARN, "Inconsistency of name between quick read and lua execution for config " + def.defaultval);
+
+      cResult rval = kRSuccess;
+      lua_pushinteger(L, rval);
+      return 1; // one argument to return.
    }
-
 
    // -----------------------------------------------------------------------------------------------------------------------
    
@@ -140,7 +131,7 @@ namespace servicelua
          for (int i = 2; i <= lua_gettop(L); ++i)
          {
             drunner_assert(lua_isstring(L, i), "arg must be a string");
-            operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+            operation.args.push_back(lf->getServiceVars().substitute(lua_tostring(L, i)));
          }
       }
       else if (lua_istable(L, 1) == 1)
@@ -169,7 +160,7 @@ namespace servicelua
          operation, 
          returnOutput ? kOSuppressed : kORaw, 
          lf->getdRunDir(), 
-         lf->getServiceVars()->getAll(), 
+         lf->getServiceVars().getAll(), 
          &out);
 
       int rcount = 0;
@@ -229,7 +220,7 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
+      std::string subcontainer = lf->getServiceVars().substitute(containerraw);
       
       bool running = utils_docker::dockerContainerRunning(subcontainer);
       lua_pushboolean(L,running);
@@ -246,7 +237,7 @@ namespace servicelua
       std::string containerraw = lua_tostring(L, 1);
 
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
+      std::string subcontainer = lf->getServiceVars().substitute(containerraw);
 
       if (utils_docker::dockerContainerRunning(subcontainer))
       {
@@ -272,7 +263,7 @@ namespace servicelua
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       luafile * lf = get_luafile(L);
-      std::string s = lf->getServiceVars()->substitute(lua_tostring(L, 1));
+      std::string s = lf->getServiceVars().substitute(lua_tostring(L, 1));
       lua_pushstring(L, s.c_str());
       return 1; // one argument to return.
    }
@@ -287,7 +278,7 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
-      std::string v = lf->getServiceVars()->getVal(s);
+      std::string v = lf->getServiceVars().getVal(s);
       lua_pushstring(L, v.c_str());
       return 1; // one arg to return.
    }
@@ -305,8 +296,8 @@ namespace servicelua
       std::string s = lua_tostring(L, 1);
       std::string v = lua_tostring(L, 2);
 
-      cResult r = lf->getServiceVars()->setVal(s, v);
-      r += lf->getServiceVars()->savevariables();
+      cResult r = lf->getServiceVars().setVal(s, v);
+      r += lf->getServiceVars().savevariables();
 
       if (r == kRError)
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());

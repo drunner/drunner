@@ -21,6 +21,7 @@ public:
 
 private:
    void _extendconfig();
+   std::vector<envDef> loadServiceVariablesLua();
 };
 
 
