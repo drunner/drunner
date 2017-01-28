@@ -13,16 +13,17 @@
 #include "service_lua.h"
 
 
-std::vector<envDef> loadServiceVariablesLua();
+// needs to be called from ctor.
+std::vector<envDef> loadServiceVariablesLua(std::string servicename);
 
 serviceVars::serviceVars(std::string servicename) :
-   persistvariables(servicename, servicePaths(servicename).getPathServiceVars(), loadServiceVariablesLua())
+   persistvariables(servicename, servicePaths(servicename).getPathServiceVars(), loadServiceVariablesLua(servicename))
 {
    _extendconfig();
 
    cResult r = loadvariables();
    if (!r.success())
-      logmsg(kLWARN, "Failed to load service variables.");
+      logmsg(kLDEBUG, "Failed to load service variables.");
 }
 
 std::string serviceVars::getImageName() const
@@ -77,11 +78,12 @@ void serviceVars::_extendconfig()
 
 // ------------------------------------------------------------------------------------------------------
 
-std::vector<envDef> serviceVars::loadServiceVariablesLua()
+// needs to be called from ctor.
+std::vector<envDef> loadServiceVariablesLua(std::string servicename)
 {
    std::vector<envDef> defs;
 
-   std::string path = servicePaths(mName).getPathServiceLua().toString();
+   std::string path = servicePaths(servicename).getPathServiceLua().toString();
    std::ifstream infile(path);
    std::string line;
    std::string search = "addconfig(";

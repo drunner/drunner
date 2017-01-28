@@ -66,15 +66,16 @@ namespace servicelua
       int loadok = luaL_loadfile(L, path.toString().c_str());
       if (loadok != 0)
          fatal("Failed to load " + path.toString() + "\n"+ lua_tostring(L, -1));
-      if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
+      //if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
+      if (lua_pcall(L, 0, 0, 0) != 0)
          fatal("Failed to execute " + path.toString() + " " + lua_tostring(L, -1));
 
-      // pull out the relevant config items.
-      lua_getglobal(L, "drunner_setup");
-      if (lua_isnil(L, -1))
-         fatal("Lua file is not drunner compatible - there is no drunner_setup function defined.");
-      if (lua_pcall(L, 0, 0, 0) != LUA_OK)
-         fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
+      //// pull out the relevant config items.
+      //lua_getglobal(L, "drunner_setup");
+      //if (lua_isnil(L, -1))
+      //   fatal("Lua file is not drunner compatible - there is no drunner_setup function defined.");
+      //if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+      //   fatal("Error running drunner_setup, " + std::string(lua_tostring(L, -1)));
       drunner_assert(lua_gettop(L) == 0, "Lua stack not empty after getglobal + pcall, when there's no error.");
 
       return kRSuccess;
