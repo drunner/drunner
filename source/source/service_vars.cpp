@@ -97,7 +97,8 @@ std::vector<envDef> loadServiceVariablesLua(std::string servicename)
    while (std::getline(infile, line))
    { // search for addconfig(
       size_t pos = line.find(search);
-      if (pos != std::string::npos)
+      size_t dqpos = line.find("--"); // skip if it's a comment line.
+      if (pos != std::string::npos && (dqpos==std::string::npos || dqpos>pos))
       {
          size_t pos2 = line.find(")",pos);
          pos += search.length(); // move past the search string.
