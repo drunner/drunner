@@ -34,12 +34,14 @@ namespace servicelua
 
 
 
-   luafile::luafile(std::string serviceName) : 
-      mServicePaths(serviceName), 
+   luafile::luafile(const serviceVars & sv) :
+      mServicePaths(sv.getServiceName()), 
       mLuaLoaded(false), 
-      mLoadAttempt(false)
+      mLoadAttempt(false),
+      mServiceVars(sv)
    {
-      drunner_assert(mServicePaths.getPathServiceLua().isFile(),"Coding error: path provided to simplefile is not a file!");
+      drunner_assert(mServicePaths.getPathServiceLua().isFile(), "Coding error: services.lua path provided to luafile is not a file!");
+      drunner_assert(mServicePaths.getPathVariablesLua().isFile(), "Coding error: variables.lua path provided to luafile is not a file!");
 
       L = luaL_newstate();
       luaL_openlibs(L);
@@ -48,12 +50,9 @@ namespace servicelua
       lua_pushlightuserdata(L, (void*)this);  // value
       lua_setglobal(L, "luafile");
 
-      // set the current working directory
+      // set the current working directory to where the service.lua file is.
       setdRunDir("");
       drunner_assert(mdRunDir.isDirectory(), "mPwd is not a directory");
-
-      // We load service variables only when needed.
-      mSVptr = NULL;
    }
       
    // -------------------------------------------------------------------------------
@@ -66,10 +65,18 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
+
    cResult luafile::loadlua()
    {
       drunner_assert(!mLoadAttempt, "Load called multiple times."); // mainly because I haven't checked this makes sense.
       mLoadAttempt = true;
+
+      if (!utils::fileexists(mServicePaths.getPathVariablesLua()))
+         return cError("loadlua: the variables.lua file does not exist: " + mServicePaths.getPathVariablesLua().toString());
+
+      cResult loadvarresult = loadvariableslua();
+      if (!loadvarresult.success())
+         return loadvarresult;
 
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
@@ -98,7 +105,7 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
-   cResult luafile::_showHelp(serviceVars * sVars)
+   cResult luafile::_showHelp()
    {
       if (!mLuaLoaded)
          return cError("Can't show help because we weren't able to load the service.lua file.");
@@ -116,20 +123,19 @@ namespace servicelua
          fatal("The argument returned by help was not a string, rather "+std::string(lua_typename(L,1)));
       std::string help = lua_tostring(L, 1);
 
-      logmsg(kLINFO, sVars->substitute(help));
+      logmsg(kLINFO, mServiceVars.substitute(help));
       return kRSuccess;
    }
 
    // -------------------------------------------------------------------------------
 
-   cResult luafile::runCommand(const CommandLine & serviceCmd, serviceVars * sVars)
+   cResult luafile::runCommand(const CommandLine & serviceCmd)
    {
       drunner_assert(L != NULL, "service.lua has not been successfully loaded, can't run commands.");
-      drunner_assert(sVars != NULL, "sVars has not been set.");
       drunner_assert(Poco::icompare(serviceCmd.command, "configure") != 0, "Configure leaked through");
 
       if (Poco::icompare(serviceCmd.command, "help") == 0)
-         return _showHelp(sVars);
+         return _showHelp();
 
       cResult rval;
       lua_getglobal(L, serviceCmd.command.c_str());
@@ -143,10 +149,8 @@ namespace servicelua
          for (auto x : serviceCmd.args)
             lua_pushstring(L, x.c_str());
 
-         mSVptr = sVars;
          if (lua_pcall(L, serviceCmd.args.size(), 1, 0) != LUA_OK)
             fatal("Command " + serviceCmd.command + " failed:\n "+ std::string(lua_tostring(L,-1)));
-         mSVptr = NULL;
 
          if (!lua_isnumber(L, -1))
          {
@@ -230,12 +234,6 @@ namespace servicelua
    Poco::Path luafile::getPathdService()
    {
       return mServicePaths.getPathdService();
-   }
-
-   serviceVars * luafile::getServiceVars()
-   {
-      drunner_assert(mSVptr != NULL,"Service Variables pointer has not been set.");
-      return mSVptr;
    }
 
    const std::vector<Container> & luafile::getContainers() const

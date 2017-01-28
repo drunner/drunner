@@ -25,6 +25,11 @@ Poco::Path servicePaths::getPathServiceLua() const
    return getPathdService().setFileName("service.lua");
 }
 
+Poco::Path servicePaths::getPathVariablesLua() const
+{
+   return getPathdService().setFileName("variables.lua");
+}
+
 Poco::Path servicePaths::getPathServiceVars() const
 {
    return getPathHostVolume().setFileName("serviceconfig.json");

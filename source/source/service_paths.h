@@ -12,10 +12,13 @@ public:
    Poco::Path getPathdService() const;
    Poco::Path getPathHostVolume() const;
    Poco::Path getPathLaunchScript() const;
-   Poco::Path getPathServiceLua() const;
    Poco::Path getPathServiceVars() const;
-
    std::string getName() const;
+
+   // provided by the dService.
+   Poco::Path getPathServiceLua() const;
+   Poco::Path getPathVariablesLua() const;
+
 
 protected:
    const std::string mName;

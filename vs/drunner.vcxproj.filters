@@ -52,9 +52,6 @@
     <ClCompile Include="..\source\source\service_backup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\servicehook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\showhelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -259,9 +256,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\service.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\servicehook.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\showhelp.h">

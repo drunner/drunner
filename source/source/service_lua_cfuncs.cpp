@@ -9,10 +9,6 @@
 // -----------------------------------------------------------------------------------------------------------------------
 
 // lua C functions - defined in service_lua_cfuncs
-extern "C" int l_addconfig(lua_State *L);
-extern "C" int l_addvolume(lua_State *L);
-extern "C" int l_addcontainer(lua_State *L);
-
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_drun_outputexit(lua_State *L);
@@ -36,9 +32,6 @@ namespace servicelua
 
    void _register_lua_cfuncs(lua_State *L)
    { // define all our C functions that we want available from service.lua
-      REGISTERLUAC(l_addconfig, "addconfig")
-      REGISTERLUAC(l_addvolume, "addvolume")
-      REGISTERLUAC(l_addcontainer, "addcontainer")
 
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
@@ -70,36 +63,6 @@ namespace servicelua
       return (luafile *)luafilevoid;
    }
 
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_addconfig(lua_State *L)
-   {
-      if (lua_gettop(L) < 5 || lua_gettop(L) > 6)
-         return luaL_error(L, "Expected five or six arguments for addconfig.");
-
-      // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
-      drunner_assert(lua_isstring(L, 1), "The name must be a string.");
-      drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
-      drunner_assert(lua_isstring(L, 3), "The description must be a string.");
-      drunner_assert(lua_isstring(L, 4), "The type must be a string.");
-      drunner_assert(lua_isboolean(L, 5), "The required flag must be a boolean.");
-
-      if (lua_gettop(L) == 6)
-         drunner_assert(lua_isboolean(L, 6), "The usersettable flag must be a boolean.");
-
-      // convert configtype.
-      //configtype ctype = to_configtype(lua_tostring(L, 4));
-
-      // optional parameter.
-      bool usersettable = (lua_gettop(L) == 6 ? (lua_toboolean(L, 6) == 1) : true);
-
-      envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), usersettable ? (ENV_PERSISTS | ENV_USERSETTABLE) : ENV_PERSISTS);
-      get_luafile(L)->addConfiguration(def);
-
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
-   }
 
    // -----------------------------------------------------------------------------------------------------------------------
 

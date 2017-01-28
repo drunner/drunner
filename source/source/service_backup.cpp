@@ -7,7 +7,6 @@
 #include "utils.h"
 #include "service_backupinfo.h"
 #include "compress.h"
-#include "servicehook.h"
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "timez.h"
@@ -55,13 +54,13 @@ cResult service::backup(std::string backupfile)
 
    // -----------------------------------------
    // notify service we're starting our backup.
-   tVecStr args;
-   args.push_back(tempc.toString());
-   servicehook hook(getName(), "backup", args);
-   hook.starthook();
+   //tVecStr args;
+   //args.push_back(tempc.toString());
+   //servicehook hook(getName(), "backup", args);
+   //hook.starthook();
 
-   logmsg(kLINFO, "Time for dService to backup hook: " + tstep.getelpased());
-   tstep.restart();
+   //logmsg(kLINFO, "Time for dService to backup hook: " + tstep.getelpased());
+   //tstep.restart();
 
    // -----------------------------------------
    // back up volume containers
@@ -98,7 +97,7 @@ cResult service::backup(std::string backupfile)
 
    // -----------------------------------------
    // notify service we've finished our backup.
-   hook.endhook();
+   //hook.endhook();
 
    logmsg(kLINFO, "Time for dService to wrap up:     " + tstep.getelpased());
    tstep.restart();
@@ -220,10 +219,7 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    compress::decompress_folder(password, paths.getPathHostVolume(), hostvolp);
 
    // host volume on disk has the old settings. newluafile has the new settings. Need to merge!
-   serviceVars oldvars(servicename, imagename, newluafile.getLuaConfigurationDefinitions());
-
-   if (kRSuccess != oldvars.loadvariables()) // loads with new schema (updates).
-      logmsg(kLWARN, "Backup configuration file could not be loaded. Using defaults for all configuration!");
+   serviceVars oldvars(servicename); // , imagename, newluafile.getLuaConfigurationDefinitions());
 
    // clobber IMAGENAME, ensuring it's updated to the one we were given.
    oldvars.setImageName(imagename);
@@ -232,11 +228,11 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    if (kRSuccess != oldvars.savevariables())
       logmsg(kLWARN, "Failed to save variables.");
 
-   // tell the dService to do its restore_end action.
-   tVecStr args;
-   args.push_back(tempc.toString());
-   servicehook hook(servicename, "restore", args);
-   hook.endhook();
+   //// tell the dService to do its restore_end action.
+   //tVecStr args;
+   //args.push_back(tempc.toString());
+   //servicehook hook(servicename, "restore", args);
+   //hook.endhook();
 
    logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
    return kRSuccess;

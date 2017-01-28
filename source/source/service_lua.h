@@ -36,7 +36,7 @@ namespace servicelua
    // lua file.
    class luafile {
    public:
-      luafile(std::string serviceName);
+      luafile(const serviceVars & sv);
       ~luafile();
       
       // loads the lua file, initialises the variables, loads the variables if able.
@@ -48,7 +48,7 @@ namespace servicelua
       void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
 
       // for service::serviceRunnerCommand
-      cResult runCommand(const CommandLine & serviceCmd, serviceVars * sVars);
+      cResult runCommand(const CommandLine & serviceCmd);
 
       bool isLoaded() { return mLuaLoaded; }
 
@@ -62,10 +62,10 @@ namespace servicelua
       void setdRunDir(std::string p);
 
       Poco::Path getPathdService();
-      serviceVars * getServiceVars();
 
    private:
-      cResult _showHelp(serviceVars * sVars);
+      cResult loadvariableslua();
+      cResult _showHelp();
 
       const servicePaths mServicePaths;
 
@@ -74,7 +74,7 @@ namespace servicelua
       std::vector<Volume> mVolumes;
 
       lua_State * L;
-      serviceVars * mSVptr;
+      const serviceVars & mServiceVars;
 
       bool mLuaLoaded;
       bool mVarsLoaded;
@@ -85,7 +85,10 @@ namespace servicelua
 
    void _register_lua_cfuncs(lua_State *L);
 
+   luafile * get_luafile(lua_State *L);
+
 } // namespace
+
 
 
 

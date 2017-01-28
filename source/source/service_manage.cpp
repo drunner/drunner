@@ -11,7 +11,6 @@
 #include "exceptions.h"
 #include "drunner_setup.h"
 #include "service.h"
-#include "servicehook.h"
 #include "validateimage.h"
 #include "service_manage.h"
 #include "utils_docker.h"
@@ -30,7 +29,7 @@ namespace service_manage
       servicelua::luafile lf(servicename);
       if (kRSuccess == lf.loadlua())
       {
-         serviceVars v(servicename, lf.getLuaConfigurationDefinitions());
+         serviceVars v(servicename);
          v.loadvariables();
          imagename = v.getImageName();
          devmode = v.getIsDevMode();
@@ -130,9 +129,7 @@ namespace service_manage
             fatal("Corrupt dservice - couldn't read service.lua.");
 
          // write out service configuration for the dService.
-         serviceVars sv(servicename, imagename, syf.getLuaConfigurationDefinitions());
-         if (kRSuccess == sv.loadvariables()) // in case there's an existing file.
-            logdbg("Loaded existing service variables.");
+         serviceVars sv(servicename);
 
          // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
          sv.setImageName(imagename);
@@ -203,8 +200,8 @@ namespace service_manage
 
       _recreate(servicename,imagename,devMode);
 
-      servicehook hook(servicename, "install", {});
-      hook.endhook();
+      //servicehook hook(servicename, "install", {});
+      //hook.endhook();
 
       logdbg("Installation of " + servicename + " complete.");
       return kRSuccess;
@@ -218,15 +215,15 @@ namespace service_manage
       if (!utils::fileexists(sp.getPathdService()))
          return cError("Can't uninstall " + servicename + " - it does not exist.");
 
-      try
-      {
-         servicehook hook(servicename, "uninstall", {});
-         hook.starthook();
-      }
-      catch (const eExit &)
-      {
-         logmsg(kLWARN, "Installation damaged, unable to use uninstall hook.");
-      }
+      //try
+      //{
+      //   servicehook hook(servicename, "uninstall", {});
+      //   hook.starthook();
+      //}
+      //catch (const eExit &)
+      //{
+      //   logmsg(kLWARN, "Installation damaged, unable to use uninstall hook.");
+      //}
 
       // delete the service tree.
       logmsg(kLINFO, "Deleting all of the dService files");
@@ -252,8 +249,8 @@ namespace service_manage
       {
          try
          {
-            servicehook hook(servicename, "obliterate", {});
-            hook.starthook();
+            //servicehook hook(servicename, "obliterate", {});
+            //hook.starthook();
 
             logmsg(kLDEBUG, "Obliterating all the docker volumes - data will be gone forever.");
             // [start] deleting docker volumes.
@@ -323,12 +320,12 @@ namespace service_manage
       bool loaded = _loadImageName(servicename,imagename,devmode);
       drunner_assert(loaded, "Can't update service " + servicename + " - docker image name could not be determined.");
 
-      servicehook hook(servicename, "update", {});
-      cResult rslt = hook.starthook();
-      rslt += _recreate(servicename, imagename,devmode);
-      rslt += hook.endhook();
+      //servicehook hook(servicename, "update", {});
+      //cResult rslt = hook.starthook();
+      return _recreate(servicename, imagename,devmode);
+      //rslt += hook.endhook();
 
-      return rslt;
+//      return rslt;
    }
 
 

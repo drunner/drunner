@@ -17,8 +17,7 @@ public:
    service(std::string servicename); 
 
    const std::string getImageName() const;
-   const servicelua::luafile & getServiceLua() const { return mServiceLua; }
-   const serviceVars & getServiceVars() const { return *mServiceVarsPtr; }
+   const serviceVars & getServiceVars() const { return mServiceVars; }
 
 
    cResult backup(std::string backupfile);
@@ -30,8 +29,7 @@ private:
    cResult _runserviceRunnerCommand(const CommandLine & serviceCmd) const;
    cResult _dstop(const CommandLine & operation) const;
 
-   servicelua::luafile mServiceLua;
-   std::unique_ptr<serviceVars> mServiceVarsPtr; // the full configuration for the service. Includes config from service.lua + extras.
+   serviceVars mServiceVars; // the full configuration for the service. Includes config from service.lua + extras.
 };
 
 
