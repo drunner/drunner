@@ -177,7 +177,8 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
 
    // -----------------------------------------
    // Output results.
-   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored to service " + servicename + ". Try it!");
+   logmsg(kLINFO, "The backup " + bf.toString() + " has been restored.");
+   logmsg(kLINFO, "Service " + servicename + " is now available. Try it!");
    logmsg(kLINFO, "Total time taken:                 " + ttotal.getelpased());
    return kRSuccess;
 }

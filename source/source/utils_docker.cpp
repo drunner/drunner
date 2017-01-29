@@ -175,6 +175,8 @@ exit 1
       std::string password = utils::getenv("PASS");
       std::string backupName = volumename; // todo : make it robust to weird chars etc.
 
+      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
+
       // strip out servicename.
       size_t pos = backupName.find(servicename);
       if (pos != std::string::npos)
@@ -183,7 +185,6 @@ exit 1
       if (!utils_docker::dockerVolExists(volumename))
          fatal("Couldn't find docker volume " + volumename + ".");
 
-      drunner_assert(TempBackupFolder.isDirectory(),"Coding error: volarchive needs to be directory.");
       TempBackupFolder.setFileName(backupName + ".tar");
       compress::compress_volume(password, volumename, TempBackupFolder);
       logmsg(kLDEBUG, "Backed up docker volume " + volumename + " as " + backupName);
@@ -198,6 +199,8 @@ exit 1
       std::string password = utils::getenv("PASS");
       std::string backupName = volumename; // todo : make it robust to weird chars etc.
 
+      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
+
       // strip out servicename.
       size_t pos = backupName.find(servicename);
       if (pos != std::string::npos)
@@ -206,11 +209,13 @@ exit 1
       if (utils_docker::dockerVolExists(volumename))
          fatal("Volume already exists: " + volumename + " - can't restore.");
 
+      // create the volume to restore into.
+      utils_docker::createDockerVolume(volumename);
+
       TempBackupFolder.setFileName(backupName + ".tar");
       if (!utils::fileexists(TempBackupFolder))
          fatal("Expected archive does not exist: " + TempBackupFolder.toString());
 
-      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
       compress::decompress_volume(password, volumename, TempBackupFolder);
       logmsg(kLDEBUG, "Restored docker volume " + volumename + " as " + backupName);
 
