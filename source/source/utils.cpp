@@ -499,3 +499,15 @@ void CommandLine::logcommand(std::string prefix,eLogLevel ll) const
       oss << " [" << a << "]";
    logmsg(ll, oss.str());
 }
+
+void CommandLine::setfromvector(const std::vector<std::string>& v)
+{
+   command.clear();
+   args.clear();
+
+   if (v.size() == 0)
+      return;
+   command = v.front();
+   args = v;
+   args.erase(args.begin());
+}

@@ -26,6 +26,7 @@ extern "C" int l_dockerstop(lua_State *L);
 extern "C" int l_dockerrunning(lua_State *L);
 extern "C" int l_dockerpull(lua_State *L);
 extern "C" int l_dockercreatevolume(lua_State *L);
+extern "C" int l_docker(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -56,6 +57,7 @@ namespace servicelua
       REGISTERLUAC(l_dockerrunning, "dockerrunning")
       REGISTERLUAC(l_dockerpull, "dockerpull")
       REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
+      REGISTERLUAC(l_docker, "docker")
 
    }
 
@@ -126,21 +128,17 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
    
-
-   int drun(lua_State *L, bool returnOutput, bool returnExit)
+   // convert args (either as separate args or a lua table) to a vec of strings.
+   std::vector<std::string> args2vec(lua_State *L)
    {
-      luafile * lf = get_luafile(L);
-      CommandLine operation;
-
+      std::vector<std::string> vs;
 
       if (lua_isstring(L, 1) == 1)
       {
-         drunner_assert(lua_isstring(L, 1), "command must be a string");
-         operation.command = lua_tostring(L, 1);
-         for (int i = 2; i <= lua_gettop(L); ++i)
+         for (int i = 1; i <= lua_gettop(L); ++i)
          {
             drunner_assert(lua_isstring(L, i), "arg must be a string");
-            operation.args.push_back(lf->getServiceVars().substitute(lua_tostring(L, i)));
+            vs.push_back(lua_tostring(L, 1));
          }
       }
       else if (lua_istable(L, 1) == 1)
@@ -153,16 +151,28 @@ namespace servicelua
             drunner_assert(lua_isstring(L, -1), "Table value isn't a string");
             int i = (int)lua_tonumber(L, -2); // key
             std::string s = lua_tostring(L, -1); // value
-            //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
-            if (i == 1)
-               operation.command = s;
-            else
-               operation.args.push_back(s);
+                                                 //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
+
+            vs.push_back(s);
             lua_pop(L, 1); // remove value, keep key for next iteration.
          }
       }
       else
-         fatal("Unrecognised argument type passed to drun family.");
+         fatal("Unrecognised argument type.");
+      
+      return vs;
+   }
+
+   int _drun(lua_State *L, bool returnOutput, bool returnExit, std::string command="")
+   {
+      luafile * lf = get_luafile(L);
+
+      std::vector<std::string> v = args2vec(L);
+      if (command.length() > 0)
+         v.insert(v.begin(), command);
+
+      CommandLine operation;
+      operation.setfromvector(v);
 
       std::string out;
       int r = utils::runcommand_stream(
@@ -196,9 +206,18 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
 
-      return drun(L, false, true);
+      return _drun(L, false, true);
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_docker(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: docker( arg1, arg2, ... )");
+
+      return _drun(L, false, true, "docker");
+   }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
@@ -207,7 +226,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
 
-      return drun(L, true, false);
+      return _drun(L, true, false);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -217,7 +236,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
 
-      return drun(L, true, true);
+      return _drun(L, true, true);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
