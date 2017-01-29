@@ -138,7 +138,7 @@ namespace servicelua
          for (int i = 1; i <= lua_gettop(L); ++i)
          {
             drunner_assert(lua_isstring(L, i), "arg must be a string");
-            vs.push_back(lua_tostring(L, 1));
+            vs.push_back(lua_tostring(L, i));
          }
       }
       else if (lua_istable(L, 1) == 1)
@@ -149,7 +149,8 @@ namespace servicelua
          {
             drunner_assert(lua_isnumber(L, -2), "Table keys aren't numbers");
             drunner_assert(lua_isstring(L, -1), "Table value isn't a string");
-            int i = (int)lua_tonumber(L, -2); // key
+
+            //int i = (int)lua_tonumber(L, -2); // key
             std::string s = lua_tostring(L, -1); // value
                                                  //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
 
