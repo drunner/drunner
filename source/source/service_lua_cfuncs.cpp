@@ -26,6 +26,7 @@ extern "C" int l_dockerstop(lua_State *L);
 extern "C" int l_dockerrunning(lua_State *L);
 extern "C" int l_dockerpull(lua_State *L);
 extern "C" int l_dockercreatevolume(lua_State *L);
+extern "C" int l_dockerdeletevolume(lua_State *L);
 extern "C" int l_docker(lua_State *L);
 extern "C" int l_dockerbackup(lua_State *L);
 extern "C" int l_dockerrestore(lua_State *L);
@@ -60,6 +61,7 @@ namespace servicelua
       REGISTERLUAC(l_dockerrunning, "dockerrunning")
       REGISTERLUAC(l_dockerpull, "dockerpull")
       REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
+      REGISTERLUAC(l_dockerdeletevolume, "dockerdeletevolume")
       REGISTERLUAC(l_docker, "docker")
       REGISTERLUAC(l_dockerbackup, "dockerbackup")
       REGISTERLUAC(l_dockerrestore, "dockerrestore")
@@ -316,6 +318,21 @@ namespace servicelua
       lua_pushinteger(L, r);
       return 1; // 1 result to return.
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerdeletevolume(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to delete) for dockerdeletevolume.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+      cResult r = utils_docker::deleteDockerVolume(vol);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+
    // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_dockerbackup(lua_State *L)
