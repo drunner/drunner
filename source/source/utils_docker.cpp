@@ -168,12 +168,17 @@ exit 1
       return r.success(); // returns 0 if root (success).
    }
 
-   cResult backupDockerVolume(std::string volumename, Poco::Path TempBackupFolder)
+   cResult backupDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename)
    {
       // -----------------------------------------
       // back up volume container
       std::string password = utils::getenv("PASS");
       std::string backupName = volumename; // todo : make it robust to weird chars etc.
+
+      // strip out servicename.
+      size_t pos = backupName.find(servicename);
+      if (pos != std::string::npos)
+         backupName.erase(pos, servicename.length());
 
       if (!utils_docker::dockerVolExists(volumename))
          fatal("Couldn't find docker volume " + volumename + ".");
@@ -184,6 +189,32 @@ exit 1
       logmsg(kLDEBUG, "Backed up docker volume " + volumename + " as " + backupName);
 
       return kRSuccess;
+   }
+
+   cResult restoreDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename)
+   {
+      // -----------------------------------------
+      // restore volume container
+      std::string password = utils::getenv("PASS");
+      std::string backupName = volumename; // todo : make it robust to weird chars etc.
+
+      // strip out servicename.
+      size_t pos = backupName.find(servicename);
+      if (pos != std::string::npos)
+         backupName.erase(pos, servicename.length());
+
+      if (utils_docker::dockerVolExists(volumename))
+         fatal("Volume already exists: " + volumename + " - can't restore.");
+
+      TempBackupFolder.setFileName(backupName + ".tar");
+      if (!utils::fileexists(TempBackupFolder))
+         fatal("Expected archive does not exist: " + TempBackupFolder.toString());
+
+      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
+      compress::decompress_volume(password, volumename, TempBackupFolder);
+      logmsg(kLDEBUG, "Restored docker volume " + volumename + " as " + backupName);
+
+      return cResult();
    }
 
 } // namespace

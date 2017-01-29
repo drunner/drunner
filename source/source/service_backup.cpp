@@ -158,7 +158,7 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    // restore dservice definition files
 
    logmsg(kLDEBUG, "Restoring dService definition files.");
-   compress::compress_folder(password, servicepaths.getPathdService(), backuppaths.getPathdServiceDefArchiveFile());
+   compress::decompress_folder("", servicepaths.getPathdService(), backuppaths.getPathdServiceDefArchiveFile());
 
    logmsg(kLINFO, "Time for dService def restore: " + tstep.getelpased());
    tstep.restart();

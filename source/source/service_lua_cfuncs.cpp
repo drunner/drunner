@@ -27,6 +27,9 @@ extern "C" int l_dockerrunning(lua_State *L);
 extern "C" int l_dockerpull(lua_State *L);
 extern "C" int l_dockercreatevolume(lua_State *L);
 extern "C" int l_docker(lua_State *L);
+extern "C" int l_dockerbackup(lua_State *L);
+extern "C" int l_dockerrestore(lua_State *L);
+
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -58,6 +61,8 @@ namespace servicelua
       REGISTERLUAC(l_dockerpull, "dockerpull")
       REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
       REGISTERLUAC(l_docker, "docker")
+      REGISTERLUAC(l_dockerbackup, "dockerbackup")
+      REGISTERLUAC(l_dockerrestore, "dockerrestore")
 
    }
 
@@ -311,7 +316,44 @@ namespace servicelua
       lua_pushinteger(L, r);
       return 1; // 1 result to return.
    }
+   // -----------------------------------------------------------------------------------------------------------------------
 
+   extern "C" int l_dockerbackup(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to backup) for dockerbackup.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+
+      luafile * lf = get_luafile(L);
+      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Coding error.");
+      Poco::Path folder(lf->getServiceVars().getTempBackupFolder());
+
+      cResult r = utils_docker::backupDockerVolume(vol,folder,lf->getServiceName());
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   
+   // -----------------------------------------------------------------------------------------------------------------------
+   
+   extern "C" int l_dockerrestore(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to restore) for dockerrestore.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+
+      luafile * lf = get_luafile(L);
+      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Coding error.");
+      Poco::Path folder(lf->getServiceVars().getTempBackupFolder());
+
+      cResult r = utils_docker::restoreDockerVolume(vol, folder, lf->getServiceName());
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   
    // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_dsub(lua_State *L)
