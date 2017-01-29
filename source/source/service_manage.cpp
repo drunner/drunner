@@ -163,7 +163,7 @@ namespace service_manage
       servicelua::luafile lf(sv, CommandLine("install"));
       // run the recreate command
       if (lf.getResult() != kRSuccess)
-         fatal("Failed to run install in service.lua.");
+         fatal("Failed to run install in service.lua:\n"+lf.getResult().what());
 
       logdbg("Installation of " + servicename + " complete.");
       return kRSuccess;

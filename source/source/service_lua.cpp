@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <Poco/String.h>
+#include <fstream>
 
 #include "service_lua.h"
 #include "utils.h"
@@ -53,22 +54,72 @@ namespace servicelua
 
    // -------------------------------------------------------------------------------
 
+   bool iscomment(std::string line)
+   {
+      Poco::trimInPlace(line);
+      if (line.length() == 0) return true;
+      return (line.find("--") == 0);
+   }
 
    cResult luafile::_loadlua()
    {
+      logmsg(kLDEBUG, "Loading lua.");
+
       Poco::Path path = mServicePaths.getPathServiceLua();
       drunner_assert(path.isFile(),"Coding error: path provided to loadlua is not a file.");
       if (!utils::fileexists(path))
          return cError("loadlua: the service.lua file does not exist: " + path.toString());
 
+      logmsg(kLDEBUG, "Registering C functions.");
       _register_lua_cfuncs(L);
 
-      int loadok = luaL_loadfile(L, path.toString().c_str());
-      if (loadok != 0)
-         fatal("Failed to load " + path.toString() + "\n"+ lua_tostring(L, -1));
-      //if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
+      //int loadok = luaL_loadfile(L, path.toString().c_str());
+      //if (loadok != 0)
+      //   fatal("Failed to load " + path.toString() + "\n"+ lua_tostring(L, -1));
+      ////if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
+      //if (lua_pcall(L, 0, 0, 0) != 0)
+      //   fatal("Failed to execute " + path.toString() + " " + lua_tostring(L, -1));
+
+
+      std::ifstream infile(path.toString());
+      std::string line, wholefile;
+      if (!infile.is_open())
+         fatal("Couldn't open service.lua at " + path.toString());
+
+      logmsg(kLDEBUG, "Executing "+path.toString());
+
+      while (std::getline(infile, line))
+      {  // substitute variables in the line.
+         bool comment = iscomment(line);
+         if (!comment)
+         {
+            while (true) // breakable loop
+            {
+               size_t pos = line.find("${");
+               if (pos == std::string::npos)
+                  break;
+               size_t pos2 = line.find("}", pos);
+               if (pos2 == std::string::npos)
+                  fatal("Unmatched ${ in lua file: \n" + line);
+               std::string key = line.substr(pos + 2, pos2 - pos - 2);
+               std::string repstr = utils::getenv(key);
+               if (repstr.length() == 0)
+                  repstr = mServiceVars.getVal(key);
+               line.replace(pos, pos2 - pos + 1, repstr);
+            }
+         }
+         logmsg(kLDEBUG, "<< " + line);
+         wholefile += line + "\n";
+      }
+      // line has had variables substituted. Execute.
+      int error = luaL_loadbuffer(L, wholefile.c_str(), wholefile.length(), path.toString().c_str());
+      if (error)
+         fatal("Failed loading:\n" + wholefile + "\n\n" + lua_tostring(L, -1));
+
       if (lua_pcall(L, 0, 0, 0) != 0)
-         fatal("Failed to execute " + path.toString() + " " + lua_tostring(L, -1));
+         fatal("Failed to execute " + path.toString() + ":\n" + lua_tostring(L, -1));
+
+
 
       //// pull out the relevant config items.
       //lua_getglobal(L, "drunner_setup");
