@@ -87,16 +87,10 @@ function testcontainer {
 function runcheck {
    cd
    "${DRUNNER}" unittest || die "Unit tests failed"
-   testcontainer "helloworld"
-   testcontainer "minecraft"
-   testcontainer "minimalexample"
-   testcontainer "dtest"
-
-   DTEST="dtesttest"
-   "${DRUNNER}" install "dtest" "${DTEST}" || die "Couldn't install dtest"
-   "${DRUNNER}" servicecmd "${DTEST}" "configure" "port=5544" || die "Couldn't configure dtest"
-   "${DRUNNER}" servicecmd "${DTEST}" "checkport" "5544" || die "Port check failed."
-   "${DRUNNER}" obliterate "${DTEST}" || die "Couldn't obliterate dtest."
+   testcontainer "rocketchat_d10"
+#   testcontainer "minecraft"
+#   testcontainer "minimalexample"
+#   testcontainer "dtest"
 }
 
 function makeclean {
