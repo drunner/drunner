@@ -16,7 +16,7 @@ sudo mv docker-compose* /usr/local/bin/docker-compose
 sudo chmod a+x /usr/local/bin/docker-compose
 
 mkdir temp
-wget https://drunner.s3.amazonaws.com/lin/drunner -O temp/drunner
+wget https://drunner.s3.amazonaws.com/09/lin/drunner -O temp/drunner
 chmod a+x temp/drunner
 sudo mv temp/drunner /usr/local/bin
 drunner setup
