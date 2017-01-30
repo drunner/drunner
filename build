@@ -164,7 +164,7 @@ function main {
       # relies on S3KEY and S3SECRET environ vars
          putS3 "${MYDIR}/source/drunner" "/${NICEVER}/lin/drunner"
 
-         s3supportpath="${MYDIR}/.s3supportfiles"
+         s3supportpath="${MYDIR}/s3supportfiles"
          for file in "$s3supportpath"/*; do
             putS3 "$s3supportpath/${file##*/}" "/${NICEVER}/lin/${file##*/}"
          done

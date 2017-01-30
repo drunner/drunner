@@ -2,7 +2,7 @@
 
 ## Status
 
-This version is a major rewrite to be cross-platform. While key functionality works it's under active development and has had only a small amount of testing (primarily on Linux). The documentation is currently incomplete, particularly around making your own dServices.
+The 1.0 release is in light production use.
 
 ## Overview
 
