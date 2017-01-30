@@ -50,9 +50,9 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
 
 const std::vector<envDef> drunnerSettings::_getConfig()
 {
-   std::vector<Configuration> config;
-   config.push_back(Configuration("INSTALLURL", sInstallURL, "The URL to download drunner from.", kCF_URL, true, true));
-   config.push_back(Configuration("INSTALLTIME", utils::getTime(), "Time installed.", kCF_string, false, false));
-   config.push_back(Configuration("PULLIMAGES", "true", "Set to false to never pull docker images", kCF_bool, true, true));
+   std::vector<envDef> config;
+   config.push_back(envDef("INSTALLURL", sInstallURL, "The URL to download drunner from.",ENV_PERSISTS | ENV_USERSETTABLE));
+   config.push_back(envDef("INSTALLTIME", utils::getTime(), "Time installed.",ENV_PERSISTS | ENV_USERSETTABLE));
+   config.push_back(envDef("PULLIMAGES", "true", "Set to false to never pull docker images",ENV_PERSISTS | ENV_USERSETTABLE));
    return config;
 }
