@@ -7,6 +7,15 @@
 #include "drunner_setup.h"
 #include "drunner_paths.h"
 
+#ifdef _WIN32
+static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/09/win/drunner)EOF";
+#elif defined(__APPLE__)
+static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/09/mac/drunner)EOF";
+#else
+static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/09/lin/drunner)EOF";
+#endif
+
+static std::string sBadURL = R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF";
 
 
 // can't put this in header because circular
@@ -23,6 +32,9 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
 
       if (r.success())
       {
+         if (getVal("INSTALLURL").compare(sBadURL))
+            setVal("INSTALLURL", sInstallURL);
+
          mReadOkay = true;
          logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
       }
@@ -36,7 +48,7 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
 const std::vector<Configuration> drunnerSettings::_getConfig()
 {
    std::vector<Configuration> config;
-   config.push_back(Configuration("INSTALLURL", R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF", "The URL to download drunner from.", kCF_URL, true, true));
+   config.push_back(Configuration("INSTALLURL", sInstallURL, "The URL to download drunner from.", kCF_URL, true, true));
    config.push_back(Configuration("INSTALLTIME", utils::getTime(), "Time installed.", kCF_string, false, false));
    config.push_back(Configuration("PULLIMAGES", "true", "Set to false to never pull docker images", kCF_bool, true, true));
    return config;
