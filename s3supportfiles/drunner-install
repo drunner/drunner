@@ -7,7 +7,6 @@ fi
 
 echo "Updating dRunner..."
 docker run --rm -v "/usr/local/bin:/ulb" "drunner/drunner_utils" bash -c \
-   "wget http://drunner.s3.amazonaws.com/lin/drunner && chmod a+x drunner && cp drunner /ulb"
 
 
 echo "dRunner updated."
