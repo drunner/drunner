@@ -108,7 +108,7 @@ namespace servicelua
                line.replace(pos, pos2 - pos + 1, repstr);
             }
          }
-         logmsg(kLDEBUG, "<< " + line);
+         //logmsg(kLDEBUG, "<< " + line);
          wholefile += line + "\n";
       }
       // line has had variables substituted. Execute.
