@@ -40,15 +40,19 @@ COMMANDS
    ${EXENAME} list
    ${EXENAME} update
    ${EXENAME} initialise
-   ${EXENAME} checkimage IMAGENAME
 
    [PASS=?] ${EXENAME} backup  SERVICENAME BACKUPFILE
    [PASS=?] ${EXENAME} restore BACKUPFILE  SERVICENAME
 
-   ${EXENAME} install    IMAGENAME [SERVICENAME]
+   ${EXENAME} install    [REGISTRY/]REPO[:TAG] [SERVICENAME]
    ${EXENAME} update     SERVICENAME
    ${EXENAME} uninstall  SERVICENAME
    ${EXENAME} obliterate SERVICENAME
+
+   ${EXENAME} registry
+   ${EXENAME} registry add NICENAME GITURL
+   ${EXENAME} registry del NICENAME
+
 
 EXIT CODE
    0   - success

@@ -103,7 +103,8 @@ namespace service_manage
          // write out service configuration for the dService.
          serviceVars sv(servicename);
 
-         // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line)
+         // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line, or
+         // expanded by copy_from_github)
          sv.setImageName(imagename);
          sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
