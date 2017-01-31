@@ -8,6 +8,9 @@ namespace sourceplugins
    // Copy from within a docker container.
    cResult dockercontainer::install(std::string & imagename, const servicePaths & sp)
    {
+      if (imagename.find('/') == std::string::npos)
+         imagename="drunner/" + imagename;
+
       cResult r = utils_docker::pullImage(imagename);
       if (!r.success())
          return r;
