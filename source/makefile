@@ -1,6 +1,7 @@
 APP=drunner
 
-INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/lua
+INC=-Isource -Ibuildnum -Isource/tests -Ideps \
+	-Isource/plugins -Isource/sourceplugins -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
@@ -22,7 +23,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 # The default search paths on OS X are unlikely to include where Poco has been installed.
-# Add the default location used by Brew, at least. 
+# Add the default location used by Brew, at least.
 ifeq ($(UNAME_S),Darwin)
    CXXFLAGS += -I/usr/local/include
    LDFLAGS += -L/usr/local/lib
