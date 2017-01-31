@@ -38,22 +38,22 @@ namespace sourceplugins
    cResult localdir::install(std::string & imagename, const servicePaths & sp)
    {
       Poco::Path dest = sp.getPathdService();
-      static const std::string local = "local|";
-
+      static const std::string localstr = "local:";
       Poco::Path path;
+
       if (imagename.compare(".") == 0)
       {
          path = Poco::Path::current();
-         imagename = local + path.toString();
+         imagename = localstr + path.toString();
       }
       else
       {
-         if (imagename.find(local) != 0)
+         if (imagename.find(localstr) != 0)
             return kRNoChange;
-         path = imagename.substr(local.length());
+         path = imagename.substr(localstr.length());
       }
 
-      logmsg(kLDEBUG, "Installing from local directory.");
+      logmsg(kLINFO, "Installing from local directory "+path.toString());
       return copydServiceFiles(path, dest);
    }
 }
