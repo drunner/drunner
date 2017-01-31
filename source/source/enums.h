@@ -53,7 +53,6 @@ enum eCommand {
    c_list,
    c_initialise,
    c_update,
-   c_checkimage,
    c_backup,
    c_restore,
    c_install,

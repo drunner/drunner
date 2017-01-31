@@ -85,7 +85,6 @@
     <ClCompile Include="..\source\source\timez.cpp" />
     <ClCompile Include="..\source\source\utils.cpp" />
     <ClCompile Include="..\source\source\utils_docker.cpp" />
-    <ClCompile Include="..\source\source\validateimage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\deps\lua\lapi.h" />
@@ -148,7 +147,6 @@
     <ClInclude Include="..\source\source\timez.h" />
     <ClInclude Include="..\source\source\utils.h" />
     <ClInclude Include="..\source\source\utils_docker.h" />
-    <ClInclude Include="..\source\source\validateimage.h" />
     <ClInclude Include="..\source\source\win\getopt.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

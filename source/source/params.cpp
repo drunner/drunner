@@ -21,7 +21,6 @@ params::params(int argc, char * const * argv) :
    mCommandList({
    {"clean",c_clean},
    {"list",c_list},
-   {"checkimage",c_checkimage},
    {"unittest",c_unittest},
    {"help",c_help},
    {"install",c_install},

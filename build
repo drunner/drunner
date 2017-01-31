@@ -59,6 +59,7 @@ function runbuild {
    docker run --rm \
       -e "VCOMBO=${VCOMBO}" \
       -e "VSHORT=${VSHORT}" \
+      -e "NICEVER=${NICEVER}" \
       -e "DEBUG=${DEBUG}"   \
       -v "${SRC}:/source" "${IMAGE}" \
       /bin/bash -c "make"

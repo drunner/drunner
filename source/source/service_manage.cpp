@@ -11,7 +11,6 @@
 #include "exceptions.h"
 #include "drunner_setup.h"
 #include "service.h"
-#include "validateimage.h"
 #include "service_manage.h"
 #include "utils_docker.h"
 #include "service.h"
@@ -97,7 +96,8 @@ namespace service_manage
          _create_common(servicename);
 
          // copy files to service directory on host.
-         cResult r = sddi::copy_from_container(imagename, sp);
+         //cResult r = sddi::copy_from_container(imagename, sp);
+         cResult r = sddi::copy_from_github(imagename, sp);
          if (!r.success()) fatal(r.what());
 
          // write out service configuration for the dService.
@@ -139,13 +139,6 @@ namespace service_manage
       logmsg(kLDEBUG, "Installing " + servicename + " at " + sp.getPathdService().toString() + ", using image " + imagename);
       if (utils::fileexists(sp.getPathdService()))
          logmsg(kLERROR, "Service already exists. Try:\n drunner update " + servicename);
-
-      // make sure we have the latest version of the service for validation.
-      if (!devMode)
-         utils_docker::pullImage(imagename);
-
-      logmsg(kLDEBUG, "Attempting to validate " + imagename);
-      validateImage::validate(imagename);
 
       _install_create(servicename,imagename,devMode);
 

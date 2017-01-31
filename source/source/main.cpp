@@ -17,7 +17,6 @@
 #include "unittests.h"
 #include "service.h"
 #include "plugins.h"
-#include "validateimage.h"
 #include "service_manage.h"
 #include "drunner_settings.h"
 #include "drunner_paths.h"
@@ -134,15 +133,6 @@ cResult mainroutines::process()
             return drunnerSetup::update_drunner();
          else
             return service_manage::update(p.getArg(0));
-      }
-
-      case c_checkimage:
-      {
-         if (p.numArgs()<1)
-            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
-         
-         validateImage::validate(_imageparse(p.getArg(0)));
-         break;
       }
 
       case c_install:

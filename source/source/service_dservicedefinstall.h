@@ -7,6 +7,7 @@
 namespace sddi
 {
    cResult copy_from_container(std::string imagename, const servicePaths & sp);
+   cResult copy_from_github(std::string imagename, const servicePaths & sp);
 }
 
 
