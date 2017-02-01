@@ -5,12 +5,11 @@
 
 namespace sourceplugins
 {
-   // Copy from within a docker container.
-   cResult dockercontainer::install(std::string & imagename, const servicePaths & sp)
-   {
-      if (imagename.find('/') == std::string::npos)
-         imagename="drunner/" + imagename;
+   static const std::string dockerstr = "docker:";
 
+   // Copy from within a docker container.
+   cResult dockercontainer::install(std::string imagename, const servicePaths & sp)
+   {
       cResult r = utils_docker::pullImage(imagename);
       if (!r.success())
          return r;
@@ -29,6 +28,39 @@ namespace sourceplugins
          return cError("Could not copy the service files. You will need to reinstall the service.\nError:\n" + op);
       drunner_assert(utils::fileexists(sp.getPathServiceLua()), "The dService service.lua file was not copied across.");
       return kRSuccess;
+   }
+
+   bool dockercontainer::pluginmatch(std::string imagename)
+   {
+      return (imagename.find(dockerstr) == 0);
+   }
+
+   cResult dockercontainer::normaliseNames(std::string & imagename, std::string & servicename)
+   {
+      // format is docker:[url or docker hub repo/]image[:tag]
+      drunner_assert(imagename.find(dockerstr) == 0,"Malformed imagename in dockercontainer::checkname - "+imagename);
+      std::string s = imagename;
+      s.erase(0, dockerstr.length());
+
+      if (s.find('/') == std::string::npos)
+         s = "drunner/" + s;
+
+      size_t pos = s.find_last_of('/');
+
+      std::string url = s.substr(0, pos + 1); // keep the /
+      std::string repo = s.substr(pos + 1);
+
+      if (servicename.length() == 0)
+      {
+         servicename = repo;
+         size_t pos2 = servicename.find(':', pos);
+         if (pos2 != std::string::npos)
+            servicename.erase(pos2);
+      }
+
+      imagename = dockerstr + url + repo;
+
+      return cResult();
    }
 
 }

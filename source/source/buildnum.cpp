@@ -17,3 +17,12 @@ std::string getVersionStrShort()
    return VERSION_STR_SHORT ;
 #endif
 }
+
+std::string getVersionNice()
+{
+#ifdef _WIN32
+   return "10";
+#else
+   return VERSION_NICEVER;
+#endif
+}

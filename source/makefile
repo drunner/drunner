@@ -4,6 +4,7 @@ INC=-Isource -Ibuildnum -Isource/tests -Ideps \
 	-Isource/plugins -Isource/sourceplugins -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
+-D VERSION_NICEVER="\"$(NICEVER)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
  -Wall -Wno-unknown-pragmas -std=c++11
 

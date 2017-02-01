@@ -10,13 +10,16 @@ namespace sourceplugins
    {
    public:
       // returns kRNoChange if nothing installed (e.g. imagename not of the correct type).
-      virtual cResult install(std::string & imagename, const servicePaths & sp) = 0;
+      virtual bool pluginmatch(std::string imagename) = 0;
+
+      virtual cResult install(std::string imagename, const servicePaths & sp) = 0;
+      virtual cResult normaliseNames(std::string & imagename, std::string & servicename) = 0;
    };
 
 
 
-   cResult install(std::string & imagename, const servicePaths & sp);
-
+   cResult install(std::string imagename, const servicePaths & sp);
+   cResult normaliseNames(std::string & imagename, std::string & servicename);
 } // namespace
 
 #endif

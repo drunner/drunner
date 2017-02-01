@@ -124,15 +124,10 @@ namespace service_manage
 
    cResult install(std::string & servicename, std::string imagename, bool devMode)
    {
-      if (servicename.length() == 0)
-      {
-         servicename = imagename;
-         size_t found;
-         while ((found = servicename.find("/")) != std::string::npos)
-            servicename.erase(0, found + 1);
-         while ((found = servicename.find(":")) != std::string::npos)
-            servicename.erase(found);
-      }
+      cResult r = sourceplugins::normaliseNames(imagename, servicename);
+      if (!r.success())
+         fatal(r.what());
+      drunner_assert(servicename.length() > 0, "Couldn't auto determine servicename.");
 
       servicePaths sp(servicename);
       drunner_assert(imagename.length() > 0, "Can't install service " + servicename + " - image name could not be determined.");

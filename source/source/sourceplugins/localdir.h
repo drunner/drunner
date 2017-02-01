@@ -10,7 +10,10 @@ namespace sourceplugins
    {
    public:
       localdir() {}
-      cResult install(std::string & imagename, const servicePaths & sp);
+      cResult install(std::string imagename, const servicePaths & sp);
+      bool pluginmatch(std::string imagename);
+      cResult normaliseNames(std::string & imagename, std::string & servicename);
+
       static cResult copydServiceFiles(Poco::Path pfrom, Poco::Path pto);
    };
 

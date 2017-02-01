@@ -9,4 +9,7 @@ std::string getVersionStr();
 // e.g. 0.3 r91
 std::string getVersionStrShort();
 
+// e.g. 03
+std::string getVersionNice();
+
 #endif

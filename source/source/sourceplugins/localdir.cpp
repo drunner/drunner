@@ -1,9 +1,14 @@
 #include "localdir.h"
 
 #include "Poco/DirectoryIterator.h"
+#include "dassert.h"
 
 namespace sourceplugins
 {
+
+   static const std::string localstr = "local:";
+
+
    // copy files including service.lua.
    cResult localdir::copydServiceFiles(Poco::Path pfrom, Poco::Path pto)
    {
@@ -35,25 +40,40 @@ namespace sourceplugins
 
    // ----------------------------
 
-   cResult localdir::install(std::string & imagename, const servicePaths & sp)
+   cResult localdir::install(std::string imagename, const servicePaths & sp)
    {
       Poco::Path dest = sp.getPathdService();
-      static const std::string localstr = "local:";
-      Poco::Path path;
-
-      if (imagename.compare(".") == 0)
-      {
-         path = Poco::Path::current();
-         imagename = localstr + path.toString();
-      }
-      else
-      {
-         if (imagename.find(localstr) != 0)
-            return kRNoChange;
-         path = imagename.substr(localstr.length());
-      }
+      Poco::Path path(imagename.substr(localstr.length()));
 
       logmsg(kLINFO, "Installing from local directory "+path.toString());
       return copydServiceFiles(path, dest);
+   }
+   bool localdir::pluginmatch(std::string imagename)
+   {
+      if (imagename.compare(".") == 0)
+         return true;
+
+      if (imagename.find(localstr) == 0)
+         return true;
+
+      return false;
+   }
+   cResult localdir::normaliseNames(std::string & imagename, std::string & servicename)
+   {
+      if (imagename.compare(".") == 0)
+         imagename = localstr + Poco::Path::current();
+     
+      drunner_assert(imagename.find(localstr) == 0, "Malformed imagename in localdir plugin");
+
+      if (servicename.length() > 0)
+         return kRSuccess;
+
+      // need to determine imagename from path.
+      std::string path = imagename;
+      path.erase(0, localstr.length());
+      Poco::Path p(path);
+      drunner_assert(p.depth() >= 1, "Current directory is root. No.");
+      servicename = p.directory(p.depth() - 1);
+      return kRSuccess;
    }
 }
