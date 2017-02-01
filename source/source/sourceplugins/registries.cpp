@@ -45,7 +45,7 @@ namespace sourceplugins
 
    bool registries::pluginmatch(std::string imagename)
    {
-      // we have to say yes to most things here :/
+      // we have to say yes to most things here as this is the default.
       // just check imagename is of form:  [git:][registry/]repo[:tag]
 
       // optional prefix. Ensured present in normalize, which hasn't been called.

@@ -31,7 +31,8 @@ params::params(int argc, char * const * argv) :
    {"backup",c_backup},
    {"restore",c_restore},
    {"configure",c_configure},
-   {"servicecmd",c_servicecmd}
+   {"servicecmd",c_servicecmd},
+   {"registry",c_registry}
    })
 {
    _setdefaults();

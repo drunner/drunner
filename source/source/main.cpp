@@ -20,6 +20,7 @@
 #include "service_manage.h"
 #include "drunner_settings.h"
 #include "drunner_paths.h"
+#include "sourceplugins.h"
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -188,10 +189,14 @@ cResult mainroutines::process()
 
       case c_plugin:
       {
-         plugins p;
-         return p.runcommand();
+         plugins pg;
+         return pg.runcommand();
       }
 
+      case c_registry:
+      {
+         return sourceplugins::registrycommand();
+      }
 
       default:
       {
