@@ -23,7 +23,7 @@ namespace sourceplugins
       pluginvec plugins;
       loadplugins(plugins);
 
-      for (int i = 0; i < plugins.size(); ++i)
+      for (unsigned int i = 0; i < plugins.size(); ++i)
          if (plugins[i]->pluginmatch(imagename))
             return plugins[i];
       return NULL;

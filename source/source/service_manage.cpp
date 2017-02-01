@@ -122,7 +122,7 @@ namespace service_manage
       return kRSuccess;
    }
 
-   cResult install(std::string & servicename, std::string imagename, bool devMode)
+   cResult install(std::string & servicename, std::string & imagename, bool devMode)
    {
       cResult r = sourceplugins::normaliseNames(imagename, servicename);
       if (!r.success())

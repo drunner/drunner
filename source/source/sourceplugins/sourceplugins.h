@@ -16,8 +16,6 @@ namespace sourceplugins
       virtual cResult normaliseNames(std::string & imagename, std::string & servicename) = 0;
    };
 
-
-
    cResult install(std::string imagename, const servicePaths & sp);
    cResult normaliseNames(std::string & imagename, std::string & servicename);
    cResult registrycommand();

@@ -71,7 +71,7 @@ namespace sourceplugins
    {
       // optional prefix.
       std::string gitprefix = "git:";
-      if (imagename.find(gitprefix) == std::string::npos)
+      if (imagename.find(gitprefix) == 0)
          imagename.insert(0, gitprefix);
 
       if (servicename.length() > 0)
@@ -145,7 +145,7 @@ namespace sourceplugins
    {
       CommandLine op;
       op.command = "git";
-      op.args = { "clone", "--progress", "-b", tag, "--depth", "1", url };
+      op.args = { "--progress", "-b", tag, "--depth", "1", url };
       utils::tempfolder scratch(drunnerPaths::getPath_Temp().pushDirectory("drunnerdef-" + timeutils::getDateTimeStr()));
       tKeyVals env;
       std::string outstr;
