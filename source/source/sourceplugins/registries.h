@@ -24,13 +24,14 @@ namespace sourceplugins
    {
    public:
       sourceinfo() : mSet(false) {}
-      sourceinfo(protocol _protocol, std::string _url, std::string _tag) : mSet(true), mProtocol(_protocol),
-         mURL(_url), mTag(_tag) {}
+      sourceinfo(protocol _protocol, std::string _url, std::string _tag, std::string _desc) : 
+         mSet(true), mProtocol(_protocol), mURL(_url), mTag(_tag), mDescription(_desc) {}
       
       bool mSet;
       protocol mProtocol; // git, local, docker
       std::string mURL;
       std::string mTag;
+      std::string mDescription;
    };
 
    class registries

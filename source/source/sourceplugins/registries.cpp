@@ -24,7 +24,7 @@ namespace sourceplugins
 
       if (load().noChange())
       { // create and save defaults.
-         mData.setVal("drunner","https://github.com/drunner/");
+         mData.setVal("drunner","https://raw.githubusercontent.com/drunner/registry/master/registry");
          cResult r = save();
          if (!r.success())
             fatal("Couldn't save registries file:\n" + r.what());

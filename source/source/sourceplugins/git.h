@@ -25,7 +25,6 @@ namespace sourceplugins
    private:
       cResult copy(std::string nicename, std::string repo, std::string tag, Poco::Path dest) const;
       cResult copy_url(std::string url, std::string repo, std::string tag, Poco::Path dest) const;
-      cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag) const;
    };
 }
 
