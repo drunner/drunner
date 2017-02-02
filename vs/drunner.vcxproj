@@ -77,6 +77,7 @@
     <ClCompile Include="..\source\source\sourceplugins\git.cpp" />
     <ClCompile Include="..\source\source\sourceplugins\localdir.cpp" />
     <ClCompile Include="..\source\source\sourceplugins\registries.cpp" />
+    <ClCompile Include="..\source\source\sourceplugins\registry.cpp" />
     <ClCompile Include="..\source\source\sourceplugins\sourceplugins.cpp" />
     <ClCompile Include="..\source\source\test_dbackup.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="..\source\source\sourceplugins\git.h" />
     <ClInclude Include="..\source\source\sourceplugins\localdir.h" />
     <ClInclude Include="..\source\source\sourceplugins\registries.h" />
+    <ClInclude Include="..\source\source\sourceplugins\registry.h" />
     <ClInclude Include="..\source\source\sourceplugins\sourceplugins.h" />
     <ClInclude Include="..\source\source\variables.h" />
     <ClInclude Include="..\source\source\service_lua.h" />
