@@ -229,6 +229,9 @@
     <ClCompile Include="..\source\source\sourceplugins\dockercontainer.cpp">
       <Filter>Source Files\sourceplugins</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\sourceplugins\git.cpp">
+      <Filter>Source Files\sourceplugins</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -421,6 +424,9 @@
       <Filter>Source Files\sourceplugins</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\sourceplugins\sourceplugins.h">
+      <Filter>Source Files\sourceplugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sourceplugins\git.h">
       <Filter>Source Files\sourceplugins</Filter>
     </ClInclude>
   </ItemGroup>

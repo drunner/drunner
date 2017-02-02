@@ -3,6 +3,7 @@
 #include "sourceplugins.h"
 #include "registries.h"
 #include "localdir.h"
+#include "git.h"
 #include "dockercontainer.h"
 #include "globalcontext.h"
 
@@ -14,7 +15,7 @@ namespace sourceplugins
    void loadplugins(pluginvec & plugins)
    {
       plugins.push_back(pluginptr(new localdir()));
-      plugins.push_back(pluginptr(new registries()));
+      plugins.push_back(pluginptr(new git()));
       plugins.push_back(pluginptr(new dockercontainer()));
    }
 

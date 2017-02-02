@@ -13,26 +13,41 @@
 
 namespace sourceplugins
 {
-   class registries : public sourceplugin
+   enum protocol
+   {
+      kGit,
+      kLocal,
+      kDocker
+   };
+
+   class sourceinfo
+   {
+   public:
+      sourceinfo() : mSet(false) {}
+      sourceinfo(protocol _protocol, std::string _url, std::string _tag) : mSet(true), mProtocol(_protocol),
+         mURL(_url), mTag(_tag) {}
+      
+      bool mSet;
+      protocol mProtocol; // git, local, docker
+      std::string mURL;
+      std::string mTag;
+   };
+
+   class registries
    {
    public:
       registries();
-
-      cResult install(std::string imagename, const servicePaths & sp);
-      bool pluginmatch(std::string imagename);
-      cResult normaliseNames(std::string & imagename, std::string & servicename);
 
       cResult addregistry(std::string nicename, std::string giturl);
       cResult delregistry(std::string nicename);
       cResult showregistries();
 
-   private:
-      cResult copy(std::string nicename, std::string repo, std::string tag, Poco::Path dest) const;
-      cResult copy_url(std::string url, std::string repo, std::string tag, Poco::Path dest) const;
-      cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag) const;
+      sourceinfo get(const std::string imagename) const;
 
+   private:
       cResult load();
       cResult save();
+      cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag) const;
 
       keyVals mData;
       Poco::Path mPath;
