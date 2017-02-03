@@ -7,25 +7,38 @@
 
 namespace sourceplugins
 {
+   enum eProtocol
+   {
+      kGit,
+      kLocal,
+      kDocker,
+      kHTTP
+   };
+
+   class registryitem
+   {
+   public:
+      std::string nicename;
+      eProtocol protocol;
+      std::string url;
+      std::string description;
+   };
+
    class registry
    {
    public:
-      registry(std::string fullurl) : mFullURL(fullurl) {}
-
+      registry(std::string fullurl);
+      
       cResult get(
          const std::string nicename,
-         std::string & protocolURL,
-         std::string & description
+         registryitem & item
       );
 
-      cResult getAll(
-         std::vector<std::string> & nicenames,
-         std::vector<std::string> & protocolURLs,
-         std::vector<std::string> & descriptions
-      );
+      const std::vector<registryitem> & getAll() { return mRegistryItems; }
 
    private:
-      std::string mFullURL;
+      cResult loadline(const std::string line, registryitem & ri);
+      std::vector<registryitem> mRegistryItems;
    };
 }
 

@@ -13,12 +13,6 @@
 
 namespace sourceplugins
 {
-   enum protocol
-   {
-      kGit,
-      kLocal,
-      kDocker
-   };
 
    class sourceinfo
    {
