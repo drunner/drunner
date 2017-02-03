@@ -102,30 +102,16 @@ cResult sourceplugins::registry::loadline(const std::string line, registryitem &
       chunks.push_back(l.substr(0, i));
       l.erase(0, i + 1);
    }
-   if (chunks.size()!=3)
-      return cError("Registry lines must be of form: nicename protocol:URL description:\n"+line);
+   if (chunks.size()!=4)
+      return cError("Registry lines must be of form: nicename protocol URL description:\n"+line);
 
    ri.nicename = chunks[0];
-   ri.description = chunks[2];
-   size_t pos = chunks[1].find(":");
-   if (pos==std::string::npos || pos==0)
-      return cError("Registry lines must be of form: nicename protocol:URL description:\n" + line);
+   ri.protocol = ProtoParse(chunks[1]);
+   ri.url = chunks[2];
+   ri.description = chunks[3];
 
-   std::string protocol = Poco::toLower(chunks[1].substr(0, pos));
-   ri.url = chunks[1].substr(pos + 1);
+   if (ri.protocol == kP_ERROR)
+      return cError("Unknown protocol " + chunks[1] + " in:\n" + line);
 
-   switch (s2i(protocol.c_str()))
-   {
-   case s2i("git"):
-      ri.protocol = kGit; break;
-   case s2i("http"):
-      ri.protocol = kHTTP; break;
-   case s2i("docker"):
-      ri.protocol = kDocker; break;
-   case s2i("local"):
-      ri.protocol = kLocal; break;
-   default:
-      return cError("Unknown protocol " + protocol);
-   }
    return kRSuccess;
 }

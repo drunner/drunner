@@ -4,16 +4,10 @@
 #include <string>
 
 #include "cresult.h"
+#include "captaincopy.h"
 
 namespace sourceplugins
 {
-   enum eProtocol
-   {
-      kGit,
-      kLocal,
-      kDocker,
-      kHTTP
-   };
 
    class registryitem
    {

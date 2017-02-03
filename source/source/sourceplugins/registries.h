@@ -24,7 +24,6 @@ namespace sourceplugins
       bool mSet;
       protocol mProtocol; // git, local, docker
       std::string mURL;
-      std::string mTag;
       std::string mDescription;
    };
 
