@@ -10,42 +10,67 @@
 #include "service_paths.h"
 #include "sourceplugins.h"
 #include "variables.h"
+#include "captaincopy.h"
 
-namespace sourceplugins
+class registrydataitem
 {
+public:
+   registrydataitem(std::string n, eProtocol p, std::string u) : mNiceName(n), mProtocol(p), mURL(u) {}
+   registrydataitem(std::string n, std::string p, std::string u) : mNiceName(n), mProtocol(ProtoParse(p)), mURL(u) {}
+   std::string mNiceName;
+   eProtocol mProtocol;
+   std::string mURL;
 
-   class sourceinfo
-   {
-   public:
-      sourceinfo() : mSet(false) {}
-      sourceinfo(protocol _protocol, std::string _url, std::string _tag, std::string _desc) : 
-         mSet(true), mProtocol(_protocol), mURL(_url), mTag(_tag), mDescription(_desc) {}
-      
-      bool mSet;
-      protocol mProtocol; // git, local, docker
-      std::string mURL;
-      std::string mDescription;
-   };
+   std::string protostr() const { return unParseProto(mProtocol); }
+private:
+   // --- serialisation --
+   friend class ::cereal::access;
+   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mNiceName,mProtocol,mURL); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mNiceName, mProtocol, mURL); }
+   // --- serialisation --
+};
+CEREAL_CLASS_VERSION(registrydataitem, 1);
 
-   class registries
-   {
-   public:
-      registries();
+class registrydata
+{
+public:
 
-      cResult addregistry(std::string nicename, std::string giturl);
-      cResult delregistry(std::string nicename);
-      cResult showregistries();
+   void setVal(const registrydataitem & val);
+   bool exists(std::string nicename) const;
+   const registrydataitem & getVal(std::string nicename) const;
+   void delVal(std::string nicename);
 
-      sourceinfo get(const std::string imagename) const;
+   const std::vector<registrydataitem> & getAll() const;
 
-   private:
-      cResult load();
-      cResult save();
-      cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag) const;
+private:
+   // --- serialisation --
+   friend class cereal::access;
+   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mItems); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) { mItems.clear(); ar(mItems); }
+   // --- serialisation --
 
-      keyVals mData;
-      Poco::Path mPath;
-   };
-}
+   std::vector<registrydataitem> mItems;
+};
+CEREAL_CLASS_VERSION(registrydata, 1);
+
+
+class registries
+{
+public:
+   registries();
+
+   cResult addregistry(std::string nicename, std::string protocol, std::string url);
+   cResult delregistry(std::string nicename);
+   cResult showregistries();
+
+   registrydataitem get(const std::string imagename) const;
+
+private:
+   cResult load();
+   cResult save();
+
+   registrydata mData;
+   Poco::Path mPath;
+};
 
 #endif

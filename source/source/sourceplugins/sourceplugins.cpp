@@ -60,10 +60,10 @@ namespace sourceplugins
 
       if (Poco::icompare(p.getArg(0), "add")==0)
       {
-         if (p.numArgs() != 3)
-            fatal("drunner registry add NICENAME GITURL");
+         if (p.numArgs() != 4)
+            fatal("drunner registry add NICENAME PROTOCOL URL");
          else
-            return r.addregistry(p.getArg(1), p.getArg(2));
+            return r.addregistry(p.getArg(1), p.getArg(2), p.getArg(3));
       }
 
       if (Poco::icompare(p.getArg(0), "del") == 0)

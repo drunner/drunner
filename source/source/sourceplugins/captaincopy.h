@@ -22,6 +22,7 @@ enum eCopyMode
 };
 
 eProtocol ProtoParse(std::string protocol);
+std::string unParseProto(eProtocol p);
 
 cResult CaptainCopy(eProtocol protocol, std::string url, std::string path, Poco::Path target, eCopyMode mode);
 

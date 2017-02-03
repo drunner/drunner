@@ -38,8 +38,30 @@ eProtocol ProtoParse(std::string protocol)
       return kP_Docker;
    case s2i("local"):
       return kP_Local;
+   case s2i("ssh"):
+      return kP_SSH;
    default:
       return kP_ERROR;
+   }
+}
+
+std::string unParseProto(eProtocol p)
+{
+   switch (p)
+   {
+   case kP_Git:
+      return "git";
+   case kP_Local:
+      return "local";
+   case kP_Docker:
+      return "docker";
+   case kP_HTTP:
+      return "http";
+   case kP_SSH:
+      return "ssh";
+
+   default:
+      fatal("CaptainCopy : Unknown protocol.");
    }
 }
 
