@@ -13,7 +13,8 @@ CFLAGS=-D LUA_USE_POSIX -MD -MP -fdiagnostics-color=always \
 
 LDFLAGS=
 #LDLIBS=-lPocoNetSSL -lPocoNet -lPocoCrypto -lPocoUtil -lPocoFoundation
-LDLIBS=-lPocoNet -lPocoUtil -lPocoFoundation
+LDLIBS=-lPocoNetSSL -lPocoNet -lPocoCrypto -lPocoUtil -lPocoJSON -lPocoXML -lPocoFoundation \
+			-lssl -lcrypto
 
 # On OS X we dynamically link runtime libs.
 # On Linux we statically link runtime libs.

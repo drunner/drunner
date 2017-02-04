@@ -3,7 +3,7 @@
 #include "Poco/String.h"
 #include "Poco/File.h"
 #include "Poco/Net/HTTPStreamFactory.h"
-//#include "Poco/Net/HTTPSStreamFactory.h"
+#include "Poco/Net/HTTPSStreamFactory.h"
 #include "Poco/URI.h"
 #include "Poco/URIStreamOpener.h"
 #include "Poco/StreamCopier.h"
@@ -19,7 +19,7 @@ cResult downloadfile(std::string url, Poco::Path dest)
    try
    {
       Poco::Net::HTTPStreamFactory::registerFactory(); // Must register the HTTP factory to stream using HTTP
-  //    Poco::Net::HTTPSStreamFactory::registerFactory(); // Must register the HTTP factory to stream using HTTP
+      Poco::Net::HTTPSStreamFactory::registerFactory(); // Must register the HTTP factory to stream using HTTP
 
       if (utils::fileexists(dest))
          Poco::File(dest).remove();
