@@ -4,6 +4,7 @@
 #include "drunner_paths.h"
 #include "utils.h"
 #include "globallogger.h"
+#include "buildnum.h"
 
 #ifdef _WIN32
 #include <ShlObj.h>
@@ -20,7 +21,7 @@ Poco::Path drunnerPaths::getPath_Root() {
    Poco::Path drunnerdir = Poco::Path::home();
    drunnerdir.makeDirectory();
    poco_assert(drunnerdir.isDirectory());
-   drunnerdir.pushDirectory(".drunner");
+   drunnerdir.pushDirectory(".drunner"+getVersionNice());
    return drunnerdir;
 }
 
