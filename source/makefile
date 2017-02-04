@@ -12,7 +12,7 @@ CFLAGS=-D LUA_USE_POSIX -MD -MP -fdiagnostics-color=always \
 -Wall -Wno-unknown-pragmas
 
 LDFLAGS=
-LDLIBS=-lPocoFoundation -lPocoUtil
+LDLIBS=-lPocoCrypto -lPocoNet -lPocoUtil -lPocoFoundation
 
 # On OS X we dynamically link runtime libs.
 # On Linux we statically link runtime libs.
