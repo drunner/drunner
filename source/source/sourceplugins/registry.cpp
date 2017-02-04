@@ -3,43 +3,20 @@
 
 #include "Poco/String.h"
 #include "Poco/File.h"
-#include "Poco/Net/HTTPStreamFactory.h"
-#include "Poco/URI.h"
-#include "Poco/URIStreamOpener.h"
-#include "Poco/StreamCopier.h"
 
 #include "registry.h"
 #include "drunner_paths.h"
 #include "utils.h"
 #include "dassert.h"
+#include "captaincopy.h"
 
-cResult downloadfile(std::string url, Poco::Path dest)
-{
-   logmsg(kLINFO, "Downloading " + url);
-   try
-   {
-      Poco::Net::HTTPStreamFactory::registerFactory(); // Must register the HTTP factory to stream using HTTP
-      if (utils::fileexists(dest))
-         Poco::File(dest).remove();
-
-      std::ofstream fileStream;
-      fileStream.open(dest.toString(), std::ios::out | std::ios::trunc | std::ios::binary);
-      Poco::URI uri(url);
-      std::auto_ptr<std::istream> pStr(Poco::URIStreamOpener::defaultOpener().open(uri));
-      Poco::StreamCopier::copyStream(*pStr.get(), fileStream);
-      fileStream.close();
-   }
-
-   catch (Poco::Exception & e)
-   {
-      return cError(e.what());
-   }
-   return kRSuccess;
-}
-
-sourceplugins::registry::registry(std::string fullurl)
+sourcecopy::registry::registry(registrydefinition r)
 {
    Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
+
+   SourceInfo s(r.mProtocol, r.mURL, "");
+   cResult r = CaptainCopy(s, f, kCM_File);
+
    cResult r = downloadfile(fullurl, f);
    if (!r.success())
       fatal(r.what());
@@ -64,7 +41,7 @@ sourceplugins::registry::registry(std::string fullurl)
    }
 }
 
-cResult sourceplugins::registry::get(const std::string nicename, registryitem & item)
+cResult sourcecopy::registry::get(const std::string nicename, registryitem & item)
 {
    for (unsigned int i = 0; i<mRegistryItems.size(); ++i)
       if (Poco::icompare(mRegistryItems[i].nicename, nicename) == 0)
@@ -90,7 +67,7 @@ int getchunk(std::string l)
    return l.length();
 }
 
-cResult sourceplugins::registry::loadline(const std::string line, registryitem & ri)
+cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri)
 {
    // expect three whitespace separated strings.
    std::vector<std::string> chunks;
@@ -114,4 +91,9 @@ cResult sourceplugins::registry::loadline(const std::string line, registryitem &
       return cError("Unknown protocol " + chunks[1] + " in:\n" + line);
 
    return kRSuccess;
+}
+
+SourceInfo sourcecopy::registryitem::getSourceInfo(std::string tag) const
+{
+   return SourceInfo(nicename, protocol, url, tag);
 }

@@ -8,39 +8,20 @@
 #include <cereal/types/map.hpp>
 
 #include "service_paths.h"
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 #include "variables.h"
 #include "captaincopy.h"
 
-class registrydataitem
-{
-public:
-   registrydataitem(std::string n, eProtocol p, std::string u) : mNiceName(n), mProtocol(p), mURL(u) {}
-   registrydataitem(std::string n, std::string p, std::string u) : mNiceName(n), mProtocol(ProtoParse(p)), mURL(u) {}
-   std::string mNiceName;
-   eProtocol mProtocol;
-   std::string mURL;
-
-   std::string protostr() const { return unParseProto(mProtocol); }
-private:
-   // --- serialisation --
-   friend class ::cereal::access;
-   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mNiceName,mProtocol,mURL); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mNiceName, mProtocol, mURL); }
-   // --- serialisation --
-};
-CEREAL_CLASS_VERSION(registrydataitem, 1);
-
-class registrydata
+class registrydefinitions
 {
 public:
 
-   void setVal(const registrydataitem & val);
+   void setVal(const registrydefinition & val);
    bool exists(std::string nicename) const;
-   const registrydataitem & getVal(std::string nicename) const;
+   cResult getVal(std::string nicename, registrydefinition & val) const;
    void delVal(std::string nicename);
 
-   const std::vector<registrydataitem> & getAll() const;
+   const std::vector<registrydefinition> & getAll() const;
 
 private:
    // --- serialisation --
@@ -49,9 +30,9 @@ private:
    template <class Archive> void load(Archive &ar, std::uint32_t const version) { mItems.clear(); ar(mItems); }
    // --- serialisation --
 
-   std::vector<registrydataitem> mItems;
+   std::vector<registrydefinition> mItems;
 };
-CEREAL_CLASS_VERSION(registrydata, 1);
+CEREAL_CLASS_VERSION(registrydefinitions, 1);
 
 
 class registries
@@ -63,13 +44,15 @@ public:
    cResult delregistry(std::string nicename);
    cResult showregistries();
 
-   registrydataitem get(const std::string imagename) const;
+   registrydefinition get(const std::string imagename) const;
+
+   static cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag);
 
 private:
    cResult load();
    cResult save();
 
-   registrydata mData;
+   registrydefinitions mData;
    Poco::Path mPath;
 };
 

@@ -151,21 +151,13 @@ cResult persistvariables::setVal(std::string key, std::string val)
    return cError("Setting '" + key + "' is not recognised.");
 }
 
-
-std::string _pad(std::string x, unsigned int w)
-{
-   while (x.length() < w) x += " ";
-   return x;
-}
-inline int _max(int a, int b) { return (a > b) ? a : b; }
-
 cResult persistvariables::_showconfiginfo() const
 { // show current variables.
    logmsg(kLINFO, "Current configuration:\n ");
 
    int maxkey = 0;
    for (const auto & y : getAll())
-      maxkey = _max(maxkey, y.first.length());
+      maxkey = utils::_max(maxkey, y.first.length());
 
    int uservars = 0;
    for (const auto & y : getAll())
@@ -173,14 +165,14 @@ cResult persistvariables::_showconfiginfo() const
       {
          if (def->usersettable)
          {
-            logmsg(kLINFO, " " + _pad(y.first, maxkey) + " = " + (def->secret ? "xxxxxx" : y.second));
-            logmsg(kLINFO, " " + _pad(" ", maxkey) + "   " + def->description + "\n");
+            logmsg(kLINFO, " " + utils::_pad(y.first, maxkey) + " = " + (def->secret ? "xxxxxx" : y.second));
+            logmsg(kLINFO, " " + utils::_pad(" ", maxkey) + "   " + def->description + "\n");
             ++uservars;
          }
          else
          {
-            logdbg("[" + _pad(y.first, maxkey) + "]= " + (def->secret ? "xxxxxx" : y.second) + " (not user settable)");
-            logdbg(" " + _pad(" ", maxkey) + "   " + def->description + "\n");
+            logdbg("[" + utils::_pad(y.first, maxkey) + "]= " + (def->secret ? "xxxxxx" : y.second) + " (not user settable)");
+            logdbg(" " + utils::_pad(" ", maxkey) + "   " + def->description + "\n");
          }
       }
       else

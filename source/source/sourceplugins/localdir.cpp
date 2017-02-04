@@ -3,7 +3,7 @@
 #include "Poco/DirectoryIterator.h"
 #include "dassert.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
 
    static const std::string localstr = "local:";

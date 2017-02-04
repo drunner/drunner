@@ -1,26 +1,61 @@
+#include <fstream>
+
 #include "Poco/String.h"
+#include "Poco/File.h"
+#include "Poco/Net/HTTPStreamFactory.h"
+#include "Poco/URI.h"
+#include "Poco/URIStreamOpener.h"
+#include "Poco/StreamCopier.h"
 
 #include "captaincopy.h"
 #include "utils.h"
 
-cResult _CopyGit(std::string url, std::string path, Poco::Path target, eCopyMode mode)
+
+cResult downloadfile(std::string url, Poco::Path dest)
+{
+   logmsg(kLINFO, "Downloading " + url);
+   try
+   {
+      Poco::Net::HTTPStreamFactory::registerFactory(); // Must register the HTTP factory to stream using HTTP
+      if (utils::fileexists(dest))
+         Poco::File(dest).remove();
+
+      std::ofstream fileStream;
+      fileStream.open(dest.toString(), std::ios::out | std::ios::trunc | std::ios::binary);
+      Poco::URI uri(url);
+      std::auto_ptr<std::istream> pStr(Poco::URIStreamOpener::defaultOpener().open(uri));
+      Poco::StreamCopier::copyStream(*pStr.get(), fileStream);
+      fileStream.close();
+   }
+
+   catch (Poco::Exception & e)
+   {
+      return cError(e.what());
+   }
+   return kRSuccess;
+}
+
+cResult _CopyGit(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
    return kRNotImplemented;
 }
-cResult _CopyLocal(std::string url, std::string path, Poco::Path target, eCopyMode mode)
+cResult _CopyLocal(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
    return kRNotImplemented;
 }
-cResult _CopyDocker(std::string url, std::string path, Poco::Path target, eCopyMode mode)
+cResult _CopyDocker(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
    return kRNotImplemented;
 }
-cResult _CopyHTTP(std::string url, std::string path, Poco::Path target, eCopyMode mode)
+cResult _CopyHTTP(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
    return kRNotImplemented;
 }
-cResult _CopySSH(std::string url, std::string path, Poco::Path target, eCopyMode mode)
+cResult _CopySSH(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
+   if (mode == kCM_File)
+      return downloadfile(s.mURL, target);
+
    return kRNotImplemented;
 }
 
@@ -65,24 +100,24 @@ std::string unParseProto(eProtocol p)
    }
 }
 
-cResult CaptainCopy(eProtocol protocol, std::string url, std::string path, Poco::Path target, eCopyMode mode)
+cResult CaptainCopy(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
-   switch (protocol)
+   switch (s.mProtocol)
    {
    case kP_Git:
-      return _CopyGit(url, path, target, mode);
+      return _CopyGit(s, target, mode);
 
    case kP_Local:
-      return _CopyLocal(url, path, target, mode);
+      return _CopyLocal(s, target, mode);
 
    case kP_Docker:
-      return _CopyDocker(url, path, target, mode);
+      return _CopyDocker(s, target, mode);
 
    case kP_HTTP:
-      return _CopyHTTP(url, path, target, mode);
+      return _CopyHTTP(s, target, mode);
 
    case kP_SSH:
-      return _CopySSH(url, path, target, mode);
+      return _CopySSH(s, target, mode);
 
    default:
       fatal("CaptainCopy : Unknown protocol.");

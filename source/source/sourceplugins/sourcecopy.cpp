@@ -1,53 +1,38 @@
 #include "Poco/String.h"
 
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 #include "registries.h"
-#include "localdir.h"
-#include "git.h"
-#include "dockercontainer.h"
 #include "globalcontext.h"
+#include "registry.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
-   typedef std::shared_ptr<sourceplugin> pluginptr;
-   typedef std::vector < pluginptr > pluginvec;
-
-   void loadplugins(pluginvec & plugins)
-   {
-      plugins.push_back(pluginptr(new localdir()));
-      plugins.push_back(pluginptr(new git()));
-      plugins.push_back(pluginptr(new dockercontainer()));
-   }
-
-   pluginptr getPlugin(std::string imagename)
-   {
-      pluginvec plugins;
-      loadplugins(plugins);
-
-      for (unsigned int i = 0; i < plugins.size(); ++i)
-         if (plugins[i]->pluginmatch(imagename))
-            return plugins[i];
-      return NULL;
-  }
 
    // -----------------------------------------------------------------------------
    // Install the imagename.
    cResult install(std::string imagename, const servicePaths & sp)
    {
-      pluginptr p = getPlugin(imagename);
+      registries regall;
+      registrydefinition regdef = regall.get(imagename);
+      
+      registry r(regdef.mURL);
 
-      if (!p)
-         return cError(imagename + " doesn't match any known source type.");
 
-      cResult r = p->install(imagename, sp);
-      return r;
+      return kRNotImplemented;
    }
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
    {
-      pluginptr p = getPlugin(imagename);
+      std::string registry, repo, tag;
+      cResult r = registries::splitImageName(imagename, registry, repo, tag);
+      if (!r.success())
+         return r;
 
-      return p->normaliseNames(imagename, servicename);
+      imagename = registry + "/" + repo + ":" + tag;
+      if (servicename.length() == 0)
+         servicename = repo;
+
+      return kRSuccess;
    }
 
    cResult registrycommand()

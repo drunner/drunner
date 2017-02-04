@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "Poco/String.h"
 #include "Poco/File.h"
 #include <cereal/archives/json.hpp>
 #include <fstream>
@@ -11,11 +12,7 @@
 #include "drunner_paths.h"
 #include "buildnum.h"
 #include "timez.h"
-#include "localdir.h"
-
-
-
-static std::string gitprefix = "git:";
+#include "registry.h"
 
 registries::registries()
 {
@@ -24,7 +21,7 @@ registries::registries()
    if (load().noChange())
    { // create and save defaults.
       mData.setVal(
-         registrydataitem("drunner", "http", "https://raw.githubusercontent.com/drunner/registry/master/registry")
+         registrydefinition("drunner", "http", "https://raw.githubusercontent.com/drunner/registry/master/registry")
       );
       cResult r = save();
       if (!r.success())
@@ -34,7 +31,7 @@ registries::registries()
 
 cResult registries::addregistry(std::string nicename, std::string protocol, std::string url)
 {
-   mData.setVal(registrydataitem(nicename, protocol, url));
+   mData.setVal(registrydefinition(nicename, protocol, url));
    return save();
 }
 
@@ -47,31 +44,25 @@ cResult registries::delregistry(std::string nicename)
    return save();
 }
 
-
-std::string _pad(std::string x, unsigned int w)
-{
-   while (x.length() < w) x += " ";
-   return x;
-}
-inline int _max(int a, int b) { return (a > b) ? a : b; }
-
 cResult registries::showregistries()
 {
    int maxkey = 0, maxproto=0, maxurl=0;
    for (const auto & y : mData.getAll())
    {
-      maxkey = _max(maxkey, y.mNiceName.length());
-      maxproto = _max(maxproto, y.protostr().length());
-      maxurl = _max(maxurl, y.mURL.length());
+      maxkey = utils::_max(maxkey, y.mNiceName.length());
+      maxproto = utils::_max(maxproto, y.protostr().length());
+      maxurl = utils::_max(maxurl, y.mURL.length());
    }
    for (const auto & y : mData.getAll())
-      logmsg(kLINFO, " " + _pad(y.mNiceName, maxkey) + " -> " + _pad(y.protostr(),maxproto) +
-         " : " + _pad(y.mURL,maxurl));
+      logmsg(kLINFO, 
+         " " + utils::_pad(y.mNiceName, maxkey) + 
+         " -> " + utils::_pad(y.protostr(),maxproto) +
+         " : " + utils::_pad(y.mURL,maxurl));
 
    return kRSuccess;
 }
 
-sourceinfo registries::get(const std::string imagename) const
+registrydefinition registries::get(const std::string imagename) const
 {
    // load registries and see if we can find a match for nicename.
    // [registry/]nicename[:tag]
@@ -80,11 +71,23 @@ sourceinfo registries::get(const std::string imagename) const
    if (!r.success())
    {
       logmsg(kLWARN, r.what());
-      return sourceinfo();
+      return registrydefinition();
    }
 
-   std::string r = mData.getVal(registry);
+   registrydefinition regdata;
+   if (!mData.getVal(registry,regdata).success())
+      fatal("Unable to acccess registry " + registry);
 
+   sourcecopy::registry reg(regdata.mURL);
+   sourcecopy::registryitem item;
+   r = reg.get(dservicename, item);
+   if (!r.success())
+   {
+      logmsg(kLWARN, r.what());
+      return registrydefinition();
+   }
+
+   return regdata;
 }
 
 
@@ -136,14 +139,11 @@ cResult registries::save()
 
 // splitImageName
 // splits the imagename into the registry nice name, the repo and the tag.
-cResult registries::splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag) const
+cResult registries::splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag)
 {
-   // imagename is of form:  git:[registry/]repo[:tag]
-   if (imagename.find(gitprefix) != 0)
-      return cError("Missing git: prefix for git registry.");
+   // imagename is of form:  [registry/]repo[:tag]
 
    repo = imagename;
-   repo.erase(0, gitprefix.length());
 
    // extract registry
    registry = "drunner";
@@ -166,10 +166,47 @@ cResult registries::splitImageName(std::string imagename, std::string & registry
    {
       if (pos == 0)
          return cError("Missing dService name in image " + imagename);
-      tag = repo.substr(pos + 1);
-      repo.erase(repo.begin() + pos, repo.end());
+      if (pos < repo.length() - 1)
+         tag = repo.substr(pos + 1);
+      repo.erase(pos);
    }
    return kRSuccess;
 }
 
+void registrydefinitions::setVal(const registrydefinition & val)
+{
+   for (unsigned int i=0;i<mItems.size();++i)
+      if (Poco::icompare(mItems[i].mNiceName, val.mNiceName) == 0)
+      {
+         mItems.erase(mItems.begin() + i);
+      }
+}
 
+bool registrydefinitions::exists(std::string nicename) const
+{
+   for (auto & x : mItems)
+      if (Poco::icompare(x.mNiceName, nicename) == 0)
+         return true;
+   return false;
+}
+
+cResult registrydefinitions::getVal(std::string nicename, registrydefinition & val) const
+{
+   for (auto & x : mItems)
+      if (Poco::icompare(x.mNiceName, nicename) == 0)
+      {
+         val = x;
+         return kRSuccess;
+      }
+   val= registrydefinition();
+   return cError("Couldn't find " + nicename + " in registry.");
+}
+
+void registrydefinitions::delVal(std::string nicename)
+{
+}
+
+const std::vector<registrydefinition>& registrydefinitions::getAll() const
+{
+   return mItems;
+}

@@ -3,7 +3,7 @@
 #include "utils_docker.h"
 #include "dassert.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
    static const std::string dockerstr = "docker:";
 

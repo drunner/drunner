@@ -481,6 +481,12 @@ namespace utils
       return s;
    }
 
+   std::string _pad(std::string x, unsigned int w)
+   {
+      while (x.length() < w) x += " ";
+      return x;
+   }
+
    std::string base64decode(std::string s)
    {
       std::ostringstream os;

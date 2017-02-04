@@ -1,9 +1,9 @@
 #ifndef __LOCALDIR_H
 #define __LOCALDIR_H
 
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
 
    class localdir : public sourceplugin

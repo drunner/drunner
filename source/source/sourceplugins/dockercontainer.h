@@ -1,9 +1,9 @@
 #ifndef __DOCKERCONTAINER_H
 #define __DOCKERCONTAINER_H
 
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
 
    class dockercontainer : public sourceplugin

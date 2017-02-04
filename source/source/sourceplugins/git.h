@@ -8,10 +8,10 @@
 #include <cereal/types/map.hpp>
 
 #include "service_paths.h"
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 #include "variables.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
    class git : public sourceplugin
    {

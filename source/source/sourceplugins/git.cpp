@@ -1,7 +1,7 @@
 #include "git.h"
 #include "dassert.h"
 
-namespace sourceplugins
+namespace sourcecopy
 {
 
 

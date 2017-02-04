@@ -20,7 +20,7 @@
 #include "service_manage.h"
 #include "drunner_settings.h"
 #include "drunner_paths.h"
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -196,7 +196,7 @@ cResult mainroutines::process()
 
       case c_registry:
       {
-         return sourceplugins::registrycommand();
+         return sourcecopy::registrycommand();
       }
 
       default:

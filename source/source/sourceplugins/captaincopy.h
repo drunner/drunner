@@ -21,9 +21,20 @@ enum eCopyMode
    kCM_Tree
 };
 
+class SourceInfo
+{
+public:
+   SourceInfo(eProtocol p, std::string url, std::string tag) :
+      mProtocol(p), mURL(url), mTag(tag) {}
+
+   eProtocol   mProtocol;
+   std::string mURL;
+   std::string mTag;
+};
+
 eProtocol ProtoParse(std::string protocol);
 std::string unParseProto(eProtocol p);
 
-cResult CaptainCopy(eProtocol protocol, std::string url, std::string path, Poco::Path target, eCopyMode mode);
+cResult CaptainCopy(SourceInfo s, Poco::Path target, eCopyMode mode);
 
 #endif

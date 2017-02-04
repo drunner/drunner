@@ -99,6 +99,10 @@ namespace utils
       Poco::Path mPath;
    };
 
+
+   std::string _pad(std::string x, unsigned int w);
+   inline int _max(int a, int b) { return (a > b) ? a : b; }
+
 } // namespace
 
 

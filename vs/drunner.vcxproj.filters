@@ -217,25 +217,16 @@
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\localdir.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\sourceplugins\registries.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\sourceplugins.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\dockercontainer.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\git.cpp">
       <Filter>Source Files\sourceplugins</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\sourceplugins\registry.cpp">
       <Filter>Source Files\sourceplugins</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\sourceplugins\captaincopy.cpp">
+      <Filter>Source Files\sourceplugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\sourceplugins\sourcecopy.cpp">
       <Filter>Source Files\sourceplugins</Filter>
     </ClCompile>
   </ItemGroup>
@@ -420,25 +411,16 @@
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\dockercontainer.h">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\localdir.h">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\sourceplugins\registries.h">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\sourceplugins.h">
-      <Filter>Source Files\sourceplugins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\git.h">
       <Filter>Source Files\sourceplugins</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\sourceplugins\registry.h">
       <Filter>Source Files\sourceplugins</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\sourceplugins\captaincopy.h">
+      <Filter>Source Files\sourceplugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\sourceplugins\sourcecopy.h">
       <Filter>Source Files\sourceplugins</Filter>
     </ClInclude>
   </ItemGroup>

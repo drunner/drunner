@@ -18,7 +18,7 @@
 #include "generate.h"
 #include "dassert.h"
 #include "service_vars.h"
-#include "sourceplugins.h"
+#include "sourcecopy.h"
 
 
 namespace service_manage
@@ -96,7 +96,7 @@ namespace service_manage
          _create_common(servicename);
 
          // copy files to service directory on host.
-         cResult r = sourceplugins::install(imagename, sp);
+         cResult r = sourcecopy::install(imagename, sp);
          if (!r.success())
             fatal(r.what());
 
@@ -124,7 +124,7 @@ namespace service_manage
 
    cResult install(std::string & servicename, std::string & imagename, bool devMode)
    {
-      cResult r = sourceplugins::normaliseNames(imagename, servicename);
+      cResult r = sourcecopy::normaliseNames(imagename, servicename);
       if (!r.success())
          fatal(r.what());
       drunner_assert(servicename.length() > 0, "Couldn't auto determine servicename.");
