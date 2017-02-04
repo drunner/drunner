@@ -55,7 +55,7 @@ cResult sourcecopy::registry::get(const std::string nicename, registryitem & ite
 int getchunk(std::string l)
 {
    bool q = false;
-   for (int i = 0; i < l.length(); ++i)
+   for (unsigned int i = 0; i < l.length(); ++i)
    {
       if (iswspace(l[i]) && !q)
          return i;
