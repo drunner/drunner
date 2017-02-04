@@ -62,25 +62,18 @@ cResult registries::showregistries()
    return kRSuccess;
 }
 
-registrydefinition registries::get(const std::string imagename) const
+registrydefinition registries::get(std::string & registry, std::string & dService) const
 {
    // load registries and see if we can find a match for nicename.
    // [registry/]nicename[:tag]
-   std::string registry, dservicename, tag;
-   cResult r = splitImageName(imagename, registry, dservicename, tag);
-   if (!r.success())
-   {
-      logmsg(kLWARN, r.what());
-      return registrydefinition();
-   }
 
    registrydefinition regdata;
    if (!mData.getVal(registry,regdata).success())
       fatal("Unable to acccess registry " + registry);
 
-   sourcecopy::registry reg(regdata.mURL);
+   sourcecopy::registry reg(regdata);
    sourcecopy::registryitem item;
-   r = reg.get(dservicename, item);
+   cResult r = reg.get(dService, item);
    if (!r.success())
    {
       logmsg(kLWARN, r.what());
@@ -139,36 +132,36 @@ cResult registries::save()
 
 // splitImageName
 // splits the imagename into the registry nice name, the repo and the tag.
-cResult registries::splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag)
+cResult registries::splitImageName(std::string imagename, std::string & registry, std::string & dService, std::string & tag)
 {
    // imagename is of form:  [registry/]repo[:tag]
 
-   repo = imagename;
+   dService = imagename;
 
    // extract registry
    registry = "drunner";
-   auto pos = repo.find('/');
+   auto pos = dService.find('/');
    if (pos != std::string::npos)
    {
-      if (repo.find(':') != std::string::npos &&
-         repo.find(':') < pos)
+      if (dService.find(':') != std::string::npos &&
+         dService.find(':') < pos)
          return cError("Format must be [registry/]dService[:tag]");
 
       if (pos > 0)
-         registry = repo.substr(0, pos);
-      repo.erase(0, pos + 1);
+         registry = dService.substr(0, pos);
+      dService.erase(0, pos + 1);
    }
 
    // extract tag
    tag = "";
-   pos = repo.find(':');
+   pos = dService.find(':');
    if (pos != std::string::npos)
    {
       if (pos == 0)
          return cError("Missing dService name in image " + imagename);
-      if (pos < repo.length() - 1)
-         tag = repo.substr(pos + 1);
-      repo.erase(pos);
+      if (pos < dService.length() - 1)
+         tag = dService.substr(pos + 1);
+      dService.erase(pos);
    }
    return kRSuccess;
 }

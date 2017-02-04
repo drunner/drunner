@@ -9,6 +9,7 @@
 
 #include "captaincopy.h"
 #include "utils.h"
+#include "dassert.h"
 
 
 cResult downloadfile(std::string url, Poco::Path dest)
@@ -49,13 +50,13 @@ cResult _CopyDocker(SourceInfo s, Poco::Path target, eCopyMode mode)
 }
 cResult _CopyHTTP(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
+   if (mode == kCM_File)
+      return downloadfile(s.mURL, target);
+
    return kRNotImplemented;
 }
 cResult _CopySSH(SourceInfo s, Poco::Path target, eCopyMode mode)
 {
-   if (mode == kCM_File)
-      return downloadfile(s.mURL, target);
-
    return kRNotImplemented;
 }
 
@@ -98,6 +99,7 @@ std::string unParseProto(eProtocol p)
    default:
       fatal("CaptainCopy : Unknown protocol.");
    }
+   return "?!";
 }
 
 cResult CaptainCopy(SourceInfo s, Poco::Path target, eCopyMode mode)

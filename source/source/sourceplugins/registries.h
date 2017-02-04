@@ -11,6 +11,7 @@
 #include "sourcecopy.h"
 #include "variables.h"
 #include "captaincopy.h"
+#include "registry.h"
 
 class registrydefinitions
 {
@@ -44,9 +45,9 @@ public:
    cResult delregistry(std::string nicename);
    cResult showregistries();
 
-   registrydefinition get(const std::string imagename) const;
+   registrydefinition get(std::string & registry, std::string & dService) const;
 
-   static cResult splitImageName(std::string imagename, std::string & registry, std::string & repo, std::string & tag);
+   static cResult splitImageName(std::string imagename, std::string & registry, std::string & dService, std::string & tag);
 
 private:
    cResult load();

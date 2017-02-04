@@ -15,15 +15,13 @@ sourcecopy::registry::registry(registrydefinition r)
    Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
 
    SourceInfo s(r.mProtocol, r.mURL, "");
-   cResult r = CaptainCopy(s, f, kCM_File);
-
-   cResult r = downloadfile(fullurl, f);
-   if (!r.success())
-      fatal(r.what());
+   cResult rslt = CaptainCopy(s, f, kCM_File);
+   if (!rslt.success())
+      fatal(rslt.what());
 
    std::ifstream infile(f.toString());
    if (!infile.is_open())
-      fatal("Couldn't open registry "+fullurl+".");
+      fatal("Couldn't open registry "+r.mNiceName+".");
 
    std::string line;
    while (std::getline(infile, line))
@@ -95,5 +93,5 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
 
 SourceInfo sourcecopy::registryitem::getSourceInfo(std::string tag) const
 {
-   return SourceInfo(nicename, protocol, url, tag);
+   return SourceInfo(protocol, url, tag);
 }

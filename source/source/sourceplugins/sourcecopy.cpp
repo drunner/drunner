@@ -1,24 +1,69 @@
 #include "Poco/String.h"
+#include "Poco/File.h"
 
 #include "sourcecopy.h"
 #include "registries.h"
 #include "globalcontext.h"
-#include "registry.h"
+#include "buildnum.h"
 
 namespace sourcecopy
 {
+
+
 
    // -----------------------------------------------------------------------------
    // Install the imagename.
    cResult install(std::string imagename, const servicePaths & sp)
    {
       registries regall;
-      registrydefinition regdef = regall.get(imagename);
+
+      std::string registry, dService, tag;
+      registries::splitImageName(imagename, registry, dService, tag);
+
+      registrydefinition regdef = regall.get(registry,dService);
       
-      registry r(regdef.mURL);
+      sourcecopy::registry r(regdef);
+      sourcecopy::registryitem regitem;
+      r.get(regdef.mNiceName, regitem);
 
+      Poco::Path temppath = sp.getPathdService();
+      temppath.pushDirectory("temp_download");
+      utils::tempfolder tempf(temppath);
 
-      return kRNotImplemented;
+      cResult rslt = CaptainCopy(regitem.getSourceInfo(tag), tempf.getpath(), kCM_Tree);
+      if (!rslt.success())
+         return rslt;
+
+      Poco::Path target = sp.getPathdService();
+      target.pushDirectory(dService);
+
+      // try drunner10 subfolder
+      {
+         Poco::Path subf = tempf.getpath();
+         subf.pushDirectory("drunner" + getVersionNice());
+         Poco::File subf2(subf);
+         if (subf2.exists())
+         {
+            subf2.copyTo(target.toString());
+            return kRSuccess;
+         }
+      }
+
+      // try drunner subfolder
+      {
+         Poco::Path subf = tempf.getpath();
+         subf.pushDirectory("drunner");
+         Poco::File subf2(subf);
+         if (subf2.exists())
+         {
+            subf2.copyTo(target.toString());
+            return kRSuccess;
+         }
+      }
+
+      Poco::File subf2(tempf.getpath());
+      subf2.copyTo(target.toString());
+      return kRSuccess;
    }
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
