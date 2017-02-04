@@ -170,9 +170,9 @@ void registrydefinitions::setVal(const registrydefinition & val)
 {
    for (unsigned int i=0;i<mItems.size();++i)
       if (Poco::icompare(mItems[i].mNiceName, val.mNiceName) == 0)
-      {
          mItems.erase(mItems.begin() + i);
-      }
+
+   mItems.push_back(val);
 }
 
 bool registrydefinitions::exists(std::string nicename) const
