@@ -78,7 +78,7 @@ Poco::Path drunnerPaths::getPath_Bin()
 
 Poco::Path drunnerPaths::getPath_dServices()
 {
-   return getPath_Root().pushDirectory("dServices");
+   return getPath_Root().pushDirectory("dServices_definitions");
 }
 
 Poco::Path drunnerPaths::getPath_Temp()
@@ -88,12 +88,12 @@ Poco::Path drunnerPaths::getPath_Temp()
 
 Poco::Path drunnerPaths::getPath_HostVolumes()
 {
-   return getPath_Root().pushDirectory("hostVolumes");
+   return getPath_Root().pushDirectory("dServices_settings");
 }
 
 Poco::Path drunnerPaths::getPath_Settings()
 {
-   return getPath_Root().pushDirectory("settings");
+   return getPath_Root().pushDirectory("dRunner_settings");
 }
 
 Poco::Path drunnerPaths::getPath_Logs()
