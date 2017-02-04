@@ -14,11 +14,8 @@
     <Filter Include="Source Files\win">
       <UniqueIdentifier>{98fd1ce8-fbea-426c-be93-ebf507ce8c65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\new 1_0">
-      <UniqueIdentifier>{0c53213d-4a83-44f2-bf80-0ce405a4f30b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\sourceplugins">
-      <UniqueIdentifier>{b9a019c3-4f05-4386-a8b3-695b38be60ef}</UniqueIdentifier>
+    <Filter Include="Source Files\registry">
+      <UniqueIdentifier>{a69c4fd8-024d-4bae-a9f4-a7bbd865dc57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -217,17 +214,17 @@
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\registries.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClCompile Include="..\source\source\registry\captaincopy.cpp">
+      <Filter>Source Files\registry</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\registry.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClCompile Include="..\source\source\registry\registries.cpp">
+      <Filter>Source Files\registry</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\captaincopy.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClCompile Include="..\source\source\registry\registry.cpp">
+      <Filter>Source Files\registry</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\sourceplugins\sourcecopy.cpp">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClCompile Include="..\source\source\registry\sourcecopy.cpp">
+      <Filter>Source Files\registry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -411,17 +408,17 @@
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\registries.h">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClInclude Include="..\source\source\registry\captaincopy.h">
+      <Filter>Source Files\registry</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\registry.h">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClInclude Include="..\source\source\registry\registries.h">
+      <Filter>Source Files\registry</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\captaincopy.h">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClInclude Include="..\source\source\registry\registry.h">
+      <Filter>Source Files\registry</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\sourceplugins\sourcecopy.h">
-      <Filter>Source Files\sourceplugins</Filter>
+    <ClInclude Include="..\source\source\registry\sourcecopy.h">
+      <Filter>Source Files\registry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

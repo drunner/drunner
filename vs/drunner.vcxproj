@@ -58,6 +58,10 @@
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\plugins\ddev.cpp" />
+    <ClCompile Include="..\source\source\registry\captaincopy.cpp" />
+    <ClCompile Include="..\source\source\registry\registries.cpp" />
+    <ClCompile Include="..\source\source\registry\registry.cpp" />
+    <ClCompile Include="..\source\source\registry\sourcecopy.cpp" />
     <ClCompile Include="..\source\source\service_log.cpp" />
     <ClCompile Include="..\source\source\exceptions.cpp" />
     <ClCompile Include="..\source\source\generate.cpp" />
@@ -73,10 +77,6 @@
     <ClCompile Include="..\source\source\service_lua_cfuncs.cpp" />
     <ClCompile Include="..\source\source\service_paths.cpp" />
     <ClCompile Include="..\source\source\service_vars.cpp" />
-    <ClCompile Include="..\source\source\sourceplugins\captaincopy.cpp" />
-    <ClCompile Include="..\source\source\sourceplugins\registries.cpp" />
-    <ClCompile Include="..\source\source\sourceplugins\registry.cpp" />
-    <ClCompile Include="..\source\source\sourceplugins\sourcecopy.cpp" />
     <ClCompile Include="..\source\source\test_dbackup.cpp" />
     <ClCompile Include="..\source\source\variables.cpp" />
     <ClCompile Include="..\source\source\service_lua.cpp" />
@@ -125,6 +125,10 @@
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\plugins\ddev.h" />
+    <ClInclude Include="..\source\source\registry\captaincopy.h" />
+    <ClInclude Include="..\source\source\registry\registries.h" />
+    <ClInclude Include="..\source\source\registry\registry.h" />
+    <ClInclude Include="..\source\source\registry\sourcecopy.h" />
     <ClInclude Include="..\source\source\service_manage.h" />
     <ClInclude Include="..\source\source\service_log.h" />
     <ClInclude Include="..\source\source\enums.h" />
@@ -140,10 +144,6 @@
     <ClInclude Include="..\source\source\service.h" />
     <ClInclude Include="..\source\source\service_paths.h" />
     <ClInclude Include="..\source\source\service_vars.h" />
-    <ClInclude Include="..\source\source\sourceplugins\captaincopy.h" />
-    <ClInclude Include="..\source\source\sourceplugins\registries.h" />
-    <ClInclude Include="..\source\source\sourceplugins\registry.h" />
-    <ClInclude Include="..\source\source\sourceplugins\sourcecopy.h" />
     <ClInclude Include="..\source\source\variables.h" />
     <ClInclude Include="..\source\source\service_lua.h" />
     <ClInclude Include="..\source\source\showhelp.h" />
@@ -214,7 +214,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\sourceplugins;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco-1.7.3\Foundation\include;$(SolutionDir)..\pocowin\poco-1.7.3\Util\include;$(SolutionDir)..\pocowin\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco-1.7.3\Foundation\include;$(SolutionDir)..\pocowin\poco-1.7.3\Util\include;$(SolutionDir)..\pocowin\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -231,7 +231,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\sourceplugins;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco-1.7.3\Foundation\include;$(SolutionDir)..\pocowin\poco-1.7.3\Util\include;$(SolutionDir)..\pocowin\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco-1.7.3\Foundation\include;$(SolutionDir)..\pocowin\poco-1.7.3\Util\include;$(SolutionDir)..\pocowin\poco-1.7.3\Net\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
