@@ -8,6 +8,8 @@
 #include "utils_docker.h"
 #include "globalcontext.h"
 #include "globallogger.h"
+#include "compress.h"
+#include "dassert.h"
 
 namespace utils_docker
 {
@@ -15,59 +17,84 @@ namespace utils_docker
    static std::vector<std::string> S_PullList;
 
 
-   void createDockerVolume(std::string name)
+   cResult createDockerVolume(std::string name)
    {
       CommandLine cl("docker", { "volume","create","--name=" + name });
       std::string op;
       int rval = utils::runcommand(cl, op);
       if (rval != 0)
-         logmsg(kLERROR, "Unable to create docker volume " + name);
+      {
+         logmsg(kLDEBUG, "Unable to create docker volume " + name);
+         return cError("Unable to create docker volume " + name);
+      }
       logmsg(kLDEBUG, "Created docker volume " + name);
+      return kRSuccess;
    }
 
-   void stopContainer(std::string name)
+   cResult deleteDockerVolume(std::string name)
+   {
+      logmsg(kLINFO, "Obliterating docker volume " + name);
+      std::string op;
+      CommandLine cl("docker", { "volume", "rm", name });
+      if (0 != utils::runcommand(cl, op))
+      {
+         logmsg(kLDEBUG, "Failed to remove " + name + ":" + op);
+         return cError("Failed to remove " + name + ":" + op);
+      }
+      return kRSuccess;
+   }
+
+   cResult stopContainer(std::string name)
    {
       CommandLine cl("docker", { "stop",name });
       std::string op;
       int rval = utils::runcommand(cl, op);
       if (rval != 0)
-         logmsg(kLERROR, "Unable to stop docker container " + name+"\n"+op);
+      {
+         logmsg(kLDEBUG, "Failed to stop docker container " + name + "\n" + op);
+         return cError("Failed to stop docker container " + name + "\n" + op);
+      }
       logmsg(kLDEBUG, "Stopped docker container " + name);
+      return kRSuccess;
    }
 
-   void removeContainer(std::string name)
+   cResult removeContainer(std::string name)
    {
-      CommandLine cl("docker", { "rm",name });
+      CommandLine cl("docker", { "rm", name });
       std::string op;
       int rval = utils::runcommand(cl, op);
       if (rval != 0)
-         logmsg(kLERROR, "Unable to remove docker container " + name + "\n" + op);
+      {
+         logmsg(kLDEBUG, "Unable to remove docker container " + name + "\n" + op);
+         return cError("Unable to remove docker container " + name + "\n" + op);
+      }
       logmsg(kLDEBUG, "Removed docker container " + name);
+      return kRSuccess;
    }
 
-   void pullImage(const std::string & image)
+   cResult pullImage(const std::string & image)
    {
 #ifdef _DEBUG
       logmsg(kLDEBUG, "DEBUG BUILD - not pulling");
-      return;
+      return kRSuccess;
 #endif
 
       if (GlobalContext::getParams()->isDevelopmentMode())
       {
          logmsg(kLDEBUG, "In developer mode - not pulling " + image);
-         return;
+         return kRSuccess;
       }
 
       if (!GlobalContext::getSettings()->getPullImages())
       {
          logmsg(kLDEBUG, "Pulling images disabled in the global dRunner configuration.");
-         return;
+         return kRSuccess;
       }
 
       if (std::find(S_PullList.begin(), S_PullList.end(), image) != S_PullList.end())
       { // pulling is slow. Never do it twice in one command.
          logmsg(kLDEBUG, "Already pulled " + image + " so not pulling again.");
-         return;
+         return kRSuccess;
       }
 
 
@@ -79,13 +106,15 @@ namespace utils_docker
       CommandLine cl("docker", { "pull", image });
       int rval = utils::runcommand_stream(cl, GlobalContext::getParams()->supportCallMode(), "", {},&op);
 
-      if (rval!=0)
-         logmsg(kLERROR, "Couldn't pull " + image);
-      else
+      if (rval != 0) 
       {
-         S_PullList.push_back(image);
-         logmsg(kLDEBUG, "Successfully pulled " + image);
+         logmsg(kLINFO, "Couldn't pull " + image);
+         return cError("Couldn't pull " + image);
       }
+
+      S_PullList.push_back(image);
+      logmsg(kLDEBUG, "Successfully pulled " + image);
+      return kRSuccess;
    }
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op)
@@ -139,5 +168,58 @@ exit 1
       return r.success(); // returns 0 if root (success).
    }
 
+   cResult backupDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename)
+   {
+      // -----------------------------------------
+      // back up volume container
+      std::string password = utils::getenv("PASS");
+      std::string backupName = volumename; // todo : make it robust to weird chars etc.
+
+      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
+
+      // strip out servicename.
+      size_t pos = backupName.find(servicename);
+      if (pos != std::string::npos)
+         backupName.erase(pos, servicename.length());
+
+      if (!utils_docker::dockerVolExists(volumename))
+         fatal("Couldn't find docker volume " + volumename + ".");
+
+      TempBackupFolder.setFileName(backupName + ".tar");
+      compress::compress_volume(password, volumename, TempBackupFolder);
+      logmsg(kLDEBUG, "Backed up docker volume " + volumename + " as " + backupName);
+
+      return kRSuccess;
+   }
+
+   cResult restoreDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename)
+   {
+      // -----------------------------------------
+      // restore volume container
+      std::string password = utils::getenv("PASS");
+      std::string backupName = volumename; // todo : make it robust to weird chars etc.
+
+      drunner_assert(TempBackupFolder.isDirectory(), "Coding error: volarchive needs to be directory.");
+
+      // strip out servicename.
+      size_t pos = backupName.find(servicename);
+      if (pos != std::string::npos)
+         backupName.erase(pos, servicename.length());
+
+      if (utils_docker::dockerVolExists(volumename))
+         fatal("Volume already exists: " + volumename + " - can't restore.");
+
+      // create the volume to restore into.
+      utils_docker::createDockerVolume(volumename);
+
+      TempBackupFolder.setFileName(backupName + ".tar");
+      if (!utils::fileexists(TempBackupFolder))
+         fatal("Expected archive does not exist: " + TempBackupFolder.toString());
+
+      compress::decompress_volume(password, volumename, TempBackupFolder);
+      logmsg(kLDEBUG, "Restored docker volume " + volumename + " as " + backupName);
+
+      return cResult();
+   }
 
 } // namespace

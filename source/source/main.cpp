@@ -17,10 +17,10 @@
 #include "unittests.h"
 #include "service.h"
 #include "plugins.h"
-#include "validateimage.h"
 #include "service_manage.h"
 #include "drunner_settings.h"
 #include "drunner_paths.h"
+#include "sourcecopy.h"
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -38,8 +38,11 @@ int main(int argc, char **argv)
       if (argc > 1 && 0==Poco::icompare(std::string(argv[1]), "debug"))
       {
          forcereturn = true;
-         std::vector<std::string> args = { "drunner", "-v","-p","-d","initialise" };
-//         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };
+         std::vector<std::string> args = { "drunner", "-v","install","rocketchat","ff"};
+//         std::vector<std::string> args = { "drunner", "-v","obliterate","rocketchat" };
+         //         std::vector<std::string> args = { "drunner", "-v","install","rocketchat" };
+      //std::vector<std::string> args = { "drunner", "-v","-p","-d","initialise" };
+         //         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };
 //         std::vector<std::string> args = { "drunner", "-v","unittest" };
 
          GlobalContext::init(args);
@@ -63,15 +66,6 @@ int main(int argc, char **argv)
       mainroutines::waitforreturn(forcereturn);
       return e.exitCode();
    }
-}
-
-// 
-
-std::string _imageparse(std::string imagename)
-{
-   if (imagename.find('/') == std::string::npos)
-      return "drunner/" + imagename;
-   return imagename;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
@@ -110,10 +104,6 @@ cResult mainroutines::process()
       return newSettings.handleConfigureCommand(cl); // needs to be read/write settings.
    }
 
-   cResult rval = GlobalContext::getSettings()->checkRequired();
-   if (!rval.success())
-      fatal("Please configure dRunner:\n " + rval.what());
-
    // ----------------
    // command handling
    switch (p.getCommand())
@@ -138,21 +128,12 @@ cResult mainroutines::process()
             return service_manage::update(p.getArg(0));
       }
 
-      case c_checkimage:
-      {
-         if (p.numArgs()<1)
-            logmsg(kLERROR,"Usage: drunner checkimage IMAGENAME");
-         
-         validateImage::validate(_imageparse(p.getArg(0)));
-         break;
-      }
-
       case c_install:
       {
          if (p.numArgs()<1 || p.numArgs()>2)
             logmsg(kLERROR,"Usage: drunner install IMAGENAME [SERVICENAME]");
 
-         std::string imagename = _imageparse(p.getArg(0));
+         std::string imagename = p.getArg(0);
          std::string servicename = p.numArgs() == 2 ? p.getArg(1) : "";
 
          cResult r = service_manage::install(servicename, imagename, GlobalContext::getParams()->isDevelopmentMode());
@@ -209,10 +190,14 @@ cResult mainroutines::process()
 
       case c_plugin:
       {
-         plugins p;
-         return p.runcommand();
+         plugins pg;
+         return pg.runcommand();
       }
 
+      case c_registry:
+      {
+         return sourcecopy::registrycommand();
+      }
 
       default:
       {

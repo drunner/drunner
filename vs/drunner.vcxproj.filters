@@ -14,6 +14,9 @@
     <Filter Include="Source Files\win">
       <UniqueIdentifier>{98fd1ce8-fbea-426c-be93-ebf507ce8c65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\registry">
+      <UniqueIdentifier>{a69c4fd8-024d-4bae-a9f4-a7bbd865dc57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp">
@@ -49,9 +52,6 @@
     <ClCompile Include="..\source\source\service_backup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\servicehook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\showhelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,9 +71,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\drunner_setup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\source\validateimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\drunner_paths.cpp">
@@ -196,9 +193,6 @@
     <ClCompile Include="..\source\source\variables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\service_backupinfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\plugins\dbackup.cpp">
       <Filter>Source Files\plugins</Filter>
     </ClCompile>
@@ -217,11 +211,20 @@
     <ClCompile Include="..\source\source\service_manage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\plugins\dcron.cpp">
-      <Filter>Source Files\plugins</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\registry\captaincopy.cpp">
+      <Filter>Source Files\registry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\registry\registries.cpp">
+      <Filter>Source Files\registry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\registry\registry.cpp">
+      <Filter>Source Files\registry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\registry\sourcecopy.cpp">
+      <Filter>Source Files\registry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,9 +264,6 @@
     <ClInclude Include="..\source\source\service.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\servicehook.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\showhelp.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -283,9 +283,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\drunner_setup.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\validateimage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\drunner_paths.h">
@@ -390,9 +387,6 @@
     <ClInclude Include="..\source\source\variables.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\service_backupinfo.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\plugins\dbackup.h">
       <Filter>Source Files\plugins</Filter>
     </ClInclude>
@@ -414,8 +408,17 @@
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\plugins\dcron.h">
-      <Filter>Source Files\plugins</Filter>
+    <ClInclude Include="..\source\source\registry\captaincopy.h">
+      <Filter>Source Files\registry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\registry\registries.h">
+      <Filter>Source Files\registry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\registry\registry.h">
+      <Filter>Source Files\registry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\registry\sourcecopy.h">
+      <Filter>Source Files\registry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

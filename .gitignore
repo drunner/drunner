@@ -10,7 +10,7 @@
 *.pch
 
 # POCO
-poco-1.7.3
+pocowin/poco
 poco.zip
 
 # backported

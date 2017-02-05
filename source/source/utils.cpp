@@ -321,7 +321,7 @@ namespace utils
       tidy();
    }
 
-   Poco::Path tempfolder::getpath() 
+   Poco::Path tempfolder::getpath() const
    { 
       poco_assert(mPath.isDirectory());
       return mPath; 
@@ -481,6 +481,12 @@ namespace utils
       return s;
    }
 
+   std::string _pad(std::string x, unsigned int w)
+   {
+      while (x.length() < w) x += " ";
+      return x;
+   }
+
    std::string base64decode(std::string s)
    {
       std::ostringstream os;
@@ -498,4 +504,16 @@ void CommandLine::logcommand(std::string prefix,eLogLevel ll) const
    for (const auto & a : args)
       oss << " [" << a << "]";
    logmsg(ll, oss.str());
+}
+
+void CommandLine::setfromvector(const std::vector<std::string>& v)
+{
+   command.clear();
+   args.clear();
+
+   if (v.size() == 0)
+      return;
+   command = v.front();
+   args = v;
+   args.erase(args.begin());
 }

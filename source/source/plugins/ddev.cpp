@@ -10,9 +10,9 @@
 
 ddev::ddev()
 {
-   addConfig("TAG", "The docker image tag (e.g. drunner/helloworld)", "", kCF_string, true,true);
-   addConfig("DSERVICE", "Whether this is a dService [true/false]", "true", kCF_bool, true,true);
-   addConfig("DSERVICENAME", "The name to install the dService as (blank = don't install)", "", kCF_string, false,true);
+   addConfig(envDef("TAG", "", "The docker image tag (e.g. drunner/helloworld)", ENV_PERSISTS | ENV_USERSETTABLE));
+   addConfig(envDef("DSERVICE", "true", "Whether this is a dService [true/false]", ENV_PERSISTS | ENV_USERSETTABLE));
+   addConfig(envDef("DSERVICENAME", "", "The name to install the dService as (blank = don't install)", ENV_PERSISTS | ENV_USERSETTABLE));
 }
 
 std::string ddev::getName() const
@@ -26,15 +26,15 @@ cResult ddev::runCommand(const CommandLine & cl, persistvariables & v) const
    {
       case (s2i("build")):
       {
-         return _build(cl, v.getVariables(), Poco::Path::current());
+         return _build(cl, v, Poco::Path::current());
       }
       case (s2i("buildtree")):
       {
-         return _buildtree(cl, v.getVariables(), Poco::Path::current());
+         return _buildtree(cl, v, Poco::Path::current());
       }
       case (s2i("test")):
       {
-         return _test(cl, v.getVariables());
+         return _test(cl, v);
       }
       default:
          return cError("Unrecognised command " + cl.command);
@@ -89,7 +89,7 @@ Poco::Path ddev::configurationFilePath() const
    return cfp;
 }
 
-cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) const
+cResult ddev::_build(const CommandLine & cl, const persistvariables & v,Poco::Path d) const
 {
    std::string imagename = v.getVal("TAG");
    std::string dservicename = v.getVal("DSERVICENAME");
@@ -123,7 +123,7 @@ cResult ddev::_build(const CommandLine & cl, const variables & v,Poco::Path d) c
    return rval;
 }
 
-cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path d) const
+cResult ddev::_buildtree(const CommandLine & cl, const persistvariables & v, Poco::Path d) const
 {
    cResult rval;
    Poco::DirectoryIterator di(d), end;
@@ -153,7 +153,7 @@ cResult ddev::_buildtree(const CommandLine & cl, const variables & v, Poco::Path
       cResult r = pv.loadvariables();
       if (!r.success())
          return r;
-      r = _build(cl, pv.getVariables(),ddevjson.parent());
+      r = _build(cl, pv, ddevjson.parent());
       if (r.success())
          logmsg(kLINFO, "Successfully built " + ddevjson.toString()+"\n----------------------------------------------------------");
       else
@@ -186,7 +186,7 @@ cResult _testcommand(std::string dservicename, std::vector<std::string> args)
    return _testcommand(cl);
 }
 
-cResult ddev::_test(const CommandLine & cl, const variables & v) const
+cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
 {
    std::string dservicename;
    if (cl.args.size() == 0)

@@ -53,7 +53,6 @@ enum eCommand {
    c_list,
    c_initialise,
    c_update,
-   c_checkimage,
    c_backup,
    c_restore,
    c_install,
@@ -65,6 +64,7 @@ enum eCommand {
    c_saveenvironment,
    c_plugin,
    c_configure,
+   c_registry
 };
 
 

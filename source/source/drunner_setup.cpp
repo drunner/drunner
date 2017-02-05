@@ -9,7 +9,6 @@
 #include "globallogger.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
-#include "validateimage.h"
 #include "dassert.h"
 
 #include <Poco/Process.h>

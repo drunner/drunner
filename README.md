@@ -1,20 +1,15 @@
 # dRunner [![Build Status](https://travis-ci.org/drunner/drunner.svg?branch=master)](https://travis-ci.org/drunner/drunner)
 
-## Status - In light production use 
+## Status
 
-The previous stable version of dRunner (0.6) is still available: [Version 0.6 branch](https://github.com/drunner/drunner/blob/Version_0_6/README.md).
-
-This version is a major rewrite to be cross-platform. While key functionality works it's under active development and has had only a small amount of testing (primarily on Linux). The documentation is currently incomplete, particularly around making your own dServices.
+The 1.0 release is in light production use.
 
 ## Overview
 
 dRunner is a stand-alone executable and a set of conventions to make it easy to make, install,
-configure and use compatible Docker containers ("dServices") on a Debian or Ubuntu host via the
-command line interface.
+configure and use compatible "dServices" via the command line interface. It works on Debian, Ubuntu, Windows and Mac OS X.
 
-dRunner eliminates the need to manually store and manage scripts to use the Docker containers,
-or type in long docker run commands. It also provides a configurable way (per host) to bring up
-services that consist of multiple Docker containers.
+Aimed at Docker containers, dRunner eliminates the need to manually store and manage scripts to use them, or type in long docker run commands. It also provides a configurable way (per host) to bring up services that consist of multiple Docker containers. And it works fine if you're not using Docker for your service.
 
 ## Features
 
@@ -27,14 +22,10 @@ services that consist of multiple Docker containers.
 * Destroying a service leaves the machine in a clean state, no cruft left.
 * Everything in containers is run as a non-root user, drunner on the host also runs as non-root.
 * Trivial to install a service multiple times with different configurations (e.g. mulitple minecraft servers).
-* Ansible friendly for automation (see [Exit Codes](README.md#exit-codes) below).
 * Small footprint: everything dRunner creates on the host is contained in one folder of your choice (apart from Docker Volumes).
-* Includes simple HTTP(S) port forwarding based on domain name (dproxy), with automatic configuration.
-* Scripts to control docker containers are in Lua.
-* You can use Docker Compose files to define services.
-* Some useful tools to build dServices and test them.
-
-
+* Scripts to control containers are in Lua.
+* You can use Docker Compose files to define services if you wish.
+* Some useful tools to build dServices and test them are available.
 
 ## Installation
 

@@ -10,15 +10,9 @@
 
 // lua C functions - defined in service_lua_cfuncs
 extern "C" int l_addconfig(lua_State *L);
-extern "C" int l_addvolume(lua_State *L);
-extern "C" int l_addcontainer(lua_State *L);
-extern "C" int l_addcron(lua_State *L);
-
 extern "C" int l_drun(lua_State *L);
 extern "C" int l_drun_output(lua_State *L);
 extern "C" int l_drun_outputexit(lua_State *L);
-extern "C" int l_drunning(lua_State *L);
-extern "C" int l_dstop(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
 extern "C" int l_dconfig_get(lua_State *L);
 extern "C" int l_dconfig_set(lua_State *L);
@@ -27,6 +21,16 @@ extern "C" int l_dsplit(lua_State *L);
 extern "C" int l_getdrundir(lua_State *L);
 extern "C" int l_setdrundir(lua_State *L);
 extern "C" int l_getpwd(lua_State *L);
+
+extern "C" int l_dockerstop(lua_State *L);
+extern "C" int l_dockerrunning(lua_State *L);
+extern "C" int l_dockerpull(lua_State *L);
+extern "C" int l_dockercreatevolume(lua_State *L);
+extern "C" int l_dockerdeletevolume(lua_State *L);
+extern "C" int l_docker(lua_State *L);
+extern "C" int l_dockerbackup(lua_State *L);
+extern "C" int l_dockerrestore(lua_State *L);
+
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -37,16 +41,13 @@ namespace servicelua
 
    void _register_lua_cfuncs(lua_State *L)
    { // define all our C functions that we want available from service.lua
+
       REGISTERLUAC(l_addconfig, "addconfig")
-      REGISTERLUAC(l_addvolume, "addvolume")
-      REGISTERLUAC(l_addcontainer, "addcontainer")
-      REGISTERLUAC(l_addcron,"addcron")
 
       REGISTERLUAC(l_drun, "drun")
       REGISTERLUAC(l_drun_output, "drun_output")
       REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
-      REGISTERLUAC(l_drunning, "drunning")
-      REGISTERLUAC(l_dstop, "dstop")
+
       REGISTERLUAC(l_dsub, "dsub")
       REGISTERLUAC(l_dconfig_get, "dconfig_get")
       REGISTERLUAC(l_dconfig_set, "dconfig_set")
@@ -55,6 +56,16 @@ namespace servicelua
       REGISTERLUAC(l_getdrundir,"getdrundir")
       REGISTERLUAC(l_setdrundir, "setdrundir")
       REGISTERLUAC(l_getpwd, "getpwd")
+
+      REGISTERLUAC(l_dockerstop, "dockerstop")
+      REGISTERLUAC(l_dockerrunning, "dockerrunning")
+      REGISTERLUAC(l_dockerpull, "dockerpull")
+      REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
+      REGISTERLUAC(l_dockerdeletevolume, "dockerdeletevolume")
+      REGISTERLUAC(l_docker, "docker")
+      REGISTERLUAC(l_dockerbackup, "dockerbackup")
+      REGISTERLUAC(l_dockerrestore, "dockerrestore")
+
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -72,36 +83,6 @@ namespace servicelua
       return (luafile *)luafilevoid;
    }
 
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_addconfig(lua_State *L)
-   {
-      if (lua_gettop(L) < 5 || lua_gettop(L) > 6)
-         return luaL_error(L, "Expected five or six arguments for addconfig.");
-
-      // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
-      drunner_assert(lua_isstring(L, 1), "The name must be a string.");
-      drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
-      drunner_assert(lua_isstring(L, 3), "The decsription must be a string.");
-      drunner_assert(lua_isstring(L, 4), "The type must be a string.");
-      drunner_assert(lua_isboolean(L, 5), "The required flag must be a boolean.");
-
-      if (lua_gettop(L) == 6)
-         drunner_assert(lua_isboolean(L, 6), "The usersettable flag must be a boolean.");
-
-      // convert configtype.
-      configtype ctype = to_configtype(lua_tostring(L, 4));
-
-      // optional parameter.
-      bool usersettable = (lua_gettop(L) == 6 ? (lua_toboolean(L, 6) == 1) : true);
-
-      Configuration c(lua_tostring(L, 1), lua_tostring(L, 3), lua_tostring(L, 2), ctype, (lua_toboolean(L, 5) == 1), usersettable);
-      get_luafile(L)->addConfiguration(c);
-
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
-   }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
@@ -114,96 +95,57 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-
-   extern "C" int l_addvolume(lua_State *L)
-   {
-      if (lua_gettop(L) < 1 || lua_gettop(L)>4)
-         return luaL_error(L, "Expected one to four arguments: (name, backup, external, runasroot) for addvolume.");
-
-      luafile * lf = get_luafile(L);
-
-      Volume v;
-      drunner_assert(lua_isstring(L, 1), "The name of the volume must be a string.");
-      v.name = lua_tostring(L, 1); // lf->getServiceVars()->substitute(lua_tostring(L, 1)); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-      v.backup = true;
-      v.external = false;
-
-      if (lua_gettop(L)>1)
-         v.backup = (1 == lua_toboolean(L, 2));
-
-      if (lua_gettop(L)>2)
-         v.external = (1 == lua_toboolean(L, 3));
-
-      lf->addVolume(v);
-      
-      return _luasuccess(L);
-   }
-
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_addcontainer(lua_State *L)
-   {
-      if (lua_gettop(L) <1 || lua_gettop(L)>2)
-         return luaL_error(L, "Expected one to two arguments (the name of the container and if it is permitted to run as root) for addcontainer.");
-      drunner_assert(lua_isstring(L, 1), "The name of the container must be a string.");
-     
-      Container c;
-      c.name = lua_tostring(L, 1); // first argument. http://stackoverflow.com/questions/29449296/extending-lua-check-number-of-parameters-passed-to-a-function
-      c.runasroot = false;
-
-      if (lua_gettop(L) > 1)
-      {
-         drunner_assert(lua_isboolean(L, 2), "The runasroot flag must be a boolean.");
-         c.runasroot = (1 == lua_toboolean(L, 2));
-      }
-
-      get_luafile(L)->addContainer(c);
-
-      return _luasuccess(L);
-   }
-
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_addcron(lua_State *L)
+   // just sanity check the pass we've already done.
+   extern "C" int l_addconfig(lua_State *L)
    {
       if (lua_gettop(L) != 3)
-         return luaL_error(L, "addcron requries three arguments (offsetmin, repeatmin, functionname).");
-      CronEntry c;
-      drunner_assert(lua_isstring(L, 1), "offsetmin must be able to be interpreted as a string.");
-      drunner_assert(lua_isstring(L, 2), "repeatmin must be able to be interpreted as a string.");
-      drunner_assert(lua_isstring(L, 3), "function name must be a string.");
+         return luaL_error(L, "Expected three arguments for addconfig.");
 
-      //std::istringstream offset(lua_tostring(L, 1));
-      //offset >> c.offsetmin;
-      //std::istringstream repeat(lua_tostring(L, 2));
-      //repeat >> c.repeatmin;
+      // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
+      drunner_assert(lua_isstring(L, 1), "The name must be a string.");
+      drunner_assert(lua_isstring(L, 2), "The default value must be a string.");
+      drunner_assert(lua_isstring(L, 3), "The description must be a string.");
 
-      c.offsetmin = lua_tostring(L, 1);
-      c.repeatmin = lua_tostring(L, 2);
-      c.function = lua_tostring(L, 3);
+      envDef def(lua_tostring(L, 1), lua_tostring(L, 2), lua_tostring(L, 3), ENV_PERSISTS | ENV_USERSETTABLE);
+      const std::vector<envDef> & config = servicelua::get_luafile(L)->getServiceVars().getEnvDefs();
+      bool found = false;
+      for (auto & x : config)
+         if (0 == Poco::icompare(x.name, def.name))
+         {
+            found = true;
 
-      get_luafile(L)->addCronEntry(c);
+            if (0 != Poco::icompare(x.defaultval,def.defaultval))
+               logmsg(kLWARN, "Inconsistency of default value between quick read and lua execution for config " + def.defaultval);
 
-      return _luasuccess(L);
+            if (0 != Poco::icompare(x.description, def.description))
+               logmsg(kLWARN, "Inconsistency of description between quick read and lua execution for config " + def.defaultval);
+
+            break;
+         }
+
+      if (!found)
+         logmsg(kLWARN, "Inconsistency of name between quick read and lua execution for config " + def.defaultval);
+
+      cResult rval = kRSuccess;
+      lua_pushinteger(L, rval);
+      return 1; // one argument to return.
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
    
-
-   int drun(lua_State *L, bool returnOutput, bool returnExit)
+   // convert args (either as separate args or a lua table) to a vec of strings.
+   std::vector<std::string> args2vec(lua_State *L)
    {
-      luafile * lf = get_luafile(L);
-      CommandLine operation;
-
+      std::vector<std::string> vs;
 
       if (lua_isstring(L, 1) == 1)
       {
-         drunner_assert(lua_isstring(L, 1), "command must be a string");
-         operation.command = lua_tostring(L, 1);
-         for (int i = 2; i <= lua_gettop(L); ++i)
+         for (int i = 1; i <= lua_gettop(L); ++i)
          {
             drunner_assert(lua_isstring(L, i), "arg must be a string");
-            operation.args.push_back(lf->getServiceVars()->substitute(lua_tostring(L, i)));
+            vs.push_back(lua_tostring(L, i));
          }
       }
       else if (lua_istable(L, 1) == 1)
@@ -214,25 +156,38 @@ namespace servicelua
          {
             drunner_assert(lua_isnumber(L, -2), "Table keys aren't numbers");
             drunner_assert(lua_isstring(L, -1), "Table value isn't a string");
-            int i = (int)lua_tonumber(L, -2); // key
+
+            //int i = (int)lua_tonumber(L, -2); // key
             std::string s = lua_tostring(L, -1); // value
-            //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
-            if (i == 1)
-               operation.command = s;
-            else
-               operation.args.push_back(s);
+                                                 //logmsg(kLDEBUG, std::to_string(i)+" -> [" + s + "]");
+
+            vs.push_back(s);
             lua_pop(L, 1); // remove value, keep key for next iteration.
          }
       }
       else
-         fatal("Unrecognised argument type passed to drun family.");
+         fatal("Unrecognised argument type.");
+      
+      return vs;
+   }
+
+   int _drun(lua_State *L, bool returnOutput, bool returnExit, std::string command="")
+   {
+      luafile * lf = get_luafile(L);
+
+      std::vector<std::string> v = args2vec(L);
+      if (command.length() > 0)
+         v.insert(v.begin(), command);
+
+      CommandLine operation;
+      operation.setfromvector(v);
 
       std::string out;
       int r = utils::runcommand_stream(
          operation, 
          returnOutput ? kOSuppressed : kORaw, 
          lf->getdRunDir(), 
-         lf->getServiceVars()->getAll(), 
+         lf->getServiceVars().getAll(), 
          &out);
 
       int rcount = 0;
@@ -259,9 +214,18 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
 
-      return drun(L, false, true);
+      return _drun(L, false, true);
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_docker(lua_State *L)
+   {
+      if (lua_gettop(L) < 1)
+         return luaL_error(L, "Expected at least one argument: docker( arg1, arg2, ... )");
+
+      return _drun(L, false, true, "docker");
+   }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
@@ -270,7 +234,7 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
 
-      return drun(L, true, false);
+      return _drun(L, true, false);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -280,19 +244,19 @@ namespace servicelua
       if (lua_gettop(L) < 1)
          return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
 
-      return drun(L, true, true);
+      return _drun(L, true, true);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
       
-   extern "C" int l_drunning(lua_State *L)
+   extern "C" int l_dockerrunning(lua_State *L)
    {
       if (lua_gettop(L) != 1)
          return luaL_error(L, "Expected exactly one argument (the container name to check) for drunning.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
+      std::string subcontainer = lf->getServiceVars().substitute(containerraw);
       
       bool running = utils_docker::dockerContainerRunning(subcontainer);
       lua_pushboolean(L,running);
@@ -301,15 +265,30 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_dstop(lua_State *L)
+   extern "C" int l_dockerpull(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dstop.");
+         return luaL_error(L, "Expected exactly one argument (the image name to pull) for dockerpull.");
+      drunner_assert(lua_isstring(L, 1), "image name must be a string.");
+      std::string imagename = lua_tostring(L, 1);
+      //luafile *lf = get_luafile(L);
+
+      cResult r = utils_docker::pullImage(imagename);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerstop(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dockerstop.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
 
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getServiceVars()->substitute(containerraw);
+      std::string subcontainer = lf->getServiceVars().substitute(containerraw);
 
       if (utils_docker::dockerContainerRunning(subcontainer))
       {
@@ -328,6 +307,72 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
+   extern "C" int l_dockercreatevolume(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to create) for dockercreatevolume.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+      cResult r = utils_docker::createDockerVolume(vol);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerdeletevolume(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to delete) for dockerdeletevolume.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+      cResult r = utils_docker::deleteDockerVolume(vol);
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerbackup(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to backup) for dockerbackup.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+
+      luafile * lf = get_luafile(L);
+      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Coding error.");
+      Poco::Path folder(lf->getServiceVars().getTempBackupFolder());
+
+      cResult r = utils_docker::backupDockerVolume(vol,folder,lf->getServiceName());
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   
+   // -----------------------------------------------------------------------------------------------------------------------
+   
+   extern "C" int l_dockerrestore(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "Expected exactly one argument (the volume to restore) for dockerrestore.");
+      drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
+      std::string vol = lua_tostring(L, 1);
+
+      luafile * lf = get_luafile(L);
+      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Coding error.");
+      Poco::Path folder(lf->getServiceVars().getTempBackupFolder());
+
+      cResult r = utils_docker::restoreDockerVolume(vol, folder, lf->getServiceName());
+
+      lua_pushinteger(L, r);
+      return 1; // 1 result to return.
+   }
+   
+   // -----------------------------------------------------------------------------------------------------------------------
+
    extern "C" int l_dsub(lua_State *L)
    {
       if (lua_gettop(L) != 1)
@@ -335,7 +380,7 @@ namespace servicelua
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       luafile * lf = get_luafile(L);
-      std::string s = lf->getServiceVars()->substitute(lua_tostring(L, 1));
+      std::string s = lf->getServiceVars().substitute(lua_tostring(L, 1));
       lua_pushstring(L, s.c_str());
       return 1; // one argument to return.
    }
@@ -350,7 +395,7 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
-      std::string v = lf->getServiceVars()->getVal(s);
+      std::string v = lf->getServiceVars().getVal(s);
       lua_pushstring(L, v.c_str());
       return 1; // one arg to return.
    }
@@ -368,8 +413,8 @@ namespace servicelua
       std::string s = lua_tostring(L, 1);
       std::string v = lua_tostring(L, 2);
 
-      cResult r = lf->getServiceVars()->setVal(s, v);
-      r += lf->getServiceVars()->savevariables();
+      cResult r = lf->getServiceVars().setVal(s, v);
+      r += lf->getServiceVars().savevariables();
 
       if (r == kRError)
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());

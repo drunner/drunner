@@ -10,7 +10,6 @@
 #include "service.h"
 #include "globallogger.h"
 #include "utils.h"
-#include "servicehook.h"
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "service_lua.h"
@@ -22,16 +21,8 @@
 
 service::service(std::string servicename) : 
    servicePaths(servicename),
-   mServiceLua(servicename)
+   mServiceVars(servicename)
 {
-   if (mServiceLua.loadlua() != kRSuccess)
-      fatal("Could not load service.lua: " + getPathServiceLua().toString());
-
-   // make_unique is C++14.
-   mServiceVarsPtr = std::unique_ptr<serviceVars>(new serviceVars(servicename, mServiceLua.getLuaConfigurationDefinitions()));
-
-   if (mServiceVarsPtr->loadvariables() != kRSuccess)
-      fatal("Could not load service varialbes.");
 }
 
 cResult service::servicecmd()
@@ -52,13 +43,7 @@ cResult service::servicecmd()
 
    // handle configure
    if (0 == Poco::icompare(cl.command, "configure"))
-   {
-      servicehook hook(getName(), "configure", cl.args);
-      hook.starthook();
-      cResult rval = mServiceVarsPtr->handleConfigureCommand(cl);
-      hook.endhook();
-      return rval;
-   }
+      return mServiceVars.handleConfigureCommand(cl);
 
    // check reserved commands
    if (p.isdrunnerCommand(cl.command) && cl.command != "help")
@@ -71,18 +56,14 @@ cResult service::servicecmd()
 
 cResult service::runLuaFunction(CommandLine cl)
 {
-   // check all required variables are configured.
-   cResult reqdresult = mServiceVarsPtr->checkRequired();
-   if (!reqdresult.success())
-      logmsg(kLWARN, reqdresult.what());
-
    // handle the command.
    std::ostringstream oss;
    oss << "[" << cl.command << "]";
    for (const auto & x : cl.args) oss << " " << x;
    logmsg(kLDEBUG, "serviceCmd is: " + oss.str());
 
-   cResult rval = mServiceLua.runCommand(cl, mServiceVarsPtr.get());
+   servicelua::luafile sl(mServiceVars,cl);
+   cResult rval = sl.getResult();
 
    if (rval == kRNotImplemented)
       logmsg(kLERROR, "Command is not implemented by " + mName + ": " + cl.command);
@@ -92,5 +73,5 @@ cResult service::runLuaFunction(CommandLine cl)
 
 const std::string service::getImageName() const
 {
-   return mServiceVarsPtr->getImageName();
+   return mServiceVars.getImageName();
 }

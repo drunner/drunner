@@ -11,13 +11,11 @@
 
 #include "dbackup.h"
 #include "ddev.h"
-#include "dcron.h"
 
 plugins::plugins()
 {
    mPlugins.push_back(std::unique_ptr<plugin>(new dbackup()));
    mPlugins.push_back(std::unique_ptr<plugin>(new ddev()));
-   mPlugins.push_back(std::unique_ptr<plugin>(new dcron()));
 }
 
 void plugins::generate_plugin_scripts() const
@@ -52,24 +50,6 @@ void plugins::getPluginNames(std::vector<std::string> & names) const
       names.push_back(p->get()->getName());
 }
 
-servicelua::CronEntry plugins::getCronJob(std::string pluginName) const
-{
-   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
-      if (0 == Poco::icompare(p->get()->getName(), pluginName))
-         return p->get()->getCron();
-
-   fatal("Couldn't find plugin " + pluginName);
-   return servicelua::CronEntry();
-}
-
-cResult plugins::runCron(std::string pluginName) const
-{
-   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
-      if (0 == Poco::icompare(p->get()->getName(), pluginName))
-         return p->get()->runCron();
-
-   return cError("Couldn't find plugin "+pluginName);
-}
 
 // -----------------------------------
 
@@ -106,10 +86,9 @@ cResult configuredplugin::runCommand() const
    return runCommand(cl, pv);
 }
 
-cResult configuredplugin::addConfig(std::string name, std::string description, std::string defaultval, configtype type, bool required, bool usersettable)
+cResult configuredplugin::addConfig(envDef def)
 {
-   Configuration c(name, defaultval, description, type, required, usersettable);
-   mConfiguration.push_back(c);
+   mConfiguration.push_back(def);
    return kRSuccess;
 }
 

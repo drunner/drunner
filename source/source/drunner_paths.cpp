@@ -4,6 +4,7 @@
 #include "drunner_paths.h"
 #include "utils.h"
 #include "globallogger.h"
+#include "buildnum.h"
 
 #ifdef _WIN32
 #include <ShlObj.h>
@@ -20,7 +21,7 @@ Poco::Path drunnerPaths::getPath_Root() {
    Poco::Path drunnerdir = Poco::Path::home();
    drunnerdir.makeDirectory();
    poco_assert(drunnerdir.isDirectory());
-   drunnerdir.pushDirectory(".drunner");
+   drunnerdir.pushDirectory(".drunner"+getVersionNice());
    return drunnerdir;
 }
 
@@ -77,7 +78,7 @@ Poco::Path drunnerPaths::getPath_Bin()
 
 Poco::Path drunnerPaths::getPath_dServices()
 {
-   return getPath_Root().pushDirectory("dServices");
+   return getPath_Root().pushDirectory("dServices_definitions");
 }
 
 Poco::Path drunnerPaths::getPath_Temp()
@@ -87,12 +88,12 @@ Poco::Path drunnerPaths::getPath_Temp()
 
 Poco::Path drunnerPaths::getPath_HostVolumes()
 {
-   return getPath_Root().pushDirectory("hostVolumes");
+   return getPath_Root().pushDirectory("dServices_settings");
 }
 
 Poco::Path drunnerPaths::getPath_Settings()
 {
-   return getPath_Root().pushDirectory("settings");
+   return getPath_Root().pushDirectory("dRunner_settings");
 }
 
 Poco::Path drunnerPaths::getPath_Logs()

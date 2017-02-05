@@ -14,92 +14,45 @@
 
 namespace servicelua
 {
-   struct Volume 
-   {
-      bool backup;
-      bool external;
-      std::string name;
-   };
-
-   struct Container
-   {
-      std::string name;
-      bool runasroot;
-   };
-
-   struct BackupVol
-   {
-      std::string volumeName;
-      std::string backupName;
-   };
-
-   class CronEntry
-   {
-   public:
-      CronEntry() : offsetmin("0"), repeatmin("0"), function("") {}
-      bool isvalid() const { return repeatmin != "0"; }
-
-      std::string offsetmin;
-      std::string repeatmin;
-      std::string function;
-   };
-
    // lua file.
    class luafile {
    public:
-      luafile(std::string serviceName);
+      // runs the given command.
+      luafile(serviceVars & sv, const CommandLine & serviceCmd);
       ~luafile();
+
+      cResult getResult() { return mResult; }
       
-      // loads the lua file, initialises the variables, loads the variables if able.
-      cResult loadlua();
-
-      const std::vector<Container> & getContainers() const;
-      const std::vector<Configuration> & getLuaConfigurationDefinitions() const;
-      void getManageDockerVolumeNames(std::vector<std::string> & vols) const;
-      void getBackupDockerVolumeNames(std::vector<BackupVol> & vols) const;
-      const std::vector<CronEntry> & getCronEntries() const;
-
-      // for service::serviceRunnerCommand
-      cResult runCommand(const CommandLine & serviceCmd, serviceVars * sVars);
-
-      bool isLoaded() { return mLuaLoaded; }
-
-      std::string getServiceName() { return mServicePaths.getName(); }
-
       // for lua
-      void addContainer(Container c);
-      void addConfiguration(Configuration cf);
-      void addVolume(Volume v);
-      void addCronEntry(CronEntry c);
+      void addConfiguration(envDef cf);
       Poco::Path getdRunDir() const;
       void setdRunDir(std::string p);
+      std::string getServiceName() { return mServicePaths.getName(); }
 
-      Poco::Path getPathdService();
-      serviceVars * getServiceVars();
+      serviceVars & getServiceVars() { return mServiceVars; }
+      //Poco::Path getPathdService();
 
    private:
-      cResult _showHelp(serviceVars * sVars);
+      // loads the lua file, initialises the variables, loads the variables if able.
+      cResult _loadlua();
+      cResult _showHelp();
+      cResult _runCommand(const CommandLine & serviceCmd);
 
       const servicePaths mServicePaths;
 
-      std::vector<Container> mContainers;
-      std::vector<Configuration> mLuaConfigurationDefinitions; // This is not the full configuration for the service, just the parts defined by service.lua (e.g. missing IMAGENAME, DEVMODE).
-      std::vector<Volume> mVolumes;
-      std::vector<CronEntry> mCronEntries;
-
       lua_State * L;
-      serviceVars * mSVptr;
-
-      bool mLuaLoaded;
-      bool mVarsLoaded;
-      bool mLoadAttempt;
+      serviceVars & mServiceVars;
 
       Poco::Path mdRunDir;
+      cResult mResult;
    };
 
    void _register_lua_cfuncs(lua_State *L);
 
+   luafile * get_luafile(lua_State *L);
+
 } // namespace
+
 
 
 

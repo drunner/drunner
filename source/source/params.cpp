@@ -21,7 +21,6 @@ params::params(int argc, char * const * argv) :
    mCommandList({
    {"clean",c_clean},
    {"list",c_list},
-   {"checkimage",c_checkimage},
    {"unittest",c_unittest},
    {"help",c_help},
    {"install",c_install},
@@ -32,7 +31,8 @@ params::params(int argc, char * const * argv) :
    {"backup",c_backup},
    {"restore",c_restore},
    {"configure",c_configure},
-   {"servicecmd",c_servicecmd}
+   {"servicecmd",c_servicecmd},
+   {"registry",c_registry}
    })
 {
    _setdefaults();

@@ -8,14 +8,14 @@ class drunnerSettings : public persistvariables
 public:
    drunnerSettings(); // sets defaults, loads if able.
 
-   std::string getdrunnerInstallURL() const { return mVariables.getVal("INSTALLURL"); }
-   std::string getdrunnerInstallTime()const { return mVariables.getVal("INSTALLTIME"); }
-   bool getPullImages() const               { return mVariables.getBool("PULLIMAGES"); }
+   std::string getdrunnerInstallURL() const { return getVal("INSTALLURL"); }
+   std::string getdrunnerInstallTime()const { return getVal("INSTALLTIME"); }
+   bool getPullImages() const               { return getBool("PULLIMAGES"); }
 
    bool mReadOkay;
 
 private:
-   static const std::vector<Configuration> _getConfig();
+   static const std::vector<envDef> _getConfig();
 };
 
 #endif

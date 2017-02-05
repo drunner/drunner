@@ -19,43 +19,81 @@
 #include "timez.h"
 #include "drunner_paths.h"
 
-std::ofstream g_CurrentStream;
-const size_t g_Limit = 1024 * 1024 * 5;
-bool g_LogFailedMsgSent = false;
-
-bool CheckLogFileOpen(std::string mainlogfile)
+class FileStreamer
 {
-   if (!g_CurrentStream.is_open())
-      g_CurrentStream.open(mainlogfile, std::ios_base::app);
-   if (!g_CurrentStream.is_open())
+public:      
+   FileStreamer() : mLogFailedMsgSent(false)
    {
-      if (!g_LogFailedMsgSent)
+      mMainlogFile = drunnerPaths::getPath_Logs().setFileName("log.txt");
+   }
+   ~FileStreamer()
+   {
+
+   }
+
+   void Log(std::string s)
+   {
+
+   }
+
+   bool CheckLogFileOpen(std::string mainlogfile)
+   {
+      if (!mCurrentStream.is_open())
+         mCurrentStream.open(mainlogfile, std::ios_base::app);
+      if (!mCurrentStream.is_open())
       {
-         g_LogFailedMsgSent = true;
-         logmsg(kLWARN, "Logging suspended - could not open log file: " + mainlogfile);
+         if (!mLogFailedMsgSent)
+         {
+            mLogFailedMsgSent = true;
+            logmsg(kLWARN, "Logging suspended - could not open log file: " + mainlogfile);
+         }
+         return false;
       }
-      return false;
+
+      if (mLogFailedMsgSent)
+      {
+         mLogFailedMsgSent = false;
+         logmsg(kLINFO, "Now logging to log file: " + mainlogfile);
+      }
+
+      return true;
    }
 
-   if (g_LogFailedMsgSent)
+   bool PastLimit(std::string s)
    {
-      g_LogFailedMsgSent = false;
-      logmsg(kLINFO, "Now logging to log file: " + mainlogfile);
+      return static_cast<std::string::size_type>(mCurrentStream.tellp()) + s.length() > mLimit;
    }
 
-   return true;
-}
+   void Close()
+   {
+      mCurrentStream.close();
+   }
+
+   void Append(std::string s)
+   {
+      mCurrentStream << s;
+   }
+
+private:
+   Poco::Path mMainlogFile;
+   std::ofstream mCurrentStream;
+   bool mLogFailedMsgSent;
+   const size_t mLimit = 1024 * 1024 * 5;
+};
+
+FileStreamer g_FileStreamer;
+
 
 void FileRotationLogSink(std::string s)
 {
    Poco::Path mainlogfile = drunnerPaths::getPath_Logs().setFileName("log.txt");
 
-   if (!CheckLogFileOpen(mainlogfile.toString()))
+   if (!g_FileStreamer.CheckLogFileOpen(mainlogfile.toString()))
       return; // can't log to file.
 
-   if (static_cast<std::string::size_type>(g_CurrentStream.tellp()) +  s.length() > g_Limit) 
+   if (g_FileStreamer.PastLimit(s))
    {
-      g_CurrentStream.close();
+      g_FileStreamer.Close();
       
       Poco::Path archive = drunnerPaths::getPath_Logs().setFileName(timeutils::getDateTimeStr() + "_log.txt");
 
@@ -66,11 +104,11 @@ void FileRotationLogSink(std::string s)
       }
       
       // open new logfile
-      if (!CheckLogFileOpen(mainlogfile.toString()))
+      if (!g_FileStreamer.CheckLogFileOpen(mainlogfile.toString()))
          return; // can't log to file.
    }
 
-   g_CurrentStream << s;
+   g_FileStreamer.Append( s );
 }
 
 

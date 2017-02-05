@@ -1,8 +1,10 @@
 APP=drunner
 
-INC=-Isource -Ibuildnum -Isource/tests -Ideps -Isource/plugins -Ideps/lua
+INC=-Isource -Ibuildnum -Isource/tests -Ideps \
+	-Isource/plugins -Isource/registry -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
+-D VERSION_NICEVER="\"$(NICEVER)\"" \
  $(DEBUG) -MD -MP -fdiagnostics-color=always \
  -Wall -Wno-unknown-pragmas -std=c++11
 
@@ -10,7 +12,9 @@ CFLAGS=-D LUA_USE_POSIX -MD -MP -fdiagnostics-color=always \
 -Wall -Wno-unknown-pragmas
 
 LDFLAGS=
-LDLIBS=-lPocoFoundation -lPocoUtil
+#LDLIBS=-lPocoNetSSL -lPocoNet -lPocoCrypto -lPocoUtil -lPocoFoundation
+LDLIBS=-lPocoNetSSL -lPocoNet -lPocoCrypto -lPocoUtil -lPocoJSON -lPocoXML -lPocoFoundation \
+			-lssl -lcrypto
 
 # On OS X we dynamically link runtime libs.
 # On Linux we statically link runtime libs.
@@ -22,7 +26,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 # The default search paths on OS X are unlikely to include where Poco has been installed.
-# Add the default location used by Brew, at least. 
+# Add the default location used by Brew, at least.
 ifeq ($(UNAME_S),Darwin)
    CXXFLAGS += -I/usr/local/include
    LDFLAGS += -L/usr/local/lib

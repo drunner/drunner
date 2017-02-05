@@ -6,22 +6,25 @@
 class serviceVars : public persistvariables
 {
 public:
-   serviceVars(std::string servicename, const std::vector<Configuration> & config);
-   serviceVars(std::string servicename, std::string imagename, const std::vector<Configuration> & config);
+   // the configuration passed in is as defined in the Lua file by the service.
+   // we mix in our own variables here too, namely whether it's in dev mode, 
+   // the service name and the image name.
 
-   //serviceVars(std::string servicename);
-   //initialise(const std::vector<Configuration> & config);
+   serviceVars(std::string servicename);
+
+   std::string getServiceName() const;
 
    std::string getImageName() const;
-   std::string getServiceName() const;
-   bool getIsDevMode() const;
-
    void setImageName(std::string imagename);
+
+   bool getIsDevMode() const;
    void setDevMode(bool isDevMode);
 
-private:
-   void _setconfig();
-};
+   std::string getTempBackupFolder() const;
+   void setTempBackupFolder(std::string folder);
 
+private:
+   void _extendconfig();
+};
 
 #endif

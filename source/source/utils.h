@@ -21,6 +21,8 @@ public:
    CommandLine(std::string c) : command(c) {}
    CommandLine(std::string c, const std::vector<std::string> & a) : command(c), args(a) { }
    void logcommand(std::string prefix, eLogLevel ll=kLDEBUG) const;
+   void setfromvector(const std::vector<std::string> & v);
+
    std::string command;
    std::vector<std::string> args;
 };
@@ -89,13 +91,17 @@ namespace utils
    public:
       tempfolder(Poco::Path d);
       ~tempfolder();
-      Poco::Path getpath();
+      Poco::Path getpath() const;
       
    private:
       void die(std::string msg);
       void tidy();
       Poco::Path mPath;
    };
+
+
+   std::string _pad(std::string x, unsigned int w);
+   inline int _max(int a, int b) { return (a > b) ? a : b; }
 
 } // namespace
 

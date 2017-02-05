@@ -20,7 +20,7 @@ private:
 
 namespace timeutils
 {
-   std::string getDateTimeStr();
+   std::string getDateTimeStr(); // suitable for filenames.
    std::string getLogTimeStamp();
    Poco::DateTime dateTimeStr2Time(std::string dts);
 

@@ -11,13 +11,17 @@ namespace utils_docker
    bool dockerContainerExists(const std::string & container);
    bool dockerContainerRunning(const std::string & container);
 
-   void createDockerVolume(std::string name);
-   void stopContainer(std::string name);
-   void removeContainer(std::string name);
-   void pullImage(const std::string & image);
+   cResult createDockerVolume(std::string name);
+   cResult deleteDockerVolume(std::string name);
+   cResult stopContainer(std::string name);
+   cResult removeContainer(std::string name);
+   cResult pullImage(const std::string & image);
 
    cResult runBashScriptInContainer(std::string data, std::string imagename, std::string & op);
    bool dockerContainerRunsAsRoot(std::string container);
+
+   cResult backupDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename);
+   cResult restoreDockerVolume(std::string volumename, Poco::Path TempBackupFolder, std::string servicename);
 }
 
 #endif

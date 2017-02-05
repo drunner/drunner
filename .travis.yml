@@ -26,5 +26,4 @@ script:
    - bash build check
 
 after_success:
-# Branch Version_0_9 is now official branch for drunner 0.9
-   - if [ $TRAVIS_BRANCH == 'Version_0_9' ]; then bash build upload; fi
+   - if [ $TRAVIS_BRANCH == 'master' ]; then bash build upload; fi
