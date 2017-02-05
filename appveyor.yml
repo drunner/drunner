@@ -8,10 +8,17 @@ configuration:
 shallow_clone: true
 
 install:
-     - echo Installing POCO
-     - ps: pushd pocowin
-     - ps: .\pocowin.ps1
-     - ps: popd
+     - echo Installing POCO via conan
+      - cmd: echo "Downloading conan..."
+      - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
+      - cmd: pip.exe install conan
+      - cmd: conan user # Create the conan data directory
+      - cmd: conan --version
+      - cmd: cd vs/conandebug
+      - cmd: conan install -s build_type=Debug -s compiler="Visual Studio" -s compiler.runtime=MTd -s arch=x86
+      - cmd: cd ../conanrelease
+      - cmd: conan install -s build_type=Release -s compiler="Visual Studio" -s compiler.runtime=MT -s arch=x86
+      - cmd: cd ../..
 
 build:
    project: vs\drunner.sln
