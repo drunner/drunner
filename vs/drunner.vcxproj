@@ -192,7 +192,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -209,7 +209,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco\Foundation\include;$(SolutionDir)..\pocowin\poco\Util\include;$(SolutionDir)..\pocowin\poco\Net\include;$(SolutionDir)..\pocowin\poco\NetSSL_OpenSSL\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco\Foundation\include;$(SolutionDir)..\pocowin\poco\Util\include;$(SolutionDir)..\pocowin\poco\Net\include;$(SolutionDir)..\pocowin\poco\NetSSL_OpenSSL\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
