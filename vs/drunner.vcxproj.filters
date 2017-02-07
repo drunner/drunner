@@ -214,9 +214,6 @@
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\registry\captaincopy.cpp">
-      <Filter>Source Files\registry</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\registry\registries.cpp">
       <Filter>Source Files\registry</Filter>
     </ClCompile>
@@ -407,9 +404,6 @@
     </ClInclude>
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\source\registry\captaincopy.h">
-      <Filter>Source Files\registry</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\registry\registries.h">
       <Filter>Source Files\registry</Filter>

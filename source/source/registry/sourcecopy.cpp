@@ -107,5 +107,13 @@ namespace sourcecopy
       return cError("Unknown registry command: " + p.getArg(0));
    }
 
+   cResult gitcopy(std::string repoURL, std::string tag, std::vector<std::string> subfoldersearch, Poco::path dest)
+   {
+      // checkout repo, copy subfolder if present.
+
+
+      return cResult();
+   }
+
 
 } // namespace 

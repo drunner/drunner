@@ -50,7 +50,6 @@
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\plugins\ddev.cpp" />
-    <ClCompile Include="..\source\source\registry\captaincopy.cpp" />
     <ClCompile Include="..\source\source\registry\registries.cpp" />
     <ClCompile Include="..\source\source\registry\registry.cpp" />
     <ClCompile Include="..\source\source\registry\sourcecopy.cpp" />
@@ -117,7 +116,6 @@
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\plugins\ddev.h" />
-    <ClInclude Include="..\source\source\registry\captaincopy.h" />
     <ClInclude Include="..\source\source\registry\registries.h" />
     <ClInclude Include="..\source\source\registry\registry.h" />
     <ClInclude Include="..\source\source\registry\sourcecopy.h" />

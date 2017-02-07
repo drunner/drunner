@@ -10,7 +10,6 @@
 #include "service_paths.h"
 #include "sourcecopy.h"
 #include "variables.h"
-#include "captaincopy.h"
 #include "registry.h"
 
 class registrydefinitions

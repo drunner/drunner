@@ -21,7 +21,7 @@ registries::registries()
    if (load().noChange())
    { // create and save defaults.
       mData.setVal(
-         registrydefinition("drunner", "http", "https://raw.githubusercontent.com/drunner/registry/master/registry")
+         registrydefinition("drunner", "https://github.com/drunner/registry.git")
       );
       cResult r = save();
       if (!r.success())
@@ -46,18 +46,16 @@ cResult registries::delregistry(std::string nicename)
 
 cResult registries::showregistries()
 {
-   int maxkey = 0, maxproto=0, maxurl=0;
+   int maxkey = 0, maxurl=0;
    for (const auto & y : mData.getAll())
    {
       maxkey = utils::_max(maxkey, y.mNiceName.length());
-      maxproto = utils::_max(maxproto, y.protostr().length());
       maxurl = utils::_max(maxurl, y.mURL.length());
    }
    for (const auto & y : mData.getAll())
       logmsg(kLINFO, 
          " " + utils::_pad(y.mNiceName, maxkey) + 
-         " -> " + utils::_pad(y.protostr(),maxproto) +
-         " : " + utils::_pad(y.mURL,maxurl));
+         " -> " + utils::_pad(y.mURL,maxurl));
 
    return kRSuccess;
 }

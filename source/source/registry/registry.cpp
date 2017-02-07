@@ -8,13 +8,11 @@
 #include "drunner_paths.h"
 #include "utils.h"
 #include "dassert.h"
-#include "captaincopy.h"
 
 sourcecopy::registry::registry(registrydefinition r)
 {
    Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
 
-   SourceInfo s(r.mProtocol, r.mURL, "");
    cResult rslt = CaptainCopy(s, f, kCM_File);
    if (!rslt.success())
       fatal(rslt.what());
