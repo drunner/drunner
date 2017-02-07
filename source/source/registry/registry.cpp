@@ -8,12 +8,13 @@
 #include "drunner_paths.h"
 #include "utils.h"
 #include "dassert.h"
+#include "sourcecopy.h"
 
 sourcecopy::registry::registry(registrydefinition r)
 {
    Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
 
-   cResult rslt = CaptainCopy(s, f, kCM_File);
+   cResult rslt = gitcopy(r.mURL, "", f);
    if (!rslt.success())
       fatal(rslt.what());
 
@@ -75,21 +76,13 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
       chunks.push_back(l.substr(0, i));
       l.erase(0, i + 1);
    }
-   if (chunks.size()!=4)
-      return cError("Registry lines must be of form: nicename protocol URL description:\n"+line);
+   if (chunks.size()!=3)
+      return cError("Registry lines must be of form: nicename GitURI description:\n"+line);
 
    ri.nicename = chunks[0];
-   ri.protocol = ProtoParse(chunks[1]);
-   ri.url = chunks[2];
-   ri.description = chunks[3];
-
-   if (ri.protocol == kP_ERROR)
-      return cError("Unknown protocol " + chunks[1] + " in:\n" + line);
+   ri.url = chunks[1];
+   ri.description = chunks[2];
 
    return kRSuccess;
 }
 
-SourceInfo sourcecopy::registryitem::getSourceInfo(std::string tag) const
-{
-   return SourceInfo(protocol, url, tag);
-}

@@ -30,7 +30,7 @@ namespace sourcecopy
       temppath.pushDirectory("temp_download");
       utils::tempfolder tempf(temppath);
 
-      cResult rslt = CaptainCopy(regitem.getSourceInfo(tag), tempf.getpath(), kCM_Tree);
+      cResult rslt = gitcopy(regitem.url, tag, tempf.getpath());
       if (!rslt.success())
          return rslt;
 
@@ -107,12 +107,19 @@ namespace sourcecopy
       return cError("Unknown registry command: " + p.getArg(0));
    }
 
-   cResult gitcopy(std::string repoURL, std::string tag, std::vector<std::string> subfoldersearch, Poco::path dest)
+   cResult gitcopy(std::string repoURL, std::string tag, Poco::Path dest)
    {
       // checkout repo, copy subfolder if present.
+      // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
+      if (!utils::fileexists(dest))
+         return cError("gitcopy: Destination does not exist: " + dest.toString());
+      CommandLine op;
+      op.command = "git";
+      op.args = { "clone","--progress","-b",tag.length() > 0 ? tag : "master",
+      "--depth","1",repoURL,"."};
+      cResult r=utils::runcommand_stream(op, kORaw, dest, tKeyVals(), NULL);
 
-
-      return cResult();
+      return r;
    }
 
 

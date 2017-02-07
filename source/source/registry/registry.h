@@ -22,8 +22,8 @@ public:
 private:
    // --- serialisation --
    friend class ::cereal::access;
-   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mNiceName, mProtocol, mURL); }
-   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mNiceName, mProtocol, mURL); }
+   template <class Archive> void save(Archive &ar, std::uint32_t const version) const { ar(mNiceName, mURL); }
+   template <class Archive> void load(Archive &ar, std::uint32_t const version) { ar(mNiceName, mURL); }
    // --- serialisation --
 };
 CEREAL_CLASS_VERSION(registrydefinition, 1);
