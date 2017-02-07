@@ -7,8 +7,8 @@
 
 namespace command_general
 {
-   void showservices();
-   void clean();
+   cResult showservices();
+   cResult clean();
 }
 
 #endif

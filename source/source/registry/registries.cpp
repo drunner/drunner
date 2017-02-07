@@ -60,6 +60,32 @@ cResult registries::showregistries()
    return kRSuccess;
 }
 
+cResult registries::showAllRegistereddServices()
+{
+   for (const auto & y : mData.getAll())
+   {
+      logmsg(kLINFO, "--------------------------------------------");
+      logmsg(kLINFO, "REGISTRY " + y.mNiceName + " ("+y.mURL+")");
+      logmsg(kLINFO, " ");
+
+      sourcecopy::registry reg(y);
+      int maxkey = 0, maxdesc = 0;
+      for (const auto & z : reg.getAll())
+      {
+         maxkey = utils::_max(maxkey, y.mNiceName.length() + 1 + z.nicename.length());
+         maxdesc = utils::_max(maxdesc, z.description.length());
+      }
+      for (const auto & z : reg.getAll())
+      {
+         logmsg(kLINFO, " " + utils::_pad(y.mNiceName + "/" + z.nicename, maxkey) +
+            "   " + utils::_pad(z.description, maxdesc));
+      }
+      logmsg(kLINFO, " ");
+   }
+
+   return kRSuccess;
+}
+
 registrydefinition registries::get(std::string & registry, std::string & dService) const
 {
    // load registries and see if we can find a match for nicename.

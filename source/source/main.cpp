@@ -21,6 +21,7 @@
 #include "drunner_settings.h"
 #include "drunner_paths.h"
 #include "sourcecopy.h"
+#include "registries.h"
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -109,14 +110,17 @@ cResult mainroutines::process()
    switch (p.getCommand())
    {
       case c_clean:
-      {
-         command_general::clean();
-         break;
-      }
+         return command_general::clean();
 
       case c_list:
       {
-         command_general::showservices();
+         if (p.numArgs() < 1)
+            return command_general::showservices();
+         else
+         {
+            registries r;
+            return r.showAllRegistereddServices();
+         }
          break;
       }
 

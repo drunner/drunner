@@ -12,13 +12,15 @@
 
 sourcecopy::registry::registry(registrydefinition r)
 {
-   Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
+   Poco::Path temppath = drunnerPaths::getPath_Temp();
+   temppath.pushDirectory("temp_"+r.mNiceName);
+   utils::tempfolder tempf(temppath);
 
-   cResult rslt = gitcopy(r.mURL, "", f);
+   cResult rslt = gitcopy(r.mURL, "", tempf.getpath());
    if (!rslt.success())
       fatal(rslt.what());
 
-   std::ifstream infile(f.toString());
+   std::ifstream infile(tempf.getpath().toString()+"/registry");
    if (!infile.is_open())
       fatal("Couldn't open registry "+r.mNiceName+".");
 

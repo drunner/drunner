@@ -44,6 +44,8 @@ public:
    cResult delregistry(std::string nicename);
    cResult showregistries();
 
+   cResult showAllRegistereddServices();
+
    registrydefinition get(std::string & registry, std::string & dService) const;
 
    static cResult splitImageName(std::string imagename, std::string & registry, std::string & dService, std::string & tag);
