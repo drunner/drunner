@@ -31,7 +31,7 @@ sourcecopy::registry::registry(registrydefinition r)
       if (line.length() > 0 && line[0] != '#')
       {
          registryitem ri;
-         cResult r = loadline(line, ri).success();
+         cResult r = loadline(line, ri);
          if (r.success())
             mRegistryItems.push_back(ri);
          else
@@ -55,6 +55,7 @@ cResult sourcecopy::registry::get(const std::string nicename, registryitem & ite
 // returns index of separating space.
 int getchunk(std::string l)
 {
+   drunner_assert(l.length() > 0, "getchunk passed empty string.");
    bool q = false;
    for (unsigned int i = 0; i < l.length(); ++i)
    {
@@ -71,12 +72,14 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    // expect three whitespace separated strings.
    std::vector<std::string> chunks;
    std::string l(line);
+   Poco::trimInPlace(l);
    while (l.length() > 0)
    {
       int i = getchunk(l);
       drunner_assert(i > 0, "loadline : coding err");
       chunks.push_back(l.substr(0, i));
       l.erase(0, i + 1);
+      Poco::trimLeftInPlace(l);
    }
    if (chunks.size()!=3)
       return cError("Registry lines must be of form: nicename GitURI description:\n"+line);
@@ -84,6 +87,8 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    ri.nicename = chunks[0];
    ri.url = chunks[1];
    ri.description = chunks[2];
+
+   logmsg(kLINFO, "<" + ri.nicename + "><" + ri.url + "><" + ri.description + ">");
 
    return kRSuccess;
 }
