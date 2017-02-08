@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "dassert.h"
 #include "sourcecopy.h"
+#include "gitcache.h"
 
 sourcecopy::registry::registry(registrydefinition r)
 {
@@ -16,6 +17,11 @@ sourcecopy::registry::registry(registrydefinition r)
    temppath.pushDirectory("temp_"+r.mNiceName);
    utils::tempfolder tempf(temppath);
 
+   gitcache gc(r.mURL);
+   Poco::Path checkout;
+   gc.get(checkout, false);
+
+   asdflkjfa
    cResult rslt = gitcopy(r.mURL, "", tempf.getpath());
    if (!rslt.success())
       fatal(rslt.what());
@@ -56,12 +62,13 @@ cResult sourcecopy::registry::get(const std::string nicename, registryitem & ite
 int getchunk(std::string l)
 {
    drunner_assert(l.length() > 0, "getchunk passed empty string.");
-   bool q = false;
-   for (unsigned int i = 0; i < l.length(); ++i)
+   drunner_assert(!iswspace(l[0]), "gitchunk given untrimmed string.");
+   bool q = (l[0]=='"');
+   for (unsigned int i = q ? 1 : 0; i < l.length(); ++i)
    {
       if (iswspace(l[i]) && !q)
          return i;
-      if (l[i] == '"' && q)
+      if (l[i] == '"')
          q = false;
    }
    return l.length();
@@ -72,7 +79,7 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    // expect three whitespace separated strings.
    std::vector<std::string> chunks;
    std::string l(line);
-   Poco::trimInPlace(l);
+   Poco::trimLeftInPlace(l);
    while (l.length() > 0)
    {
       int i = getchunk(l);
@@ -88,7 +95,7 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    ri.url = chunks[1];
    ri.description = chunks[2];
 
-   logmsg(kLINFO, "<" + ri.nicename + "><" + ri.url + "><" + ri.description + ">");
+   logmsg(kLDEBUG, "<" + ri.nicename + "><" + ri.url + "><" + ri.description + ">");
 
    return kRSuccess;
 }
