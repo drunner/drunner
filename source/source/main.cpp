@@ -39,8 +39,9 @@ int main(int argc, char **argv)
       if (argc > 1 && 0==Poco::icompare(std::string(argv[1]), "debug"))
       {
          forcereturn = true;
-         std::vector<std::string> args = { "drunner", "-v","install","rocketchat","ff"};
-//         std::vector<std::string> args = { "drunner", "-v","obliterate","rocketchat" };
+         std::vector<std::string> args = { "drunner", "-v","list","all"};
+         //std::vector<std::string> args = { "drunner", "-v","install","rocketchat","ff"};
+         //         std::vector<std::string> args = { "drunner", "-v","obliterate","rocketchat" };
          //         std::vector<std::string> args = { "drunner", "-v","install","rocketchat" };
       //std::vector<std::string> args = { "drunner", "-v","-p","-d","initialise" };
          //         std::vector<std::string> args = { "drunner", "-v","__plugin__dbackup","run" };

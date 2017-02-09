@@ -17,10 +17,14 @@ sourcecopy::registry::registry(registrydefinition r)
    temppath.pushDirectory("temp_"+r.mNiceName);
    utils::tempfolder tempf(temppath);
 
+   logmsg(kLDEBUG, "Copying registry.");
+
    gitcache gc(r.mURL);
    cResult rslt = gc.copyTo(tempf.getpath(), false);
    if (!rslt.success())
       fatal(rslt.what());
+
+   logmsg(kLDEBUG, "Reading registry.");
 
    std::ifstream infile(tempf.getpath().toString()+"/registry");
    if (!infile.is_open())

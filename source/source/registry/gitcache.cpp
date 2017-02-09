@@ -6,6 +6,7 @@
 #include "gitcache.h"
 #include "utils.h"
 #include "drunner_paths.h"
+#include "dassert.h"
 
 gitcache::gitcache(std::string url, std::string tag) : mURL(url), mTag(tag)
 {
@@ -78,6 +79,7 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
          else
          {
             it->copyTo(dest.toString());
+            logmsg(kLDEBUG, "Copied " + it->path() + " to " + dest.toString());
          }
       }
    }
@@ -94,6 +96,8 @@ cResult gitcache::copyTo(Poco::Path dest, bool forceUpdate) const
    cResult r = get(p, forceUpdate);
    if (!r.success())
       return r;
+
+   drunner_assert(utils::fileexists(p), "Directory does not exist: " + p.toString());
 
    return recursiveCopy(p, dest);
 }
