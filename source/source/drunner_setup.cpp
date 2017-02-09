@@ -167,14 +167,14 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create directory structure.
-      _makedirectory(drunnerPaths::getPath_Root(), S_755);
+      _makedirectory(drunnerPaths::getPath_Root(), S_700);
       _makedirectory(drunnerPaths::getPath_Bin(), S_700);
-      _makedirectory(drunnerPaths::getPath_dServices(), S_755);
-      _makedirectory(drunnerPaths::getPath_Temp(), S_755);
-      _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
-      _makedirectory(drunnerPaths::getPath_Settings(), S_755);
-      _makedirectory(drunnerPaths::getPath_Logs(), S_755);
-
+      _makedirectory(drunnerPaths::getPath_dServices(), S_700);
+      _makedirectory(drunnerPaths::getPath_Temp(), S_700);
+      _makedirectory(drunnerPaths::getPath_HostVolumes(), S_700);
+      _makedirectory(drunnerPaths::getPath_Settings(), S_700);
+      _makedirectory(drunnerPaths::getPath_Logs(), S_700);
+      _makedirectory(drunnerPaths::getPath_GitCache(), S_700);
 
       // On windows, we copy the executable to the .drunner/bin folder and make the .drunner folder hidden.
       // On Linux drunner is manually copied to /usr/local/bin (or wherever) by the user as part of the install process.

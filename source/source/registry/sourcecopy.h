@@ -10,8 +10,6 @@ namespace sourcecopy
    cResult normaliseNames(std::string & imagename, std::string & servicename);
    cResult registrycommand();
 
-   cResult gitcopy(std::string repoURL, std::string tag, Poco::Path dest);
-
 } // namespace
 
 #endif

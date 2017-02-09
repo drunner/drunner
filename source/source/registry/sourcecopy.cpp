@@ -5,6 +5,7 @@
 #include "registries.h"
 #include "globalcontext.h"
 #include "buildnum.h"
+#include "gitcache.h"
 
 namespace sourcecopy
 {
@@ -26,11 +27,9 @@ namespace sourcecopy
       sourcecopy::registryitem regitem;
       r.get(regdef.mNiceName, regitem);
 
-      Poco::Path temppath = sp.getPathdService();
-      temppath.pushDirectory("temp_download");
-      utils::tempfolder tempf(temppath);
-
-      cResult rslt = gitcopy(regitem.url, tag, tempf.getpath());
+      Poco::Path p;
+      gitcache gc(regitem.url, tag);
+      cResult rslt = gc.get(p, true);
       if (!rslt.success())
          return rslt;
 
@@ -39,7 +38,7 @@ namespace sourcecopy
 
       // try drunner10 subfolder
       {
-         Poco::Path subf = tempf.getpath();
+         Poco::Path subf = p;
          subf.pushDirectory("drunner" + getVersionNice());
          Poco::File subf2(subf);
          if (subf2.exists())
@@ -51,7 +50,7 @@ namespace sourcecopy
 
       // try drunner subfolder
       {
-         Poco::Path subf = tempf.getpath();
+         Poco::Path subf = p;
          subf.pushDirectory("drunner");
          Poco::File subf2(subf);
          if (subf2.exists())
@@ -61,7 +60,7 @@ namespace sourcecopy
          }
       }
 
-      Poco::File subf2(tempf.getpath());
+      Poco::File subf2(p);
       subf2.copyTo(target.toString());
       return kRSuccess;
    }

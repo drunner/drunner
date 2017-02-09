@@ -15,6 +15,7 @@ namespace drunnerPaths
    Poco::Path getPath_HostVolumes();
    Poco::Path getPath_Settings();
    Poco::Path getPath_Logs();
+   Poco::Path getPath_GitCache();
 
    Poco::Path getPath_drunnerSettings_json();
 

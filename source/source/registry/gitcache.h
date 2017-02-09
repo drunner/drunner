@@ -15,7 +15,9 @@ public:
    cResult copyTo(Poco::Path dest, bool forceUpdate = false) const;
 
 private:
-   std::string hash(std::string url);
+   std::string hash(std::string url) const;
+
+   std::string mURL, mTag;
 };
 
 #endif

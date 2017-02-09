@@ -101,6 +101,11 @@ Poco::Path drunnerPaths::getPath_Logs()
    return getPath_Root().pushDirectory("logs");
 }
 
+Poco::Path drunnerPaths::getPath_GitCache()
+{
+   return getPath_Root().pushDirectory("gitcache");
+}
+
 
 Poco::Path drunnerPaths::getPath_drunnerSettings_json()
 {

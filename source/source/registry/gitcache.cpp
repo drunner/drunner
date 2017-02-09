@@ -1,20 +1,61 @@
 #include "Poco/DirectoryIterator.h"
 #include "Poco/String.h"
+#include "Poco/DigestStream.h"
+#include "Poco/MD5Engine.h"
 
 #include "gitcache.h"
 #include "utils.h"
+#include "drunner_paths.h"
 
-gitcache::gitcache(std::string url, std::string tag)
+gitcache::gitcache(std::string url, std::string tag) : mURL(url), mTag(tag)
 {
+   if (mTag.length() == 0)
+      mTag = "master";
 }
 
 cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
 {
-   return cResult();
+   // checkout repo, copy subfolder if present.
+   // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
+   Poco::Path dest = drunnerPaths::getPath_GitCache();
+   dest.pushDirectory(hash(mURL));
+   p = dest;
+   cResult r;
+
+   if (utils::fileexists(dest))
+   {
+      if (forceUpdate)
+      {
+         CommandLine op;
+         op.command = "git";
+         op.args = { "pull" };
+         r+= utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+      }
+   }
+   else
+   {
+      utils::makedirectory(dest, S_700);
+
+      CommandLine op;
+      op.command = "git";
+      op.args = { "clone","--progress","-b",mTag,
+         "--depth","1",mURL,"." };
+      r+=utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+   }
+
+   CommandLine op;
+   op.command = "git";
+   op.args = { "checkout",mTag };
+   r+= utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+   return r;
 }
 
+// copies the contents of src to dest.
 cResult recursiveCopy(Poco::Path src, Poco::Path dest)
 {
+   if (!utils::fileexists(dest))
+      return cError("Destination directory does not exist.");
+
    try
    {
       Poco::DirectoryIterator end;
@@ -44,6 +85,7 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
    {
       fatal(e.what());
    }
+   return kRSuccess;
 }
 
 cResult gitcache::copyTo(Poco::Path dest, bool forceUpdate) const
@@ -53,28 +95,22 @@ cResult gitcache::copyTo(Poco::Path dest, bool forceUpdate) const
    if (!r.success())
       return r;
 
-
-
-   return cResult();
+   return recursiveCopy(p, dest);
 }
 
-std::string gitcache::hash(std::string url)
+std::string gitcache::hash(std::string url) const
 {
-   return std::string();
+   using Poco::DigestOutputStream;
+   using Poco::DigestEngine;
+   using Poco::MD5Engine;
+
+   MD5Engine md5;
+   DigestOutputStream ostr(md5);
+   ostr << url;
+   ostr.flush(); // Ensure everything gets passed to the digest engine
+   const DigestEngine::Digest& digest = md5.digest(); // obtain result
+   std::string result = DigestEngine::digestToHex(digest);
+   return result;
 }
 
 
-cResult gitcopy(std::string repoURL, std::string tag, Poco::Path dest)
-{
-   // checkout repo, copy subfolder if present.
-   // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
-   if (!utils::fileexists(dest))
-      return cError("gitcopy: Destination does not exist: " + dest.toString());
-   CommandLine op;
-   op.command = "git";
-   op.args = { "clone","--progress","-b",tag.length() > 0 ? tag : "master",
-      "--depth","1",repoURL,"." };
-   cResult r = utils::runcommand_stream(op, kORaw, dest, tKeyVals(), NULL);
-
-   return r;
-}

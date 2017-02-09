@@ -18,11 +18,7 @@ sourcecopy::registry::registry(registrydefinition r)
    utils::tempfolder tempf(temppath);
 
    gitcache gc(r.mURL);
-   Poco::Path checkout;
-   gc.get(checkout, false);
-
-   asdflkjfa
-   cResult rslt = gitcopy(r.mURL, "", tempf.getpath());
+   cResult rslt = gc.copyTo(tempf.getpath(), false);
    if (!rslt.success())
       fatal(rslt.what());
 
