@@ -57,6 +57,8 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
    if (!utils::fileexists(dest))
       return cError("Destination directory does not exist.");
 
+   logmsg(kLDEBUG, "Copying tree contents in " + src.toString() + " to " + dest.toString());
+
    try
    {
       Poco::DirectoryIterator end;
@@ -64,8 +66,14 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
       {
          if (it->isDirectory())
          {
-            if (Poco::icompare(it->path(), ".git") != 0)
+            Poco::Path p = it->path();
+
+
+            if (Poco::icompare(p.popDirectory().toString(), ".git") != 0)
             {
+               drunner_assert(p.popDirectory().toString().length() > 0, "Empty path.");
+               logmsg(kLDEBUG, "Copying folder "+it->path()+" ("+ p.popDirectory().toString()+") to "+dest.toString());
+
                Poco::Path subdest(dest);
                subdest.pushDirectory(it->path());
                utils::makedirectory(subdest, S_700);
@@ -78,6 +86,7 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
          }
          else
          {
+            drunner_assert(it->path().length() > 0, "Empty file path.");
             it->copyTo(dest.toString());
             logmsg(kLDEBUG, "Copied " + it->path() + " to " + dest.toString());
          }
