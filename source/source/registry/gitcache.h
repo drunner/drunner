@@ -16,6 +16,8 @@ public:
 
 private:
    std::string hash(std::string url) const;
+   cResult runGitCommand(std::vector<std::string> args) const;
+   Poco::Path getCachePath() const;
 
    std::string mURL, mTag;
 };

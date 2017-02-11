@@ -17,23 +17,48 @@ gitcache::gitcache(std::string url, std::string tag) : mURL(url), mTag(tag)
    drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
 }
 
-cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
-{
-   // checkout repo, copy subfolder if present.
-   // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
-   drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
 
-   Poco::Path dest = drunnerPaths::getPath_GitCache();
-   dest.pushDirectory(hash(mURL));
-   p = dest;
-   cResult r;
+
+cResult gitcache::runGitCommand(std::vector<std::string> args) const
+{
+   CommandLine op;
+   op.command = "git";
+   op.args = args;
+
+   std::string out;
 
    tKeyVals env;
    std::string s = Poco::Environment::get("PATH");
    logmsg(kLDEBUG, "PATH = " + s);
    env["PATH"] = s;
 
-   Poco::Path gitfolder = dest;
+   cResult r = utils::runcommand_stream(op, kOSuppressed, getCachePath(),env,&out);
+   if (r.success())
+      logmsg(kLDEBUG, out);
+   else
+      logmsg(kLERROR, out);
+
+   return r;
+}
+
+Poco::Path gitcache::getCachePath() const
+{
+   Poco::Path dest = drunnerPaths::getPath_GitCache();
+   dest.pushDirectory(hash(mURL));
+   return dest;
+}
+
+
+cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
+{
+   // checkout repo, copy subfolder if present.
+   // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
+   drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
+
+   cResult r;
+   p = getCachePath();
+
+   Poco::Path gitfolder = p;
    gitfolder.pushDirectory(".git");
 
    if (utils::fileexists(gitfolder))
@@ -41,33 +66,20 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
       if (forceUpdate)
       {
          logmsg(kLDEBUG, "Updating via git.");
-
-         CommandLine op;
-         op.command = "git";
-         op.args = { "pull" };
-         r+= utils::runcommand_stream(op, kORaw, dest, env, NULL);
+         r+= runGitCommand({ "pull" });
       }
    }
    else
    {
-      utils::makedirectory(dest, S_700);
+      utils::makedirectory(p, S_700);
 
       logmsg(kLDEBUG, "Cloning via git.");
-
-      CommandLine op;
-      op.command = "git";
-      op.args = { "clone","--progress","-b",mTag,
-         "--depth","1",mURL,"." };
-      r+=utils::runcommand_stream(op, kORaw, dest, env, NULL);
+      r+= runGitCommand({ "clone","--progress","-b",mTag,"--depth","1",mURL,"." });
    }
 
 
    logmsg(kLDEBUG, "Checking out tag "+mTag+" via git.");
-
-   CommandLine op;
-   op.command = "git";
-   op.args = { "checkout",mTag };
-   r+= utils::runcommand_stream(op, kORaw, dest, env, NULL);
+   r+=runGitCommand({ "checkout",mTag });
    return r;
 }
 
