@@ -13,12 +13,16 @@ gitcache::gitcache(std::string url, std::string tag) : mURL(url), mTag(tag)
 {
    if (mTag.length() == 0)
       mTag = "master";
+
+   drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
 }
 
 cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
 {
    // checkout repo, copy subfolder if present.
    // git clone --progress -b master --depth 1 https://github.com/drunner/d10_rocketchat
+   drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
+
    Poco::Path dest = drunnerPaths::getPath_GitCache();
    dest.pushDirectory(hash(mURL));
    p = dest;
@@ -29,7 +33,10 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
    logmsg(kLDEBUG, "PATH = " + s);
    env["PATH"] = s;
 
-   if (utils::fileexists(dest))
+   Poco::Path gitfolder = dest;
+   gitfolder.pushDirectory(".git");
+
+   if (utils::fileexists(gitfolder))
    {
       if (forceUpdate)
       {
@@ -48,7 +55,7 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
       logmsg(kLDEBUG, "Cloning via git.");
 
       CommandLine op;
-      op.command = "git.exe";
+      op.command = "git";
       op.args = { "clone","--progress","-b",mTag,
          "--depth","1",mURL,"." };
       r+=utils::runcommand_stream(op, kORaw, dest, env, NULL);
