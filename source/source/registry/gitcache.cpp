@@ -2,6 +2,7 @@
 #include "Poco/String.h"
 #include "Poco/DigestStream.h"
 #include "Poco/MD5Engine.h"
+#include "Poco/Environment.h"
 
 #include "gitcache.h"
 #include "utils.h"
@@ -23,31 +24,43 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
    p = dest;
    cResult r;
 
+   tKeyVals env;
+   std::string s = Poco::Environment::get("PATH");
+   logmsg(kLDEBUG, "PATH = " + s);
+   env["PATH"] = s;
+
    if (utils::fileexists(dest))
    {
       if (forceUpdate)
       {
+         logmsg(kLDEBUG, "Updating via git.");
+
          CommandLine op;
          op.command = "git";
          op.args = { "pull" };
-         r+= utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+         r+= utils::runcommand_stream(op, kORaw, dest, env, NULL);
       }
    }
    else
    {
       utils::makedirectory(dest, S_700);
 
+      logmsg(kLDEBUG, "Cloning via git.");
+
       CommandLine op;
-      op.command = "git";
+      op.command = "git.exe";
       op.args = { "clone","--progress","-b",mTag,
          "--depth","1",mURL,"." };
-      r+=utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+      r+=utils::runcommand_stream(op, kORaw, dest, env, NULL);
    }
+
+
+   logmsg(kLDEBUG, "Checking out tag "+mTag+" via git.");
 
    CommandLine op;
    op.command = "git";
    op.args = { "checkout",mTag };
-   r+= utils::runcommand_stream(op, kORaw, dest, {}, NULL);
+   r+= utils::runcommand_stream(op, kORaw, dest, env, NULL);
    return r;
 }
 
@@ -66,20 +79,21 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
       {
          if (it->isDirectory())
          {
-            Poco::Path p = it->path();
+            Poco::Path p( it->path() );
+            p.makeDirectory();
+            drunner_assert(p.depth() > 1, "Asked to copy from root directory. Disallowed.");
+            drunner_assert(p.isDirectory(), "Converted path is not a directory.");
+            std::string dirname = p[p.depth() - 1];
 
-
-            if (Poco::icompare(p.popDirectory().toString(), ".git") != 0)
+            if (Poco::icompare(dirname, ".git") != 0)
             {
-               drunner_assert(p.popDirectory().toString().length() > 0, "Empty path.");
-               logmsg(kLDEBUG, "Copying folder "+it->path()+" ("+ p.popDirectory().toString()+") to "+dest.toString());
+               drunner_assert(dirname.length() > 0, "Empty path.");
+               logmsg(kLDEBUG, "Copying folder "+it->path()+" ("+  dirname + ") to "+dest.toString());
 
                Poco::Path subdest(dest);
-               subdest.pushDirectory(it->path());
+               subdest.pushDirectory(dirname);
                utils::makedirectory(subdest, S_700);
-               Poco::Path subsrc(src);
-               subsrc.pushDirectory(it->path());
-               recursiveCopy(subsrc, subdest);
+               recursiveCopy(it->path(), subdest);
             }
             else
                logmsg(kLDEBUG, "Skipping .git directory tree");
@@ -96,11 +110,14 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
    {
       fatal(e.what());
    }
+   logmsg(kLDEBUG, "Finished copying " + src.toString() + " to " + dest.toString());
    return kRSuccess;
 }
 
 cResult gitcache::copyTo(Poco::Path dest, bool forceUpdate) const
 {
+   logmsg(kLDEBUG, "Copying repo " + mURL + " with tag " + mTag + " to " + dest.toString());
+
    Poco::Path p;
    cResult r = get(p, forceUpdate);
    if (!r.success())
