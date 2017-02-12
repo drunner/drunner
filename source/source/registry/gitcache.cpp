@@ -17,22 +17,47 @@ gitcache::gitcache(std::string url, std::string tag) : mURL(url), mTag(tag)
    drunner_assert(mURL.length() > 0, "Empty URL given to gitcache");
 }
 
-
+static bool _sGitChecked = false;
+static bool _sHasGit = false;
 
 cResult gitcache::runGitCommand(std::vector<std::string> args) const
 {
    CommandLine op;
-   op.command = "git";
-   op.args = args;
-
    std::string out;
+
+   op.command = "git";
 
    tKeyVals env;
    std::string s = Poco::Environment::get("PATH");
    logmsg(kLDEBUG, "PATH = " + s);
    env["PATH"] = s;
 
-   cResult r = utils::runcommand_stream(op, kOSuppressed, getCachePath(),env,&out);
+   if (!_sGitChecked)
+   {
+      op.args = { "--version" };
+      cResult r0 = utils::runcommand_stream(op, kOSuppressed, "", env, &out);
+      logmsg(kLDEBUG, out);
+      _sHasGit = r0.success();
+      if (_sHasGit)
+         logmsg(kLINFO, "Using host's git command.");
+      else
+         logmsg(kLINFO, "Git not found on host, using container.");
+   }
+
+
+   op.args = args;
+   cResult r;
+
+   if (!utils::fileexists(getCachePath()))
+      utils::makedirectory(getCachePath(), S_700);
+   drunner_assert(utils::fileexists(getCachePath()), "Failed to create " + getCachePath().toString());
+
+   if (_sHasGit)
+      r = utils::runcommand_stream(op, kOSuppressed, getCachePath(),env,&out);
+   else
+   { // run in container.
+      fatal("Git running in container not yet implemented. Install git on host for this pre-release.");
+   }
    if (r.success())
       logmsg(kLDEBUG, out);
    else
@@ -71,8 +96,6 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
    }
    else
    {
-      utils::makedirectory(p, S_700);
-
       logmsg(kLDEBUG, "Cloning via git.");
       r+= runGitCommand({ "clone","--progress","-b",mTag,"--depth","1",mURL,"." });
    }
