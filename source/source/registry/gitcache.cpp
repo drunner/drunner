@@ -120,7 +120,7 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
 }
 
 // copies the contents of src to dest.
-cResult recursiveCopy(Poco::Path src, Poco::Path dest)
+cResult gitcache::recursiveCopyContents(Poco::Path src, Poco::Path dest, std::string skipDir)
 {
    if (!utils::fileexists(dest))
       return cError("Destination directory does not exist.");
@@ -140,7 +140,7 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
             drunner_assert(p.isDirectory(), "Converted path is not a directory.");
             std::string dirname = p[p.depth() - 1];
 
-            if (Poco::icompare(dirname, ".git") != 0)
+            if (Poco::icompare(dirname, skipDir) != 0)
             {
                drunner_assert(dirname.length() > 0, "Empty path.");
                logmsg(kLDEBUG, "Copying folder "+it->path()+" ("+  dirname + ") to "+dest.toString());
@@ -148,7 +148,7 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
                Poco::Path subdest(dest);
                subdest.pushDirectory(dirname);
                utils::makedirectory(subdest, S_700);
-               recursiveCopy(it->path(), subdest);
+               recursiveCopyContents(it->path(), subdest);
             }
             else
                logmsg(kLDEBUG, "Skipping .git directory tree");
@@ -169,19 +169,20 @@ cResult recursiveCopy(Poco::Path src, Poco::Path dest)
    return kRSuccess;
 }
 
-cResult gitcache::copyTo(Poco::Path dest, bool forceUpdate) const
-{
-   logmsg(kLDEBUG, "Copying repo " + mURL + " with tag " + mTag + " to " + dest.toString());
+//cResult gitcache::copyRepoTo(Poco::Path dest, bool forceUpdate) const
+//{
+//   logmsg(kLDEBUG, "Copying repo " + mURL + " with tag " + mTag + " to " + dest.toString());
+//
+//   Poco::Path p;
+//   cResult r = get(p, forceUpdate);
+//   if (!r.success())
+//      return r;
+//
+//   drunner_assert(utils::fileexists(p), "Directory does not exist: " + p.toString());
+//
+//   return recursiveCopyContents(p, dest);
+//}
 
-   Poco::Path p;
-   cResult r = get(p, forceUpdate);
-   if (!r.success())
-      return r;
-
-   drunner_assert(utils::fileexists(p), "Directory does not exist: " + p.toString());
-
-   return recursiveCopy(p, dest);
-}
 
 std::string gitcache::hash(std::string url) const
 {

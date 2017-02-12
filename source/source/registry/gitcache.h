@@ -12,7 +12,7 @@ public:
 
    cResult get(Poco::Path & p, bool forceUpdate = false) const;
    
-   cResult copyTo(Poco::Path dest, bool forceUpdate = false) const;
+   static cResult recursiveCopyContents(Poco::Path src, Poco::Path dest, std::string skipDir=".git");
 
 private:
    std::string hash(std::string url) const;

@@ -13,20 +13,14 @@
 
 sourcecopy::registry::registry(registrydefinition r)
 {
-   Poco::Path temppath = drunnerPaths::getPath_Temp();
-   temppath.pushDirectory("temp_"+r.mNiceName);
-   utils::tempfolder tempf(temppath);
-
-   logmsg(kLDEBUG, "Copying registry.");
-
    gitcache gc(r.mURL);
-   cResult rslt = gc.copyTo(tempf.getpath(), false);
+   logmsg(kLDEBUG, "Reading registry.");
+   Poco::Path p;
+   cResult rslt = gc.get(p, false);
    if (!rslt.success())
       fatal(rslt.what());
 
-   logmsg(kLDEBUG, "Reading registry.");
-
-   std::ifstream infile(tempf.getpath().toString()+"/registry");
+   std::ifstream infile( p.toString() + "/registry");
    if (!infile.is_open())
       fatal("Couldn't open registry "+r.mNiceName+".");
 
@@ -37,11 +31,11 @@ sourcecopy::registry::registry(registrydefinition r)
       if (line.length() > 0 && line[0] != '#')
       {
          registryitem ri;
-         cResult r = loadline(line, ri);
-         if (r.success())
+         rslt +=loadline(line, ri);
+         if (rslt.success())
             mRegistryItems.push_back(ri);
          else
-            fatal(r.what());
+            fatal(rslt.what());
       }
    }
 }

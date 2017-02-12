@@ -36,35 +36,24 @@ namespace sourcecopy
          return rslt;
 
       Poco::Path target = sp.getPathdService();
-      target.pushDirectory(dService);
 
       // try drunner10 subfolder
-      {
-         Poco::Path subf = p;
-         subf.pushDirectory("drunner" + getVersionNice());
-         Poco::File subf2(subf);
-         if (subf2.exists())
-         {
-            subf2.copyTo(target.toString());
-            return kRSuccess;
-         }
-      }
+      Poco::Path drunner10(p.toString() + "drunner" + getVersionNice());
+      drunner10.makeDirectory(); // ensures the path is treated as a directory (does not create a directory on disk!!)
+      if (Poco::File(drunner10.toString()+"service.lua").exists())
+         return gc.recursiveCopyContents(drunner10, target);
 
       // try drunner subfolder
-      {
-         Poco::Path subf = p;
-         subf.pushDirectory("drunner");
-         Poco::File subf2(subf);
-         if (subf2.exists())
-         {
-            subf2.copyTo(target.toString());
-            return kRSuccess;
-         }
-      }
+      Poco::Path drunner(p.toString() + "drunner");
+      drunner.makeDirectory();
+      if (Poco::File(drunner.toString() + "service.lua").exists())
+         return gc.recursiveCopyContents(drunner, target);
 
-      Poco::File subf2(p);
-      subf2.copyTo(target.toString());
-      return kRSuccess;
+      // just copy whole repo
+      if (Poco::File(p.toString()+"service.lua").exists())
+         return gc.recursiveCopyContents(p, target);
+
+      return cError("Unable to locate service.lua in git repo for " + imagename);
    }
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
