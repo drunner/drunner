@@ -86,7 +86,7 @@ cResult registries::showAllRegistereddServices()
    return kRSuccess;
 }
 
-registrydefinition registries::get(std::string & registry, std::string & dService) const
+registrydefinition registries::get(std::string & registry) const
 {
    // load registries and see if we can find a match for nicename.
    // [registry/]nicename[:tag]
@@ -95,14 +95,14 @@ registrydefinition registries::get(std::string & registry, std::string & dServic
    if (!mData.getVal(registry,regdata).success())
       fatal("Unable to acccess registry " + registry);
 
-   sourcecopy::registry reg(regdata);
-   sourcecopy::registryitem item;
-   cResult r = reg.get(dService, item);
-   if (!r.success())
-   {
-      logmsg(kLWARN, r.what());
-      return registrydefinition();
-   }
+   //sourcecopy::registry reg(regdata);
+   //sourcecopy::registryitem item;
+   //cResult r = reg.get(dService, item);
+   //if (!r.success())
+   //{
+   //   logmsg(kLWARN, r.what());
+   //   return registrydefinition();
+   //}
 
    return regdata;
 }

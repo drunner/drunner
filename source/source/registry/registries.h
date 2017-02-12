@@ -46,8 +46,8 @@ public:
 
    cResult showAllRegistereddServices();
 
-   registrydefinition get(std::string & registry, std::string & dService) const;
-
+   registrydefinition get(std::string & registry) const;
+   
    static cResult splitImageName(std::string imagename, std::string & registry, std::string & dService, std::string & tag);
 
 private:

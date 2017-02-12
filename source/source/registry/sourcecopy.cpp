@@ -21,11 +21,13 @@ namespace sourcecopy
       std::string registry, dService, tag;
       registries::splitImageName(imagename, registry, dService, tag);
 
-      registrydefinition regdef = regall.get(registry,dService);
+      registrydefinition regdef = regall.get(registry);
       
       sourcecopy::registry r(regdef);
       sourcecopy::registryitem regitem;
-      r.get(regdef.mNiceName, regitem);
+      cResult getrslt = r.get(dService, regitem);
+      if (!getrslt.success())
+         return getrslt;
 
       Poco::Path p;
       gitcache gc(regitem.url, tag);
