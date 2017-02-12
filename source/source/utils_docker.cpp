@@ -154,6 +154,13 @@ namespace utils_docker
       return (rval != 0 ? false : utils::wordmatch(out, container));
    }
 
+   bool dockerContainerWait(const std::string & containername, int port, int timeout)
+   {
+      // run script in guest.
+      drunner_assert(false, "To do ");
+      return false;
+   }
+
    bool dockerContainerRunsAsRoot(std::string container)
    {
       std::string script = R"EOF(

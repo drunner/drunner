@@ -24,6 +24,7 @@ extern "C" int l_getpwd(lua_State *L);
 
 extern "C" int l_dockerstop(lua_State *L);
 extern "C" int l_dockerrunning(lua_State *L);
+extern "C" int l_dockerwait(lua_State *L);
 extern "C" int l_dockerpull(lua_State *L);
 extern "C" int l_dockercreatevolume(lua_State *L);
 extern "C" int l_dockerdeletevolume(lua_State *L);
@@ -36,7 +37,6 @@ extern "C" int l_dockerrestore(lua_State *L);
 
 namespace servicelua
 {
-
    // -----------------------------------------------------------------------------------------------------------------------
 
    void _register_lua_cfuncs(lua_State *L)
@@ -59,13 +59,13 @@ namespace servicelua
 
       REGISTERLUAC(l_dockerstop, "dockerstop")
       REGISTERLUAC(l_dockerrunning, "dockerrunning")
+      REGISTERLUAC(l_dockerwait, "dockerwait")
       REGISTERLUAC(l_dockerpull, "dockerpull")
       REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
       REGISTERLUAC(l_dockerdeletevolume, "dockerdeletevolume")
       REGISTERLUAC(l_docker, "docker")
       REGISTERLUAC(l_dockerbackup, "dockerbackup")
       REGISTERLUAC(l_dockerrestore, "dockerrestore")
-
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -256,12 +256,31 @@ namespace servicelua
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
       luafile *lf = get_luafile(L);
-      std::string subcontainer = lf->getServiceVars().substitute(containerraw);
-      
-      bool running = utils_docker::dockerContainerRunning(subcontainer);
+
+      bool running = utils_docker::dockerContainerRunning(containerraw);
       lua_pushboolean(L,running);
       return 1;
    }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dockerwait(lua_State *L)
+   {
+      // dockerwait( containername, port, timeout=30s)
+      // Waits until port is up in the container. Times out after 30 seconds by default
+      int nargs = lua_gettop(L);
+      if (nargs < 2 || nargs > 3)
+         return luaL_error(L, "Incorrect number of arguments. Syntax:   dockerwait( containername, port, [timeout] )");
+      std::string containername = lua_tostring(L, 1);
+      int port = (int)lua_tointeger(L, 2);
+      int timeout = (nargs == 3 ? (int)lua_tointeger(L, 3) : 30);
+
+      bool rval = utils_docker::dockerContainerWait(containername, port, timeout);
+
+      lua_pushboolean(L, rval);
+      return 1;
+   }
+
 
    // -----------------------------------------------------------------------------------------------------------------------
 
