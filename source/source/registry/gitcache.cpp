@@ -25,18 +25,17 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
    CommandLine op;
    std::string out;
 
-   op.command = "git";
-
-   tKeyVals env;
-   std::string s = Poco::Environment::get("PATH");
-   logmsg(kLDEBUG, "PATH = " + s);
-   env["PATH"] = s;
+   //tKeyVals env;
+   //std::string s = Poco::Environment::get("PATH");
+   //logmsg(kLDEBUG, "PATH = " + s);
+   //env["PATH"] = s;
 
    // Git commonly installed on Windows does not support HTTPS (GnuTLS fails to initialize).
    // So we just fall back to the container approach.
 #ifndef _WIN32
    if (!_sGitChecked)
    {
+      op.command = "git";
       op.args = { "--version" };
       cResult r0 = utils::runcommand_stream(op, kOSuppressed, "", env, &out);
       logmsg(kLDEBUG, out);
@@ -48,7 +47,6 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
    }
 #endif
 
-   op.args = args;
    cResult r;
 
    if (!utils::fileexists(getCachePath()))
@@ -56,10 +54,22 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
    drunner_assert(utils::fileexists(getCachePath()), "Failed to create " + getCachePath().toString());
 
    if (_sHasGit)
-      r = utils::runcommand_stream(op, kOSuppressed, getCachePath(),env,&out);
+   {
+      op.command = "git";
+      op.args = args;
+      r = utils::runcommand_stream(op, kOSuppressed, getCachePath(), {}, &out);
+   }
    else
    { // run in container.
-      fatal("Git running in container not yet implemented. Install git on host for this pre-release.");
+      op.command = "docker";
+      op.args = { "run","--rm","-v",getCachePath().toString() + ":/dst",
+         drunnerPaths::getdrunnerUtilsImage(),"bash","-c"};
+      std::string bashline = "cd /dst ; git";
+      for (auto x : args)
+         bashline+=" " + x;
+      op.args.push_back(bashline);
+
+      r = utils::runcommand_stream(op, kOSuppressed, getCachePath(), {}, &out);
    }
    if (r.success())
       logmsg(kLDEBUG, out);
