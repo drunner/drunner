@@ -32,6 +32,9 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
    logmsg(kLDEBUG, "PATH = " + s);
    env["PATH"] = s;
 
+   // Git commonly installed on Windows does not support HTTPS (GnuTLS fails to initialize).
+   // So we just fall back to the container approach.
+#ifndef _WIN32
    if (!_sGitChecked)
    {
       op.args = { "--version" };
@@ -43,7 +46,7 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
       else
          logmsg(kLINFO, "Git not found on host, using container.");
    }
-
+#endif
 
    op.args = args;
    cResult r;
