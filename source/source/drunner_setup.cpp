@@ -10,6 +10,7 @@
 #include "globalcontext.h"
 #include "drunner_paths.h"
 #include "dassert.h"
+#include "buildnum.h"
 
 #include <Poco/Process.h>
 #include <Poco/Path.h>
@@ -21,18 +22,18 @@ namespace drunnerSetup
 
    void _check_prereqs_xplatform()
    {
-      CommandLine cl("docker", { "version","--format","{{.Server.Version}}"});
+      CommandLine cl("docker", { "version","--format","{{.Server.Version}}" });
       std::string op;
       if (utils::runcommand(cl, op) != 0)
          fatal("Running \"docker --version\" failed!\nIs docker correctly installed on this machine?\n" + op);
       std::string major, minor;
       unsigned int i;
-      for (i=0; i < op.length() && op[i] != '.'; ++i)
+      for (i = 0; i < op.length() && op[i] != '.'; ++i)
          major += op[i];
       for (++i; i < op.length() && op[i] != '.'; ++i)
          minor += op[i];
       logdbg("Docker major version = " + major + " and minor = " + minor);
-      if (std::strtol(major.c_str(),0,10) == 1 && std::stoi(minor.c_str(),0,10) < 12)
+      if (std::strtol(major.c_str(), 0, 10) == 1 && std::stoi(minor.c_str(), 0, 10) < 12)
          fatal("dRunner requires docker version 1.12 or newer. Please update!");
    }
 
@@ -77,9 +78,9 @@ namespace drunnerSetup
    }
 
 #ifdef _WIN32
-   void _check_prerequisits() 
-   { 
-      _check_prereqs_xplatform(); 
+   void _check_prerequisits()
+   {
+      _check_prereqs_xplatform();
    }
 #else   // Linux
 #include <unistd.h>
@@ -87,7 +88,7 @@ namespace drunnerSetup
    int bashcommand(std::string bashline, std::string & op, bool trim)
    {
       CommandLine cl("/bin/bash", { "-c", bashline });
-      int r=utils::runcommand(cl, op);
+      int r = utils::runcommand(cl, op);
       if (trim)
          Poco::trimInPlace(op);
       return r;
@@ -131,6 +132,21 @@ namespace drunnerSetup
 
       // check ~/.drunner/bin is in ~/.profile.
       _ensure_line(Poco::Path::home() + ".profile", "PATH=\"$HOME/.drunner/bin:$PATH\"");
+
+      // check symbolic link
+      std::string ddir = Poco::Path::home() + ".drunner";
+      Poco::File dlink(ddir);
+      if (dlink.exists())
+      {
+         if (dlink.isLink())
+            dlink.remove();
+         else
+            dlink.renameTo(ddir+"09");
+      }
+      drunner_assert(!dlink.exists(), ".drunner folder still exists. :/ \n"+ddir);
+      int r = symlink((ddir + getVersionNice()).c_str(), ddir.c_str());
+      if (r != 0)
+         fatal("Failed to create symlink at "+ddir);
    }
 #endif
 
@@ -167,14 +183,14 @@ namespace drunnerSetup
 
       // -----------------------------------------------------------------------------
       // create directory structure.
-      _makedirectory(drunnerPaths::getPath_Root(), S_755);
+      _makedirectory(drunnerPaths::getPath_Root(), S_700);
       _makedirectory(drunnerPaths::getPath_Bin(), S_700);
-      _makedirectory(drunnerPaths::getPath_dServices(), S_755);
-      _makedirectory(drunnerPaths::getPath_Temp(), S_755);
-      _makedirectory(drunnerPaths::getPath_HostVolumes(), S_755);
-      _makedirectory(drunnerPaths::getPath_Settings(), S_755);
-      _makedirectory(drunnerPaths::getPath_Logs(), S_755);
-
+      _makedirectory(drunnerPaths::getPath_dServices(), S_700);
+      _makedirectory(drunnerPaths::getPath_Temp(), S_700);
+      _makedirectory(drunnerPaths::getPath_HostVolumes(), S_700);
+      _makedirectory(drunnerPaths::getPath_Settings(), S_700);
+      _makedirectory(drunnerPaths::getPath_Logs(), S_700);
+      _makedirectory(drunnerPaths::getPath_GitCache(), S_700);
 
       // On windows, we copy the executable to the .drunner/bin folder and make the .drunner folder hidden.
       // On Linux drunner is manually copied to /usr/local/bin (or wherever) by the user as part of the install process.

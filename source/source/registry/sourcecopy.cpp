@@ -5,6 +5,7 @@
 #include "registries.h"
 #include "globalcontext.h"
 #include "buildnum.h"
+#include "gitcache.h"
 
 namespace sourcecopy
 {
@@ -20,50 +21,39 @@ namespace sourcecopy
       std::string registry, dService, tag;
       registries::splitImageName(imagename, registry, dService, tag);
 
-      registrydefinition regdef = regall.get(registry,dService);
+      registrydefinition regdef = regall.get(registry);
       
       sourcecopy::registry r(regdef);
       sourcecopy::registryitem regitem;
-      r.get(regdef.mNiceName, regitem);
+      cResult getrslt = r.get(dService, regitem);
+      if (!getrslt.success())
+         return getrslt;
 
-      Poco::Path temppath = sp.getPathdService();
-      temppath.pushDirectory("temp_download");
-      utils::tempfolder tempf(temppath);
-
-      cResult rslt = CaptainCopy(regitem.getSourceInfo(tag), tempf.getpath(), kCM_Tree);
+      Poco::Path p;
+      gitcache gc(regitem.url, tag);
+      cResult rslt = gc.get(p, true);
       if (!rslt.success())
          return rslt;
 
       Poco::Path target = sp.getPathdService();
-      target.pushDirectory(dService);
 
       // try drunner10 subfolder
-      {
-         Poco::Path subf = tempf.getpath();
-         subf.pushDirectory("drunner" + getVersionNice());
-         Poco::File subf2(subf);
-         if (subf2.exists())
-         {
-            subf2.copyTo(target.toString());
-            return kRSuccess;
-         }
-      }
+      Poco::Path drunner10(p.toString() + "drunner" + getVersionNice());
+      drunner10.makeDirectory(); // ensures the path is treated as a directory (does not create a directory on disk!!)
+      if (Poco::File(drunner10.toString()+"service.lua").exists())
+         return gc.recursiveCopyContents(drunner10, target);
 
       // try drunner subfolder
-      {
-         Poco::Path subf = tempf.getpath();
-         subf.pushDirectory("drunner");
-         Poco::File subf2(subf);
-         if (subf2.exists())
-         {
-            subf2.copyTo(target.toString());
-            return kRSuccess;
-         }
-      }
+      Poco::Path drunner(p.toString() + "drunner");
+      drunner.makeDirectory();
+      if (Poco::File(drunner.toString() + "service.lua").exists())
+         return gc.recursiveCopyContents(drunner, target);
 
-      Poco::File subf2(tempf.getpath());
-      subf2.copyTo(target.toString());
-      return kRSuccess;
+      // just copy whole repo
+      if (Poco::File(p.toString()+"service.lua").exists())
+         return gc.recursiveCopyContents(p, target);
+
+      return cError("Unable to locate service.lua in git repo for " + imagename);
    }
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
@@ -106,6 +96,8 @@ namespace sourcecopy
 
       return cError("Unknown registry command: " + p.getArg(0));
    }
+
+
 
 
 } // namespace 

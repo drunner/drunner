@@ -8,18 +8,19 @@
 #include "drunner_paths.h"
 #include "utils.h"
 #include "dassert.h"
-#include "captaincopy.h"
+#include "sourcecopy.h"
+#include "gitcache.h"
 
 sourcecopy::registry::registry(registrydefinition r)
 {
-   Poco::Path f = drunnerPaths::getPath_Temp().setFileName("registry.tmp");
-
-   SourceInfo s(r.mProtocol, r.mURL, "");
-   cResult rslt = CaptainCopy(s, f, kCM_File);
+   gitcache gc(r.mURL);
+   logmsg(kLDEBUG, "Reading registry.");
+   Poco::Path p;
+   cResult rslt = gc.get(p, false);
    if (!rslt.success())
       fatal(rslt.what());
 
-   std::ifstream infile(f.toString());
+   std::ifstream infile( p.toString() + "/registry");
    if (!infile.is_open())
       fatal("Couldn't open registry "+r.mNiceName+".");
 
@@ -30,11 +31,11 @@ sourcecopy::registry::registry(registrydefinition r)
       if (line.length() > 0 && line[0] != '#')
       {
          registryitem ri;
-         cResult r = loadline(line, ri).success();
-         if (r.success())
+         rslt +=loadline(line, ri);
+         if (rslt.success())
             mRegistryItems.push_back(ri);
          else
-            fatal(r.what());
+            fatal(rslt.what());
       }
    }
 }
@@ -54,12 +55,14 @@ cResult sourcecopy::registry::get(const std::string nicename, registryitem & ite
 // returns index of separating space.
 int getchunk(std::string l)
 {
-   bool q = false;
-   for (unsigned int i = 0; i < l.length(); ++i)
+   drunner_assert(l.length() > 0, "getchunk passed empty string.");
+   drunner_assert(!iswspace(l[0]), "gitchunk given untrimmed string.");
+   bool q = (l[0]=='"');
+   for (unsigned int i = q ? 1 : 0; i < l.length(); ++i)
    {
       if (iswspace(l[i]) && !q)
          return i;
-      if (l[i] == '"' && q)
+      if (l[i] == '"')
          q = false;
    }
    return l.length();
@@ -70,28 +73,24 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    // expect three whitespace separated strings.
    std::vector<std::string> chunks;
    std::string l(line);
+   Poco::trimLeftInPlace(l);
    while (l.length() > 0)
    {
       int i = getchunk(l);
       drunner_assert(i > 0, "loadline : coding err");
       chunks.push_back(l.substr(0, i));
       l.erase(0, i + 1);
+      Poco::trimLeftInPlace(l);
    }
-   if (chunks.size()!=4)
-      return cError("Registry lines must be of form: nicename protocol URL description:\n"+line);
+   if (chunks.size()!=3)
+      return cError("Registry lines must be of form: nicename GitURI description:\n"+line);
 
    ri.nicename = chunks[0];
-   ri.protocol = ProtoParse(chunks[1]);
-   ri.url = chunks[2];
-   ri.description = chunks[3];
+   ri.url = chunks[1];
+   ri.description = chunks[2];
 
-   if (ri.protocol == kP_ERROR)
-      return cError("Unknown protocol " + chunks[1] + " in:\n" + line);
+   logmsg(kLDEBUG, "<" + ri.nicename + "><" + ri.url + "><" + ri.description + ">");
 
    return kRSuccess;
 }
 
-SourceInfo sourcecopy::registryitem::getSourceInfo(std::string tag) const
-{
-   return SourceInfo(protocol, url, tag);
-}

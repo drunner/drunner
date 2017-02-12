@@ -214,9 +214,6 @@
     <ClCompile Include="..\source\source\test_dbackup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\registry\captaincopy.cpp">
-      <Filter>Source Files\registry</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\registry\registries.cpp">
       <Filter>Source Files\registry</Filter>
     </ClCompile>
@@ -224,6 +221,9 @@
       <Filter>Source Files\registry</Filter>
     </ClCompile>
     <ClCompile Include="..\source\source\registry\sourcecopy.cpp">
+      <Filter>Source Files\registry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\registry\gitcache.cpp">
       <Filter>Source Files\registry</Filter>
     </ClCompile>
   </ItemGroup>
@@ -408,9 +408,6 @@
     <ClInclude Include="..\source\source\service_manage.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\registry\captaincopy.h">
-      <Filter>Source Files\registry</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\source\registry\registries.h">
       <Filter>Source Files\registry</Filter>
     </ClInclude>
@@ -418,6 +415,9 @@
       <Filter>Source Files\registry</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\registry\sourcecopy.h">
+      <Filter>Source Files\registry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\registry\gitcache.h">
       <Filter>Source Files\registry</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@ namespace sourcecopy
    cResult install(std::string imagename, const servicePaths & sp);
    cResult normaliseNames(std::string & imagename, std::string & servicename);
    cResult registrycommand();
+
 } // namespace
 
 #endif

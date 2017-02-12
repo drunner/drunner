@@ -21,7 +21,7 @@ registries::registries()
    if (load().noChange())
    { // create and save defaults.
       mData.setVal(
-         registrydefinition("drunner", "http", "https://raw.githubusercontent.com/drunner/registry/master/registry")
+         registrydefinition("drunner", "https://github.com/drunner/registry.git")
       );
       cResult r = save();
       if (!r.success())
@@ -46,23 +46,47 @@ cResult registries::delregistry(std::string nicename)
 
 cResult registries::showregistries()
 {
-   int maxkey = 0, maxproto=0, maxurl=0;
+   int maxkey = 0, maxurl=0;
    for (const auto & y : mData.getAll())
    {
       maxkey = utils::_max(maxkey, y.mNiceName.length());
-      maxproto = utils::_max(maxproto, y.protostr().length());
       maxurl = utils::_max(maxurl, y.mURL.length());
    }
    for (const auto & y : mData.getAll())
       logmsg(kLINFO, 
          " " + utils::_pad(y.mNiceName, maxkey) + 
-         " -> " + utils::_pad(y.protostr(),maxproto) +
-         " : " + utils::_pad(y.mURL,maxurl));
+         " -> " + utils::_pad(y.mURL,maxurl));
 
    return kRSuccess;
 }
 
-registrydefinition registries::get(std::string & registry, std::string & dService) const
+cResult registries::showAllRegistereddServices()
+{
+   for (const auto & y : mData.getAll())
+   {
+      logmsg(kLINFO, "--------------------------------------------");
+      logmsg(kLINFO, "REGISTRY " + y.mNiceName + " ("+y.mURL+")");
+      logmsg(kLINFO, " ");
+
+      sourcecopy::registry reg(y);
+      int maxkey = 0, maxdesc = 0;
+      for (const auto & z : reg.getAll())
+      {
+         maxkey = utils::_max(maxkey, y.mNiceName.length() + 1 + z.nicename.length());
+         maxdesc = utils::_max(maxdesc, z.description.length());
+      }
+      for (const auto & z : reg.getAll())
+      {
+         logmsg(kLINFO, " " + utils::_pad(y.mNiceName + "/" + z.nicename, maxkey) +
+            "   " + utils::_pad(z.description, maxdesc));
+      }
+      logmsg(kLINFO, " ");
+   }
+
+   return kRSuccess;
+}
+
+registrydefinition registries::get(std::string & registry) const
 {
    // load registries and see if we can find a match for nicename.
    // [registry/]nicename[:tag]
@@ -71,14 +95,14 @@ registrydefinition registries::get(std::string & registry, std::string & dServic
    if (!mData.getVal(registry,regdata).success())
       fatal("Unable to acccess registry " + registry);
 
-   sourcecopy::registry reg(regdata);
-   sourcecopy::registryitem item;
-   cResult r = reg.get(dService, item);
-   if (!r.success())
-   {
-      logmsg(kLWARN, r.what());
-      return registrydefinition();
-   }
+   //sourcecopy::registry reg(regdata);
+   //sourcecopy::registryitem item;
+   //cResult r = reg.get(dService, item);
+   //if (!r.success())
+   //{
+   //   logmsg(kLWARN, r.what());
+   //   return registrydefinition();
+   //}
 
    return regdata;
 }

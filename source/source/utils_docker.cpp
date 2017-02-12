@@ -74,10 +74,10 @@ namespace utils_docker
 
    cResult pullImage(const std::string & image)
    {
-#ifdef _DEBUG
-      logmsg(kLDEBUG, "DEBUG BUILD - not pulling");
-      return kRSuccess;
-#endif
+//#ifdef _DEBUG
+//      logmsg(kLDEBUG, "DEBUG BUILD - not pulling");
+//      return kRSuccess;
+//#endif
 
       if (GlobalContext::getParams()->isDevelopmentMode())
       {

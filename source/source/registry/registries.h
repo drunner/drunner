@@ -10,7 +10,6 @@
 #include "service_paths.h"
 #include "sourcecopy.h"
 #include "variables.h"
-#include "captaincopy.h"
 #include "registry.h"
 
 class registrydefinitions
@@ -45,8 +44,10 @@ public:
    cResult delregistry(std::string nicename);
    cResult showregistries();
 
-   registrydefinition get(std::string & registry, std::string & dService) const;
+   cResult showAllRegistereddServices();
 
+   registrydefinition get(std::string & registry) const;
+   
    static cResult splitImageName(std::string imagename, std::string & registry, std::string & dService, std::string & tag);
 
 private:
