@@ -292,12 +292,12 @@ namespace servicelua
 
       if (utils_docker::dockerContainerRunning(subcontainer))
       {
-         logmsg(kLINFO, "Stopping " + lf->getServiceName());
+         logmsg(kLINFO, "Stopping " + lf->getServiceName() +" ("+subcontainer+")");
          utils_docker::stopContainer(subcontainer);
       }
       if (utils_docker::dockerContainerExists(subcontainer))
       {
-         logmsg(kLINFO, "Removing " + lf->getServiceName());
+         logmsg(kLINFO, "Removing " + lf->getServiceName() + " (" + subcontainer + ")");
          utils_docker::removeContainer(subcontainer);
       }
       else
