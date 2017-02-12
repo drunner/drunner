@@ -37,13 +37,13 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
    {
       op.command = "git";
       op.args = { "--version" };
-      cResult r0 = utils::runcommand_stream(op, kOSuppressed, "", env, &out);
+      cResult r0 = utils::runcommand_stream(op, kOSuppressed, "", {}, &out);
       logmsg(kLDEBUG, out);
       _sHasGit = r0.success();
       if (_sHasGit)
-         logmsg(kLINFO, "Using host's git command.");
+         logmsg(kLDEBUG, "Using host's git command.");
       else
-         logmsg(kLINFO, "Git not found on host, using container.");
+         logmsg(kLDEBUG, "Git not found on host, using container.");
    }
 #endif
 
