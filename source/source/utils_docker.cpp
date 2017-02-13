@@ -164,7 +164,7 @@ namespace utils_docker
 
       for (int i = 0; i < timeout; ++i)
       {
-         CommandLine cl("docker", { "inspect","--format","'{{ .NetworkSettings.IPAddress }}'", containername });
+         CommandLine cl("docker", { "inspect","--format","{{ .NetworkSettings.IPAddress }}", containername });
          std::string out;
          int rval = utils::runcommand(cl, out);
          if (rval == 0)
