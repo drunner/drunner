@@ -255,7 +255,7 @@ namespace servicelua
          return luaL_error(L, "Expected exactly one argument (the container name to check) for drunning.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
-      luafile *lf = get_luafile(L);
+      //luafile *lf = get_luafile(L);
 
       bool running = utils_docker::dockerContainerRunning(containerraw);
       lua_pushboolean(L,running);
@@ -311,12 +311,12 @@ namespace servicelua
 
       if (utils_docker::dockerContainerRunning(subcontainer))
       {
-         logmsg(kLINFO, "Stopping " + lf->getServiceName() +" ("+subcontainer+")");
+         logmsg(kLINFO, "Stopping container "+subcontainer);
          utils_docker::stopContainer(subcontainer);
       }
       if (utils_docker::dockerContainerExists(subcontainer))
       {
-         logmsg(kLINFO, "Removing " + lf->getServiceName() + " (" + subcontainer + ")");
+         logmsg(kLINFO, "Removing container "+ subcontainer);
          utils_docker::removeContainer(subcontainer);
       }
       else
