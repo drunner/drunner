@@ -2,6 +2,10 @@
 #include <iterator>
 
 #include <Poco/String.h>
+#include <Poco/Net/Socket.h>
+#include <Poco/Net/SocketAddress.h>
+#include <Poco/Net/StreamSocket.h>
+#include <Poco/Thread.h>
 
 #include "basen.h"
 #include "utils.h"
@@ -152,6 +156,43 @@ namespace utils_docker
       std::string out;
       int rval = utils::runcommand(cl, out);
       return (rval != 0 ? false : utils::wordmatch(out, container));
+   }
+
+   bool dockerContainerWait(const std::string & containername, int port, int timeout)
+   {
+      // get IP address of container.
+
+      for (int i = 0; i < timeout; ++i)
+      {
+         CommandLine cl("docker", { "inspect","--format","{{ .NetworkSettings.IPAddress }}", containername });
+         std::string out;
+         int rval = utils::runcommand(cl, out);
+         if (rval == 0)
+         {
+            Poco::trimInPlace(out);
+            // test if IP address responds on given port.
+            out += ":" + std::to_string(port);
+            logmsg(kLDEBUG, "Checking address " + out);
+            Poco::Net::SocketAddress sa(out);
+
+            bool socketok = false;
+            try {
+               Poco::Net::StreamSocket sock(sa);
+               sock.shutdown();
+               socketok = true;
+            }
+            catch (Poco::Exception & e)
+            {
+               logmsg(kLDEBUG, e.what());
+            }
+            if (socketok)
+               return true;
+            Poco::Thread::sleep(1000);
+         }
+      }
+
+      // run script in guest.
+      return false;
    }
 
    bool dockerContainerRunsAsRoot(std::string container)

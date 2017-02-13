@@ -10,6 +10,7 @@ namespace utils_docker
    bool dockerVolExists(const std::string & vol);
    bool dockerContainerExists(const std::string & container);
    bool dockerContainerRunning(const std::string & container);
+   bool dockerContainerWait(const std::string & containername, int port, int timeout);
 
    cResult createDockerVolume(std::string name);
    cResult deleteDockerVolume(std::string name);
