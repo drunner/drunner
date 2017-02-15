@@ -38,15 +38,16 @@ cResult gitcache::runGitCommand(std::vector<std::string> args) const
       op.command = "git";
       op.args = { "--version" };
       cResult r0 = utils::runcommand_stream(op, kOSuppressed, "", {}, &out);
-      logmsg(kLDEBUG, out);
+      Poco::trimInPlace(out);
+      logmsg(kLDEBUG, "   " + out);
       _sHasGit = r0.success();
+      _sGitChecked = true;
       if (_sHasGit)
          logmsg(kLDEBUG, "Using host's git command.");
       else
          logmsg(kLDEBUG, "Git not found on host, using container.");
    }
 #endif
-
    cResult r;
 
    if (!utils::fileexists(getCachePath()))
@@ -110,9 +111,9 @@ cResult gitcache::get(Poco::Path & p, bool forceUpdate) const
    else
    {
       logmsg(kLDEBUG, "Cloning via git.");
-      r+= runGitCommand({ "clone","--progress","-b",mTag,"--depth","1",mURL,"." });
+      r+= runGitCommand({ "clone","--progress",mURL,"." });
+      //      r+= runGitCommand({ "clone","--progress","-b",mTag,"--depth","1",mURL,"." });
    }
-
 
    logmsg(kLDEBUG, "Checking out tag "+mTag+" via git.");
    r+=runGitCommand({ "checkout",mTag });
