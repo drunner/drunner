@@ -82,7 +82,9 @@ function testcontainer {
    echo "-- Testing $1 --"
    "${DRUNNER}" install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
    "${DRUNNER}" "__plugin__ddev" "test" "testcontainer-${1}"
+   rval=$?
    obliterate "testcontainer-${1}"
+   [[ rval -eq 0 ]] || die "Tests failed."
 }
 
 function runcheck {

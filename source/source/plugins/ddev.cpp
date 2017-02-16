@@ -180,15 +180,18 @@ cResult _testcommand(std::string dservicename, std::vector<std::string> args)
 cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
 {
    std::string dservicename;
+   cResult r;
+   bool installed = false;
+
    if (cl.args.size() == 0)
-   {
+   { // install service from current directory and run tests
       dservicename = timeutils::getDateTimeStr();
+      r += _testcommand(CommandLine("drunner", { "install",".",dservicename }));
+      installed = true;
    }
-   else
+   else // run tests on already installed service
       dservicename = cl.args[0];
 
-   cResult r;
-   r += _testcommand(CommandLine("drunner", { "install",".",dservicename }));
 
    if (r.success())
       r += _testcommand(dservicename, { "help" });
@@ -219,9 +222,12 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
    if (r.success())
       r += rr;
 
-   rr = _testcommand(CommandLine("drunner", { "obliterate",dservicename }));
-   if (r.success())
-      r += rr;
+   if (installed)
+   {
+      rr = _testcommand(CommandLine("drunner", { "obliterate",dservicename }));
+      if (r.success())
+         r += rr;
+   }
 
    if (r.success())
       logmsg(kLINFO, "Tests completed successfully.");
