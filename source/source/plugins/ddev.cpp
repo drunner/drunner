@@ -187,14 +187,16 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
    { // install service from current directory and run tests
       dservicename = timeutils::getDateTimeStr();
       r += _testcommand(CommandLine("drunner", { "install",".",dservicename }));
+      if (!r.success())
+         return r;
+
       installed = true;
    }
    else // run tests on already installed service
       dservicename = cl.args[0];
 
 
-   if (r.success())
-      r += _testcommand(dservicename, { "help" });
+   r = _testcommand(dservicename, { "help" });
 
    if (r.success())
       r += _testcommand(dservicename, { "configure" });
