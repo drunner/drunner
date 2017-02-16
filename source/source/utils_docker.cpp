@@ -161,10 +161,13 @@ namespace utils_docker
    bool dockerContainerWait(const std::string & containername, int port, int timeout)
    {
       // get IP address of container.
+      // assumes only one network in container (a bit fragile).
 
       for (int i = 0; i < timeout; ++i)
       {
-         CommandLine cl("docker", { "inspect","--format","{{ .NetworkSettings.IPAddress }}", containername });
+         CommandLine cl;
+         cl = CommandLine("docker", { "inspect","--format","{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containername });
+
          std::string out;
          int rval = utils::runcommand(cl, out);
          if (rval == 0)

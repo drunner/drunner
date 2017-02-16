@@ -6,16 +6,24 @@
 #include "globalcontext.h"
 #include "buildnum.h"
 #include "gitcache.h"
+#include "dassert.h"
 
 namespace sourcecopy
 {
 
-
+   cResult install_local(std::string imagename, const servicePaths & sp)
+   {
+      fatal("Not yet implemented: local");
+   }
 
    // -----------------------------------------------------------------------------
    // Install the imagename.
    cResult install(std::string imagename, const servicePaths & sp)
    {
+      if (Poco::icompare(imagename.substr(0, 6), "local:") == 0)
+         return install_local(imagename, sp);
+
+
       registries regall;
 
       std::string registry, dService, tag;
@@ -58,14 +66,28 @@ namespace sourcecopy
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
    {
-      std::string registry, repo, tag;
-      cResult r = registries::splitImageName(imagename, registry, repo, tag);
-      if (!r.success())
-         return r;
+      if (Poco::icompare(imagename,".")==0)
+      {
+         imagename = "local:" + utils::getPWD();
+         if (servicename.length() == 0)
+         {
+            Poco::Path p(Poco::Path::current());
+            drunner_assert(p.isDirectory(), "coding error: not a directory");
+            drunner_assert(p.depth() > 0, "Can't install from /");
+            servicename = p.directory(p.depth() - 1);
+         }         
+      }
+      else
+      {
+         std::string registry, repo, tag;
+         cResult r = registries::splitImageName(imagename, registry, repo, tag);
+         if (!r.success())
+            return r;
 
-      imagename = registry + "/" + repo + ":" + tag;
-      if (servicename.length() == 0)
-         servicename = repo;
+         imagename = registry + "/" + repo + ":" + tag;
+         if (servicename.length() == 0)
+            servicename = repo;
+      }
 
       return kRSuccess;
    }
