@@ -7,16 +7,7 @@
 #include "drunner_setup.h"
 #include "drunner_paths.h"
 
-#ifdef _WIN32
-static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/10/win/drunner)EOF";
-static std::string sBadURL2 = R"EOF(https://drunner.s3.amazonaws.com/09/win/drunner)EOF";
-#elif defined(__APPLE__)
-static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/10/mac/drunner)EOF";
-static std::string sBadURL2 = R"EOF(https://drunner.s3.amazonaws.com/09/mac/drunner)EOF";
-#else
-static std::string sInstallURL = R"EOF(https://drunner.s3.amazonaws.com/10/lin/drunner)EOF";
-static std::string sBadURL2 = R"EOF(https://drunner.s3.amazonaws.com/09/lin/drunner)EOF";
-#endif
+
 
 static std::string sBadURL = R"EOF(https://drunner.s3.amazonaws.com/drunner)EOF";
 
@@ -34,10 +25,6 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
 
       if (r.success())
       {
-         if (getVal("INSTALLURL").compare(sBadURL)==0 ||
-             getVal("INSTALLURL").compare(sBadURL2)==0)
-            setVal("INSTALLURL", sInstallURL);
-
          mReadOkay = true;
          logdbg("Read dRunner settings from " + drunnerPaths::getPath_drunnerSettings_json().toString());
       }
@@ -48,11 +35,21 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
    }
 }
 
+std::string drunnerSettings::getdrunnerInstallURL() 
+{
+#ifdef _WIN32
+   return R"EOF(https://drunner.s3.amazonaws.com/10/win/drunner)EOF";
+#elif defined(__APPLE__)
+   return R"EOF(https://drunner.s3.amazonaws.com/10/mac/drunner)EOF";
+#else
+   return R"EOF(https://drunner.s3.amazonaws.com/10/lin/drunner)EOF";
+#endif
+}
+
 const std::vector<envDef> drunnerSettings::_getConfig()
 {
    std::vector<envDef> config;
-   config.push_back(envDef("INSTALLURL", sInstallURL, "The URL to download drunner from.",ENV_PERSISTS | ENV_USERSETTABLE));
-   config.push_back(envDef("INSTALLTIME", utils::getTime(), "Time installed.",ENV_PERSISTS | ENV_USERSETTABLE));
+   config.push_back(envDef("INSTALLTIME", utils::getTime(), "Time installed.",ENV_PERSISTS ));
    config.push_back(envDef("PULLIMAGES", "true", "Set to false to never pull docker images",ENV_PERSISTS | ENV_USERSETTABLE));
    return config;
 }

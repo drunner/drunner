@@ -8,7 +8,7 @@ class drunnerSettings : public persistvariables
 public:
    drunnerSettings(); // sets defaults, loads if able.
 
-   std::string getdrunnerInstallURL() const { return getVal("INSTALLURL"); }
+   static std::string getdrunnerInstallURL();
    std::string getdrunnerInstallTime()const { return getVal("INSTALLTIME"); }
    bool getPullImages() const               { return getBool("PULLIMAGES"); }
 

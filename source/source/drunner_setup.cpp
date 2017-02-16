@@ -141,12 +141,12 @@ namespace drunnerSetup
          if (dlink.isLink())
             dlink.remove();
          else
-            dlink.renameTo(ddir+"09");
+            dlink.renameTo(ddir + "09");
       }
-      drunner_assert(!dlink.exists(), ".drunner folder still exists. :/ \n"+ddir);
+      drunner_assert(!dlink.exists(), ".drunner folder still exists. :/ \n" + ddir);
       int r = symlink((ddir + getVersionNice()).c_str(), ddir.c_str());
       if (r != 0)
-         fatal("Failed to create symlink at "+ddir);
+         fatal("Failed to create symlink at " + ddir);
    }
 #endif
 
@@ -154,11 +154,11 @@ namespace drunnerSetup
    {
       Poco::Path currentexe = drunnerPaths::getPath_Exe();
 
-      try 
+      try
       {
          if (currentexe.parent().toString().compare(drunnerPaths::getPath_Bin().toString()) != 0)
             Poco::File(currentexe).copyTo(drunnerPaths::getPath_Bin().toString());
-         logdbg("Copied drunner to "+ drunnerPaths::getPath_Bin().toString());
+         logdbg("Copied drunner to " + drunnerPaths::getPath_Bin().toString());
          drunner_assert(utils::fileexists(drunnerPaths::getPath_Exe_Target()), "Failed to install drunner.exe");
       }
       catch (const Poco::FileException & e)
@@ -216,35 +216,42 @@ namespace drunnerSetup
       return kRSuccess;
    }
 
-
    cResult update_drunner()
    {
       // download and install the latest drunner.
 
 #ifdef _WIN32
-      fatal("Update not yet supported on Windows.");
+      fatal("Auto update not yet supported on Windows.");
 #else
 
       std::string targetdir = "/tmp/drunner";
       std::string target = targetdir + "/drunner-install";
 
+      if (utils::fileexists(target))
+         utils::delfile(target);
+
       utils::makedirectory(targetdir, S_700);
       std::string op;
-      CommandLine cl("docker", { "run","--rm","-v",targetdir+":/dtemp","drunner/drunner_utils","download_drunner_install" });
+      CommandLine cl("docker", { "run","--rm","-v",targetdir + ":/dtemp","drunner/drunner_utils","bash","-c",
+         "cd /dtemp ; wget -nv " + drunnerSettings::getdrunnerInstallURL() });
       int r = utils::runcommand_stream(cl, kORaw, "", {}, &op);
       if (r != 0)
-         fatal("Update script failed:\n "+op);
-   
+         fatal("Update script failed:\n " + op);
+
       if (!utils::fileexists(target))
          fatal("Couldn't download drunner-install.");
 
       // exec to switch to that process.
-      const char    *my_argv[64] = { "/tmp/drunner/drunner-install",NULL};
+      if (chmod(target.c_str(), S_700) != 0)
+         fatal("Unable to change permissions on " + target);
+      
+      const char    *my_argv[64] = { target.c_str(), NULL };
       execve(my_argv[0], (char **)my_argv, NULL);
 
       fatal("Execution failed");
 #endif
-
       return kRSuccess;
    }
-}
+
+
+} // namespace drunnerSetup
