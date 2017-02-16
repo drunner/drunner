@@ -6,7 +6,7 @@
 
 dRunner version 1.0 needs docker. You can install it with:
 ```
-wget -nv http://drunner.s3.amazonaws.com/10/lin/docker-install
+wget https://drunner.s3.amazonaws.com/10/lin/docker-install
 sudo bash docker-install
 ```
 
@@ -19,7 +19,7 @@ You'll need to log out then in again for the group to take effect.
 
 ### Installing dRunner
 ```
-wget http://drunner.s3.amazonaws.com/10/lin/drunner-install
+wget https://drunner.s3.amazonaws.com/10/lin/drunner-install
 bash drunner-install
 ```
 

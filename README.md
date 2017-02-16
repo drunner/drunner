@@ -2,7 +2,9 @@
 
 ## Status
 
-The 1.0 release is in light production use.
+Under heavy development. 1.0 is not yet stable - check out the 0.9 branch for the latest stable version.
+
+Also be warnde: these instructions have not been properly updated for 1.0 yet.
 
 ## Overview
 
