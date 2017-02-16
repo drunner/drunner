@@ -233,7 +233,8 @@ namespace drunnerSetup
       utils::makedirectory(targetdir, S_700);
       std::string op;
       CommandLine cl("docker", { "run","--rm","-v",targetdir + ":/dtemp","drunner/drunner_utils","bash","-c",
-         "cd /dtemp ; wget -nv " + drunnerSettings::getdrunnerInstallURL() });
+         "cd /dtemp ; wget -nv " + drunnerSettings::getdrunnerInstallURL() +
+         " ; chmod a+x drunner-install"});
       int r = utils::runcommand_stream(cl, kORaw, "", {}, &op);
       if (r != 0)
          fatal("Update script failed:\n " + op);
@@ -242,9 +243,6 @@ namespace drunnerSetup
          fatal("Couldn't download drunner-install.");
 
       // exec to switch to that process.
-      if (chmod(target.c_str(), S_700) != 0)
-         fatal("Unable to change permissions on " + target);
-      
       const char    *my_argv[64] = { target.c_str(), NULL };
       execve(my_argv[0], (char **)my_argv, NULL);
 
