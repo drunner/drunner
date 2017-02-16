@@ -38,11 +38,11 @@ drunnerSettings::drunnerSettings() : persistvariables("drunner", drunnerPaths::g
 std::string drunnerSettings::getdrunnerInstallURL() 
 {
 #ifdef _WIN32
-   return R"EOF(https://drunner.s3.amazonaws.com/10/win/drunner)EOF";
+   return R"EOF(https://drunner.s3.amazonaws.com/10/win/drunner-install)EOF";
 #elif defined(__APPLE__)
-   return R"EOF(https://drunner.s3.amazonaws.com/10/mac/drunner)EOF";
+   return R"EOF(https://drunner.s3.amazonaws.com/10/mac/drunner-install)EOF";
 #else
-   return R"EOF(https://drunner.s3.amazonaws.com/10/lin/drunner)EOF";
+   return R"EOF(https://drunner.s3.amazonaws.com/10/lin/drunner-install)EOF";
 #endif
 }
 
