@@ -11,12 +11,12 @@ sudo apt-get purge -qq lxc-docker
 sudo apt-get install -qq apparmor
 sudo apt-get -o Dpkg::Options::="--force-confnew" install -qq docker-engine
 
-wget https://github.com/docker/compose/releases/download/1.7.1/docker-compose-Linux-x86_64
+wget https://github.com/docker/compose/releases/download/1.10.0/docker-compose-Linux-x86_64
 sudo mv docker-compose* /usr/local/bin/docker-compose
 sudo chmod a+x /usr/local/bin/docker-compose
 
 mkdir temp
-wget https://drunner.s3.amazonaws.com/09/lin/drunner -O temp/drunner
+wget https://drunner.s3.amazonaws.com/10/lin/drunner -O temp/drunner
 chmod a+x temp/drunner
 sudo mv temp/drunner /usr/local/bin
 drunner setup
