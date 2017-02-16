@@ -7,12 +7,11 @@
 #include "dassert.h"
 #include "drunner_paths.h"
 #include "service_manage.h"
+#include "timez.h"
 
 ddev::ddev()
 {
    addConfig(envDef("TAG", "", "The docker image tag (e.g. drunner/helloworld)", ENV_PERSISTS | ENV_USERSETTABLE));
-   addConfig(envDef("DSERVICE", "true", "Whether this is a dService [true/false]", ENV_PERSISTS | ENV_USERSETTABLE));
-   addConfig(envDef("DSERVICENAME", "", "The name to install the dService as (blank = don't install)", ENV_PERSISTS | ENV_USERSETTABLE));
 }
 
 std::string ddev::getName() const
@@ -65,14 +64,16 @@ COMMANDS
    ddev configure [OPTION=[VALUE]]
 
    ddev build
-   ddev info
-   ddev check
+      build a docker image in current folder
+
+   ddev buildtree
+      build docker images in current folder and subfolders
+
    ddev test
+      test a dservice in current folder
 
 CONFIGURATION OPTIONS
    IMAGENAME        name of docker image to tag build as
-   DSERVICE         whether it's a dService (true/false)
-   DSERVICENAME     name of dservice to install as after builds, or blank
 )EOF";
 
    logmsg(kLINFO, help);
@@ -92,7 +93,6 @@ Poco::Path ddev::configurationFilePath() const
 cResult ddev::_build(const CommandLine & cl, const persistvariables & v,Poco::Path d) const
 {
    std::string imagename = v.getVal("TAG");
-   std::string dservicename = v.getVal("DSERVICENAME");
 
    if (imagename.length() == 0)
       return cError("You need to configure ddev with a tag first.");
@@ -111,15 +111,6 @@ cResult ddev::_build(const CommandLine & cl, const persistvariables & v,Poco::Pa
       return cError("Build failed.");
    logmsg(kLINFO, "Built " + imagename);
 
-   // install
-   if (dservicename.length() > 0)
-   {
-      logmsg(kLINFO, "Installing " + imagename + " as " + dservicename);
-      service_manage::uninstall(dservicename);
-      rval+=service_manage::install(dservicename, imagename, true); // don't pull images.
-   }
-   else
-      logmsg(kLINFO,"Not a dService so not installing.");
    return rval;
 }
 
@@ -191,15 +182,16 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
    std::string dservicename;
    if (cl.args.size() == 0)
    {
-      dservicename = v.getVal("DSERVICENAME");
-      if (dservicename.length() == 0)
-         return cError("You need to configure ddev with a tag first.");
+      dservicename = timeutils::getDateTimeStr();
    }
    else
       dservicename = cl.args[0];
 
    cResult r;
-   r += _testcommand(dservicename, { "help" });
+   r += _testcommand(CommandLine("drunner", { "install",".",dservicename }));
+
+   if (r.success())
+      r += _testcommand(dservicename, { "help" });
 
    if (r.success())
       r += _testcommand(dservicename, { "configure" });
@@ -224,6 +216,10 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
       logmsg(kLWARN, "Previous test failed. Obliterating then logging failure message.");
 
    cResult rr = _testcommand(CommandLine("drunner", { "obliterate", tempservice }));
+   if (r.success())
+      r += rr;
+
+   rr = _testcommand(CommandLine("drunner", { "obliterate",dservicename }));
    if (r.success())
       r += rr;
 
