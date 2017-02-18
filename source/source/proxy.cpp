@@ -140,7 +140,7 @@ cResult proxy::generate()
 cResult proxy::restart()
 {
    std::string op;
-   if (utils_docker::dockerContainerRunning(containerName()))
+   if (utils_docker::dockerContainerExists(containerName()))
    { // can't just send signal to restart it, as networks may have changed.
       utils_docker::stopContainer(containerName());
       utils_docker::removeContainer(containerName());
