@@ -100,15 +100,19 @@ cResult proxy::generate()
       {
          bool fakemode = (Poco::icompare(x.mode, "fake") == 0);
 
-         oss << x.domain << ":443 {" << std::endl;
+         oss << "https://" << x.domain << " {" << std::endl;
          oss << "   proxy / http://" << ip << ":" << x.port << " {" << std::endl;
          oss << "      transparent" << std::endl;
          oss << "      websocket" << std::endl;
          oss << "   }" << std::endl;
          //         oss << "   gzip" << std::endl;
-         oss << "   tls " << 
+         oss << "   tls " <<
             (fakemode ? "self_signed" : x.email)
             << std::endl;
+         oss << "}" << std::endl << std::endl;
+
+         oss << "http://" << x.domain << " {" << std::endl;
+         oss << "   redir https://" << x.domain << std::endl;
          oss << "}" << std::endl << std::endl;
       }
    }
