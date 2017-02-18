@@ -4,6 +4,7 @@
 #include "service_lua.h"
 #include "dassert.h"
 #include "utils_docker.h"
+#include "proxy.h"
 
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
@@ -31,6 +32,9 @@ extern "C" int l_dockerdeletevolume(lua_State *L);
 extern "C" int l_docker(lua_State *L);
 extern "C" int l_dockerbackup(lua_State *L);
 extern "C" int l_dockerrestore(lua_State *L);
+
+extern "C" int l_proxyenable(lua_State *L);
+extern "C" int l_proxydisable(lua_State *L);
 
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
@@ -66,6 +70,9 @@ namespace servicelua
       REGISTERLUAC(l_docker, "docker")
       REGISTERLUAC(l_dockerbackup, "dockerbackup")
       REGISTERLUAC(l_dockerrestore, "dockerrestore")
+
+      REGISTERLUAC(l_proxyenable, "proxyenable")
+      REGISTERLUAC(l_proxydisable, "proxydisable")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -534,5 +541,59 @@ namespace servicelua
       return 1;
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_proxyenable(lua_State *L)
+   {
+      if (lua_gettop(L) != 5)
+         return luaL_error(L, "Expected exactly five arguments: proxyenable( HOSTNAME, CONTAINER, PORT, EMAIL, MODE )");
+
+      luafile *lf = get_luafile(L);
+      std::string servicename = lf->getServiceName();
+
+      drunner_assert(lua_isstring(L, 1), "proxyenable: String expected as 1st argument.");
+      drunner_assert(lua_isstring(L, 2), "proxyenable: String expected as 2nd argument.");
+      drunner_assert(lua_isnumber(L, 3), "proxyenable: Number expected as 3rd argument.");
+      drunner_assert(lua_isstring(L, 4), "proxyenable: String expected as 4th argument.");
+      drunner_assert(lua_isstring(L, 5), "proxyenable: String expected as 5th argument.");
+
+      proxy p;
+      cResult r = p.proxyenable(
+         proxydatum(
+         servicename,
+         lua_tostring(L, 1),
+         lua_tostring(L, 2),
+         std::to_string(lua_tointeger(L, 3)),
+         lua_tostring(L, 4),
+         lua_tostring(L, 5)
+         )
+      );
+
+      if (r == kRError)
+         logmsg(kLWARN, "Failed to enable proxy: " + r.what());
+
+      lua_pushinteger(L, r);
+      return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_proxydisable(lua_State *L)
+   {
+      if (lua_gettop(L) != 0)
+         return luaL_error(L, "No argements expected for proxydisable.");
+
+      luafile *lf = get_luafile(L);
+      std::string servicename = lf->getServiceName();
+
+      proxy p;
+      cResult r = p.proxydisable(servicename);
+
+      if (r == kRError)
+         logmsg(kLWARN, "Failed to disable proxy for "+servicename+":\n " + r.what());
+
+      lua_pushinteger(L, r);
+      return 1;
+   }
 
 }
