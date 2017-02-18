@@ -12,6 +12,8 @@ namespace utils_docker
    bool dockerContainerRunning(const std::string & container);
    bool dockerContainerWait(const std::string & containername, int port, int timeout);
 
+   std::string getIPAddress(const std::string & containername);
+
    cResult createDockerVolume(std::string name);
    cResult deleteDockerVolume(std::string name);
    cResult stopContainer(std::string name);

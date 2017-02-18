@@ -165,14 +165,9 @@ namespace utils_docker
 
       for (int i = 0; i < timeout; ++i)
       {
-         CommandLine cl;
-         cl = CommandLine("docker", { "inspect","--format","{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containername });
-
-         std::string out;
-         int rval = utils::runcommand(cl, out);
-         if (rval == 0)
+         std::string out = getIPAddress(containername);
+         if (out.length()>0)
          {
-            Poco::trimInPlace(out);
             // test if IP address responds on given port.
             out += ":" + std::to_string(port);
             logmsg(kLDEBUG, "Checking address " + out);
@@ -196,6 +191,21 @@ namespace utils_docker
 
       // run script in guest.
       return false;
+   }
+
+   std::string getIPAddress(const std::string & containername)
+   {
+      CommandLine cl;
+      cl = CommandLine("docker", { "inspect","--format","{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containername });
+
+      std::string out;
+      int rval = utils::runcommand(cl, out);
+      if (rval == 0)
+      {
+         Poco::trimInPlace(out);
+         return out;
+      }
+      return "";
    }
 
    bool dockerContainerRunsAsRoot(std::string container)

@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "drunner_paths.h"
 #include "dassert.h"
+#include "utils_docker.h"
 
 proxy::proxy()
 {
@@ -75,14 +76,74 @@ cResult proxy::proxyconfigchanged()
    return r;
 }
 
+// generate the caddyfile in the shared volume
 cResult proxy::generate()
 {
-   return cResult();
+   std::ostringstream oss;
+
+   for (auto x : mData.mProxyData)
+   {       
+      std::string ip = utils_docker::getIPAddress(x.container);
+      if (ip.length() == 0)
+         logmsg(kLWARN, "Couldn't determine IP address for " + x.container + " - skipping proxy configuration.");
+      else
+      {
+         bool fakemode = (Poco::icompare(x.mode, "fake") == 0);
+
+         oss << x.domain << ":443 {" << std::endl;
+         oss << "   proxy / http://" << ip << ":" << x.port << " {" << std::endl;
+         oss << "      transparent" << std::endl;
+         oss << "      header_upstream Host {host}" << std::endl;
+         oss << "      header_upstream X-Real-IP {remote}" << std::endl;
+         oss << "      header_upstream X-Forwarded-For {host}" << std::endl;
+         oss << "      header_upstream X-Forwarded-Proto {scheme}" << std::endl;
+         oss << "   }" << std::endl;
+         oss << "   gzip" << std::endl;
+         oss << "   tls " << 
+            (fakemode ? "self_signed" : x.email)
+            << std::endl;
+         oss << "}" << std::endl << std::endl;
+      }
+   }
+
+   std::string encoded_data = utils::base64encodeWithEquals(oss.str());
+
+   CommandLine cl("docker", { "run","--rm",drunnerPaths::getdrunnerUtilsImage(),
+      "-v",dataVolume()+":/data",
+      "/bin/bash","-c",
+      "echo " + encoded_data + " | base64 -d > /data/caddyfile" });
+
+   std::string op;
+   int rval = utils::runcommand(cl, op);
+   if (rval != 0)
+   {
+      Poco::trimInPlace(op);
+      return cError("Command failed: " + op);
+   }
+
+   return kRSuccess;
 }
 
+// restart the service
 cResult proxy::restart()
 {
-   return cResult();
+   std::string op;
+   if (utils_docker::dockerContainerRunning(containerName()))
+   { // send signal to restart it
+//      docker exec <container> kill - SIGUSR1 1
+      CommandLine cl("docker", { "exec",containerName(),"kill","-","SIGUSR1","1" });
+      int rval = utils::runcommand(cl, op);
+      if (rval != 0)
+         return cError("Command failed: " + op);
+      return kRSuccess;
+   }
+   // container is not running.
+   CommandLine cl("docker", { "run","-v",dataVolume() + ":/data","--name",containerName(),
+      "--restart=always","-d",dockerContainer() });
+   int rval = utils::runcommand(cl, op);
+   if (rval != 0)
+      return cError("Command failed: " + op);
+   return kRSuccess;
 }
 
 cResult proxy::load()
