@@ -103,12 +103,9 @@ cResult proxy::generate()
          oss << x.domain << ":443 {" << std::endl;
          oss << "   proxy / http://" << ip << ":" << x.port << " {" << std::endl;
          oss << "      transparent" << std::endl;
-         oss << "      header_upstream Host {host}" << std::endl;
-         oss << "      header_upstream X-Real-IP {remote}" << std::endl;
-         oss << "      header_upstream X-Forwarded-For {host}" << std::endl;
-         oss << "      header_upstream X-Forwarded-Proto {scheme}" << std::endl;
+         oss << "      websocket" << std::endl;
          oss << "   }" << std::endl;
-         oss << "   gzip" << std::endl;
+         //         oss << "   gzip" << std::endl;
          oss << "   tls " << 
             (fakemode ? "self_signed" : x.email)
             << std::endl;
