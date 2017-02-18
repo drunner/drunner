@@ -80,7 +80,8 @@ private:
    cResult load();
    cResult save();
    Poco::Path saveFilePath();
-   std::string dataVolume() { return "drunner-proxy-dataVolume"; }
+   std::string dataVolume() { return "drunner-dproxy-dataVolume"; }
+   std::string rootVolume() { return "drunner-dproxy-rootVolume"; }
    std::string containerName() { return "drunner-dproxy"; }
    std::string dockerContainer() { return "drunner/dproxy"; }
    proxydata mData;

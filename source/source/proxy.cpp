@@ -110,6 +110,7 @@ cResult proxy::generate()
 
    CommandLine cl("docker", { "run","--rm",drunnerPaths::getdrunnerUtilsImage(),
       "-v",dataVolume()+":/data",
+      "-v",rootVolume()+":/root/.caddy",
       "/bin/bash","-c",
       "echo " + encoded_data + " | base64 -d > /data/caddyfile" });
 
@@ -210,6 +211,8 @@ cResult proxydatum::valid()
       return kRSuccess;
 
    case s2i("staging"):
+      return cError("Staging not currently supported.");
+
    case s2i("production"):
       if (email.length() == 0)
          return cError("Email not set, required for staging and production modes.");
