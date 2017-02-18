@@ -103,9 +103,8 @@ cResult proxy::generate()
          oss << "https://" << x.domain << " {" << std::endl;
          oss << "   proxy / http://" << ip << ":" << x.port << " {" << std::endl;
          oss << "      transparent" << std::endl;
-         oss << "      websocket" << std::endl;
          oss << "   }" << std::endl;
-         //         oss << "   gzip" << std::endl;
+         oss << "   gzip" << std::endl;
          oss << "   tls " <<
             (fakemode ? "self_signed" : x.email)
             << std::endl;
