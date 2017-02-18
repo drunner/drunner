@@ -32,7 +32,8 @@ params::params(int argc, char * const * argv) :
    {"restore",c_restore},
    {"configure",c_configure},
    {"servicecmd",c_servicecmd},
-   {"registry",c_registry}
+   {"registry",c_registry},
+   {"proxy",c_proxy}
    })
 {
    _setdefaults();

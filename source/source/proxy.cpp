@@ -23,7 +23,7 @@ cResult proxy::proxyenable(proxydatum pd)
    if (r.error())
       return r;
 
-   for (int i = 0; i < mData.mProxyData.size(); ++i)
+   for (unsigned int i = 0; i < mData.mProxyData.size(); ++i)
       if (Poco::icompare(mData.mProxyData[i].servicename, pd.servicename) == 0)
       {
          if (mData.mProxyData[i] == pd)
@@ -46,7 +46,7 @@ cResult proxy::proxydisable(std::string service)
       return r;
 
    int todelete = -1;
-   for (int i = 0; i < mData.mProxyData.size(); ++i)
+   for (unsigned int i = 0; i < mData.mProxyData.size(); ++i)
       if (Poco::icompare(mData.mProxyData[i].servicename, service) == 0)
          todelete = i;
 
@@ -56,6 +56,16 @@ cResult proxy::proxydisable(std::string service)
    mData.mProxyData.erase(mData.mProxyData.begin() + todelete);
 
    r = proxyconfigchanged();
+   return r;
+}
+
+cResult proxy::proxyregen()
+{
+   cResult r = load();
+   if (r.success())
+      r += generate();
+   if (r.success())
+      r += restart();
    return r;
 }
 
@@ -108,9 +118,10 @@ cResult proxy::generate()
 
    std::string encoded_data = utils::base64encodeWithEquals(oss.str());
 
-   CommandLine cl("docker", { "run","--rm",drunnerPaths::getdrunnerUtilsImage(),
+   CommandLine cl("docker", { "run","--rm",
       "-v",dataVolume()+":/data",
       "-v",rootVolume()+":/root/.caddy",
+      drunnerPaths::getdrunnerUtilsImage(),
       "/bin/bash","-c",
       "echo " + encoded_data + " | base64 -d > /data/caddyfile" });
 
@@ -130,17 +141,25 @@ cResult proxy::restart()
 {
    std::string op;
    if (utils_docker::dockerContainerRunning(containerName()))
-   { // send signal to restart it
-//      docker exec <container> kill - SIGUSR1 1
-      CommandLine cl("docker", { "exec",containerName(),"kill","-","SIGUSR1","1" });
-      int rval = utils::runcommand(cl, op);
-      if (rval != 0)
-         return cError("Command failed: " + op);
-      return kRSuccess;
+   { // can't just send signal to restart it, as networks may have changed.
+      utils_docker::stopContainer(containerName());
+      utils_docker::removeContainer(containerName());
    }
+
    // container is not running.
-   CommandLine cl("docker", { "run","-v",dataVolume() + ":/data","--name",containerName(),
-      "--restart=always","-d",dockerContainer() });
+   CommandLine cl("docker",
+   { "run","-v",dataVolume() + ":/data","--name",containerName(),
+      "-p","80:80",
+      "-p","443:443",
+      "--restart=always"});
+   
+   for (auto & x : mData.mProxyData)
+      if (x.network.length() > 0)
+         cl.args.push_back("--network="+x.network);
+
+   cl.args.push_back("-d");
+   cl.args.push_back(dockerContainer());
+
    int rval = utils::runcommand(cl, op);
    if (rval != 0)
       return cError("Command failed: " + op);
@@ -204,7 +223,7 @@ cResult proxydatum::valid()
    if (container.length() == 0)
       return cError("Container not set.");
    if (port.length() == 0 || atoi(port.c_str())<=0)
-      return cError("Port set.");
+      return cError("Port not set.");
    switch (s2i(mode.c_str()))
    {
    case s2i("fake"):
@@ -233,6 +252,7 @@ bool proxydatum::operator ==(const proxydatum &b) const
    if (Poco::icompare(domain, b.domain) != 0) return false;
    if (Poco::icompare(container, b.container) != 0) return false;
    if (Poco::icompare(port, b.port) != 0) return false;
+   if (Poco::icompare(network, b.network) != 0) return false;
    if (Poco::icompare(email, b.email) != 0) return false;
    if (Poco::icompare(mode, b.mode) != 0) return false;
 

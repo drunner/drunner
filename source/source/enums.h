@@ -64,7 +64,8 @@ enum eCommand {
    c_saveenvironment,
    c_plugin,
    c_configure,
-   c_registry
+   c_registry,
+   c_proxy,
 };
 
 

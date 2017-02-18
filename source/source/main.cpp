@@ -22,6 +22,7 @@
 #include "drunner_paths.h"
 #include "sourcecopy.h"
 #include "registries.h"
+#include "proxy.h"
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -202,6 +203,12 @@ cResult mainroutines::process()
       case c_registry:
       {
          return sourcecopy::registrycommand();
+      }
+
+      case c_proxy:
+      {
+         proxy p;
+         return p.proxyregen();
       }
 
       default:

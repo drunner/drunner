@@ -545,8 +545,8 @@ namespace servicelua
 
    extern "C" int l_proxyenable(lua_State *L)
    {
-      if (lua_gettop(L) != 5)
-         return luaL_error(L, "Expected exactly five arguments: proxyenable( HOSTNAME, CONTAINER, PORT, EMAIL, MODE )");
+      if (lua_gettop(L) != 6)
+         return luaL_error(L, "Expected exactly five arguments: proxyenable( HOSTNAME, CONTAINER, PORT, NETWORK, EMAIL, MODE )");
 
       luafile *lf = get_luafile(L);
       std::string servicename = lf->getServiceName();
@@ -556,16 +556,18 @@ namespace servicelua
       drunner_assert(lua_isnumber(L, 3), "proxyenable: Number expected as 3rd argument.");
       drunner_assert(lua_isstring(L, 4), "proxyenable: String expected as 4th argument.");
       drunner_assert(lua_isstring(L, 5), "proxyenable: String expected as 5th argument.");
+      drunner_assert(lua_isstring(L, 6), "proxyenable: String expected as 6th argument.");
 
       proxy p;
       cResult r = p.proxyenable(
          proxydatum(
-         servicename,
-         lua_tostring(L, 1),
-         lua_tostring(L, 2),
-         std::to_string(lua_tointeger(L, 3)),
-         lua_tostring(L, 4),
-         lua_tostring(L, 5)
+            servicename,
+            lua_tostring(L, 1),
+            lua_tostring(L, 2),
+            std::to_string(lua_tointeger(L, 3)),
+            lua_tostring(L, 4),
+            lua_tostring(L, 5),
+            lua_tostring(L, 6)
          )
       );
 

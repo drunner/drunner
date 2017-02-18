@@ -14,8 +14,8 @@
 class proxydatum
 {
 public:
-   proxydatum(std::string s, std::string d, std::string c, std::string p, std::string e, std::string m) :
-      servicename(s), domain(d), container(c), port(p), email(e), mode(m)
+   proxydatum(std::string s, std::string d, std::string c, std::string p, std::string n, std::string e, std::string m) :
+      servicename(s), domain(d), container(c), port(p), network(n), email(e), mode(m)
    {}
 
    proxydatum()
@@ -29,6 +29,7 @@ public:
    std::string domain;
    std::string container;
    std::string port;
+   std::string network;
    std::string email;
    std::string mode;
 
@@ -36,11 +37,11 @@ private:
    friend class cereal::access;
    template <class Archive> void save(Archive &ar, std::uint32_t const version) const 
    { 
-      ar(servicename, domain, container, port, email, mode);
+      ar(servicename, domain, container, port, network, email, mode);
    }
    template <class Archive> void load(Archive &ar, std::uint32_t const version) 
    {
-      ar(servicename, domain, container, port, email, mode);
+      ar(servicename, domain, container, port, network, email, mode);
    }
 };
 CEREAL_CLASS_VERSION(proxydatum, 1);
@@ -71,6 +72,7 @@ public:
 
    cResult proxyenable(proxydatum pd);
    cResult proxydisable(std::string service);
+   cResult proxyregen();
 
 private:
    cResult proxyconfigchanged();
