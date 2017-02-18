@@ -117,3 +117,8 @@ std::string drunnerPaths::getdrunnerUtilsImage()
    return  "drunner/drunner_utils";
 }
 
+std::string drunnerPaths::getdrunnerProxyImage()
+{
+   return "drunner/drunner_proxy";
+}
+

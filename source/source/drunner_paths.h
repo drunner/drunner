@@ -20,6 +20,7 @@ namespace drunnerPaths
    Poco::Path getPath_drunnerSettings_json();
 
    std::string getdrunnerUtilsImage();
+   std::string getdrunnerProxyImage();
 }
 
 

@@ -14,6 +14,8 @@ proxy::proxy()
 
 cResult proxy::proxyenable(proxydatum pd)
 {
+   logmsg(kLINFO, "Enabling HTTPS reverse proxy for " + pd.servicename);
+
    cResult r = pd.valid();
    if (r.error())
       return r;
@@ -101,13 +103,18 @@ cResult proxy::generate()
          bool fakemode = (Poco::icompare(x.mode, "fake") == 0);
 
          oss << "https://" << x.domain << " {" << std::endl;
-         oss << "   proxy / http://" << ip << ":" << x.port << " {" << std::endl;
+         oss << "   proxy / " << ip << ":" << x.port << " {" << std::endl;
          oss << "      transparent" << std::endl;
+         oss << "      websocket" << std::endl;
          oss << "   }" << std::endl;
          oss << "   gzip" << std::endl;
          oss << "   tls " <<
             (fakemode ? "self_signed" : x.email)
             << std::endl;
+
+         if (!x.timeouts)
+            oss << "   timeouts none" << std::endl;
+
          oss << "}" << std::endl << std::endl;
 
          oss << "http://" << x.domain << " {" << std::endl;
@@ -142,9 +149,16 @@ cResult proxy::restart()
    std::string op;
    if (utils_docker::dockerContainerExists(containerName()))
    { // can't just send signal to restart it, as networks may have changed.
+      // To Do: network attach instead (no down time).
+      logmsg(kLDEBUG, "Stopping dRunner proxy.");
       utils_docker::stopContainer(containerName());
       utils_docker::removeContainer(containerName());
    }
+
+   if (mData.mProxyData.size() == 0)
+      return kRSuccess; // no need for proxy!
+
+   logmsg(kLDEBUG, "Starting dRunner proxy.");
 
    // container is not running.
    CommandLine cl("docker",
@@ -158,7 +172,7 @@ cResult proxy::restart()
          cl.args.push_back("--network="+x.network);
 
    cl.args.push_back("-d");
-   cl.args.push_back(dockerContainer());
+   cl.args.push_back(drunnerPaths::getdrunnerProxyImage());
 
    int rval = utils::runcommand(cl, op);
    if (rval != 0)
@@ -211,7 +225,7 @@ cResult proxy::save()
 
 Poco::Path proxy::saveFilePath()
 {
-   return drunnerPaths::getPath_Settings().setFileName("dproxy.json");
+   return drunnerPaths::getPath_Settings().setFileName("dRunner_Proxy.json");
 }
 
 cResult proxydatum::valid()

@@ -205,8 +205,9 @@ namespace drunnerSetup
       GlobalContext::getPlugins()->generate_plugin_scripts();
 
       // -----------------------------------------------------------------------------
-      // get latest root util image.
+      // get latest root util and proxy images.
       utils_docker::pullImage(drunnerPaths::getdrunnerUtilsImage());
+      utils_docker::pullImage(drunnerPaths::getdrunnerProxyImage());
 
       // write settings.
       GlobalContext::getSettings()->savevariables();
