@@ -124,6 +124,7 @@ cResult proxy::generate()
    }
 
    std::string encoded_data = utils::base64encodeWithEquals(oss.str());
+   logmsg(kLDEBUG, oss.str());
 
    CommandLine cl("docker", { "run","--rm",
       "-v",dataVolume()+":/data",

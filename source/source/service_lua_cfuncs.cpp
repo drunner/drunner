@@ -561,7 +561,9 @@ namespace servicelua
 
       bool timeouts = true;
       if (lua_gettop(L) == 7)
-         timeouts = (lua_toboolean(L, 7)==0);
+         timeouts = (lua_toboolean(L, 7)==1);
+      if (!timeouts)
+         logmsg(kLDEBUG, "Timeouts disabled for " + servicename);
 
       proxy p;
       cResult r = p.proxyenable(
