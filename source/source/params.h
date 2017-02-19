@@ -26,6 +26,7 @@ public:
   
    const std::vector<std::string> & getOptions() const { return mOptions; }
    bool isDevelopmentMode() const { return mDevelopmentMode; }
+   void setDevelopmentMode(bool dev) const { mDevelopmentMode = dev; }
    bool doPause() const { return mPause; }
 
    bool isdrunnerCommand(std::string c) const;
@@ -38,7 +39,6 @@ private:
    std::string mCmdStr;
    std::vector<std::string> mArgs;
    eLogLevel mLogLevel;
-   bool mDevelopmentMode;
    bool mPause;
    const std::map<std::string, eCommand> mCommandList;
 
@@ -49,6 +49,9 @@ private:
    params();
    void _setdefaults();
    void _parse(int argc, char * const * argv);
+
+
+   mutable bool mDevelopmentMode;
 };
 
 #endif

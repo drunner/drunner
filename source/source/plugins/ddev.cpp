@@ -10,6 +10,7 @@
 #include "service_manage.h"
 #include "timez.h"
 #include "sourcecopy.h"
+#include "utils_docker.h"
 
 ddev::ddev()
 {
@@ -202,9 +203,18 @@ cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d) const
       return rval;
    }
 
-   int r = utils::runcommand_stream(
-      CommandLine("drunner", { "-d","install",".",dservicename }), kORaw, luaparent, {}, NULL);
-   if (r != 0)
+   servicePaths sp(dservicename);
+   if (utils::fileexists(sp.getPathdService()))
+   {
+      cResult r= service_manage::uninstall(dservicename);
+      if (r.error())
+         return cError("Failed to uninstall " + dservicename+"\n"+r.what());
+   }
+
+   std::string imagename = ".";
+   GlobalContext::getParams()->setDevelopmentMode(true);
+   cResult r = service_manage::install(dservicename, imagename);
+   if (!r.success())
       return cError("Failed to install " + dservicename);
 
    // intalled! 

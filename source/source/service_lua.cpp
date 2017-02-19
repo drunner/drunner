@@ -86,7 +86,7 @@ namespace servicelua
       for (auto x : cmds)
       {
          if (!hasCommand(x))
-            r += cError("Required command " + x + " not defined.");
+            r += cError("Required command not defined : "+x+"()");
       }
       return r;
    }
