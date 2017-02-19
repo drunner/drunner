@@ -19,4 +19,4 @@ mkdir temp
 wget https://drunner.s3.amazonaws.com/10/lin/drunner -O temp/drunner
 chmod a+x temp/drunner
 sudo mv temp/drunner /usr/local/bin
-drunner setup
+drunner initialise
