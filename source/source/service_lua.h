@@ -32,6 +32,9 @@ namespace servicelua
       serviceVars & getServiceVars() { return mServiceVars; }
       //Poco::Path getPathdService();
 
+      bool hasCommand(std::string command) const;
+      cResult validate() const;
+
    private:
       // loads the lua file, initialises the variables, loads the variables if able.
       cResult _loadlua();

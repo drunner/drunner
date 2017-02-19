@@ -41,7 +41,12 @@ namespace servicelua
       if (!mResult.success())
          fatal("Could not load the service.lua file from " + mServicePaths.getPathServiceLua().toString()+"\n"+ mResult.what());
 
-      mResult = _runCommand(serviceCmd);
+      if (Poco::icompare(serviceCmd.command, "install") == 0)
+      // validate on install.
+         mResult = validate();
+      
+      if (!mResult.error())
+         mResult = _runCommand(serviceCmd);
    }
       
    // -------------------------------------------------------------------------------
@@ -60,6 +65,32 @@ namespace servicelua
       if (line.length() == 0) return true;
       return (line.find("--") == 0);
    }
+
+   bool luafile::hasCommand(std::string command) const
+   {
+      cResult rval;
+      bool hasCommand = true;
+      lua_getglobal(L, command.c_str());
+      if (lua_isnil(L, -1))
+         hasCommand = false;
+      lua_pop(L, 1); // leave stack balanced.
+      return hasCommand;
+   }
+
+   cResult luafile::validate() const
+   {
+      std::vector<std::string> cmds =
+      { "install","uninstall","backup","restore","help","obliterate"};
+
+      cResult r(kRSuccess);
+      for (auto x : cmds)
+      {
+         if (!hasCommand(x))
+            r += cError("Required command " + x + " not defined.");
+      }
+      return r;
+   }
+   
 
    cResult luafile::_loadlua()
    {
