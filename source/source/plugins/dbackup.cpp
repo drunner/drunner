@@ -42,6 +42,13 @@ Poco::Path dbackup::configurationFilePath() const
 
 cResult dbackup::runCommand(const CommandLine & cl, persistvariables & v) const
 {
+   if (cl.command.length() == 0)
+   { // default (no arg)
+      if (!_configured(v))
+         logmsg(kLWARN,"Before running dbackup you need to configure it. Type  dbackup configure  to see the options.");
+      return _showHelp();
+   }
+
    switch (s2i(cl.command.c_str()))
    {
    case s2i("exclude") :
@@ -53,6 +60,9 @@ cResult dbackup::runCommand(const CommandLine & cl, persistvariables & v) const
       if (cl.args.size() == 0)
          fatal("Usage:  dbackup include SERVICENAME");
       return _include(cl.args[0],v);
+
+   case s2i("help"):
+      return _showHelp();
 
    case s2i("run"):
       return _run(v);
@@ -102,11 +112,15 @@ cResult dbackup::_exclude(std::string servicename, persistvariables &v) const
 
 cResult dbackup::_run(const persistvariables &v) const
 {
+   if (!_configured(v))
+      fatal("Please configure dbackup before running. See  dbackup help  for more info.");
+
+
    Poco::Path p = _getPath(v);
    p.makeDirectory();
 
    if (!utils::fileexists(p))
-      fatal("Configure dbackup before running.");
+      fatal("The target path does not exist: "+p.toString());
 
    std::vector<std::string> services;
    utils::getAllServices(services);
@@ -136,7 +150,11 @@ cResult dbackup::_run(const persistvariables &v) const
 
 Poco::Path dbackup::_getPath(const persistvariables & v) const
 {
-   Poco::Path p(v.getVal("BACKUPPATH"));
+   std::string b = v.getVal("BACKUPPATH");
+   if (b.length() == 0)
+      fatal("_getPath called but backup configuration not yet set.");
+
+   Poco::Path p(b);
    p.makeDirectory();
    if (!p.isAbsolute())
       p.makeAbsolute();
@@ -157,15 +175,12 @@ void dbackup::_setExcluded(const std::vector<std::string>& vs, persistvariables 
 
 cResult dbackup::_info(persistvariables &v) const
 {
-   std::string path = _getPath(v).toString();
+   if (!_configured(v))
+      fatal("dbackup is not yet configured (no path set).");
 
+   std::string path = _getPath(v).toString();
    if (!utils::fileexists(_getPath(v)))
-   {
-      if (path.length() == 0)
-         fatal("dbackup is not configured (no path set).");
-      else
-         fatal("dbackup incorrectly configured, path does not exist:\n "+path);
-   }
+      fatal("dbackup incorrectly configured, path does not exist:\n "+path);
 
    std::vector<std::string> services;
    utils::getAllServices(services);
@@ -194,7 +209,7 @@ cResult dbackup::_info(persistvariables &v) const
    return kRNoChange;
 }
 
-cResult dbackup::showHelp() const
+cResult dbackup::_showHelp() const
 {
    std::string help = R"EOF(
 NAME
@@ -223,6 +238,9 @@ COMMANDS
 
 cResult dbackup::_purgeOldBackups(const persistvariables &v) const
 {
+   if (!_configured(v))
+      fatal("Can't purge old backups as dbackup has not been configured.");
+
    Poco::Path path(_getPath(v));
    Poco::File file(path);
 
@@ -264,6 +282,12 @@ cResult dbackup::_purgeOldBackups(const persistvariables &v) const
    logmsg(kLINFO, "Done");
 
    return kRSuccess;
+}
+
+bool dbackup::_configured(const persistvariables & v) const
+{
+   std::string b = v.getVal("BACKUPPATH");
+   return (b.length() > 0);
 }
 
 inline double square(double x) { return x*x; }

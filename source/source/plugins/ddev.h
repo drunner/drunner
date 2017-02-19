@@ -10,11 +10,11 @@ public:
    virtual std::string getName() const;
    virtual cResult runCommand(const CommandLine & cl, persistvariables & v) const;
    virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
-   cResult showHelp() const;
 
    Poco::Path configurationFilePath() const;
 
 private:
+   cResult _showHelp() const;
    cResult _build(const CommandLine & cl, const persistvariables & v, Poco::Path d) const;
    cResult _buildtree(const CommandLine & cl, const persistvariables & v, Poco::Path d) const;
    cResult _test(const CommandLine & cl, const persistvariables & v) const;

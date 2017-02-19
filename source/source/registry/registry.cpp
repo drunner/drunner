@@ -73,7 +73,6 @@ cResult sourcecopy::registry::loadline(const std::string line, registryitem & ri
    // expect three whitespace separated strings.
    std::vector<std::string> chunks;
    std::string l(line);
-   Poco::trimLeftInPlace(l);
    while (l.length() > 0)
    {
       int i = getchunk(l);

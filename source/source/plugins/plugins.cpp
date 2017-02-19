@@ -66,17 +66,12 @@ cResult configuredplugin::runCommand() const
 {
    CommandLine cl;
 
-   if (GlobalContext::getParams()->numArgs() == 0)
-      cl.command = "help";
-   else
+   if (GlobalContext::getParams()->numArgs() > 0)
    {
       cl.args = GlobalContext::getParams()->getArgs();
       cl.command = cl.args[0];
       cl.args.erase(cl.args.begin());
    }
-
-   if (cl.command == "help")
-      return showHelp();
    
    persistvariables pv(getPersistVariables());
 

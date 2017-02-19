@@ -21,6 +21,13 @@ std::string ddev::getName() const
 
 cResult ddev::runCommand(const CommandLine & cl, persistvariables & v) const
 {
+   if (cl.command.length() == 0)
+   { // default
+      logmsg(kLINFO, "Building tree.");
+      return _buildtree(cl, v, Poco::Path::current());
+   }
+
+
    switch (s2i(cl.command.c_str()))
    {
       case (s2i("build")):
@@ -45,7 +52,7 @@ cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, con
    return kRNoChange;
 }
 
-cResult ddev::showHelp() const
+cResult ddev::_showHelp() const
 {
    std::string help = R"EOF(
 NAME

@@ -12,8 +12,6 @@ public:
    cResult runCommand(const CommandLine & cl, persistvariables & v) const;
    cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
    
-   cResult showHelp() const;
-
    Poco::Path configurationFilePath() const;
 
    // given a vector of backups, specified in days since today that the backup was taken (0=today), 
@@ -33,12 +31,15 @@ private:
    cResult _exclude(std::string servicename, persistvariables &v) const;
    cResult _run(const persistvariables &v) const;
    cResult _info(persistvariables &v) const;
+   cResult _showHelp() const;
 
    Poco::Path _getPath(const persistvariables &v) const;
    void _getExcluded(std::vector<std::string> & vs, const persistvariables &v) const;
    void _setExcluded(const std::vector<std::string> & vs, persistvariables &v) const;
 
    cResult _purgeOldBackups(const persistvariables &v) const;
+
+   bool _configured(const persistvariables & v) const;
 };
 
 #endif

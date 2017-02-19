@@ -34,7 +34,6 @@ public:
    virtual ~configuredplugin();
 
    virtual cResult runCommand(const CommandLine & cl, persistvariables & v) const = 0; // runCommand may wish to update system variables and save them, so we pass a non-const reference.
-   virtual cResult showHelp() const = 0;
    virtual Poco::Path configurationFilePath() const = 0;
 
 public:

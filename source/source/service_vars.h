@@ -17,9 +17,6 @@ public:
    std::string getImageName() const;
    void setImageName(std::string imagename);
 
-   bool getIsDevMode() const;
-   void setDevMode(bool isDevMode);
-
    std::string getTempBackupFolder() const;
    void setTempBackupFolder(std::string folder);
 

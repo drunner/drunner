@@ -75,7 +75,7 @@ namespace service_manage
       return _createLaunchScript(servicename);
    }
 
-   cResult _install_create(std::string servicename, std::string imagename, bool devMode)
+   cResult _install_create(std::string servicename, std::string imagename)
    {
       drunner_assert(imagename.length() > 0, "Can't create service " + servicename + " - imagename could not be determined.");
       servicePaths sp(servicename);
@@ -106,7 +106,6 @@ namespace service_manage
          // force the new imagename. (Imagename could be different on recreate - e.g. overridden at command line, or
          // expanded by copy_from_github)
          sv.setImageName(imagename);
-         sv.setDevMode(devMode);
          drunner_assert(sv.getServiceName() == servicename, "Service name mismatch: " + sv.getServiceName() + " vs " + servicename);
          sv.savevariables();
       }
@@ -122,7 +121,7 @@ namespace service_manage
       return kRSuccess;
    }
 
-   cResult install(std::string & servicename, std::string & imagename, bool devMode)
+   cResult install(std::string & servicename, std::string & imagename)
    {
       cResult r = sourcecopy::normaliseNames(imagename, servicename);
       if (!r.success())
@@ -136,7 +135,7 @@ namespace service_manage
       if (utils::fileexists(sp.getPathdService()))
          logmsg(kLERROR, "Service already exists. Try:\n drunner update " + servicename);
 
-      _install_create(servicename,imagename,devMode);
+      _install_create(servicename,imagename);
 
       serviceVars sv(servicename);
       servicelua::luafile lf(sv, CommandLine("install"));
@@ -236,7 +235,6 @@ namespace service_manage
    { // update the service (recreate it)
       serviceVars v(servicename);
       std::string imagename = v.getImageName();
-      bool devmode = v.getIsDevMode();
       drunner_assert(imagename.length() > 0, "Imagename is empty!");
 
       try
@@ -248,7 +246,7 @@ namespace service_manage
          logmsg(kLWARN, "Installation damaged, unable to uninstall dService. Attempting install...");
       }
 
-      return install(servicename, imagename, devmode);
+      return install(servicename, imagename);
    }
 
 
