@@ -36,6 +36,8 @@ extern "C" int l_dockerrestore(lua_State *L);
 extern "C" int l_proxyenable(lua_State *L);
 extern "C" int l_proxydisable(lua_State *L);
 
+extern "C" int l_die(lua_State *L);
+
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -73,6 +75,8 @@ namespace servicelua
 
       REGISTERLUAC(l_proxyenable, "proxyenable")
       REGISTERLUAC(l_proxydisable, "proxydisable")
+
+      REGISTERLUAC(l_die, "die")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -604,6 +608,21 @@ namespace servicelua
 
       lua_pushinteger(L, r);
       return 1;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_die(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         return luaL_error(L, "No message passed to die.");
+      std::string msg = lua_tostring(L, 1);
+
+      logmsg(kLWARN, "Lua die command executed:");
+      fatal(msg);
+
+      lua_pushinteger(L, 1); // error.
+      return 1; // returning 1 stack element.
    }
 
 }
