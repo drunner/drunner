@@ -14,7 +14,7 @@ public:
 
 private:
    cResult _showHelp() const;
-   cResult _ddevtree(const CommandLine & cl, Poco::Path d) const;
+   cResult _ddevtree(const CommandLine & cl, Poco::Path d, std::string servicename="") const;
    cResult _test(std::string dservicename) const;
 
    void _buildtree(const Poco::Path d) const;

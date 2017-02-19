@@ -80,7 +80,7 @@ namespace servicelua
    cResult luafile::validate() const
    {
       std::vector<std::string> cmds =
-      { "install","uninstall","backup","restore","help","obliterate"};
+      { "install","uninstall","backup","restore","help","obliterate","selftest"};
 
       cResult r(kRSuccess);
       for (auto x : cmds)

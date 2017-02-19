@@ -25,7 +25,7 @@ cResult ddev::runCommand(const CommandLine & cl) const
 {
    if (cl.command.length() == 0)
    { // default
-      logmsg(kLINFO, "Building tree.");
+      logmsg(kLINFO, "Building tree (default settings).");
       return _ddevtree(cl, Poco::Path::current());
    }
 
@@ -40,9 +40,18 @@ cResult ddev::runCommand(const CommandLine & cl) const
       case (s2i("help")):
          return _showHelp();
 
+      case (s2i("build")):
+      {
+         std::string servicename;
+         if (cl.args.size() > 0)
+            servicename = cl.args[0];
+         return _ddevtree(cl, Poco::Path::current(), servicename);
+      }
+
       default:
-         return cError("Unrecognised command " + cl.command);
+         break;
    }
+   return cError("Unknown ddev command: " + cl.command);
 }
 
 cResult ddev::_showHelp() const
@@ -175,7 +184,7 @@ std::string ddev::load_ddev(const Poco::Path d) const
    return tag;
 }
 
-cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d) const
+cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d, std::string servicename) const
 {
    cResult rval;
 
@@ -192,14 +201,16 @@ cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d) const
    }
 
    // then process the service itself.
-   std::string dservicename = load_ddev(luaparent);
+   std::string dservicename = servicename;
+   if (dservicename.length()==0)
+      dservicename = load_ddev(luaparent);
    if (dservicename.length() == 0)
       dservicename = load_ddev(d);
    if (dservicename.length() == 0)
    {
       logmsg(kLINFO, " ");
-      logmsg(kLINFO, "Service.lua found, but no corresponding ddev file.");
-      logmsg(kLINFO, "(Create the ddev file containing the service name install the dService)");
+      logmsg(kLINFO, "Service.lua found, but no corresponding ddev file and no servicename specified.");
+      logmsg(kLINFO, "(Create the ddev file containing the service name to install the dService)");
       return rval;
    }
 
@@ -211,6 +222,7 @@ cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d) const
          return cError("Failed to uninstall " + dservicename+"\n"+r.what());
    }
 
+   logmsg(kLINFO, "Installing as " + dservicename);
    std::string imagename = ".";
    GlobalContext::getParams()->setDevelopmentMode(true);
    cResult r = service_manage::install(dservicename, imagename);
@@ -273,6 +285,9 @@ cResult ddev::_test(std::string dservicename) const
    
    if (r.success())
       r += _testcommand(tempservice, { "configure" });
+
+   if (r.success())
+      r += _testcommand(tempservice, { "selftest" });
 
    if (!r.success())
       logmsg(kLWARN, "Previous test failed. Obliterating then logging failure message.");
