@@ -1,3 +1,4 @@
+#include <fstream>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/String.h>
 
@@ -8,10 +9,10 @@
 #include "drunner_paths.h"
 #include "service_manage.h"
 #include "timez.h"
+#include "sourcecopy.h"
 
 ddev::ddev()
 {
-   addConfig(envDef("TAG", "", "The docker image tag (e.g. drunner/helloworld)", ENV_PERSISTS | ENV_USERSETTABLE));
 }
 
 std::string ddev::getName() const
@@ -19,37 +20,28 @@ std::string ddev::getName() const
    return "ddev";
 }
 
-cResult ddev::runCommand(const CommandLine & cl, persistvariables & v) const
+cResult ddev::runCommand(const CommandLine & cl) const
 {
    if (cl.command.length() == 0)
    { // default
       logmsg(kLINFO, "Building tree.");
-      return _buildtree(cl, v, Poco::Path::current());
+      return _ddevtree(cl, Poco::Path::current());
    }
-
 
    switch (s2i(cl.command.c_str()))
    {
-      case (s2i("build")):
-      {
-         return _build(cl, v, Poco::Path::current());
-      }
-      case (s2i("buildtree")):
-      {
-         return _buildtree(cl, v, Poco::Path::current());
-      }
       case (s2i("test")):
       {
-         return _test(cl, v);
+         if (cl.args.size() == 0)
+            fatal("ddev test requires the service name of an installed dService.\n  ddev test SERVICENAME");
+         return _test(cl.args[0]);
       }
+      case (s2i("help")):
+         return _showHelp();
+
       default:
          return cError("Unrecognised command " + cl.command);
    }
-}
-
-cResult ddev::runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
-{
-   return kRNoChange;
 }
 
 cResult ddev::_showHelp() const
@@ -67,20 +59,16 @@ SYNOPSIS
    Operates in current directory.
 
 COMMANDS
+   ddev
+      install the dService in the current folder,
+      includes building docker images in any subfolders.
+
    ddev help
-   ddev configure [OPTION=[VALUE]]
+      this help   
 
-   ddev build
-      build a docker image in current folder
+   ddev test SERVICENAME
+      test an already installed dService 
 
-   ddev buildtree
-      build docker images in current folder and subfolders
-
-   ddev test
-      test a dservice in current folder
-
-CONFIGURATION OPTIONS
-   IMAGENAME        name of docker image to tag build as
 )EOF";
 
    logmsg(kLINFO, help);
@@ -97,70 +85,135 @@ Poco::Path ddev::configurationFilePath() const
    return cfp;
 }
 
-cResult ddev::_build(const CommandLine & cl, const persistvariables & v,Poco::Path d) const
+//cResult ddev::_build(const CommandLine & cl, Poco::Path d) const
+//{
+//   std::string imagename = v.getVal("TAG");
+//
+//   if (imagename.length() == 0)
+//      return cError("You need to configure ddev with a tag first.");
+//
+//   d.makeDirectory().setFileName("Dockerfile");
+//   if (!utils::fileexists(d))
+//      d.setFileName("dockerfile");
+//   if (!utils::fileexists(d))
+//      return cError("Couldn't find a dockerfile in the current directory.");
+//
+//   CommandLine operation;
+//   operation.command = "docker";
+//   operation.args = { "build","-t",imagename,"." };
+//   int rval = utils::runcommand_stream(operation, kORaw, d.parent(), {},NULL);
+//   if (rval != 0)
+//      return cError("Build failed.");
+//   logmsg(kLINFO, "Built " + imagename);
+//
+//   return rval;
+//
+//   //dservicename = timeutils::getDateTimeStr();
+//   //r += _testcommand(CommandLine("drunner", { "-d","install",".",dservicename }));
+//
+//}
+
+
+void ddev::_buildtree(const Poco::Path d) const
 {
-   std::string imagename = v.getVal("TAG");
+   drunner_assert(d.isDirectory(), "d not a directory:  "+d.toString());
 
-   if (imagename.length() == 0)
-      return cError("You need to configure ddev with a tag first.");
-
-   d.makeDirectory().setFileName("Dockerfile");
-   if (!utils::fileexists(d))
-      d.setFileName("dockerfile");
-   if (!utils::fileexists(d))
-      return cError("Couldn't find a dockerfile in the current directory.");
-
-   CommandLine operation;
-   operation.command = "docker";
-   operation.args = { "build","-t",imagename,"." };
-   int rval = utils::runcommand_stream(operation, kORaw, d.parent(), {},NULL);
-   if (rval != 0)
-      return cError("Build failed.");
-   logmsg(kLINFO, "Built " + imagename);
-
-   return rval;
-}
-
-cResult ddev::_buildtree(const CommandLine & cl, const persistvariables & v, Poco::Path d) const
-{
-   cResult rval;
    Poco::DirectoryIterator di(d), end;
-   Poco::Path ddevjson;
-   bool foundjson = false;
 
    // process all subdirectories
    while (di != end)
    {
       if (di->isDirectory())
-         rval += _buildtree(cl,v,di->path());
-      else
-         if (di->isFile())
-            if (0 == Poco::icompare(Poco::Path(di->path()).getFileName(), "ddev.json"))
-            {
-               foundjson = true;
-               ddevjson = di->path();
-            }
+      {
+         Poco::Path child(di->path());
+         child.makeDirectory(); // it's a directory.
+         _buildtree(child);
+      }
       ++di;
    }
 
-   // then process this directory
-   if (foundjson)
+   // not a docker definition.
+   if (!utils::fileexists(d, "dockerfile") && !utils::fileexists(d, "Dockerfile"))
+      return;
+
+   std::string tag = load_ddev(d);
+   if (tag.length()==0)
    {
-      logmsg(kLINFO,"Building " + ddevjson.toString());
-      persistvariables pv(getName(), ddevjson, mConfiguration);
-      cResult r = pv.loadvariables();
-      if (!r.success())
-         return r;
-      r = _build(cl, pv, ddevjson.parent());
-      if (r.success())
-         logmsg(kLINFO, "Successfully built " + ddevjson.toString()+"\n----------------------------------------------------------");
-      else
-         logmsg(kLERROR, "Build failed for " + ddevjson.toString() + ":\n " + r.what());
-      rval += r;
+      logmsg(kLINFO, " ");
+      logmsg(kLINFO, "Dockerfile found, but no corresponding ddev file. Skipping:");
+      logmsg(kLINFO, " " + d.toString());
+      logmsg(kLINFO, "(Create the ddev file containg the tag to auto build this image)");
+      return;
    }
 
+   logmsg(kLINFO, "Building " + tag + "...");
+   CommandLine operation;
+   operation.command = "docker";
+   operation.args = { "build","-t",tag,"." };
+   int rval = utils::runcommand_stream(operation, kORaw, d, {}, NULL);
+   if (rval != 0)
+      fatal("Build failed.");
+   logmsg(kLINFO, "Built " + tag + ".");
+}
+
+std::string ddev::load_ddev(const Poco::Path d) const
+{
+   Poco::Path ddev(d);
+   ddev.setFileName("ddev");
+   if (!utils::fileexists(ddev))
+      ddev.setFileName(".ddev");
+   if (!utils::fileexists(ddev))
+      return "";
+
+   // read ddev file to see tag for docker container.
+   std::ifstream t(ddev.toString());
+   std::stringstream buffer;
+   buffer << t.rdbuf();
+   std::string tag = buffer.str();
+   Poco::trimInPlace(tag);
+   return tag;
+}
+
+cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d) const
+{
+   cResult rval;
+
+   // build all docker images contained in tree.
+   _buildtree(d);
+
+   // find service.lua
+   Poco::Path luaparent(d);
+   rval = sourcecopy::getServiceLuaParent(luaparent);
+   if (!rval.success())
+   {
+      logmsg(kLINFO, "Couldn't find a dService, exiting.");
+      return kRSuccess;
+   }
+
+   // then process the service itself.
+   std::string dservicename = load_ddev(luaparent);
+   if (dservicename.length() == 0)
+      dservicename = load_ddev(d);
+   if (dservicename.length() == 0)
+   {
+      logmsg(kLINFO, " ");
+      logmsg(kLINFO, "Service.lua found, but no corresponding ddev file.");
+      logmsg(kLINFO, "(Create the ddev file containing the service name install the dService)");
+      return rval;
+   }
+
+   int r = utils::runcommand_stream(
+      CommandLine("drunner", { "-d","install",".",dservicename }), kORaw, luaparent, {}, NULL);
+   if (r != 0)
+      return cError("Failed to install " + dservicename);
+
+   // intalled! 
+   logmsg(kLINFO, dservicename + " successfully installed.");
+   logmsg(kLINFO, "Run   ddev test " + dservicename + "   to test it.");
    return rval;
 }
+
+// ----------------------------------------------------------------------------------
 
 cResult _testcommand(CommandLine operation)
 {
@@ -184,25 +237,12 @@ cResult _testcommand(std::string dservicename, std::vector<std::string> args)
    return _testcommand(cl);
 }
 
-cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
+cResult ddev::_test(std::string dservicename) const
 {
-   std::string dservicename;
+   if (dservicename.length() == 0)
+      return cError("ddev test requires an installed dService to test!");
+
    cResult r;
-   bool installed = false;
-
-   if (cl.args.size() == 0)
-   { // install service from current directory and run tests
-      dservicename = timeutils::getDateTimeStr();
-      r += _testcommand(CommandLine("drunner", { "install",".",dservicename }));
-      if (!r.success())
-         return r;
-
-      installed = true;
-   }
-   else // run tests on already installed service
-      dservicename = cl.args[0];
-
-
    r = _testcommand(dservicename, { "help" });
 
    if (r.success())
@@ -231,13 +271,6 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
    if (r.success())
       r += rr;
 
-   if (installed)
-   {
-      rr = _testcommand(CommandLine("drunner", { "obliterate",dservicename }));
-      if (r.success())
-         r += rr;
-   }
-
    if (r.success())
       logmsg(kLINFO, "Tests completed successfully.");
    else
@@ -245,3 +278,4 @@ cResult ddev::_test(const CommandLine & cl, const persistvariables & v) const
 
    return r;
 }
+

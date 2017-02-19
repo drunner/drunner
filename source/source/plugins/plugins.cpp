@@ -29,19 +29,21 @@ cResult plugins::runcommand() const
    std::string pluginname = GlobalContext::getParams()->getCommandStr();
 
    for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
-      if (0==Poco::icompare(p->get()->getName(), pluginname))
-        return p->get()->runCommand();
+      if (0 == Poco::icompare(p->get()->getName(), pluginname))
+      {
+         CommandLine cl;
+         // turn args into new command (shift left).
+         if (GlobalContext::getParams()->numArgs() > 0)
+         {
+            cl.args = GlobalContext::getParams()->getArgs();
+            cl.command = cl.args[0];
+            cl.args.erase(cl.args.begin());
+         }
+
+         return p->get()->runCommand(cl);
+      }
 
    return cError("Unknown plugin '" + pluginname + "'");
-}
-
-cResult plugins::runhook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const
-{
-   cResult rval;
-   for (auto p = mPlugins.begin(); p != mPlugins.end(); ++p)
-      rval += p->get()->runHook(hook, hookparams, lf, sv);
-
-   return rval;
 }
 
 void plugins::getPluginNames(std::vector<std::string> & names) const
@@ -62,17 +64,8 @@ configuredplugin::~configuredplugin()
 {
 }
 
-cResult configuredplugin::runCommand() const
-{
-   CommandLine cl;
-
-   if (GlobalContext::getParams()->numArgs() > 0)
-   {
-      cl.args = GlobalContext::getParams()->getArgs();
-      cl.command = cl.args[0];
-      cl.args.erase(cl.args.begin());
-   }
-   
+cResult configuredplugin::runCommand(const CommandLine & cl) const
+{   
    persistvariables pv(getPersistVariables());
 
    if (cl.command == "configure")

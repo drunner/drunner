@@ -57,6 +57,7 @@ namespace utils
    bool getFolders(const std::string & parent, std::vector<std::string> & folders);
 
    bool fileexists(const Poco::Path& name);
+   bool fileexists(const Poco::Path& parent, std::string name);
    bool commandexists(std::string command);
    
    int runcommand(const CommandLine & operation, std::string &out);

@@ -10,25 +10,39 @@
 
 namespace sourcecopy
 {
-
-   cResult _installfrom(Poco::Path p, const servicePaths & sp)
+   cResult getServiceLuaParent(Poco::Path & p)
    {
-      Poco::Path target = sp.getPathdService();
-
       // try drunner10 subfolder
       Poco::Path drunner10(p.toString() + "drunner" + getVersionNice());
       drunner10.makeDirectory(); // ensures the path is treated as a directory (does not create a directory on disk!!)
       if (Poco::File(drunner10.toString() + "service.lua").exists())
-         return gitcache::recursiveCopyContents(drunner10, target);
+      {
+         p = drunner10;
+         return kRSuccess;
+      }
 
       // try drunner subfolder
       Poco::Path drunner(p.toString() + "drunner");
       drunner.makeDirectory();
       if (Poco::File(drunner.toString() + "service.lua").exists())
-         return gitcache::recursiveCopyContents(drunner, target);
+      {
+         p = drunner;
+         return kRSuccess;
+      }
 
-      // just copy whole repo
       if (Poco::File(p.toString() + "service.lua").exists())
+         return kRSuccess;
+
+      return cError("Could not locate the service.lua file.");
+   }
+
+
+
+   cResult _installfrom(Poco::Path p, const servicePaths & sp)
+   {
+      Poco::Path target = sp.getPathdService();
+
+      if (getServiceLuaParent(p).success())
          return gitcache::recursiveCopyContents(p, target);
 
       return cError("Unable to locate service.lua at " + p.toString());

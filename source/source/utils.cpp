@@ -48,6 +48,14 @@ namespace utils
       return (stat (name.toString().c_str(), &buffer) == 0);
    }
 
+   bool fileexists(const Poco::Path & parent, std::string name)
+   {
+      drunner_assert(parent.isDirectory(),"fileexists: non-dir passed as parent dir");
+      Poco::Path p(parent);
+      p.setFileName(name);
+      return fileexists(p);
+   }
+
    int runcommand(const CommandLine & operation, std::string &out)
    {
       return runcommand_stream(operation, kOSuppressed, "", {}, &out);

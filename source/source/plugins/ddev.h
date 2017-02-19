@@ -3,21 +3,23 @@
 
 #include "plugins.h"
 
-class ddev : public configuredplugin
+class ddev : public plugin
 {
 public:
    ddev();
    virtual std::string getName() const;
-   virtual cResult runCommand(const CommandLine & cl, persistvariables & v) const;
-   virtual cResult runHook(std::string hook, std::vector<std::string> hookparams, const servicelua::luafile * lf, const serviceVars * sv) const;
+   virtual cResult runCommand(const CommandLine & cl) const;
 
    Poco::Path configurationFilePath() const;
 
 private:
    cResult _showHelp() const;
-   cResult _build(const CommandLine & cl, const persistvariables & v, Poco::Path d) const;
-   cResult _buildtree(const CommandLine & cl, const persistvariables & v, Poco::Path d) const;
-   cResult _test(const CommandLine & cl, const persistvariables & v) const;
+   cResult _ddevtree(const CommandLine & cl, Poco::Path d) const;
+   cResult _test(std::string dservicename) const;
+
+   void _buildtree(const Poco::Path d) const;
+
+   std::string load_ddev(const Poco::Path d) const;
 };
 
 
