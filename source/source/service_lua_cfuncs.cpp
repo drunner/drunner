@@ -1,5 +1,6 @@
 #include "Poco/String.h"
 #include "Poco/StringTokenizer.h"
+#include "Poco/Process.h"
 
 #include "service_lua.h"
 #include "dassert.h"
@@ -11,25 +12,28 @@
 
 // lua C functions - defined in service_lua_cfuncs
 extern "C" int l_addconfig(lua_State *L);
+extern "C" int l_getconfig(lua_State *L);
+extern "C" int l_setconfig(lua_State *L);
+
 extern "C" int l_drun(lua_State *L);
-extern "C" int l_drun_output(lua_State *L);
-extern "C" int l_drun_outputexit(lua_State *L);
+extern "C" int l_drunoutput(lua_State *L);
+extern "C" int l_drunoutputexit(lua_State *L);
 extern "C" int l_dsub(lua_State *L);
-extern "C" int l_dconfig_get(lua_State *L);
-extern "C" int l_dconfig_set(lua_State *L);
 extern "C" int l_dsplit(lua_State *L);
 
 extern "C" int l_getdrundir(lua_State *L);
 extern "C" int l_setdrundir(lua_State *L);
 extern "C" int l_getpwd(lua_State *L);
+extern "C" int l_isdockerrunning(lua_State *L);
+
+extern "C" int l_docker(lua_State *L);
+extern "C" int l_dockerti(lua_State *L);
 
 extern "C" int l_dockerstop(lua_State *L);
-extern "C" int l_dockerrunning(lua_State *L);
 extern "C" int l_dockerwait(lua_State *L);
 extern "C" int l_dockerpull(lua_State *L);
 extern "C" int l_dockercreatevolume(lua_State *L);
 extern "C" int l_dockerdeletevolume(lua_State *L);
-extern "C" int l_docker(lua_State *L);
 extern "C" int l_dockerbackup(lua_State *L);
 extern "C" int l_dockerrestore(lua_State *L);
 
@@ -37,6 +41,8 @@ extern "C" int l_proxyenable(lua_State *L);
 extern "C" int l_proxydisable(lua_State *L);
 
 extern "C" int l_die(lua_State *L);
+extern "C" int l_dieif(lua_State *L);
+extern "C" int l_dieunless(lua_State *L);
 
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
@@ -49,27 +55,27 @@ namespace servicelua
    { // define all our C functions that we want available from service.lua
 
       REGISTERLUAC(l_addconfig, "addconfig")
+      REGISTERLUAC(l_getconfig, "getconfig")
+      REGISTERLUAC(l_setconfig, "setconfig")
 
       REGISTERLUAC(l_drun, "drun")
-      REGISTERLUAC(l_drun_output, "drun_output")
-      REGISTERLUAC(l_drun_outputexit, "drun_outputexit")
 
       REGISTERLUAC(l_dsub, "dsub")
-      REGISTERLUAC(l_dconfig_get, "dconfig_get")
-      REGISTERLUAC(l_dconfig_set, "dconfig_set")
       REGISTERLUAC(l_dsplit, "dsplit")
 
       REGISTERLUAC(l_getdrundir,"getdrundir")
       REGISTERLUAC(l_setdrundir, "setdrundir")
       REGISTERLUAC(l_getpwd, "getpwd")
 
+      REGISTERLUAC(l_docker, "docker")
+      REGISTERLUAC(l_dockerti, "dockerti")
+
       REGISTERLUAC(l_dockerstop, "dockerstop")
-      REGISTERLUAC(l_dockerrunning, "dockerrunning")
+      REGISTERLUAC(l_isdockerrunning, "isdockerrunning")
       REGISTERLUAC(l_dockerwait, "dockerwait")
       REGISTERLUAC(l_dockerpull, "dockerpull")
       REGISTERLUAC(l_dockercreatevolume, "dockercreatevolume")
       REGISTERLUAC(l_dockerdeletevolume, "dockerdeletevolume")
-      REGISTERLUAC(l_docker, "docker")
       REGISTERLUAC(l_dockerbackup, "dockerbackup")
       REGISTERLUAC(l_dockerrestore, "dockerrestore")
 
@@ -77,6 +83,8 @@ namespace servicelua
       REGISTERLUAC(l_proxydisable, "proxydisable")
 
       REGISTERLUAC(l_die, "die")
+      REGISTERLUAC(l_dieif, "dieif")
+      REGISTERLUAC(l_dieunless, "dieunless")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -99,9 +107,23 @@ namespace servicelua
 
    int _luasuccess(lua_State *L)
    {
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
+      lua_pushboolean(L, true);
       return 1; // one argument to return.
+   }
+
+   int _luafail(lua_State *L, std::string failmessage)
+   {
+      logmsg(kLWARN, failmessage);
+      lua_pushboolean(L, false);
+      return 1;
+   }
+
+   int _luacresult(lua_State *L, cResult r)
+   {
+      if (r.success())
+         return _luasuccess(L);
+      else
+         return _luafail(L, r.what());
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -112,7 +134,7 @@ namespace servicelua
    extern "C" int l_addconfig(lua_State *L)
    {
       if (lua_gettop(L) != 3)
-         return luaL_error(L, "Expected three arguments for addconfig.");
+         return _luafail(L, "Expected three arguments for addconfig.");
 
       // name(n), defaultval(dflt), description(desc), type(t), required(rqd), usersettable(user) {}
       drunner_assert(lua_isstring(L, 1), "The name must be a string.");
@@ -139,9 +161,7 @@ namespace servicelua
       if (!found)
          logmsg(kLWARN, "Inconsistency of name between quick read and lua execution for config " + def.defaultval);
 
-      cResult rval = kRSuccess;
-      lua_pushinteger(L, rval);
-      return 1; // one argument to return.
+      return _luasuccess(L);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -150,6 +170,9 @@ namespace servicelua
    std::vector<std::string> args2vec(lua_State *L)
    {
       std::vector<std::string> vs;
+
+      if (lua_gettop(L) == 0)
+         return {};
 
       if (lua_isstring(L, 1) == 1)
       {
@@ -177,93 +200,85 @@ namespace servicelua
          }
       }
       else
-         fatal("Unrecognised argument type.");
+         logmsg(kLERROR, "Unrecognised argument type. Unable to parse arguments.");
       
       return vs;
    }
 
-   int _drun(lua_State *L, bool returnOutput, bool returnExit, std::string command="")
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   // returns result, output.
+   int _drun(lua_State * L, CommandLine operation)
    {
       luafile * lf = get_luafile(L);
-
-      std::vector<std::string> v = args2vec(L);
-      if (command.length() > 0)
-         v.insert(v.begin(), command);
-
-      CommandLine operation;
-      operation.setfromvector(v);
-
       std::string out;
       int r = utils::runcommand_stream(
-         operation, 
-         returnOutput ? kOSuppressed : kORaw, 
-         lf->getdRunDir(), 
-         lf->getServiceVars().getAll(), 
+         operation,
+         kORaw,
+         lf->getdRunDir(),
+         lf->getServiceVars().getAll(),
          &out);
 
-      int rcount = 0;
-      if (returnOutput)
-      {
-         Poco::trimInPlace(out);
-         lua_pushstring(L, out.c_str());
-         ++rcount;
-      }
-      if (returnExit)
-      {
-         lua_pushinteger(L, r);
-         ++rcount;
-      }
-
-      return rcount;
+      lua_pushboolean(L, r==0);
+      Poco::trimInPlace(out);
+      lua_pushstring(L, out.c_str());
+      return 2;
    }
-
-
-   // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_drun(lua_State *L)
    {
-      if (lua_gettop(L) < 1)
-         return luaL_error(L, "Expected at least one argument: drun( command,  arg1, arg2, ... )");
+      CommandLine operation;
+      operation.setfromvector(args2vec(L));
 
-      return _drun(L, false, true);
+      return _drun(L, operation);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_docker(lua_State *L)
    {
-      if (lua_gettop(L) < 1)
-         return luaL_error(L, "Expected at least one argument: docker( arg1, arg2, ... )");
-
-      return _drun(L, false, true, "docker");
+      CommandLine operation;
+      std::vector<std::string> args(args2vec(L));
+      args.insert(args.begin(), "docker");
+      operation.setfromvector(args);
+      return _drun(L, operation);
    }
+
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_drun_output(lua_State *L)
+   extern "C" int l_dockerti(lua_State *L)
    {
       if (lua_gettop(L) < 1)
-         return luaL_error(L, "Expected at least one argument: drun_output( command,  arg1, arg2, ... )");
+         return _luafail(L, "Expected at least one argument: dockerti( arg1, arg2, ... )");
 
-      return _drun(L, true, false);
+      CommandLine operation;
+      std::vector<std::string> args(args2vec(L));
+      args.insert(args.begin(), { "docker","-ti" });
+      operation.setfromvector(args);
+
+      int rval = -1;
+      try {
+         luafile * lf = get_luafile(L);
+         Poco::ProcessHandle ph = Poco::Process::launch(operation.command, operation.args,
+            lf->getdRunDir().toString(), NULL,NULL,NULL, lf->getServiceVars().getAll());
+
+         rval = ph.wait();
+      }
+      catch (Poco::SystemException & se)
+      {
+         logmsg(kLWARN,se.displayText());
+      }
+      return (rval == 0) ? _luasuccess(L) : _luafail(L, "Failed to launch docker command");
    }
 
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_drun_outputexit(lua_State *L)
-   {
-      if (lua_gettop(L) < 1)
-         return luaL_error(L, "Expected at least one argument: drun_outputexit( command,  arg1, arg2, ... )");
-
-      return _drun(L, true, true);
-   }
 
    // -----------------------------------------------------------------------------------------------------------------------
       
-   extern "C" int l_dockerrunning(lua_State *L)
+   extern "C" int l_isdockerrunning(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the container name to check) for drunning.");
+         return _luafail(L, "Expected exactly one argument (the container name to check) for drunning.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
       //luafile *lf = get_luafile(L);
@@ -281,7 +296,7 @@ namespace servicelua
       // Waits until port is up in the container. Times out after 30 seconds by default
       int nargs = lua_gettop(L);
       if (nargs < 2 || nargs > 3)
-         return luaL_error(L, "Incorrect number of arguments. Syntax:   dockerwait( containername, port, [timeout] )");
+         return _luafail(L, "Incorrect number of arguments. Syntax:   dockerwait( containername, port, [timeout] )");
       std::string containername = lua_tostring(L, 1);
       int port = (int)lua_tointeger(L, 2);
       int timeout = (nargs == 3 ? (int)lua_tointeger(L, 3) : 30);
@@ -298,22 +313,21 @@ namespace servicelua
    extern "C" int l_dockerpull(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the image name to pull) for dockerpull.");
+         return _luafail(L, "Expected exactly one argument (the image name to pull) for dockerpull.");
       drunner_assert(lua_isstring(L, 1), "image name must be a string.");
       std::string imagename = lua_tostring(L, 1);
       //luafile *lf = get_luafile(L);
 
       cResult r = utils_docker::pullImage(imagename);
 
-      lua_pushinteger(L, r);
-      return 1; // 1 result to return.
+      return _luacresult(L, r);
    }
    // -----------------------------------------------------------------------------------------------------------------------
 
    extern "C" int l_dockerstop(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the container name to stop) for dockerstop.");
+         return _luafail(L, "Expected exactly one argument (the container name to stop) for dockerstop.");
       drunner_assert(lua_isstring(L, 1), "container name must be a string.");
       std::string containerraw = lua_tostring(L, 1);
 
@@ -340,13 +354,12 @@ namespace servicelua
    extern "C" int l_dockercreatevolume(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the volume to create) for dockercreatevolume.");
+         return _luafail(L, "Expected exactly one argument (the volume to create) for dockercreatevolume.");
       drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
       std::string vol = lua_tostring(L, 1);
       cResult r = utils_docker::createDockerVolume(vol);
 
-      lua_pushinteger(L, r);
-      return 1; // 1 result to return.
+      return _luacresult(L, r);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -354,13 +367,12 @@ namespace servicelua
    extern "C" int l_dockerdeletevolume(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the volume to delete) for dockerdeletevolume.");
+         return _luafail(L, "Expected exactly one argument (the volume to delete) for dockerdeletevolume.");
       drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
       std::string vol = lua_tostring(L, 1);
       cResult r = utils_docker::deleteDockerVolume(vol);
 
-      lua_pushinteger(L, r);
-      return 1; // 1 result to return.
+      return _luacresult(L, r);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -368,7 +380,7 @@ namespace servicelua
    extern "C" int l_dockerbackup(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the volume to backup) for dockerbackup.");
+         return _luafail(L, "Expected exactly one argument (the volume to backup) for dockerbackup.");
       drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
       std::string vol = lua_tostring(L, 1);
 
@@ -378,8 +390,7 @@ namespace servicelua
 
       cResult r = utils_docker::backupDockerVolume(vol,folder,lf->getServiceName());
 
-      lua_pushinteger(L, r);
-      return 1; // 1 result to return.
+      return _luacresult(L, r);
    }
    
    // -----------------------------------------------------------------------------------------------------------------------
@@ -387,7 +398,7 @@ namespace servicelua
    extern "C" int l_dockerrestore(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the volume to restore) for dockerrestore.");
+         return _luafail(L, "Expected exactly one argument (the volume to restore) for dockerrestore.");
       drunner_assert(lua_isstring(L, 1), "volume name must be a string.");
       std::string vol = lua_tostring(L, 1);
 
@@ -397,8 +408,7 @@ namespace servicelua
 
       cResult r = utils_docker::restoreDockerVolume(vol, folder, lf->getServiceName());
 
-      lua_pushinteger(L, r);
-      return 1; // 1 result to return.
+      return _luacresult(L, r);
    }
    
    // -----------------------------------------------------------------------------------------------------------------------
@@ -406,7 +416,7 @@ namespace servicelua
    extern "C" int l_dsub(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the string to substitute) for dsub.");
+         return _luafail(L, "Expected exactly one argument (the string to substitute) for dsub.");
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       luafile * lf = get_luafile(L);
@@ -417,10 +427,10 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_dconfig_get(lua_State *L)
+   extern "C" int l_getconfig(lua_State *L)
    {
       if (lua_gettop(L) != 1)
-         return luaL_error(L, "Expected exactly one argument (the variable name) for dconfig_get.");
+         return _luafail(L, "Expected exactly one argument (the variable name) for dconfig_get.");
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
@@ -432,10 +442,10 @@ namespace servicelua
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_dconfig_set(lua_State *L)
+   extern "C" int l_setconfig(lua_State *L)
    {
       if (lua_gettop(L) != 2)
-         return luaL_error(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
+         return _luafail(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
       luafile *lf = get_luafile(L);
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
@@ -449,8 +459,7 @@ namespace servicelua
       if (r == kRError)
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
 
-      lua_pushinteger(L, r);
-      return 1;
+      return _luacresult(L, 1);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -458,7 +467,7 @@ namespace servicelua
    extern "C" int l_dsplit(lua_State *L)
    {
       if (lua_gettop(L)!=1)
-         return luaL_error(L, "Expected exactly one argument (the string to split) for dsplit.");
+         return _luafail(L, "Expected exactly one argument (the string to split) for dsplit.");
 
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
@@ -522,7 +531,7 @@ namespace servicelua
       std::string s;
 
       if (lua_gettop(L) > 1)
-         return luaL_error(L, "Expected exactly one argument (the new directory) for setpwd.");
+         return _luafail(L, "Expected exactly one argument (the new directory) for setpwd.");
 
       if (lua_gettop(L) == 1)
       {
@@ -549,8 +558,10 @@ namespace servicelua
 
    extern "C" int l_proxyenable(lua_State *L)
    {
-      if (lua_gettop(L) <6 || lua_gettop(L)>7)
-         return luaL_error(L, "Expected 5 to 6 arguments: proxyenable( HOSTNAME, CONTAINER, PORT, NETWORK, EMAIL, MODE, [TIMEOUTS] )");
+      if (lua_gettop(L) < 6 || lua_gettop(L) > 7)
+      {
+         logmsg(kLWARN, "Expected 5 to 6 arguments: proxyenable( HOSTNAME, CONTAINER, PORT, NETWORK, EMAIL, MODE, [TIMEOUTS] )");
+      }
 
       luafile *lf = get_luafile(L);
       std::string servicename = lf->getServiceName();
@@ -586,8 +597,7 @@ namespace servicelua
       if (r == kRError)
          logmsg(kLWARN, "Failed to enable proxy: " + r.what());
 
-      lua_pushinteger(L, r);
-      return 1;
+      return _luacresult(L, r);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -595,7 +605,7 @@ namespace servicelua
    extern "C" int l_proxydisable(lua_State *L)
    {
       if (lua_gettop(L) != 0)
-         return luaL_error(L, "No argements expected for proxydisable.");
+         logmsg(kLWARN,"No argements expected for proxydisable.");
 
       luafile *lf = get_luafile(L);
       std::string servicename = lf->getServiceName();
@@ -606,23 +616,51 @@ namespace servicelua
       if (r == kRError)
          logmsg(kLWARN, "Failed to disable proxy for "+servicename+":\n " + r.what());
 
-      lua_pushinteger(L, r);
-      return 1;
+      return _luacresult(L, r);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
 
-   extern "C" int l_die(lua_State *L)
+   int _die(std::string msg)
    {
-      if (lua_gettop(L) != 1)
-         return luaL_error(L, "No message passed to die.");
-      std::string msg = lua_tostring(L, 1);
-
       logmsg(kLWARN, "Lua die command executed:");
       fatal(msg);
 
-      lua_pushinteger(L, 1); // error.
-      return 1; // returning 1 stack element.
+      return 0; // never gets called.
    }
+
+   extern "C" int l_die(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         fatal("No message passed to die.");
+      return _die(lua_tostring(L, 1));
+   }
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dieif(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("No message passed to dieif.");
+      if (lua_toboolean(L, 1) == 1)
+         return _die(lua_tostring(L, 2));
+      
+      return 0;
+   }
+
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dieunless(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("No message passed to dieif.");
+      if (lua_toboolean(L, 1) == 0)
+         return _die(lua_tostring(L, 2));
+
+      return 0;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
 
 }
