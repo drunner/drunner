@@ -25,32 +25,32 @@ addconfig( name, default val, description )
 dRunner gives you some nice helper functions to make life easy. Note that the entire lua file has variable substition for the pattern
 ${variablename} as a pre-processing step.
 
-| Function         |   Returns | Description
-|:----------------|:--------------|:---------------|
-| `addconfig( name, default val, description )` | bool | Defines a configuration variable. Returns true on success. |
-| `getconfig( name )` | string |  Returns the value of the configuration variable. |
-| `setconfig( name, value )` | bool | Sets the value of a configuration variable. Returns true on success. |
-| `drun( command, arg1, arg2, ...)` | bool, string | Runs the command from drundir. Returns true on success and the output of the command (trimmed).|
-| `dsub( string )` | string | Returns the string with variables substituted. See note above on pre-processing substitution. |
-| `dsplit( string )` | string |  Splits a command line string into a Lua table. |
-| `getdrundir` | string | Returns the current directory for drun, docker and dockerti. |
-| `setdrundir( dir )` | bool |  Sets the drun directory. If no argument passed resets to default (the dService folder on the host). |
-| `getpwd` | string | Returns the current directory. |
-| `docker` |||
-| `dockerti` |||
-| `dockerstop` |||
-| `isdockerrunning` |||
-| `dockerwait` |||
-| `dockerpull` |||
-| `dockercreatevolume` |||
-| `dockerdeletevolume` |||
-| `dockerbackup` |||
-| `dockerrestore` |||
-| `proxyenable` |||
-| `proxydisable` |||
-| `die` |||
-| `dieif` |||
-| `dieunless` |||
+| Function         |  Description
+|:-----------------|:---------------|
+| `b = addconfig( name, default val, description )` | Defines a configuration variable. Returns true on success. |
+| `s = getconfig( name )` |  Returns the value of the configuration variable. |
+| `b = setconfig( name, value )` | ets the value of a configuration variable. Returns true on success. |
+| `b,s = drun( command, arg1, arg2, ...)` |  Runs the command from drundir. Returns true on success and the output of the command (trimmed).|
+| `s = dsub( string )` | Returns the string with variables substituted. See note above on pre-processing substitution. |
+| `s = dsplit( string )` |  Splits a command line string into a Lua table. |
+| `s = getdrundir` | Returns the current directory for drun, docker and dockerti. |
+| `b = setdrundir( dir )` | bool |  Sets the drun directory. If no argument passed resets to default (the dService folder on the host). |
+| `s = getpwd` | Returns the current directory. |
+| `docker` ||
+| `dockerti` ||
+| `dockerstop` ||
+| `isdockerrunning` ||
+| `dockerwait` ||
+| `dockerpull` ||
+| `dockercreatevolume` ||
+| `dockerdeletevolume` ||
+| `dockerbackup` ||
+| `dockerrestore` ||
+| `proxyenable` ||
+| `proxydisable` ||
+| `die` ||
+| `dieif` ||
+| `dieunless` ||
 
 
 ## Example Workflow without dProject
