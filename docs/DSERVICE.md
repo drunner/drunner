@@ -14,30 +14,43 @@ A full-on example is with the rocket.chat dService here:
 
 ## Configuration
 
-Call the following functions as needed in near the start of your service.lua file.
+Call the following functions as needed near the start of your service.lua file.
 
 ```
-addconfig( VARIABLENAME, DEFAULTVALUE, DESCRIPTION )
+addconfig( name, default val, description )
 ```
 
 ## Helper functions
 
-dRunner gives you some nice helper functions to make life easy. 
+dRunner gives you some nice helper functions to make life easy. Note that the entire lua file has variable substition for the pattern
+${variablename} as a pre-processing step.
 
-| Function         |   Description
-|:----------------|:--------------|
-| `drun( command, arg1, arg2, ...)` | Runs command on the host, returns the exit code. Substitutes any configuration variables, e.g. ${SERVICENAME}. The command and args can also be passed as a Lua table. |
-| `drun_output( command, arg1, arg2, ...)` | Same as drun, but returns a string (trimmed command output) instead of the exit code. |
-| `drun_outputexit( command, arg1, arg2, ...)` | Same as drun, but returns both a string (trimmed command output) and the exit code. |
-| `drunning( containername )` | Returns true if the container is currently running. |
-| `dstop( containername )` | Stops the given container if it's running. |
-| `dsub( string )` | returns the string where any configuration variables have been substituted. |
-| `dconfig_get( key )` | returns the value of the configuration variable. |
-| `dconfig_set( key, val )` | sets the value of the configuration variable. |
-| `dsplit( string)` | Splits a command line string into a Lua table. |
-| `getdrundir()` | Returns the current drun directory. |
-| `setdrundir( dir )` | Sets the drun directory. If no argument passed resets to default (the dService folder on the host). |
-| `getpwd()` | Returns the current directory. |
+| Function         |   Returns | Description
+|:----------------|:--------------|:---------------|
+| `addconfig( name, default val, description )` | bool | Defines a configuration variable. Returns true on success. |
+| `getconfig( name )` | string |  Returns the value of the configuration variable. |
+| `setconfig( name, value )` | bool | Sets the value of a configuration variable. Returns true on success. |
+| `drun( command, arg1, arg2, ...)` | bool, string | Runs the command from drundir. Returns true on success and the output of the command (trimmed).|
+| `dsub( string )` | string | Returns the string with variables substituted. See note above on pre-processing substitution. |
+| `dsplit( string )` | string |  Splits a command line string into a Lua table. |
+| `getdrundir` | string | Returns the current directory for drun, docker and dockerti. |
+| `setdrundir( dir )` | bool |  Sets the drun directory. If no argument passed resets to default (the dService folder on the host). |
+| `getpwd` | string | Returns the current directory. |
+| `docker` |||
+| `dockerti` |||
+| `dockerstop` |||
+| `isdockerrunning` |||
+| `dockerwait` |||
+| `dockerpull` |||
+| `dockercreatevolume` |||
+| `dockerdeletevolume` |||
+| `dockerbackup` |||
+| `dockerrestore` |||
+| `proxyenable` |||
+| `proxydisable` |||
+| `die` |||
+| `dieif` |||
+| `dieunless` |||
 
 
 ## Example Workflow without dProject
