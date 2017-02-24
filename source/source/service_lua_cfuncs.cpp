@@ -41,9 +41,6 @@ extern "C" int l_proxyenable(lua_State *L);
 extern "C" int l_proxydisable(lua_State *L);
 
 extern "C" int l_die(lua_State *L);
-extern "C" int l_dieif(lua_State *L);
-extern "C" int l_dieunless(lua_State *L);
-
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -634,30 +631,6 @@ namespace servicelua
       if (lua_gettop(L) != 1)
          fatal("No message passed to die.");
       return _die(lua_tostring(L, 1));
-   }
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_dieif(lua_State *L)
-   {
-      if (lua_gettop(L) != 2)
-         fatal("No message passed to dieif.");
-      if (lua_toboolean(L, 1) == 1)
-         return _die(lua_tostring(L, 2));
-      
-      return 0;
-   }
-
-
-   // -----------------------------------------------------------------------------------------------------------------------
-
-   extern "C" int l_dieunless(lua_State *L)
-   {
-      if (lua_gettop(L) != 2)
-         fatal("No message passed to dieif.");
-      if (lua_toboolean(L, 1) == 0)
-         return _die(lua_tostring(L, 2));
-
-      return 0;
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
