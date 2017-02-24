@@ -254,7 +254,7 @@ namespace servicelua
 
       CommandLine operation;
       std::vector<std::string> args(args2vec(L));
-      args.insert(args.begin(), { "docker","-ti" });
+      args.insert(args.begin(), { "docker","-ti","--rm" });
       operation.setfromvector(args);
 
       int rval = -1;
@@ -301,10 +301,10 @@ namespace servicelua
       int port = (int)lua_tointeger(L, 2);
       int timeout = (nargs == 3 ? (int)lua_tointeger(L, 3) : 30);
 
-      bool rval = utils_docker::dockerContainerWait(containername, port, timeout);
+      if (utils_docker::dockerContainerWait(containername, port, timeout))
+         return _luasuccess(L);
 
-      lua_pushboolean(L, rval);
-      return 1;
+      return _luafail(L, "Container " + containername + " never came up on port " + port);
    }
 
 
@@ -385,7 +385,7 @@ namespace servicelua
       std::string vol = lua_tostring(L, 1);
 
       luafile * lf = get_luafile(L);
-      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Coding error.");
+      drunner_assert(lf->getServiceVars().getTempBackupFolder().length() > 0, "Temp Backup folder not set! Only call dockerbackup from your Lua backup() function.");
       Poco::Path folder(lf->getServiceVars().getTempBackupFolder());
 
       cResult r = utils_docker::backupDockerVolume(vol,folder,lf->getServiceName());
@@ -605,7 +605,7 @@ namespace servicelua
    extern "C" int l_proxydisable(lua_State *L)
    {
       if (lua_gettop(L) != 0)
-         logmsg(kLWARN,"No argements expected for proxydisable.");
+         logmsg(kLWARN,"No arguments expected for proxydisable.");
 
       luafile *lf = get_luafile(L);
       std::string servicename = lf->getServiceName();
