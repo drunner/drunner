@@ -166,9 +166,9 @@ cResult proxy::restart()
    // container restart and hit their issuing limit!
    CommandLine cl("docker",
    { "run",
-      "-v",dataVolume() + ":/data","--name",
+      "-v",dataVolume() + ":/data",
       "-v",rootVolume() + ":/root/.caddy",
-      containerName(),
+      "--name",containerName(),
       "-p","80:80",
       "-p","443:443",
       "--restart=always"});
