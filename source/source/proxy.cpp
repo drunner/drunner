@@ -126,9 +126,9 @@ cResult proxy::generate()
    std::string encoded_data = utils::base64encodeWithEquals(oss.str());
    logmsg(kLDEBUG, oss.str());
 
+   // generate the caddy file in the drunner-proxy-dataVolume volume.
    CommandLine cl("docker", { "run","--rm",
       "-v",dataVolume()+":/data",
-      "-v",rootVolume()+":/root/.caddy",
       drunnerPaths::getdrunnerUtilsImage(),
       "/bin/bash","-c",
       "echo " + encoded_data + " | base64 -d > /data/caddyfile" });
@@ -161,9 +161,14 @@ cResult proxy::restart()
 
    logmsg(kLDEBUG, "Starting dRunner proxy.");
 
-   // container is not running.
+   // Container is not running. Volume get auto-created if not already present.
+   // Note that the /root/.caddy volume mapping is critical to not burn LetsEncrypt certs on
+   // container restart and hit their issuing limit!
    CommandLine cl("docker",
-   { "run","-v",dataVolume() + ":/data","--name",containerName(),
+   { "run",
+      "-v",dataVolume() + ":/data","--name",
+      "-v",rootVolume() + ":/root/.caddy",
+      containerName(),
       "-p","80:80",
       "-p","443:443",
       "--restart=always"});
