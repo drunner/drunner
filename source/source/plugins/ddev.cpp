@@ -217,6 +217,7 @@ cResult ddev::_ddevtree(const CommandLine & cl, Poco::Path d, std::string servic
    servicePaths sp(dservicename);
    if (utils::fileexists(sp.getPathdService()))
    {
+      logmsg(kLINFO, "Uninstalling old " + dservicename);
       cResult r= service_manage::uninstall(dservicename);
       if (r.error())
          return cError("Failed to uninstall " + dservicename+"\n"+r.what());
@@ -274,32 +275,40 @@ cResult ddev::_test(std::string dservicename) const
    Poco::Path bfile = scratch.getpath().setFileName("backupfile.bak");
    std::string tempservice = dservicename + "__TEMP_TEST";
 
-   if (r.success())
+   try
+   {
+      if (r.error()) fatal(r.what());
+
       r += _testcommand(CommandLine("drunner", { "backup",dservicename,bfile.toString() }));
-   
-   if (r.success())
+      if (r.error()) fatal(r.what());
+
       r += _testcommand(CommandLine("drunner", { "restore",bfile.toString(),tempservice }));
-   
-   if (r.success())
+      if (r.error()) fatal(r.what());
+
       r += _testcommand(tempservice, { "help" });
-   
-   if (r.success())
+      if (r.error()) fatal(r.what());
+
       r += _testcommand(tempservice, { "configure" });
+      if (r.error()) fatal(r.what());
 
-   if (r.success())
       r += _testcommand(tempservice, { "selftest" });
+      if (r.error()) fatal(r.what());
 
-   if (!r.success())
-      logmsg(kLWARN, "Previous test failed. Obliterating then logging failure message.");
+   }
+   catch (const eExit & e)
+   {
+      logmsg(kLWARN, "Test failed.");
+   }
 
+   logmsg(kLINFO, "Tidying up (obliterating " + tempservice + ")");
    cResult rr = _testcommand(CommandLine("drunner", { "obliterate", tempservice }));
-   if (r.success())
-      r += rr;
+   if (rr.error())
+      logmsg(kLWARN, rr.what());
 
    if (r.success())
-      logmsg(kLINFO, "Tests completed successfully.");
+      logmsg(kLINFO, "Result: Tests on " + dservicename + " succeeded.");
    else
-      logmsg(kLERROR, "Tests failed: " + r.what());
+      logmsg(kLERROR, "Result: Tests on "+dservicename+" failed.");
 
    return r;
 }

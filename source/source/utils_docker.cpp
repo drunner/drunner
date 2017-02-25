@@ -273,7 +273,7 @@ exit 1
       compress::decompress_volume(password, volumename, TempBackupFolder);
       logmsg(kLDEBUG, "Restored docker volume " + volumename + " as " + backupName);
 
-      return cResult();
+      return kRSuccess;
    }
 
 } // namespace

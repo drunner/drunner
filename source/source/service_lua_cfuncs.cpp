@@ -128,8 +128,12 @@ namespace servicelua
    {
       if (r.success())
          return _luasuccess(L);
-      else
+      else if (r.error())
          return _luafail(L, r.what());
+
+      // nochange?!
+      logmsg(kLDEBUG, "luacresult given kRNoChange to map. :/  Returning true (success).");
+      return _luasuccess(L);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------

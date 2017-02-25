@@ -92,6 +92,7 @@ function runcheck {
    "${DRUNNER}" unittest || die "Unit tests failed"
    testcontainer "minimalexample"
    testcontainer "rocketchat"
+   testcontainer "helloworld"
 #   testcontainer "minecraft"
 #   testcontainer "minimalexample"
 #   testcontainer "dtest"

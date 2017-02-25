@@ -155,11 +155,19 @@ namespace service_manage
       if (!utils::fileexists(sp.getPathdService()))
          return cError("Can't uninstall " + servicename + " - it does not exist.");
 
-      serviceVars sv(servicename);
-      servicelua::luafile lf(sv, CommandLine("uninstall"));
-      if (!lf.getResult().success())
-         logmsg(kLWARN, "Uninstall service command failed.");
+      try 
+      {
+         serviceVars sv(servicename);
+         servicelua::luafile lf(sv, CommandLine("uninstall"));
+         if (!lf.getResult().success())
+            logmsg(kLWARN, "Uninstall service command failed.");
+      }
+      catch (const eExit &) 
+      {
+         logmsg(kLWARN, "Unable to run the lua uninstall function. Proceeding.");
+      }
 
+   
       // delete the service tree.
       logmsg(kLINFO, "Deleting all of the dService files");
       rval += utils::deltree(sp.getPathdService());
