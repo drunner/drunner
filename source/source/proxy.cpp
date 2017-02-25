@@ -151,7 +151,7 @@ cResult proxy::generate()
 cResult proxy::restart()
 {
    std::string op;
-   if (utils_docker::dockerContainerExists(containerName()))
+   if (utils_docker::dockerContainerRunning(containerName()))
    { // just send signal to restart it.
      //      docker exec <container> kill - SIGUSR1 1
       CommandLine cl("docker", { "exec",containerName(),"kill","-","SIGUSR1","1" });
@@ -160,6 +160,13 @@ cResult proxy::restart()
          return cError("Command failed: " + op);
       return kRSuccess;
    }
+
+   if (utils_docker::dockerContainerExists(containerName()))
+   { // get rid of old crufty container.
+      logmsg(kLWARN, "Removing unexpected stopped proxy container! " + containerName());
+      utils_docker::removeContainer(containerName());
+   }
+
 
    if (mData.mProxyData.size() == 0)
       return kRSuccess; // no need for proxy!
