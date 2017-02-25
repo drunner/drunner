@@ -152,11 +152,13 @@ cResult proxy::restart()
 {
    std::string op;
    if (utils_docker::dockerContainerExists(containerName()))
-   { // can't just send signal to restart it, as networks may have changed.
-      // To Do: network attach instead (no down time).
-      logmsg(kLDEBUG, "Stopping dRunner proxy.");
-      utils_docker::stopContainer(containerName());
-      utils_docker::removeContainer(containerName());
+   { // just send signal to restart it.
+     //      docker exec <container> kill - SIGUSR1 1
+      CommandLine cl("docker", { "exec",containerName(),"kill","-","SIGUSR1","1" });
+      int rval = utils::runcommand(cl, op);
+      if (rval != 0)
+         return cError("Command failed: " + op);
+      return kRSuccess;
    }
 
    if (mData.mProxyData.size() == 0)
