@@ -15,7 +15,7 @@ class proxydatum
 {
 public:
    proxydatum(std::string s, std::string d, std::string c, std::string p, std::string n, std::string e, std::string m, bool t) :
-      servicename(s), domain(d), container(c), port(p), network(n), email(e), mode(m), timeouts(t)
+      servicename(s), domain(d), container(c), port(p), email(e), mode(m), timeouts(t)
    {}
 
    proxydatum()
@@ -29,7 +29,6 @@ public:
    std::string domain;
    std::string container;
    std::string port;
-   std::string network;
    std::string email;
    std::string mode;
    bool timeouts;
@@ -38,11 +37,11 @@ private:
    friend class cereal::access;
    template <class Archive> void save(Archive &ar, std::uint32_t const version) const 
    { 
-      ar(servicename, domain, container, port, network, email, mode, timeouts);
+      ar(servicename, domain, container, port, email, mode, timeouts);
    }
    template <class Archive> void load(Archive &ar, std::uint32_t const version) 
    {
-      ar(servicename, domain, container, port, network, email, mode, timeouts);
+      ar(servicename, domain, container, port, email, mode, timeouts);
    }
 };
 CEREAL_CLASS_VERSION(proxydatum, 1);
@@ -75,6 +74,11 @@ public:
    cResult proxydisable(std::string service);
    cResult proxyregen();
 
+   static std::string dataVolume() { return "drunner-proxy-dataVolume"; }
+   static std::string rootVolume() { return "drunner-proxy-rootVolume"; }
+   static std::string containerName() { return "drunner-proxy"; }
+   static std::string networkName() { return "drunnerproxy"; }
+
 private:
    cResult proxyconfigchanged();
    cResult generate();
@@ -83,9 +87,7 @@ private:
    cResult load();
    cResult save();
    Poco::Path saveFilePath();
-   std::string dataVolume() { return "drunner-proxy-dataVolume"; }
-   std::string rootVolume() { return "drunner-proxy-rootVolume"; }
-   std::string containerName() { return "drunner-proxy"; }
+
    proxydata mData;
 };
 

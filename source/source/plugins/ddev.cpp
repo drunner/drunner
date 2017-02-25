@@ -295,7 +295,7 @@ cResult ddev::_test(std::string dservicename) const
       if (r.error()) fatal(r.what());
 
    }
-   catch (const eExit & e)
+   catch (const eExit &)
    {
       logmsg(kLWARN, "Test failed.");
    }

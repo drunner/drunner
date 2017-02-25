@@ -95,7 +95,10 @@ cResult proxy::generate()
 
    for (auto x : mData.mProxyData)
    {       
-      std::string ip = utils_docker::getIPAddress(x.container);
+      std::string ip = utils_docker::getIPAddress(x.container, networkName());
+      if (ip.length() == 0)
+         fatal("The container " + x.container + " does not appear to be attached to the proxy network '" + networkName() + "'.");
+
       if (ip.length() == 0)
          logmsg(kLWARN, "Couldn't determine IP address for " + x.container + " - skipping proxy configuration.");
       else
@@ -165,21 +168,19 @@ cResult proxy::restart()
    // Note that the /root/.caddy volume mapping is critical to not burn LetsEncrypt certs on
    // container restart and hit their issuing limit!
    CommandLine cl("docker",
-   { "run",
+   { 
+      "run",
       "-v",dataVolume() + ":/data",
       "-v",rootVolume() + ":/root/.caddy",
       "--name",containerName(),
       "-p","80:80",
       "-p","443:443",
-      "--restart=always"});
+      "--restart=always",
+      "--network="+networkName(),
+      "-d",
+      drunnerPaths::getdrunnerProxyImage() 
+   });
    
-   for (auto & x : mData.mProxyData)
-      if (x.network.length() > 0)
-         cl.args.push_back("--network="+x.network);
-
-   cl.args.push_back("-d");
-   cl.args.push_back(drunnerPaths::getdrunnerProxyImage());
-
    int rval = utils::runcommand(cl, op);
    if (rval != 0)
       return cError("Command failed: " + op);
@@ -272,7 +273,6 @@ bool proxydatum::operator ==(const proxydatum &b) const
    if (Poco::icompare(domain, b.domain) != 0) return false;
    if (Poco::icompare(container, b.container) != 0) return false;
    if (Poco::icompare(port, b.port) != 0) return false;
-   if (Poco::icompare(network, b.network) != 0) return false;
    if (Poco::icompare(email, b.email) != 0) return false;
    if (Poco::icompare(mode, b.mode) != 0) return false;
 

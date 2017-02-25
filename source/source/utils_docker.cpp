@@ -14,6 +14,7 @@
 #include "globallogger.h"
 #include "compress.h"
 #include "dassert.h"
+#include "proxy.h"
 
 namespace utils_docker
 {
@@ -45,6 +46,23 @@ namespace utils_docker
          logmsg(kLDEBUG, "Failed to remove " + name + ":" + op);
          return cError("Failed to remove " + name + ":" + op);
       }
+      return kRSuccess;
+   }
+
+   cResult createDockerNetwork(std::string name)
+   {
+      CommandLine cl("docker", { "network","ls","-f","name=" + name });
+      std::string out;
+      int rval = utils::runcommand(cl, out);
+      if (rval == 0)
+         if (utils::wordmatch(out, name))
+            return kRNoChange; // network already exists.
+
+      cl = CommandLine("docker", { "network","create", name });
+      rval = utils::runcommand(cl, out);
+      if (rval != 0)
+         return cError("Couldn't create network " + name);
+      
       return kRSuccess;
    }
 
@@ -193,10 +211,17 @@ namespace utils_docker
       return false;
    }
 
-   std::string getIPAddress(const std::string & containername)
+   std::string getIPAddress(const std::string & containername, const std::string & network /* = "" */)
    {
       CommandLine cl;
-      cl = CommandLine("docker", { "inspect","--format","{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containername });
+
+      if (network.length() == 0) // return them all...
+         cl = CommandLine("docker", { "inspect","--format","{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}", containername });
+
+      else // pull out the ip for the appropriate network...
+         cl = CommandLine("docker", { "inspect", "--format",
+         "{{range $i, $value := .NetworkSettings.Networks}} {{if eq $i \"" + network + "\" }}{{$value.IPAddress}}{{end}}{{end}}", 
+            containername });
 
       std::string out;
       int rval = utils::runcommand(cl, out);

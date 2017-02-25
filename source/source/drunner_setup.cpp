@@ -11,6 +11,7 @@
 #include "drunner_paths.h"
 #include "dassert.h"
 #include "buildnum.h"
+#include "proxy.h"
 
 #include <Poco/Process.h>
 #include <Poco/Path.h>
@@ -211,6 +212,9 @@ namespace drunnerSetup
 
       // write settings.
       GlobalContext::getSettings()->savevariables();
+
+      // Create proxy docker network
+      utils_docker::createDockerNetwork(proxy::networkName());
 
       // -----------------------------------------------------------------------------
       // Finished!
