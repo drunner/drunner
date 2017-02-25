@@ -154,6 +154,7 @@ cResult proxy::restart()
    if (utils_docker::dockerContainerRunning(containerName()))
    { // just send signal to restart it.
      //      docker exec <container> kill - SIGUSR1 1
+      logmsg(kLINFO, "Reloading dRunner proxy settings (SIGUSR1)");
       CommandLine cl("docker", { "exec",containerName(),"kill","-","SIGUSR1","1" });
       int rval = utils::runcommand(cl, op);
       if (rval != 0)
