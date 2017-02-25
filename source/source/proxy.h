@@ -14,7 +14,7 @@
 class proxydatum
 {
 public:
-   proxydatum(std::string s, std::string d, std::string c, std::string p, std::string n, std::string e, std::string m, bool t) :
+   proxydatum(std::string s, std::string d, std::string c, std::string p, std::string e, std::string m, bool t) :
       servicename(s), domain(d), container(c), port(p), email(e), mode(m), timeouts(t)
    {}
 
