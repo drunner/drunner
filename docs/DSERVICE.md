@@ -51,6 +51,8 @@ ${variablename} as a pre-processing step.
 | `b = dockerrestore( volumename )` | Restore the given volume. Only call from restore() in service.lua. |
 |||
 | `die( msg )` ||
+| `dieif( cond, msg )` ||
+| `dieunless( cond, msg )` ||
 |||
 | `b = proxyenable( domain, container, port, network, email, mode, timeouts ) ` ||
 | `b = proxydisable()` ||

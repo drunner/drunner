@@ -41,6 +41,11 @@ extern "C" int l_proxyenable(lua_State *L);
 extern "C" int l_proxydisable(lua_State *L);
 
 extern "C" int l_die(lua_State *L);
+extern "C" int l_dieif(lua_State *L);
+extern "C" int l_dieunless(lua_State *L);
+extern "C" int l_msg(lua_State *L);
+extern "C" int l_msgif(lua_State *L);
+extern "C" int l_msgunless(lua_State *L);
 
 #define REGISTERLUAC(cfunc,luaname) lua_pushcfunction(L, cfunc); lua_setglobal(L, luaname);
 
@@ -82,6 +87,10 @@ namespace servicelua
       REGISTERLUAC(l_die, "die")
       REGISTERLUAC(l_dieif, "dieif")
       REGISTERLUAC(l_dieunless, "dieunless")
+
+      REGISTERLUAC(l_die, "msg")
+      REGISTERLUAC(l_dieif, "msgif")
+      REGISTERLUAC(l_dieunless, "msgunless")
    }
 
    // -----------------------------------------------------------------------------------------------------------------------
@@ -301,7 +310,7 @@ namespace servicelua
       if (utils_docker::dockerContainerWait(containername, port, timeout))
          return _luasuccess(L);
 
-      return _luafail(L, "Container " + containername + " never came up on port " + port);
+      return _luafail(L, "Container " + containername + " never came up on port " + std::to_string(port));
    }
 
 
@@ -626,6 +635,8 @@ namespace servicelua
       return 0; // never gets called.
    }
 
+   // -----------------------------------------------------------------------------------------------------------------------
+
    extern "C" int l_die(lua_State *L)
    {
       if (lua_gettop(L) != 1)
@@ -633,7 +644,60 @@ namespace servicelua
       return _die(lua_tostring(L, 1));
    }
 
+
+
    // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dieif(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("No message passed to dieif.");
+      if (lua_toboolean(L, 1) == 1)
+         return _die(lua_tostring(L, 2));
+
+      return 0;
+   }
+
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_dieunless(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("No message passed to dieif.");
+      if (lua_toboolean(L, 1) == 0)
+         return _die(lua_tostring(L, 2));
+
+      return 0;
+   }
+
+   // -----------------------------------------------------------------------------------------------------------------------
+
+   extern "C" int l_msg(lua_State *L)
+   {
+      if (lua_gettop(L) != 1)
+         fatal("No message passed to msg.");
+      logmsg(kLINFO, lua_tostring(L, 1));
+      return _luasuccess(L);
+   }
+
+   extern "C" int l_msgif(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("msgif requires two arguments.");
+      if (lua_toboolean(L, 1) == 1)
+         logmsg(kLINFO, lua_tostring(L, 2));
+      return _luasuccess(L);
+   }
+
+   extern "C" int l_msgunless(lua_State *L)
+   {
+      if (lua_gettop(L) != 2)
+         fatal("msgunless requires two arguments.");
+      if (lua_toboolean(L, 1) != 1)
+         logmsg(kLINFO, lua_tostring(L, 2));
+      return _luasuccess(L);
+   }
 
 
 }
