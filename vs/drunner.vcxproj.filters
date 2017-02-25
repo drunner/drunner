@@ -17,6 +17,9 @@
     <Filter Include="Source Files\registry">
       <UniqueIdentifier>{a69c4fd8-024d-4bae-a9f4-a7bbd865dc57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\proxy">
+      <UniqueIdentifier>{fcf6ecee-5dde-4c87-90d8-4b3a8e7fd450}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\source\buildnum.cpp">
@@ -223,11 +226,11 @@
     <ClCompile Include="..\source\source\registry\gitcache.cpp">
       <Filter>Source Files\registry</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\source\proxy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\source\plugins\dbackup.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\source\proxy\proxy.cpp">
+      <Filter>Source Files\proxy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -423,8 +426,8 @@
     <ClInclude Include="..\source\source\registry\gitcache.h">
       <Filter>Source Files\registry</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\source\proxy.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\source\source\proxy\proxy.h">
+      <Filter>Source Files\proxy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

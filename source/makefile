@@ -1,7 +1,7 @@
 APP=drunner
 
 INC=-Isource -Ibuildnum -Isource/tests -Ideps \
-	-Isource/plugins -Isource/registry -Ideps/lua
+	-Isource/plugins -Isource/registry -Isource/proxy -Ideps/lua
 
 CXXFLAGS=-D VERSION_STR="\"$(VCOMBO)\"" -D VERSION_STR_SHORT="\"$(VSHORT)\"" \
 -D VERSION_NICEVER="\"$(NICEVER)\"" \

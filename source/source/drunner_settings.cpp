@@ -51,5 +51,6 @@ const std::vector<envDef> drunnerSettings::_getConfig()
    std::vector<envDef> config;
    config.push_back(envDef("INSTALLTIME", utils::getTime(), "Time installed.",ENV_PERSISTS ));
    config.push_back(envDef("PULLIMAGES", "true", "Set to false to never pull docker images",ENV_PERSISTS | ENV_USERSETTABLE));
+   config.push_back(envDef("PROXY", "caddy", "The proxy to use {caddy,none}.",ENV_PERSISTS | ENV_USERSETTABLE));
    return config;
 }

@@ -11,6 +11,7 @@ public:
    static std::string getdrunnerInstallURL();
    std::string getdrunnerInstallTime()const { return getVal("INSTALLTIME"); }
    bool getPullImages() const               { return getBool("PULLIMAGES"); }
+   std::string getProxy() const { return getVal("PROXY"); }
 
    bool mReadOkay;
 

@@ -50,7 +50,7 @@
     <ClCompile Include="..\source\source\drunner_setup.cpp" />
     <ClCompile Include="..\source\source\compress.cpp" />
     <ClCompile Include="..\source\source\plugins\ddev.cpp" />
-    <ClCompile Include="..\source\source\proxy.cpp" />
+    <ClCompile Include="..\source\source\proxy\proxy.cpp" />
     <ClCompile Include="..\source\source\registry\gitcache.cpp" />
     <ClCompile Include="..\source\source\registry\registries.cpp" />
     <ClCompile Include="..\source\source\registry\registry.cpp" />
@@ -118,7 +118,7 @@
     <ClInclude Include="..\source\source\compress.h" />
     <ClInclude Include="..\source\source\cresult.h" />
     <ClInclude Include="..\source\source\plugins\ddev.h" />
-    <ClInclude Include="..\source\source\proxy.h" />
+    <ClInclude Include="..\source\source\proxy\proxy.h" />
     <ClInclude Include="..\source\source\registry\gitcache.h" />
     <ClInclude Include="..\source\source\registry\registries.h" />
     <ClInclude Include="..\source\source\registry\registry.h" />
@@ -194,7 +194,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\proxy;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -212,7 +212,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco\Foundation\include;$(SolutionDir)..\pocowin\poco\Util\include;$(SolutionDir)..\pocowin\poco\Net\include;$(SolutionDir)..\pocowin\poco\NetSSL_OpenSSL\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\source\proxy;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source;$(SolutionDir)..\source\source\tests;$(SolutionDir)..\source\source\win;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\source\registry;$(SolutionDir)..\source\source\plugins;$(SolutionDir)..\source\deps;$(SolutionDir)..\pocowin\poco\Foundation\include;$(SolutionDir)..\pocowin\poco\Util\include;$(SolutionDir)..\pocowin\poco\Net\include;$(SolutionDir)..\pocowin\poco\NetSSL_OpenSSL\include;$(SolutionDir)..\source\deps\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4307;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
