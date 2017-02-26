@@ -67,12 +67,12 @@ CEREAL_CLASS_VERSION(proxydata, 1);
 class proxyplugin
 {
 public:
-   proxyplugin(const proxydata & pd) : mProxyData(pd) {}
+   proxyplugin(const std::vector<proxydatum> & pd) : mProxyData(pd) {}
 
    virtual cResult restart() = 0;
 
 protected:
-   const proxydata & mProxyData;
+   const std::vector<proxydatum> & mProxyData;
 };
 
 

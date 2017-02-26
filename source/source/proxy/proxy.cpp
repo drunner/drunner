@@ -22,7 +22,7 @@ std::unique_ptr<proxyplugin> proxy::getPlugin()
    case s2i("none") :
       return NULL;
    case s2i("caddy") :
-      return std::unique_ptr<proxyplugin>(new caddy(mData));
+      return std::unique_ptr<proxyplugin>(new caddy(mData.mProxyData));
    default:
       logmsg(kLERROR, "Invalid proxy setting: " + GlobalContext().getSettings()->getProxy());
    }

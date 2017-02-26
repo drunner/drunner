@@ -12,7 +12,7 @@ cResult caddy::generate()
 {
    std::ostringstream oss;
 
-   for (auto x : mProxyData.mProxyData)
+   for (auto x : mProxyData)
    {
       std::string ip = utils_docker::getIPAddress(x.container, proxy::networkName());
       if (ip.length() == 0)
@@ -88,7 +88,7 @@ cResult caddy::restart()
    }
 
 
-   if (mProxyData.mProxyData.size() == 0)
+   if (mProxyData.size() == 0)
       return kRSuccess; // no need for proxy!
 
    logmsg(kLDEBUG, "Starting dRunner proxy.");

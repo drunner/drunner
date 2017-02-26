@@ -6,7 +6,7 @@
 class caddy : public proxyplugin
 {
 public:
-   caddy(const proxydata & pd) : proxyplugin(pd) {}
+   caddy(const std::vector<proxydatum> & pd) : proxyplugin(pd) {}
 
    virtual cResult restart();
 
