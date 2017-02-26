@@ -16,10 +16,10 @@ cResult caddy::generate()
    {
       std::string ip = utils_docker::getIPAddress(x.container, proxy::networkName());
       if (ip.length() == 0)
-         fatal("The container " + x.container + " does not appear to be attached to the proxy network '" + proxy::networkName() + "'.");
-
-      if (ip.length() == 0)
+      {
+         logmsg(kLWARN, "The container " + x.container + " does not appear to be attached to the proxy network '" + proxy::networkName() + "'.");
          logmsg(kLWARN, "Couldn't determine IP address for " + x.container + " - skipping proxy configuration.");
+      }
       else
       {
          bool fakemode = (Poco::icompare(x.mode, "fake") == 0);
