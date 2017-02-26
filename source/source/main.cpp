@@ -208,7 +208,7 @@ cResult mainroutines::process()
       case c_proxy:
       {
          proxy p;
-         return p.proxyregen();
+         return p.handledrunnerproxycommand();
       }
 
       default:

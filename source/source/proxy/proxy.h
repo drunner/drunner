@@ -64,6 +64,17 @@ CEREAL_CLASS_VERSION(proxydata, 1);
 
 // ---------------------------------------------------------------------------------------
 
+class proxyplugin
+{
+public:
+   proxyplugin(const proxydata & pd) : mProxyData(pd) {}
+
+   virtual cResult restart() = 0;
+
+protected:
+   const proxydata & mProxyData;
+};
+
 
 class proxy
 {
@@ -72,18 +83,14 @@ public:
 
    cResult proxyenable(proxydatum pd);
    cResult proxydisable(std::string service);
-   cResult proxyregen();
+   cResult handledrunnerproxycommand();
 
-   static std::string dataVolume() { return "drunner-proxy-dataVolume"; }
-   static std::string rootVolume() { return "drunner-proxy-rootVolume"; }
-   static std::string containerName() { return "drunner-proxy"; }
    static std::string networkName() { return "drunnerproxy"; }
 
 private:
    cResult proxyconfigchanged();
-   cResult generate();
-   cResult restart();
 
+   std::unique_ptr<proxyplugin> getPlugin();
    cResult load();
    cResult save();
    Poco::Path saveFilePath();

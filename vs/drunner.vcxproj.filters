@@ -232,6 +232,9 @@
     <ClCompile Include="..\source\source\proxy\proxy.cpp">
       <Filter>Source Files\proxy</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\source\proxy\caddy.cpp">
+      <Filter>Source Files\proxy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\source\buildnum.h">
@@ -427,6 +430,9 @@
       <Filter>Source Files\registry</Filter>
     </ClInclude>
     <ClInclude Include="..\source\source\proxy\proxy.h">
+      <Filter>Source Files\proxy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\source\proxy\caddy.h">
       <Filter>Source Files\proxy</Filter>
     </ClInclude>
   </ItemGroup>
