@@ -22,7 +22,7 @@ before_install:
    - sudo mv docker-compose* /usr/local/bin/docker-compose
    - sudo chmod a+x /usr/local/bin/docker-compose
 script:
-   - bash build install
+   - bash build fullinstall
    - bash build check
 
 after_success:

@@ -36,7 +36,10 @@ SYNOPSIS
       Remove intermediate files then build.
 
    build install
-      Build then install for testing (to ~/test).
+      Build then fast (no pulling) install
+
+   build fullinstall 
+      Build then do full install
 
 DESCRIPTION
    dRunner's test harness. Built from ${IMAGENAME}.
@@ -146,6 +149,12 @@ function main {
          drunner -d -v initialise
          ;;
 
+      fullinstall)
+         runbuild
+         sudo cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         drunner -v initialise
+         ;;
+      
       check)
          runcheck
          ;;
