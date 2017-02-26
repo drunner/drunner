@@ -113,5 +113,11 @@ cResult caddy::restart()
    int rval = utils::runcommand(cl, op);
    if (rval != 0)
       return cError("Command failed: " + op);
+
+   // wait for the proxy to come up.
+   logmsg(kLDEBUG, "Waiting for proxy to come up.");
+   if (!utils_docker::dockerContainerWait(containerName(), 80, 120))
+      logmsg(kLWARN, "The caddy proxy container didn't come up. O_o");
+
    return kRSuccess;
 }
