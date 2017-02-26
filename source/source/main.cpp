@@ -134,6 +134,19 @@ cResult mainroutines::process()
             return service_manage::update(p.getArg(0));
       }
 
+      case c_updateall:
+      {
+         std::vector<std::string> vecstr;
+         utils::getAllServices(vecstr);
+         cResult r;
+         for (const auto & x : vecstr)
+         {
+            logmsg(kLINFO, "----- UPDATING " + x + " -----");
+            r += service_manage::update(x);
+         }
+         return r;
+      }
+
       case c_install:
       {
          if (p.numArgs()<1 || p.numArgs()>2)
