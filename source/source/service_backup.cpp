@@ -172,7 +172,7 @@ cResult service_manage::service_restore(const std::string & backupfile, std::str
    if (!lf.getResult().success())
       fatal("Failed to run restore command in the dService's service.lua.");
 
-   logmsg(kLINFO, "Time for volume restore:      " + tstep.getelpased());
+   logmsg(kLINFO, "Time for dService lua restore: " + tstep.getelpased());
    tstep.restart();
 
    // -----------------------------------------

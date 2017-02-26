@@ -119,7 +119,7 @@ namespace servicelua
 
    int _luafail(lua_State *L, std::string failmessage)
    {
-      logmsg(kLWARN, failmessage);
+      logmsg(kLWARN, "_luafail called: "+failmessage);
       lua_pushboolean(L, false);
       return 1;
    }
@@ -458,18 +458,23 @@ namespace servicelua
          return _luafail(L, "Expected exactly two arguments (the variable name and value) for dconfig_set.");
       luafile *lf = get_luafile(L);
 
+
       drunner_assert(lua_isstring(L, 1), "String expected as argument.");
       drunner_assert(lua_isstring(L, 2), "String expected as argument.");
       std::string s = lua_tostring(L, 1);
       std::string v = lua_tostring(L, 2);
 
+      logmsg(kLDEBUG, "Setconfig: Setting " + s + " to " + v);
+
       cResult r = lf->getServiceVars().setVal(s, v);
+
+      logmsg(kLDEBUG, "Saving dService variables.");
       r += lf->getServiceVars().savevariables();
 
-      if (r == kRError)
+      if (r.error())
          logmsg(kLWARN, "Failed to set " + s + " to " + v+":\n "+r.what());
 
-      return _luacresult(L, 1);
+      return _luacresult(L, r);
    }
 
    // -----------------------------------------------------------------------------------------------------------------------

@@ -113,8 +113,11 @@ cResult persistvariables::savevariables() const
    logdbg("Creating " + mPath.toString());
    std::ofstream os(mPath.toString());
    if (os.bad() || !os.is_open())
+   {
+      logmsg(kLDEBUG, "Unable to open " + mPath.toString() + " for writing.");
       return cError("Unable to open " + mPath.toString() + " for writing.");
-   
+   }
+
    // extract out all the variables that are to be persisted.
    keyVals vars;
    for (auto x : getAll())
@@ -133,9 +136,13 @@ cResult persistvariables::savevariables() const
    }
    catch (const cereal::Exception & e)
    {
+      logmsg(kLDEBUG, "Cereal exception on writing settings: " + std::string(e.what()));
       return cError("Cereal exception on writing settings: " + std::string(e.what()));
    }
-   drunner_assert(utils::fileexists(mPath), "Failed to create blank settings at " + mPath.toString());
+
+   if (!utils::fileexists(mPath))
+      logmsg(kLWARN, "Failed to create blank settings at " + mPath.toString());
+
    return kRSuccess;
 }
 
@@ -148,7 +155,7 @@ cResult persistvariables::setVal(std::string key, std::string val)
          return kRSuccess;
       }
 
-   return cError("Setting '" + key + "' is not recognised.");
+   return cError("Configuration value '" + key + "' is not recognised.");
 }
 
 cResult persistvariables::_showconfiginfo() const
