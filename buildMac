@@ -1,0 +1,203 @@
+#!/bin/bash
+
+MYDIR=$( dirname "$(readlink "$0")" )
+### Unused
+# PERMISSIONSFILE="${MYDIR}/.permissions"
+
+DRUNNER="/usr/local/bin/drunner"
+
+VERSION="1.0"
+NICEVER="10"
+VERSIONSTR="${VERSION} r"
+### See SECONDS below
+# VERSIONDATE="2017-01-28"
+VSHORT="NOT SET"
+VCOMBO="NOT SET"
+DEBUG=""
+
+### Switch from -v to -z to test shell variable
+# VTAG set by travis.
+[ -z VTAG ] || VTAG="Dev"
+
+# SECONDS=$(( $(date +%s) - $(date --date="${VERSIONDATE}" +%s) ))
+SECONDS=$(( $(date +%s) - $(date -v2017y -v1m -v28d -v00H -v00M -v00S +%s) ))
+DAYS=$(( 1+${SECONDS}/(60*60*24) ))
+DATE=`date`
+
+IMAGE=drunner/drunner_build
+
+function showhelp {
+cat <<EOF >&2
+
+NAME
+   build
+
+SYNOPSIS
+   build
+      Build drunner.
+
+   build clean
+      Remove intermediate files then build.
+
+   build install
+      Build then fast (no pulling) install
+
+   build fullinstall
+      Build then do full install
+
+DESCRIPTION
+   dRunner's test harness. Built from ${IMAGENAME}.
+
+EOF
+}
+
+function runbuild {
+   OUTPUT="${MYDIR}/source/drunner"
+   rm -f ${OUTPUT}
+
+   BUILDOBJ="${MYDIR}/source/source/buildnum.o"
+   rm -f "${BUILDOBJ}"
+
+   VSHORT="${VERSION} r${DAYS}"
+   VCOMBO="${VSHORT} - ${DATE} [${VTAG}]"
+
+   echo "Building ${VCOMBO}"
+   ### Build natively
+   # echo "Mapping ${SRC} to /source"
+   # docker run --rm \
+   #    -e "VCOMBO=${VCOMBO}" \
+   #    -e "VSHORT=${VSHORT}" \
+   #    -e "NICEVER=${NICEVER}" \
+   #    -e "DEBUG=${DEBUG}"   \
+   #    -v "${SRC}:/source" "${IMAGE}" \
+   #    /bin/bash -c "make"
+   (cd source; VCOMBO="${VCOMBO}" VSHORT="${VSHORT}" NICEVER="${NICEVER}" DEBUG="${DEBUG}" make)
+
+   [ -f ${OUTPUT} ] || { echo "Build Failed." ; exit 1 ; }
+
+#   cp ${OUTPUT} ${MYDIR}
+#   chmod a+x "${MYDIR}/drunner"
+}
+
+function die { echo "$1"; exit 1 ; }
+
+function obliterate {
+   "${DRUNNER}" obliterate "${1}"
+   if [ $? -eq 1 ] ; then die "Couldn't obliterate ${1}" ; fi
+}
+
+function testcontainer {
+   echo " "
+   echo "-- Testing $1 --"
+   "${DRUNNER}" install "${1}" "testcontainer-${1}" || die "Couldn't install ${1}"
+   "${DRUNNER}" "__plugin__ddev" "test" "testcontainer-${1}"
+   rval=$?
+   obliterate "testcontainer-${1}"
+   [[ rval -eq 0 ]] || die "Tests failed."
+}
+
+function runcheck {
+   cd
+   "${DRUNNER}" unittest || die "Unit tests failed"
+   testcontainer "minimalexample"
+   testcontainer "rocketchat"
+   testcontainer "helloworld"
+#   testcontainer "minecraft"
+#   testcontainer "minimalexample"
+#   testcontainer "dtest"
+}
+
+function makeclean {
+   docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
+   rm -f "${MYDIR}/source/drunner"
+}
+
+function putS3
+{
+  [ -v S3KEY ] || die "Undefined: S3KEY";
+  [ -v S3SECRET ] ||  die "Underfined: S3SECRET";
+
+  souce_path=$1
+  aws_path=$2
+  BUCKET='drunner'
+
+  date="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+  md5="$(openssl md5 -binary < "${souce_path}" | base64)"
+  content_type='application/x-compressed-tar'
+  string="PUT\n\n${content_type}\n${date}\n/${BUCKET}${aws_path}"
+  signature=$(echo -en "${string}" | openssl sha1 -hmac "${S3SECRET}" -binary | base64)
+  curl -X PUT -T "${souce_path}" \
+   -H "Host: ${BUCKET}.s3.amazonaws.com" \
+   -H "Date: ${date}" \
+   -H "Content-Type: ${content_type}" \
+   -H "Authorization: AWS ${S3KEY}:${signature}" \
+    "https://drunner.s3-ap-southeast-2.amazonaws.com${aws_path}"
+  #    "https://${BUCKET}.s3.amazonaws.com${aws_path}"
+
+  echo "Uploaded ${souce_path} to S3."
+}
+
+function main {
+   SRC=$(echo "${MYDIR}" | sed -e 's|^/cygdrive/\(.\)/|\1:/|g')
+   SRC="${SRC}/source"
+
+   ### npm and/or brew suggest having permissions such that sudo is not needed
+   ### for normal operations, so might not need sudo to copy binary to /usr/local/bin.
+   ELEVATE=sudo
+   if [[ -w "$(dirname ${DRUNNER}})" ]] ; then
+       ELEVATE=
+   fi
+
+
+   COMMAND="build"
+   [ $# -eq 0 ] || COMMAND="$1"
+
+   case "$COMMAND" in
+      build)
+         runbuild
+         ;;
+
+      install)
+         runbuild
+         ${ELEVATE} cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         drunner -d -v initialise
+         ;;
+
+      fullinstall)
+         runbuild
+         ${ELEVATE} cp "${MYDIR}/source/drunner" "${DRUNNER}"
+         drunner -v initialise
+         ;;
+
+      check)
+         runcheck
+         ;;
+
+      debug)
+         DEBUG="-g -D _DEBUG -D POCO_ENABLE_DEBUGGER"
+         runbuild
+         ;;
+
+      clean)
+         makeclean
+         ;;
+
+      ### Could substitute mac for lin, but not sure whether this is typically needed,
+      ### not listed in help.
+      # upload)
+      # # relies on S3KEY and S3SECRET environ vars
+      #    putS3 "${MYDIR}/source/drunner" "/${NICEVER}/lin/drunner"
+      #
+      #    s3supportpath="${MYDIR}/s3supportfiles"
+      #    for file in "$s3supportpath"/*; do
+      #       putS3 "$s3supportpath/${file##*/}" "/${NICEVER}/lin/${file##*/}"
+      #    done
+      #    ;;
+
+      *)
+         showhelp
+         ;;
+   esac
+}
+
+main "$@"
