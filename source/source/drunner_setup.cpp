@@ -118,12 +118,16 @@ namespace drunnerSetup
       if (euid == 0)
          fatal("Please run as a standard user, not as root.");
 
+#if defined(__APPLE__)
+      // Docker Community Edition application on Mac does not require groups as below
+#else
       std::string user = getUSER();
       if (0 != bashcommand("groups $USER | grep docker"))
          fatal("Please add the current user to the docker group. As root: " + utils::kCODE_S + "adduser " + user + " docker" + utils::kCODE_E);
 
       if (0 != bashcommand("groups | grep docker"))
          fatal(user + " hasn't picked up group docker yet. Log out then in again, or run " + utils::kCODE_S + "exec su -l " + user + utils::kCODE_E);
+#endif
 
       if (!commandexists("docker"))
          fatal("Please install Docker before using dRunner.\n(e.g. use  https://raw.githubusercontent.com/j842/scripts/master/install_docker.sh )");
