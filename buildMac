@@ -108,7 +108,9 @@ function runcheck {
 }
 
 function makeclean {
-   docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
+   ### Do clean locally and not docker container
+   # docker run --rm -v "${SRC}:/source" "${IMAGE}" make clean
+   (cd source; make clean)
    rm -f "${MYDIR}/source/drunner"
 }
 
