@@ -21,4 +21,4 @@ script:
    - drunner unittest
    - drunner install drunner/dtest
    - dtest test
-   - dtest test drunner/helloworld
+   - dtest test drunner/06-helloworld
