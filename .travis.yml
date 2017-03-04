@@ -17,6 +17,7 @@ before_install:
    - docker run hello-world
 script:
    - bash build fullinstall
+   - drunner configure proxy=none
    - bash build check
 
 after_success:
