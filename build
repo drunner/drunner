@@ -87,9 +87,7 @@ function testcontainer {
 function runcheck {
    cd
    "${DRUNNER}" unittest || die "Unit tests failed"
-   testcontainer "helloworld"
-   testcontainer "minecraft"
-   testcontainer "minimalexample"
+   testcontainer "09-helloworld"
    testcontainer "dtest"
 
    DTEST="dtesttest"
