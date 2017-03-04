@@ -224,7 +224,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\pocowin\poco-1.7.3\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PocoFoundationmt.lib;PocoUtilmt.lib;PocoCryptomt.lib;PocoNetmt.lib;PocoNetSSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationmt.lib;PocoUtilmt.lib;PocoCryptomt.lib;PocoNetmt.lib;PocoNetSSLmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>
