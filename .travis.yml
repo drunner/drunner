@@ -1,3 +1,7 @@
+#
+#  Travis-ci.org definition file for testing dRunner changes.
+#  The actual tests are in the build script.
+#
 language: cpp
 sudo: required
 
