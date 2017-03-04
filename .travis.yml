@@ -13,7 +13,7 @@ matrix:
 #     - os: osx
 
 before_install:
-   - sudo .travis/install_docker.sh
+   - sudo bash .travis/install_docker.sh
    - docker run hello-world
 script:
    - bash build fullinstall
