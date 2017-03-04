@@ -102,6 +102,7 @@ cResult caddy::restart()
       "-v",dataVolume() + ":/data",
       "-v",rootVolume() + ":/root/.caddy",
       "--name",containerName(),
+      "--cap-add","NET_BIND_SERVICE",
       "-p","80:80",
       "-p","443:443",
       "--restart=always",

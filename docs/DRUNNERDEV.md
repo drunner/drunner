@@ -14,12 +14,12 @@ This uses a docker container to build drunner. Works fine compiling for Linux fr
 * Install docker for windows ([from here](https://docs.docker.com/docker-for-windows/))
 * Install conan for windows ([from here](https://github.com/conan-io/conan/releases/download/0.19.1/conan-win_0_19_1.exe))
 * Checkout drunner/drunner from github
-* Open conan and change the the drunner/vs directory, then run:
+* Open conan and change to the drunner/vs directory, then run:
 ```
-- cmd: cd conandebug
-- cmd: conan install -s build_type=Debug -s compiler="Visual Studio" -s compiler.runtime=MTd -s arch=x86
-- cmd: cd ../conanrelease
-- cmd: conan install -s build_type=Release -s compiler="Visual Studio" -s compiler.runtime=MT -s arch=x86
+cd conandebug
+conan install -s build_type=Debug -s compiler="Visual Studio" -s compiler.runtime=MTd -s arch=x86
+cd ../conanrelease
+conan install -s build_type=Release -s compiler="Visual Studio" -s compiler.runtime=MT -s arch=x86
 ```
 This will create conanbuildinfo.props for debug and release builds.
 * Open vs/drunner.sln, build and run (Release, x86)
