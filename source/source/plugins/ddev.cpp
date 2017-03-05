@@ -294,6 +294,9 @@ cResult ddev::_test(std::string dservicename) const
       r += _testcommand(tempservice, { "selftest" });
       if (r.error()) fatal(r.what());
 
+      r += _testcommand(CommandLine("drunner", { "update",tempservice }));
+      if (r.error()) fatal(r.what());
+
    }
    catch (const eExit &)
    {

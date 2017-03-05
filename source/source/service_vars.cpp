@@ -79,7 +79,8 @@ std::vector<envDef> loadServiceVariablesLua(std::string servicename)
 
    if (!infile.is_open())
    {
-      logmsg(kLWARN, "Couldn't open service.lua at "+path);
+      logmsg(kLDEBUG, "Couldn't open service.lua at "+path);
+      logmsg(kLWARN, servicename + " is not installed (no service.lua).");
       return defs;
    }
 

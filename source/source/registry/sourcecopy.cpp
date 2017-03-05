@@ -85,9 +85,15 @@ namespace sourcecopy
 
    cResult normaliseNames(std::string & imagename, std::string & servicename)
    {
+      const std::string locallabel = "local:";
+
       if (Poco::icompare(imagename,".")==0)
+         imagename = locallabel + utils::getPWD();
+
+      // local folder
+      if (imagename.find(locallabel) == 0)
       {
-         imagename = "local:" + utils::getPWD();
+         logmsg(kLDEBUG, "Image refers to local folder: "+imagename);
          if (servicename.length() == 0)
          {
             Poco::Path p(Poco::Path::current());
@@ -95,18 +101,18 @@ namespace sourcecopy
             drunner_assert(p.depth() > 0, "Can't install from /");
             servicename = p.directory(p.depth() - 1);
          }         
+         return kRSuccess;
       }
-      else
-      {
-         std::string registry, repo, tag;
-         cResult r = registries::splitImageName(imagename, registry, repo, tag);
-         if (!r.success())
-            return r;
 
-         imagename = registry + "/" + repo + ":" + tag;
-         if (servicename.length() == 0)
-            servicename = repo;
-      }
+      // online registry
+      std::string registry, repo, tag;
+      cResult r = registries::splitImageName(imagename, registry, repo, tag);
+      if (!r.success())
+         return r;
+
+      imagename = registry + "/" + repo + ":" + tag;
+      if (servicename.length() == 0)
+         servicename = repo;
 
       return kRSuccess;
    }

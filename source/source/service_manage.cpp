@@ -241,20 +241,32 @@ namespace service_manage
 
    cResult update(std::string servicename)
    { // update the service (recreate it)
+     // settings file for service contains imagename, so we can still update after
+     // an uninstall!
+
+      logmsg(kLINFO, "Determining image name.");
       serviceVars v(servicename);
       std::string imagename = v.getImageName();
       drunner_assert(imagename.length() > 0, "Imagename is empty!");
+      logmsg(kLDEBUG, "Imagename is " + imagename);
 
       try
       {
-         uninstall(servicename);
+         logmsg(kLINFO, "Attempting to uninstall " + servicename);
+         cResult r = uninstall(servicename);
+         if (!r.success())
+            logmsg(kLINFO, "Uninstall failed: "+r.what());
       }
       catch (const eExit &)
       {
-         logmsg(kLWARN, "Installation damaged, unable to uninstall dService. Attempting install...");
+         logmsg(kLWARN, "Installation damaged, unable to uninstall "+servicename);
       }
 
-      return install(servicename, imagename);
+      logmsg(kLINFO, "Installing " + servicename + " from " + imagename);
+      cResult r2= install(servicename, imagename);
+      if (r2.success())
+         logmsg(kLINFO, "Installation complete.");
+      return r2;
    }
 
 
