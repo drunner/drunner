@@ -69,6 +69,10 @@ cResult caddy::generate()
 // restart the service
 cResult caddy::restart()
 {
+   cResult r = generate();
+   if (r.error())
+      return r;
+
    std::string op;
    if (utils_docker::dockerContainerRunning(containerName()))
    { // just send signal to restart it.
